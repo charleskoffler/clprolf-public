@@ -13,40 +13,42 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
-* [**“One Reason to Change” — The Forgotten Logic Behind the SRP (and How Clprolf Completes It)**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_18_srp.md)
+* [**Separating Class Responsibilities with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_19_separate_resp.md)
 
-* [**🗂️ Clprolf Directory Explorer — When Breadth-First Becomes Intuitive**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_17_directory_explorer.md)
+* [**“One Reason to Change” — The Forgotten Logic Behind the SRP (and How Clprolf Completes It)**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_18_srp.md)
 
-* [**☀️ WeatherApp MVC — When Clprolf Meets Spring MVC Philosophy**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_16_weather_app.md)
+* [**🗂️ Clprolf Directory Explorer — When Breadth-First Becomes Intuitive**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_17_directory_explorer.md)
 
-* [**🐍 Revisiting Snake in Java with Clprolf — From Clear Code to Clear Game**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_15_snake.md)
+* [**☀️ WeatherApp MVC — When Clprolf Meets Spring MVC Philosophy**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_16_weather_app.md)
 
-* [**Composite Pattern in Clprolf — Example with Files and Folders**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_14_composite.md)
+* [**🐍 Revisiting Snake in Java with Clprolf — From Clear Code to Clear Game**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_15_snake.md)
 
-* [**Builder Pattern in Clprolf — Example with a House**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_13_pattern_builder.md)
+* [**Composite Pattern in Clprolf — Example with Files and Folders**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_14_composite.md)
 
-* [**Decorator Pattern in Clprolf — Example with Coffee**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_12_pattern_decorator.md)
+* [**Builder Pattern in Clprolf — Example with a House**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_13_pattern_builder.md)
 
-* [**Proxy Pattern in Clprolf — Example with an Image**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_11_pattern_proxy.md)
+* [**Decorator Pattern in Clprolf — Example with Coffee**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_12_pattern_decorator.md)
 
-* [**Factory Method in Clprolf: Clear Rules for Object Creation**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_10_pattern_factory.md)
+* [**Proxy Pattern in Clprolf — Example with an Image**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_11_pattern_proxy.md)
 
-* [**Observer Pattern in Clprolf: Clear Roles for Notifications**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_9_pattern_observer.md)
+* [**Factory Method in Clprolf: Clear Rules for Object Creation**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_10_pattern_factory.md)
 
-* [**Strategy Pattern in Clprolf: Clear Roles for Swappable Behavior**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_8_pattern_strategy.md)
+* [**Observer Pattern in Clprolf: Clear Roles for Notifications**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_9_pattern_observer.md)
 
-* [**Adapter Pattern in Clprolf: From Enumeration to Iterator**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_7_pattern_adapter.md)
+* [**Strategy Pattern in Clprolf: Clear Roles for Swappable Behavior**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_8_pattern_strategy.md)
 
-* [**Clprolf Docs #6 — The underst Method Modifier**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_doc_6_underst_modifier.md)
+* [**Adapter Pattern in Clprolf: From Enumeration to Iterator**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_7_pattern_adapter.md)
 
-* [**Clprolf Docs #5 — Concurrency and Parallelism Made Clear**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_doc_5_conc_parall.md)
+* [**Clprolf Docs #6 — The underst Method Modifier**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_doc_6_underst_modifier.md)
 
-* [**Clprolf Docs #4 — Interfaces in Clprolf: A Complete Overview**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_4_doc_interfaces.md)
+* [**Clprolf Docs #5 — Concurrency and Parallelism Made Clear**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_doc_5_conc_parall.md)
 
-* [**Clprolf Docs #3 — Learning Class Roles Through Java Wrappers**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_3_java_wrappers.md)
+* [**Clprolf Docs #4 — Interfaces in Clprolf: A Complete Overview**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_4_doc_interfaces.md)
 
-* [**Clprolf Docs #2 — A QuickSort Example: Java vs. Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_2_java_vs_clprolf.md)
+* [**Clprolf Docs #3 — Learning Class Roles Through Java Wrappers**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_3_java_wrappers.md)
 
-* [**Clprolf Docs #1 — Declensions Explained**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_1_declensions_expl.md)
+* [**Clprolf Docs #2 — A QuickSort Example: Java vs. Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_2_java_vs_clprolf.md)
 
-* [**Introducing Clprolf: a New Programming Language for Clear OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_introduc.md)
+* [**Clprolf Docs #1 — Declensions Explained**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_1_declensions_expl.md)
+
+* [**Introducing Clprolf: a New Programming Language for Clear OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_introduc.md)
