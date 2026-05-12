@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**“One Reason to Change” — The Forgotten Logic Behind the SRP (and How Clprolf Completes It)**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_18_srp.md)
+
 * [**🗂️ Clprolf Directory Explorer — When Breadth-First Becomes Intuitive**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_17_directory_explorer.md)
 
 * [**☀️ WeatherApp MVC — When Clprolf Meets Spring MVC Philosophy**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_16_weather_app.md)
