@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**Preventing Architectural Drift in Object-Oriented Systems — A Structural Approach with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_22_prevent_drift.md)
+
 * [**Refactoring Your Classes with Clprolf and `indef_obj`**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_21_refactoring.md)
 
 * [**A Global Model of How Classes Relate to Each Other in Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_20_global_model.md)
