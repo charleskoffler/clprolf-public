@@ -13,7 +13,7 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
-# Decorator Pattern in Clprolf — Example with Coffee
+* [**Builder Pattern in Clprolf — Example with a House**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_13_pattern_builder.md)
 
 * [**Decorator Pattern in Clprolf — Example with Coffee**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_12_pattern_decorator.md)
 
