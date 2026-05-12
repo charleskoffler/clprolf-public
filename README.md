@@ -61,6 +61,8 @@ Feel free to reach out if you're interested.
 
 * [**🧱 Two Structural Principles behind Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_0.5_principles.md)
 
-* [**Getting Started with Clprolf: Structuring Responsibilities in OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_0_getting_started.md)
+* [**Getting Started with Clprolf: Structuring Responsibilities in OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_0.3_getting_started.md)
+
+* [**Clprolf — A new way to express your talent with OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_0_quick_start.md)
 
 * [**Introducing Clprolf: a New Programming Language for Clear OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_introduc.md)
