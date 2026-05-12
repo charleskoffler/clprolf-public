@@ -15,6 +15,8 @@ Feel free to reach out if you're interested.
 
 * [**A Global Model of How Classes Relate to Each Other in Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_20_global_model.md)
 
+* [**Separating Class Responsibilities with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_19_separate_resp.md)
+
 * [**“One Reason to Change” — The Forgotten Logic Behind the SRP (and How Clprolf Completes It)**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_18_srp.md)
 
 * [**🗂️ Clprolf Directory Explorer — When Breadth-First Becomes Intuitive**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_17_directory_explorer.md)
