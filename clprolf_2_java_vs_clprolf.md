@@ -1,4 +1,4 @@
-# Clprolf Docs #2: A QuickSort Example: Java vs. Clprolf
+# Clprolf Docs #2 — A QuickSort Example: Java vs. Clprolf
 
 Java is great — but in Clprolf, we can say the same thing differently.
 Let’s take an example with **QuickSort**, the famous and efficient sorting algorithm.
