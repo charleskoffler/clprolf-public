@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**Clprolf Docs #6 — The underst Method Modifier**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_doc_6_underst_modifier.md)
+
 * [**Clprolf Docs #5 — Concurrency and Parallelism Made Clear**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_doc_5_conc_parall.md)
 
 * [**Clprolf Docs #4 — Interfaces in Clprolf: A Complete Overview**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_4_doc_interfaces.md)
