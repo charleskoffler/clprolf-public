@@ -13,6 +13,10 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+# Decorator Pattern in Clprolf — Example with Coffee
+
+* [**Decorator Pattern in Clprolf — Example with Coffee**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_12_pattern_decorator.md)
+
 * [**Proxy Pattern in Clprolf — Example with an Image**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_11_pattern_proxy.md)
 
 * [**Factory Method in Clprolf: Clear Rules for Object Creation**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_10_pattern_factory.md)
