@@ -57,6 +57,8 @@ Feel free to reach out if you're interested.
 
 * [**Clprolf Docs #1 — Declensions Explained**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_1_declensions_expl.md)
 
+* [**🧱 Two Structural Principles behind Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_0.5_principles.md)
+
 * [**Getting Started with Clprolf: Structuring Responsibilities in OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_0_getting_started.md)
 
 * [**Introducing Clprolf: a New Programming Language for Clear OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_introduc.md)
