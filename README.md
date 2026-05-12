@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**☀️ WeatherApp MVC — When Clprolf Meets Spring MVC Philosophy**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_16_weather_app.md)
+
 * [**🐍 Revisiting Snake in Java with Clprolf — From Clear Code to Clear Game**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_15_snake.md)
 
 * [**Composite Pattern in Clprolf — Example with Files and Folders**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_14_composite.md)

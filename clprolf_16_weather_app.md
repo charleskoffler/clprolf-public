@@ -1,0 +1,258 @@
+# ☀️ WeatherApp MVC — When Clprolf Meets Spring MVC Philosophy
+
+Everyone knows the **MVC pattern**.
+But what if you could make it **even clearer**, more **structurally explicit**, and **compatible** with both *desktop* and *web* architectures?
+
+That’s what **Clprolf** does —
+it turns the philosophy of **clarity-oriented programming** into real, verifiable structure.
+
+Let’s look at a simple example:
+a *WeatherApp* written in Java + Clprolf annotations —
+which behaves like a **Spring MVC** application,
+but runs locally in Swing.
+
+---
+
+## 🧠 1. The Idea Behind It
+
+In Spring MVC, a `Controller` receives a request,
+calls a `Repository` or `Service`,
+and returns a `View`.
+
+In **Clprolf**, we do exactly the same —
+but we **explicitly declare the roles** of each component.
+
+| Component           | Clprolf Role                   | Description                                 |
+| ------------------- | ------------------------------ | ------------------------------------------- |
+| `WeatherApp`        | `@Worker_agent(Gender.STATIC)` | The system launcher (like Spring Boot main) |
+| `WeatherController` | `@Agent`                       | The “brain” that coordinates the logic      |
+| `WeatherRepository` | `@Worker_agent`                | Technical layer fetching data               |
+| `WeatherRenderer`   | `@Worker_agent`                | The View layer (UI and user input)          |
+
+---
+
+## 🏗️ 2. The Complete Code
+
+```java
+package org.clprolf.examples.design_patterns.mvc;
+
+import org.clprolf.framework.java.Gender;
+import org.clprolf.framework.java.Worker_agent;
+
+@Worker_agent(Gender.STATIC)
+public class WeatherApp {
+    public static void main(String[] args) {
+        WeatherController controller = new WeatherController();
+    }
+}
+```
+
+---
+
+### 🧩 Controller (Agent Layer)
+
+```java
+package org.clprolf.examples.design_patterns.mvc;
+
+import org.clprolf.framework.java.Agent;
+import org.clprolf.framework.java.Gender;
+
+@Agent(Gender.EXPERT_COMPONENT)
+public class WeatherController {
+    private WeatherRepository model;
+    private WeatherRenderer view;
+
+    public WeatherController() {
+        model = new WeatherRepository();
+        view = new WeatherRenderer(this);
+    }
+
+    public void giveTheWeather(String location){
+        model.setLocation(location);
+        model.fetchWeather();
+        String forecast = model.getForecast();
+        view.displayForecast(forecast);
+    }
+}
+```
+
+This class acts like a **Spring `@Controller`**:
+it receives a request (`giveTheWeather`),
+calls the **repository**,
+and updates the **view**.
+
+---
+
+### 🎨 View (Worker Layer)
+
+```java
+package org.clprolf.examples.design_patterns.mvc;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+
+import org.clprolf.framework.java.Agent;
+import org.clprolf.framework.java.Contracts;
+import org.clprolf.framework.java.Nature;
+import org.clprolf.framework.java.Worker_agent;
+import org.clprolf.framework.java.Advice;
+
+@Worker_agent
+public class WeatherRenderer {
+
+    private JFrame frame;
+    private JTextField locationField;
+    private JTextArea forecastArea;
+    private WeatherController expert;
+
+    @Agent
+    @Version_inh
+    private static interface WindowObserver extends @Nature ActionListener { }
+
+    @Agent
+    private class WindowObserverImpl implements @Contracts WindowObserver {
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String location = getLocationInput();
+            this.expert.giveTheWeather(location);
+        }
+    }
+
+    public WeatherRenderer(WeatherController expert) {
+        this.expert = expert;
+        prepareViewObjects();
+    }
+
+    protected void prepareViewObjects() {
+        frame = new JFrame("Weather Forecast");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 200);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel locationLabel = new JLabel("Enter Location:");
+        locationField = new JTextField(20);
+        locationField.addActionListener(new WindowObserverImpl());
+
+        forecastArea = new JTextArea(5, 30);
+        forecastArea.setEditable(false);
+
+        panel.add(locationLabel, BorderLayout.NORTH);
+        panel.add(locationField, BorderLayout.CENTER);
+        panel.add(new JScrollPane(forecastArea), BorderLayout.SOUTH);
+
+        frame.getContentPane().add(panel);
+        frame.setVisible(true);
+    }
+
+    public String getLocationInput() {
+        return locationField.getText();
+    }
+
+    public void displayForecast(String forecast) {
+        forecastArea.setText(forecast);
+    }
+}
+```
+
+Here, the **view** acts like a web frontend.
+It observes user input (capacity-inherited `ActionListener`)
+and sends the event to the **controller agent**.
+
+You could almost replace Swing with HTML/JavaScript
+and it would behave the same way!
+
+---
+
+### ☁️ Repository (Technical Worker)
+
+```java
+package org.clprolf.examples.design_patterns.mvc;
+
+import org.clprolf.framework.java.Worker_agent;
+
+@Worker_agent
+class WeatherRepository {
+    private String location;
+    private String forecast;
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void fetchWeather() {
+        this.forecast = "Sunny with a chance of clouds";
+    }
+
+    public String getForecast() {
+        return forecast;
+    }
+}
+```
+
+A pure worker: no intelligence, no UI — just technical work.
+That’s exactly what a `Repository` or `Service` does in Spring MVC.
+
+---
+
+## 🔄 3. The MVC Flow
+
+```
+User (View) → WeatherRenderer (worker_agent)
+             → WeatherController (agent)
+             → WeatherRepository (worker_agent)
+             → back to WeatherRenderer
+```
+
+The **same logical flow** as Spring MVC —
+but here, everything runs locally and instantly.
+
+---
+
+## 🧠 4. Why It Matters
+
+This example shows that **Clprolf integrates seamlessly** with existing patterns.
+It doesn’t replace MVC, Spring, or OOP —
+it simply **clarifies and strengthens** them.
+
+In a Spring app, you’d just change the way communication happens
+(HTTP + `@GetMapping` instead of direct calls) —
+but your *roles*, *responsibilities*, and *architecture* remain identical.
+
+---
+
+## 💬 5. Final Thoughts
+
+Clprolf makes **architecture visible**.
+You no longer guess what a class *is supposed to be*:
+you *declare it* — explicitly.
+
+> A `Controller` is an **Agent**.
+> A `Repository` is a **Worker_agent**.
+> A `Launcher` is a **Static Worker_agent**.
+> A `View` is also a **Worker_agent** — the interface between human and machine.
+
+In short:
+Clprolf doesn’t reinvent MVC — it **makes it self-explanatory**.
+
+---
+
+### 🧡 Summary
+
+| Traditional Role | Clprolf Equivalent             | Layer            |
+| ---------------- | ------------------------------ | ---------------- |
+| Controller       | `@Agent`                       | Logic / Domain   |
+| Repository       | `@Worker_agent`                | Data / Technical |
+| View             | `@Worker_agent`                | Presentation     |
+| Launcher         | `@Worker_agent(Gender.STATIC)` | System entry     |
+
+---
+
+> 🌤️ *“It acts as a living interface between human and machine —
+> the very essence of the worker_agent.”*
+
+That’s the clarity and beauty of Clprolf.
+
+---
