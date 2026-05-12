@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**Refactoring Your Classes with Clprolf and `indef_obj`**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_21_refactoring.md)
+
 * [**A Global Model of How Classes Relate to Each Other in Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_20_global_model.md)
 
 * [**Separating Class Responsibilities with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_19_separate_resp.md)
