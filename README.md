@@ -13,7 +13,7 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
-* [**Separating Class Responsibilities with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_19_separate_resp.md)
+* [**A Global Model of How Classes Relate to Each Other in Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_20_global_model.md)
 
 * [**“One Reason to Change” — The Forgotten Logic Behind the SRP (and How Clprolf Completes It)**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_18_srp.md)
 
