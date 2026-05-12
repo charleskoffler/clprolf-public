@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**Adapter Pattern in Clprolf: From Enumeration to Iterator**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_7_pattern_adapter.md)
+
 * [**Clprolf Docs #6 — The underst Method Modifier**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_doc_6_underst_modifier.md)
 
 * [**Clprolf Docs #5 — Concurrency and Parallelism Made Clear**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_doc_5_conc_parall.md)
