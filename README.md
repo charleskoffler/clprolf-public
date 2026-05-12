@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**Observer Pattern in Clprolf: Clear Roles for Notifications**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_9_pattern_observer.md)
+
 * [**Strategy Pattern in Clprolf: Clear Roles for Swappable Behavior**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_8_pattern_strategy.md)
 
 * [**Adapter Pattern in Clprolf: From Enumeration to Iterator**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_7_pattern_adapter.md)
