@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**🗂️ Clprolf Directory Explorer — When Breadth-First Becomes Intuitive**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_17_directory_explorer.md)
+
 * [**☀️ WeatherApp MVC — When Clprolf Meets Spring MVC Philosophy**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_16_weather_app.md)
 
 * [**🐍 Revisiting Snake in Java with Clprolf — From Clear Code to Clear Game**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_15_snake.md)
