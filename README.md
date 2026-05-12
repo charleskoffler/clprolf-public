@@ -10,3 +10,7 @@ Access is limited to collaborators and testers.
 ## Collaboration
 
 Feel free to reach out if you're interested.
+
+## Articles
+
+* [** Introducing Clprolf: a New Programming Language for Clear OOP **](https://github.com/charleskoffler/clprolf-public/clprolf_introduc.md)
