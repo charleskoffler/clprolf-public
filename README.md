@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**Strategy Pattern in Clprolf: Clear Roles for Swappable Behavior**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_8_pattern_strategy.md)
+
 * [**Adapter Pattern in Clprolf: From Enumeration to Iterator**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_7_pattern_adapter.md)
 
 * [**Clprolf Docs #6 — The underst Method Modifier**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_doc_6_underst_modifier.md)
