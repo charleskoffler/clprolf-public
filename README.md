@@ -13,6 +13,10 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**Proxy Pattern in Clprolf — Example with an Image**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_11_pattern_proxy.md)
+
+* [**Factory Method in Clprolf: Clear Rules for Object Creation**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_10_pattern_factory.md)
+
 * [**Observer Pattern in Clprolf: Clear Roles for Notifications**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_9_pattern_observer.md)
 
 * [**Strategy Pattern in Clprolf: Clear Roles for Swappable Behavior**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_8_pattern_strategy.md)
