@@ -13,6 +13,8 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
+* [**Clprolf Docs #4 — Interfaces in Clprolf: A Complete Overview**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_4_doc_interfaces.md)
+
 * [**Clprolf Docs #3 — Learning Class Roles Through Java Wrappers**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_3_java_wrappers.md)
 
 * [**Clprolf Docs #2 — A QuickSort Example: Java vs. Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/clprolf_2_java_vs_clprolf.md)
