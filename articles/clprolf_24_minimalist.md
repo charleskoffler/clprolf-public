@@ -441,7 +441,7 @@ public interface DatabaseStorage {
 Capability interfaces use:
 
 ```java
-@Capacity_int(...)
+@Capacity_inh(...)
 ```
 
 with an advice.
@@ -451,7 +451,7 @@ with an advice.
 ## Business example
 
 ```java
-@Capacity_int(Advice.FOR_AGENT_LIKE)
+@Capacity_inh(Advice.FOR_AGENT_LIKE)
 public interface Payable {
 }
 ```
@@ -461,7 +461,7 @@ public interface Payable {
 ## Technical example
 
 ```java
-@Capacity_int(Advice.FOR_WORKER_LIKE)
+@Capacity_inh(Advice.FOR_WORKER_LIKE)
 public interface Persistable {
 }
 ```
