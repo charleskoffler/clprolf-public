@@ -213,6 +213,15 @@ version_inh  = primary interface for a family
 capacity_inh = common capability shared by multiple families
 compat_interf = unrestricted interface
 
+In Clprolf, interfaces are not viewed as simple
+technical contracts.
+
+The `extends` and `implements` relationships are considered
+true forms of conceptual inheritance.
+
+The `_inh` suffix (inheritance) emphasizes that these interfaces
+directly participate in the inheritance structure of the system.
+
 ---
 
 # IV.1) `version_inh`
