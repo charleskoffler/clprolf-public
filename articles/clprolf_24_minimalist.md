@@ -209,6 +209,10 @@ In Clprolf Minimalist, interfaces are viewed as:
 
 They therefore participate in the structural continuity of the system.
 
+version_inh  = primary interface for a family
+capacity_inh = common capability shared by multiple families
+compat_interf = unrestricted interface
+
 ---
 
 # IV.1) `version_inh`
