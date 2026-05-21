@@ -289,15 +289,31 @@ public compat_interf ExternalApi {
 
 ---
 
-# IV.4) Interface usage
+# IV.4) Interface Usage
 
-A class may implement at most one `version_inh` interface, and the role of the class must correspond to the role of the interface.
+In Clprolf, `version_inh` interfaces are the equivalent of pure abstract classes.
+They correspond exactly to a future Clprolf class, which is why they also possess a class role (`agent` or `worker_agent`).
 
-`capacity_inh` interfaces express an “interface of interface,” a capability possessed by a version interface. It is a common trait shared by several version interfaces.
+A class may implement at most one `version_inh` interface, and the role of the class must match the role of the interface.
 
-They may only be inherited by a `version_inh` interface, and not directly by a class.
+Clprolf therefore uses simple interface implementation, just as Java uses simple class inheritance.
+Indeed, a `version_inh` interface is always the structural reflection of its implementation.
 
----
+`capacity_inh` interfaces express an “interface of interface”: a capability possessed by a `version_inh` interface.
+It represents a common trait shared between several `version_inh` interfaces.
+
+They may only be inherited by a `version_inh` interface, and never directly by a concrete class.
+
+```text
+Concrete class
+    ↓ implements
+version_inh
+    ↓ inherits from
+capacity_inh
+```
+
+Note: of course, a `version_inh` interface may use multiple inheritance from other `version_inh` interfaces, or from `capacity_inh` interfaces.
+A `capacity_inh` interface may inherit only from other `capacity_inh` interfaces.
 
 # IV.5) Philosophy of Interfaces
 
