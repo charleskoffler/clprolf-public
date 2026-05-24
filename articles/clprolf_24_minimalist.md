@@ -1,8 +1,6 @@
 # Clprolf Minimalist — Official Documentation
 
----
-
-# Introduction
+## Introduction
 
 **Clprolf Minimalist** is a simplified version of the Clprolf language.
 
@@ -199,9 +197,32 @@ public agent Dog extends DatabaseConnection {
 Here, the domains are incompatible.
 Composition should be used.
 
+Class inheritance forcing is possible with `@Forc_inh`, above the class.
+
 ---
 
-# IV) Interfaces
+# IV) Flexible Mode
+
+Clprolf Minimalist works only in:
+
+```text
+flexible mode
+```
+
+The developer therefore keeps their freedom:
+
+* mixing remains possible if necessary,
+* progressive migration,
+* compatibility with existing code,
+* but there is always a main domain.
+
+The language acts mainly as:
+
+> a structural guide.
+
+---
+
+# V) Interfaces
 
 In Clprolf Minimalist, interfaces are viewed as:
 
@@ -209,22 +230,21 @@ In Clprolf Minimalist, interfaces are viewed as:
 
 They therefore participate in the structural continuity of the system.
 
-version_inh  = primary interface for a family
-capacity_inh = common capability shared by multiple families
+```text
+version_inh  = primary interface of a family
+capacity_inh = shared capability between families
 compat_interf = unrestricted interface
+```
 
-In Clprolf, interfaces are not viewed as simple
-technical contracts.
+In Clprolf, interfaces are not viewed as simple technical contracts.
 
-The `extends` and `implements` relationships are considered
-true forms of conceptual inheritance.
+The `extends` and `implements` relationships are considered true forms of conceptual inheritance.
 
-The `_inh` suffix (inheritance) emphasizes that these interfaces
-directly participate in the inheritance structure of the system.
+The `_inh` suffix (inheritance) emphasizes that these interfaces directly participate in the inheritance structure of the system.
 
 ---
 
-# IV.1) `version_inh`
+# V.1) `version_inh`
 
 Interface representing an abstract version.
 
@@ -234,7 +254,7 @@ Used for:
 * decoupling,
 * implementation variants.
 
-Version interfaces also possess a role:
+Version interfaces also possess a target role:
 
 * `agent`
 * or `worker_agent`
@@ -253,9 +273,9 @@ public version_inh agent Animal {
 
 ---
 
-# IV.2) `capacity_inh`
+# V.2) `capacity_inh`
 
-Interface representing a common capability.
+Interface representing a shared capability.
 
 Capability interfaces use an advice:
 
@@ -286,9 +306,10 @@ public capacity_inh Persistable {
 
 ---
 
-# IV.3) `compat_interf`
+# V.3) `compat_interf`
 
 Generic interface without any particular role.
+
 Allows the system to remain flexible.
 
 ---
@@ -302,7 +323,7 @@ public compat_interf ExternalApi {
 
 ---
 
-# IV.4) Interface Usage
+# V.4) Interface Usage
 
 In Clprolf, `version_inh` interfaces are the equivalent of pure abstract classes.
 They correspond exactly to a future Clprolf class, which is why they also possess a class role (`agent` or `worker_agent`).
@@ -311,11 +332,13 @@ A class may implement at most one `version_inh` interface, and the role of the c
 
 Clprolf therefore uses simple interface implementation, just as Java uses simple class inheritance.
 Indeed, a `version_inh` interface is always the structural reflection of its implementation.
+This notably allows systematic loose coupling.
 
 `capacity_inh` interfaces express an “interface of interface”: a capability possessed by a `version_inh` interface.
 It represents a common trait shared between several `version_inh` interfaces.
 
 They may only be inherited by a `version_inh` interface, and never directly by a concrete class.
+In coherence with loose coupling, they are extended by the `version_inh` interface corresponding to the class.
 
 ```text
 Concrete class
@@ -325,10 +348,14 @@ version_inh
 capacity_inh
 ```
 
-Note: of course, a `version_inh` interface may use multiple inheritance from other `version_inh` interfaces, or from `capacity_inh` interfaces.
+Note: of course, a `version_inh` interface may use multiple inheritance from other `version_inh` interfaces or from `capacity_inh` interfaces.
 A `capacity_inh` interface may inherit only from other `capacity_inh` interfaces.
 
-# IV.5) Philosophy of Interfaces
+Interface inheritance forcing remains possible with `@Forc_int_inh` above the interface (or even `@Forc_inh` to force inheritance between different target roles).
+
+---
+
+# V.5) Interface Philosophy
 
 The suffix:
 
@@ -347,7 +374,7 @@ but abstract structures participating in the conceptual inheritance of the syste
 
 ---
 
-# V) General Architecture
+# VI) General Architecture
 
 Clprolf Minimalist naturally encourages a simple architecture.
 
@@ -371,28 +398,7 @@ worker_agent
 
 ---
 
-# VI) Flexible Mode
-
-Clprolf Minimalist works only in:
-
-```text
-flexible mode
-```
-
-The developer therefore keeps their freedom:
-
-* mixing remains possible if necessary,
-* progressive migration,
-* compatibility with existing code,
-* but there is always a main domain.
-
-The language acts mainly as:
-
-> a structural guide.
-
----
-
-# VIII) Clprolf Framework
+# VII) Clprolf Framework
 
 Clprolf can also be used as a framework inside an existing language such as Java.
 
@@ -400,7 +406,7 @@ In that case, the keywords are replaced by annotations.
 
 ---
 
-# VIII.1) Classes
+# VII.1) Classes
 
 ---
 
@@ -434,7 +440,7 @@ public class TemporaryManager {
 
 ---
 
-# VIII.2) Version Interfaces
+# VII.2) Version Interfaces
 
 Version interfaces use two annotations:
 
@@ -465,7 +471,7 @@ public interface DatabaseStorage {
 
 ---
 
-# VIII.3) Capability Interfaces
+# VII.3) Capability Interfaces
 
 Capability interfaces use:
 
@@ -473,7 +479,7 @@ Capability interfaces use:
 @Capacity_inh(...)
 ```
 
-with an advice.
+with an advice, which acts as a target specialization.
 
 ---
 
@@ -497,7 +503,7 @@ public interface Persistable {
 
 ---
 
-# VIII.4) Free Compatibility
+# VII.4) Free Compatibility
 
 ```java
 @Compat_interf
@@ -507,7 +513,7 @@ public interface ExternalApi {
 
 ---
 
-# IX) What Was Removed
+# VIII) What Was Removed
 
 In order to drastically reduce complexity:
 
@@ -528,7 +534,7 @@ have been removed from the minimalist version.
 
 ---
 
-# X) Goal of the Language
+# IX) Goal of the Language
 
 Clprolf Minimalist does not seek to replace classical OOP.
 
@@ -540,7 +546,7 @@ It seeks to make certain important distinctions explicit:
 
 ---
 
-# XI) Summary
+# X) Summary
 
 Clprolf Minimalist adds very few concepts.
 
