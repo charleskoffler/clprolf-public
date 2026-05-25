@@ -63,7 +63,7 @@ The class performs technical work:
 These classes are declared with:
 
 ```clprolf
-worker_agent
+worker
 ```
 
 ---
@@ -74,7 +74,7 @@ A class should inherit only from a class belonging to the same conceptual domain
 
 Otherwise:
 
-> composition must be used.
+> composition should be used.
 
 This principle prevents incoherent hierarchies and mixed responsibilities.
 
@@ -82,7 +82,7 @@ This principle prevents incoherent hierarchies and mixed responsibilities.
 
 # II) Class Types
 
-Clprolf Minimalist has only three types of classes.
+Clprolf Minimalist has only three class types.
 
 ---
 
@@ -115,11 +115,11 @@ public agent OrderProcessor {
 
 ---
 
-## II.2) `worker_agent`
+## II.2) `worker`
 
 Represents a technical class.
 
-A `worker_agent`:
+A `worker`:
 
 * performs machine tasks,
 * manages infrastructure,
@@ -128,7 +128,7 @@ A `worker_agent`:
 Example:
 
 ```clprolf
-public worker_agent OrderRepository {
+public worker OrderRepository {
 
     public void save(Order order) {
 
@@ -161,6 +161,36 @@ public indef_obj TemporaryManager {
 
 ---
 
+## II.4) Main Domain and Technical Code
+
+Clprolf encourages moving as much technical code as possible from `agent` classes into `worker` classes.
+
+However, an `agent` may still contain a reasonable amount of technical code when it improves the simplicity or readability of the system.
+
+An `agent` always has a main domain representing its central responsibility.
+
+Secondary responsibilities may exist as long as they remain coherent with this main domain.
+
+---
+
+## II.5) Freedom of Interpretation
+
+The choice between `agent` and `worker` is left to the developer.
+
+Some responsibilities may be interpreted differently depending on the chosen architectural vision.
+
+For example, a connection may be represented:
+
+* as an `agent`, if it is viewed as a functional abstraction;
+* or as a `worker`, if it is considered a purely technical mechanism.
+
+If one wishes to clearly separate the functional logic related to the connection from its technical implementation, one may use:
+
+* an `agent` to represent the connection,
+* and delegate the technical code to one or more `worker` classes.
+
+---
+
 # III) Inheritance
 
 Clprolf Minimalist greatly simplifies inheritance.
@@ -168,7 +198,7 @@ Clprolf Minimalist greatly simplifies inheritance.
 The `nature` keyword disappears.
 The rule becomes implicit:
 
-> a class inherits only from a class of the same domain.
+> a class inherits only from a class belonging to the same domain.
 
 ---
 
@@ -187,7 +217,7 @@ public agent Dog extends Animal {
 ## Discouraged example
 
 ```clprolf
-public worker_agent DatabaseConnection {
+public worker DatabaseConnection {
 }
 
 public agent Dog extends DatabaseConnection {
@@ -195,15 +225,15 @@ public agent Dog extends DatabaseConnection {
 ```
 
 Here, the domains are incompatible.
-Composition should be used.
+Composition should be used instead.
 
-Class inheritance forcing is possible with `@Forc_inh`, above the class.
+Class inheritance forcing remains possible with `@Forc_inh` above the class.
 
 ---
 
 # IV) Flexible Mode
 
-Clprolf Minimalist works only in:
+Clprolf Minimalist operates only in:
 
 ```text
 flexible mode
@@ -212,11 +242,11 @@ flexible mode
 The developer therefore keeps their freedom:
 
 * mixing remains possible if necessary,
-* progressive migration,
-* compatibility with existing code,
+* progressive migration is allowed,
+* compatibility with existing code is preserved,
 * but there is always a main domain.
 
-The language acts mainly as:
+The language mainly acts as:
 
 > a structural guide.
 
@@ -231,22 +261,20 @@ In Clprolf Minimalist, interfaces are viewed as:
 They therefore participate in the structural continuity of the system.
 
 ```text
-version_inh  = primary interface of a family
-capacity_inh = shared capability between families
-compat_interf = unrestricted interface
+family_interf  = primary interface of a family
+trait_interf   = trait, shared capability between families
+compat_interf  = unrestricted interface
 ```
 
 In Clprolf, interfaces are not viewed as simple technical contracts.
 
-The `extends` and `implements` relationships are considered true forms of conceptual inheritance.
-
-The `_inh` suffix (inheritance) emphasizes that these interfaces directly participate in the inheritance structure of the system.
+The `extends` and `implements` relationships are considered genuine forms of conceptual inheritance, hence the term “family”.
 
 ---
 
-# V.1) `version_inh`
+# V.1) `family_interf`
 
-Interface representing an abstract version.
+Interface representing an abstract family.
 
 Used for:
 
@@ -254,41 +282,60 @@ Used for:
 * decoupling,
 * implementation variants.
 
-Version interfaces also possess a target role:
+Family interfaces also possess a target role:
 
 * `agent`
-* or `worker_agent`
+* or `worker`
 
 ---
 
 ## Example
 
 ```clprolf
-public version_inh agent Animal {
+public family_interf agent Animal {
 
     void eat(int quantity);
 
 }
 ```
 
+The hierarchy of `family_interf` interfaces naturally reflects the hierarchy of concrete classes.
+
+```clprolf
+public family_interf agent Horse extends Animal {
+
+    void jump(int height);
+
+}
+```
+
+And will naturally lead to:
+
+```clprolf
+public agent AnimalImpl implements Animal { (...) }
+```
+
+```clprolf
+public agent HorseImpl extends AnimalImpl implements Horse { (...) }
+```
+
 ---
 
-# V.2) `capacity_inh`
+# V.2) `trait_interf`
 
-Interface representing a shared capability.
+Interface representing a shared functionality between several `family_interf`.
 
-Capability interfaces use an advice:
+Traits use a target role, just like `family_interf`:
 
-* `@Agent_like_advice`
-* or `@Worker_like_advice`
+* `agent`
+* `worker`
 
 ---
 
 ## Business-side example
 
 ```clprolf
-@Agent_like_advice
-public capacity_inh Payable {
+public trait_interf agent Payable {
     void pay();
 }
 ```
@@ -298,8 +345,7 @@ public capacity_inh Payable {
 ## Technical-side example
 
 ```clprolf
-@Worker_like_advice
-public capacity_inh Persistable {
+public trait_interf worker Persistable {
     void save();
 }
 ```
@@ -325,52 +371,41 @@ public compat_interf ExternalApi {
 
 # V.4) Interface Usage
 
-In Clprolf, `version_inh` interfaces are the equivalent of pure abstract classes.
-They correspond exactly to a future Clprolf class, which is why they also possess a class role (`agent` or `worker_agent`).
+In Clprolf, `family_interf` interfaces are the equivalent of pure abstract classes.
 
-A class may implement at most one `version_inh` interface, and the role of the class must match the role of the interface.
+They are intended to be implemented by one or more future Clprolf classes.
+They therefore possess a target role (`agent` or `worker`).
 
-Clprolf therefore uses simple interface implementation, just as Java uses simple class inheritance.
-Indeed, a `version_inh` interface is always the structural reflection of its implementation.
-This notably allows systematic loose coupling.
+A class may implement only one main `family_interf` at a time, and the role of the class must match the target role of the interface.
 
-`capacity_inh` interfaces express an “interface of interface”: a capability possessed by a `version_inh` interface.
-It represents a common trait shared between several `version_inh` interfaces.
+Clprolf therefore uses simple interface implementation, in the same way that Java uses simple class inheritance.
 
-They may only be inherited by a `version_inh` interface, and never directly by a concrete class.
-In coherence with loose coupling, they are extended by the `version_inh` interface corresponding to the class.
+Indeed, a `family_interf` is always the structural reflection of its implementation.
+This notably enables systematic loose coupling.
+
+---
+
+`trait_interf` interfaces express a shared functionality between several `family_interf` interfaces.
+
+A `trait_interf` therefore represents a transversal trait shared across multiple families.
+
+Normally, a `trait_interf` may only be inherited by a `family_interf` interface, and not directly by a class.
+
+However, in Clprolf Minimalist, direct implementation of a `trait_interf` by a class remains tolerated, although discouraged.
 
 ```text
 Concrete class
     ↓ implements
-version_inh
+family_interf
     ↓ inherits from
-capacity_inh
+trait_interf
 ```
 
-Note: of course, a `version_inh` interface may use multiple inheritance from other `version_inh` interfaces or from `capacity_inh` interfaces.
-A `capacity_inh` interface may inherit only from other `capacity_inh` interfaces.
+Note: a `family_interf` interface may inherit from multiple `family_interf` or `trait_interf` interfaces.
 
-Interface inheritance forcing remains possible with `@Forc_int_inh` above the interface (or even `@Forc_inh` to force inheritance between different target roles).
+A `trait_interf` interface may inherit only from other `trait_interf` interfaces, because a trait remains a trait.
 
----
-
-# V.5) Interface Philosophy
-
-The suffix:
-
-```text
-_inh
-```
-
-comes from:
-
-```text
-inheritance
-```
-
-Interfaces are therefore not considered simple technical contracts,
-but abstract structures participating in the conceptual inheritance of the system.
+Interface inheritance forcing remains possible with `@Forc_int_inh` above the interface (or `@Forc_inh` to force inheritance between different target roles).
 
 ---
 
@@ -381,7 +416,7 @@ Clprolf Minimalist naturally encourages a simple architecture.
 ```text
 agent
     ↓ delegates to
-worker_agent
+worker
 ```
 
 `agents` contain:
@@ -390,25 +425,28 @@ worker_agent
 * decisions,
 * orchestration.
 
-`worker_agents` perform:
+`workers` perform:
 
 * technical work,
 * system access,
 * machine operations.
 
+An `agent` delegates technical code to one or more `worker` classes.
+It may still execute technical operations itself, but by calling methods from a `worker`.
+
+The `worker` is at the service of the `agent`.
+
 ---
 
 # VII) Clprolf Framework
 
-Clprolf can also be used as a framework inside an existing language such as Java.
+Clprolf may also be used as a framework inside an existing language such as Java.
 
-In that case, the keywords are replaced by annotations.
+In that case, the keywords are replaced with annotations.
 
 ---
 
 # VII.1) Classes
-
----
 
 ## Agent
 
@@ -420,10 +458,10 @@ public class OrderProcessor {
 
 ---
 
-## Worker Agent
+## Worker
 
 ```java
-@Worker_agent
+@Worker
 public class OrderRepository {
 }
 ```
@@ -440,12 +478,12 @@ public class TemporaryManager {
 
 ---
 
-# VII.2) Version Interfaces
+# VII.2) Family Interfaces
 
-Version interfaces use two annotations:
+Family interfaces use two annotations:
 
 * a role annotation,
-* plus `@Version_inh`.
+* plus `@Family_interf`.
 
 ---
 
@@ -453,7 +491,7 @@ Version interfaces use two annotations:
 
 ```java
 @Agent
-@Version_inh
+@Family_interf
 public interface PaymentService {
 }
 ```
@@ -463,30 +501,31 @@ public interface PaymentService {
 ## Technical-side example
 
 ```java
-@Worker_agent
-@Version_inh
+@Worker
+@Family_interf
 public interface DatabaseStorage {
 }
 ```
 
 ---
 
-# VII.3) Capability Interfaces
+# VII.3) Trait Interfaces
 
-Capability interfaces use:
+Trait interfaces use:
 
 ```java
-@Capacity_inh(...)
+@Trait_interf
 ```
 
-with an advice, which acts as a target specialization.
+with a target role.
 
 ---
 
 ## Business example
 
 ```java
-@Capacity_inh(Advice.FOR_AGENT_LIKE)
+@Agent
+@Trait_interf
 public interface Payable {
 }
 ```
@@ -496,7 +535,8 @@ public interface Payable {
 ## Technical example
 
 ```java
-@Capacity_inh(Advice.FOR_WORKER_LIKE)
+@Worker
+@Trait_interf
 public interface Persistable {
 }
 ```
@@ -513,7 +553,7 @@ public interface ExternalApi {
 
 ---
 
-# VIII) What Was Removed
+# VIII) What Has Been Removed
 
 In order to drastically reduce complexity:
 
@@ -522,12 +562,16 @@ In order to drastically reduce complexity:
 * `abstraction`
 * `simu_real_obj`
 * `comp_as_worker`
+* renaming `worker_agent` to `worker`
+* renaming `version_inh` to `family_interf`
+* renaming `capacity_inh` to `trait_interf`
 * `nature`
 * `contracts`
 * `underst`
 * `with_compat`
 * genders
 * synonyms
+* interface advices replaced with a target role
 * advanced concurrency/parallelism mechanisms
 
 have been removed from the minimalist version.
@@ -536,9 +580,9 @@ have been removed from the minimalist version.
 
 # IX) Goal of the Language
 
-Clprolf Minimalist does not seek to replace classical OOP.
+Clprolf Minimalist does not aim to replace classical OOP.
 
-It seeks to make certain important distinctions explicit:
+It aims to make certain important distinctions explicit:
 
 * business vs technical,
 * coherent inheritance vs composition,
@@ -556,7 +600,7 @@ Clprolf Minimalist adds very few concepts.
 
 ```text
 agent
-worker_agent
+worker
 indef_obj
 ```
 
@@ -565,8 +609,8 @@ indef_obj
 ## Interfaces
 
 ```text
-version_inh
-capacity_inh
+family_interf
+trait_interf
 compat_interf
 ```
 
