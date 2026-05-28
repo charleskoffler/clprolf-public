@@ -47,7 +47,6 @@ public class ClpSocket extends @Nature Socket {
 ### ClpSocketServer Wrapper
 
 Here, the name is slightly adapted: `SocketServer` instead of Java’s `ServerSocket`.
-We declare it as `@Agent(Gender.EXPERT_COMPONENT)` because it is an **expert component** for serving sockets.
 
 ```java
 package clprolf.wrappers.java.net;
@@ -61,7 +60,7 @@ import org.simol.simolframework.java.Role;
 import org.simol.simolframework.java.Agent;
 
 @Forced_inh
-@Agent(Gender.EXPERT_COMPONENT)
+@Agent
 public class ClpSocketServer extends @Nature ServerSocket {
 
     public ClpSocketServer() throws IOException {
@@ -143,7 +142,7 @@ public final class ClpScanner { // Java Scanner is final, so we use composition
 * It is `final`.
 * It only has **static methods**.
 
-This makes it a perfect fit for `@Abstraction(Gender.STATIC)`.
+This makes it a perfect fit for `@Abstraction`.
 We see it as a **singleton abstraction of the operating system**.
 
 ```java
@@ -155,7 +154,7 @@ import java.io.PrintStream;
 import org.simol.simolframework.java.Abstraction;
 import org.simol.simolframework.java.Role;
 
-@Abstraction(Gender.STATIC)
+@Abstraction
 public final class ClpSystem {
 
     public static final PrintStream getOut() {

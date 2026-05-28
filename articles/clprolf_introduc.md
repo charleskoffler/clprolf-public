@@ -6,7 +6,7 @@
 > Clprolf is a **structured object-oriented language and framework** that adds a conceptual layer on top of Java/C#/PHP.
 
 > Roles, contracts, and structural rules are **first-class language elements**.
-You model systems with **agents, worker agents, versions, and capacities**, while the compiler enforces clarity.
+You model systems with **agents, workers, family_interf, and trait_interf**, while the compiler enforces clarity.
 
 ---
 
@@ -34,7 +34,7 @@ Clprolf is intended for contexts where early architectural control and long-term
 
 * **Safer architecture**: compile-time errors prevent invalid dependencies
 * **Clear concurrency**: intent expressed with `one_at_a_time`, `turn_monitor`, etc.
-* **Readable design**: class roles (`agent`, `worker_agent`, `model`) explain themselves
+* **Readable design**: class roles (`agent`, `worker`, `model`) explain themselves
 
 ---
 
@@ -53,7 +53,7 @@ public class_for agent OrderService {
 
 ### ✨ Key Ideas
 
-* Role-based classes: `agent`, `worker_agent`, `model`, `information`, `indef_obj`
+* Role-based classes: `agent`, `worker`, `model`, `information`, `indef_obj`
 * Modifiers for real-world complexity: `long_action`, `one_at_a_time`, `dependent_activity`
 * Works two ways:
 

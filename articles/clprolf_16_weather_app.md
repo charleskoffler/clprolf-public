@@ -24,10 +24,10 @@ but we **explicitly declare the roles** of each component.
 
 | Component           | Clprolf Role                   | Description                                 |
 | ------------------- | ------------------------------ | ------------------------------------------- |
-| `WeatherApp`        | `@Worker_agent(Gender.STATIC)` | The system launcher (like Spring Boot main) |
+| `WeatherApp`        | `@Worker`       | The system launcher (like Spring Boot main) |
 | `WeatherController` | `@Agent`                       | The “brain” that coordinates the logic      |
-| `WeatherRepository` | `@Worker_agent`                | Technical layer fetching data               |
-| `WeatherRenderer`   | `@Worker_agent`                | The View layer (UI and user input)          |
+| `WeatherRepository` | `@Worker`                      | Technical layer fetching data               |
+| `WeatherRenderer`   | `@Worker`                      | The View layer (UI and user input)          |
 
 ---
 
@@ -36,10 +36,9 @@ but we **explicitly declare the roles** of each component.
 ```java
 package org.clprolf.examples.design_patterns.mvc;
 
-import org.clprolf.framework.java.Gender;
-import org.clprolf.framework.java.Worker_agent;
+import org.clprolf.framework.java.Worker;
 
-@Worker_agent(Gender.STATIC)
+@Worker
 public class WeatherApp {
     public static void main(String[] args) {
         WeatherController controller = new WeatherController();
@@ -55,9 +54,8 @@ public class WeatherApp {
 package org.clprolf.examples.design_patterns.mvc;
 
 import org.clprolf.framework.java.Agent;
-import org.clprolf.framework.java.Gender;
 
-@Agent(Gender.EXPERT_COMPONENT)
+@Agent
 public class WeatherController {
     private WeatherRepository model;
     private WeatherRenderer view;
@@ -96,10 +94,10 @@ import javax.swing.*;
 import org.clprolf.framework.java.Agent;
 import org.clprolf.framework.java.Contracts;
 import org.clprolf.framework.java.Nature;
-import org.clprolf.framework.java.Worker_agent;
+import org.clprolf.framework.java.Worker;
 import org.clprolf.framework.java.Advice;
 
-@Worker_agent
+@Worker
 public class WeatherRenderer {
 
     private JFrame frame;
@@ -108,7 +106,7 @@ public class WeatherRenderer {
     private WeatherController expert;
 
     @Agent
-    @Version_inh
+    @Family_interf
     private static interface WindowObserver extends @Nature ActionListener { }
 
     @Agent
@@ -171,9 +169,9 @@ and it would behave the same way!
 ```java
 package org.clprolf.examples.design_patterns.mvc;
 
-import org.clprolf.framework.java.Worker_agent;
+import org.clprolf.framework.java.Worker;
 
-@Worker_agent
+@Worker
 class WeatherRepository {
     private String location;
     private String forecast;
@@ -230,9 +228,9 @@ You no longer guess what a class *is supposed to be*:
 you *declare it* — explicitly.
 
 > A `Controller` is an **Agent**.
-> A `Repository` is a **Worker_agent**.
-> A `Launcher` is a **Static Worker_agent**.
-> A `View` is also a **Worker_agent** — the interface between human and machine.
+> A `Repository` is a **Worker**.
+> A `Launcher` is a **Static Worker**.
+> A `View` is also a **Worker** — the interface between human and machine.
 
 In short:
 Clprolf doesn’t reinvent MVC — it **makes it self-explanatory**.
@@ -244,9 +242,9 @@ Clprolf doesn’t reinvent MVC — it **makes it self-explanatory**.
 | Traditional Role | Clprolf Equivalent             | Layer            |
 | ---------------- | ------------------------------ | ---------------- |
 | Controller       | `@Agent`                       | Logic / Domain   |
-| Repository       | `@Worker_agent`                | Data / Technical |
-| View             | `@Worker_agent`                | Presentation     |
-| Launcher         | `@Worker_agent(Gender.STATIC)` | System entry     |
+| Repository       | `@Worker`                | Data / Technical |
+| View             | `@Worker`                | Presentation     |
+| Launcher         | `@Worker` | System entry     |
 
 ---
 

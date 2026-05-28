@@ -21,7 +21,7 @@ The challenge:
 
 In Clprolf:
 
-* The **Observer role** is a `version_inh agent`.
+* The **Observer role** is a `family_interf agent`.
 * Observers are declared with `contracts`.
 * The **Subject** is an `agent` that declares its observers with `with_compat`.
 
@@ -43,7 +43,7 @@ Both rely on a **DisplayWorker** for technical output.
 
 ```java
 // 1) Observer role
-public version_inh agent StockObserver {
+public family_interf agent StockObserver {
     void update(int price);
 }
 
@@ -80,7 +80,7 @@ public agent TrendAnalyzer contracts StockObserver {
 }
 
 // 4) Technical worker: handles I/O
-public worker_agent DisplayWorker {
+public worker DisplayWorker {
     public void show(String msg) {
         System.out.println(msg);
     }
@@ -107,7 +107,7 @@ public agent Stock {
 }
 
 // 6) Demo
-public worker_agent ObserverDemo {
+public worker ObserverDemo {
     public static void main(String[] args) {
         with_compat DisplayWorker display = new DisplayWorker();
 
@@ -143,10 +143,10 @@ Notice the difference:
 
 ## 🔎 Why this is clear in Clprolf
 
-* `version_inh agent StockObserver` → shows immediately that an Observer is a role.
+* `family_interf agent StockObserver` → shows immediately that an Observer is a role.
 * `contracts` → concrete observers are bound by contract, no ambiguity.
 * `with_compat` → Subject’s dependencies are **declared explicitly** as observers.
-* `worker_agent DisplayWorker` → keeps technical concerns isolated.
+* `worker DisplayWorker` → keeps technical concerns isolated.
 
 ---
 
@@ -169,7 +169,7 @@ Design patterns are more than technical tricks — they carry **implicit roles**
 * Strategy → a context and interchangeable rules.
 * Adapter → an agent that adapts.
 
-👉 In Clprolf, these roles are not hidden — they are **explicit keywords** (`agent`, `abstraction`, `worker_agent`).
+👉 In Clprolf, these roles are not hidden — they are **explicit keywords** (`agent`, `abstraction`, `worker`).
 That’s why patterns feel simpler and more natural here.
 
 ---

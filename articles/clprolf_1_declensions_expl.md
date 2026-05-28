@@ -36,7 +36,7 @@ The five available declensions are:
 1. **`agent`**
    Synonyms: `abstraction`, `simu_real_obj`.
 
-2. **`worker_agent`**
+2. **`worker`**
    Synonyms: `comp_as_worker`.
 
 3. **`model`**
@@ -55,7 +55,7 @@ The five available declensions are:
 Each declension keeps only a minimal set of synonyms, and every synonym reflects a specific aspect:
 
 * **Agent declension** → `agent` (agent aspect), `abstraction` (object aspect), `simu_real_obj` (simulation aspect)
-* **Worker_agent declension** → `worker_agent` (agent aspect), `comp_as_worker` (simulation aspect)
+* **Worker_agent declension** → `worker` (agent aspect), `comp_as_worker` (simulation aspect)
 * **Model declension** → `model`
 * **Information declension** → `information`
 * **Indef_obj declension** → `indef_obj`
@@ -90,23 +90,13 @@ These objects represent **real-world abstractions** or domain concepts.
 These objects handle **purely computational or support tasks**.
 Here, the **computer itself** is seen as the actor.
 
-* **`worker_agent`**: the computer as a worker executing algorithms.
+* **`worker`**: the computer as a worker executing algorithms.
   Synonyms: `comp_as_worker`.
 
 * **`information`**: a coherent data container, used by workers in algorithms.
   ⚠️ Unlike `model`, it does not represent a real-world entity, only technical data.
 
 Examples: system utilities, DAOs, repositories, low-level services, or MVC *view* components.
-
----
-
-## Interfaces and Declensions
-
-Interfaces also have declensions:
-
-* **`compat_interf_version`** = `version_inh`
-* **`compat_interf_capacity`** = `capacity_inh`
-* **`compat_interf`** (no synonym)
 
 ---
 
@@ -169,8 +159,8 @@ Result: a simpler, more maintainable system, where every object is clearly posit
 If the class already fits one of the well-known architectural categories, you can directly assign a matching role:
 
 * A service → `@Agent`
-* A helper → `@Agent` or `@Worker_agent`
-* A DAO or repository → `@Worker_agent`
+* A helper → `@Agent` or `@Worker`
+* A DAO or repository → `@Worker`
 * A controller → `@Agent`
 
 ---

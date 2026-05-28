@@ -18,11 +18,11 @@ The solution: define a **Factory**, a role dedicated to object creation.
 
 In Clprolf:
 
-* The **product role** (`Shape`) is a `version_inh abstraction`.
+* The **product role** (`Shape`) is a `family_interf abstraction`.
 * Specialized contracts (`Circle`, `Square`) extend the product role with `nature Shape`.
 * Common implementation details go in a `ShapeImpl` base class.
 * Concrete implementations (`CircleImpl`, `SquareImpl`) extend `ShapeImpl` and fulfill their contracts.
-* The **Factory role** is a `compat_interf_version abstraction`, since it’s not a hierarchy of natures but a contract for creation.
+* The **Factory role** is a `family_interf abstraction`, since it’s not a hierarchy of natures but a contract for creation.
 
 Result: the intent (*this is a factory, not a random class*) is **explicit in the syntax**.
 
@@ -41,7 +41,7 @@ Finally, a `DrawingAgent` uses them without knowing the details.
 
 ```java
 // 1) Generic product
-public version_inh abstraction Shape {
+public family_interf abstraction Shape {
     void setDisplayed(boolean value);
     boolean isDisplayed();
 
@@ -52,8 +52,8 @@ public version_inh abstraction Shape {
 }
 
 // 2) Specialized contracts (with nature Shape)
-public version_inh abstraction Circle nature Shape {}
-public version_inh abstraction Square nature Shape {}
+public family_interf abstraction Circle nature Shape {}
+public family_interf abstraction Square nature Shape {}
 
 // 3) Shared base implementation
 public abstraction ShapeImpl contracts Shape {
@@ -98,20 +98,20 @@ public abstraction SquareImpl nature ShapeImpl contracts Square {
 }
 
 // 5) Workers for technical rendering
-public worker_agent CircleDrawerWorker {
+public worker CircleDrawerWorker {
     public void drawCircle(String color, int size) {
         System.out.println("Drawing a " + color + " Circle of size " + size);
     }
 }
 
-public worker_agent SquareDrawerWorker {
+public worker SquareDrawerWorker {
     public void drawSquare(String color, int size) {
         System.out.println("Drawing a " + color + " Square of size " + size);
     }
 }
 
 // 6) Factory role (compatibility contract, not a hierarchy)
-public compat_interf_version abstraction ShapeFactory {
+public family_interf abstraction ShapeFactory {
     Shape createShape();
 }
 
@@ -152,7 +152,7 @@ public agent DrawingAgent {
 ## 👀 Bonus: Demo
 
 ```java
-public worker_agent FactoryDemo {
+public worker FactoryDemo {
     public static void main(String[] args) {
         with_compat ShapeFactory circleFactory = new CircleFactory();
         with_compat ShapeFactory squareFactory = new SquareFactory();
@@ -170,11 +170,11 @@ public worker_agent FactoryDemo {
 
 ## 🔎 Why this is clear in Clprolf
 
-* `version_inh abstraction Shape` → defines the **nature of product**.
+* `family_interf abstraction Shape` → defines the **nature of product**.
 * `Circle` and `Square` → specialized versions (`nature Shape`).
 * `ShapeImpl` → factors common attributes and logic.
 * `CircleImpl`, `SquareImpl` → extend the base, add specific workers.
-* `compat_interf_version abstraction ShapeFactory` → declares a **contract for creation**, not a nature hierarchy.
+* `family_interf abstraction ShapeFactory` → declares a **contract for creation**, not a nature hierarchy.
 * Workers → handle the technical rendering.
 * The **client agent** → depends only on the factory contract.
 
@@ -184,7 +184,7 @@ public worker_agent FactoryDemo {
 
 In Clprolf, the Factory Method pattern is just:
 
-> **Use `version_inh` for product natures, factor common logic in a base implementation, and `compat_interf_version` for the factory role.**
+> **Use `family_interf` for product natures, factor common logic in a base implementation, and `family_interf` for the factory role.**
 
 This keeps the distinction clear:
 
@@ -203,7 +203,7 @@ Design patterns are more than technical tricks — they carry **implicit roles**
 * Observer → an agent that reacts,
 * Factory → an abstraction of creation.
 
-👉 In Clprolf, these roles are not hidden — they are **explicit keywords** (`agent`, `abstraction`, `worker_agent`, `version_inh`, `compat_interf_version`).
+👉 In Clprolf, these roles are not hidden — they are **explicit keywords** (`agent`, `abstraction`, `worker`, `family_interf`, `family_interf`).
 That’s why patterns feel simpler and more natural here.
 
 ---

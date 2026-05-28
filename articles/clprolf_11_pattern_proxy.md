@@ -4,8 +4,8 @@ In traditional OOP, the **Proxy** is used to control access to another object. T
 
 In **Clprolf**, the Proxy becomes clearer and safer:
 
-* Both the proxy and the real subject are **siblings in the same abstraction family** (`version_inh`).
-* Technical work is delegated to a **`worker_agent`**, so business and technical responsibilities remain separated.
+* Both the proxy and the real subject are **siblings in the same abstraction family** (`family_interf`).
+* Technical work is delegated to a **`worker`**, so business and technical responsibilities remain separated.
 * `with_compat` enforces loose coupling.
 
 ---
@@ -19,7 +19,7 @@ Imagine we want to work with a very large image file. Loading it into memory is 
 ### The Version (Abstraction)
 
 ```java
-public version_inh abstraction IImage {
+public family_interf abstraction IImage {
     void show();
 }
 ```
@@ -50,7 +50,7 @@ public abstraction BigImage contracts IImage {
 ### The Worker Agent (Technical Responsibility)
 
 ```java
-public worker_agent WorkerImageHandler {
+public worker WorkerImageHandler {
     private String filename;
 
     public WorkerImageHandler(String filename){
@@ -96,7 +96,7 @@ public abstraction ProxyImage contracts IImage {
 ### The Launcher
 
 ```java
-public worker_agent Launcher {
+public worker Launcher {
     public static void main(String[] args){
         with_compat IImage image = new ProxyImage("big_photo.jpg", "fullscreen");
 
@@ -120,10 +120,10 @@ Displaying big_photo.jpg in mode: fullscreen
 
 ## Why Proxy Is Clearer in Clprolf
 
-* `IImage` → **`version_inh abstraction`**, defines the family of Image abstractions.
+* `IImage` → **`family_interf abstraction`**, defines the family of Image abstractions.
 * `BigImage` → **abstraction**, a concrete member of that family.
 * `ProxyImage` → **abstraction**, another member of the same family, acting as a clone with a different behavior (lazy loading).
-* `WorkerImageHandler` → **worker_agent**, handling the technical responsibility of file loading and display.
+* `WorkerImageHandler` → **worker**, handling the technical responsibility of file loading and display.
 
 In traditional OOP, `Image` often mixes both business and technical code. In Clprolf, the split is natural, and the Proxy fits in seamlessly.
 
@@ -135,7 +135,7 @@ One might ask: *“Why not subclass `BigImage`?”*
 
 The difference is crucial:
 
-| **Inheritance (`nature`)**                                                 | **Proxy (`version_inh abstraction`)**                                 |
+| **Inheritance (`nature`)**                                                 | **Proxy (`family_interf abstraction`)**                                 |
 | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | Creates a **child class**                                                  | Creates another **sibling in the same family**                        |
 | Parent’s constructor is **always called** → heavy load happens immediately | The real subject is created **only when needed**                      |
@@ -147,10 +147,10 @@ The difference is crucial:
 
 ---
 
-## Why `version_inh` matters for Proxy in Clprolf
+## Why `family_interf` matters for Proxy in Clprolf
 
 In traditional OOP, the Proxy is described as “an object with the same interface as another.”
-In Clprolf, this intent becomes **visible in the code** because we use **`version_inh`** to define the family of abstractions.
+In Clprolf, this intent becomes **visible in the code** because we use **`family_interf`** to define the family of abstractions.
 
 * The real subject (`BigImage`) and the proxy (`ProxyImage`) are **siblings** in the same family.
 * They are not subclasses of each other, but two different implementations of the same abstraction.
@@ -212,8 +212,8 @@ This makes the distinction even clearer:
 
 The **Proxy Pattern in Clprolf** becomes simpler and more consistent:
 
-* Proxy and real subject are **siblings in the same abstraction family** (`version_inh abstraction`).
-* Technical details are isolated in a **worker_agent**.
+* Proxy and real subject are **siblings in the same abstraction family** (`family_interf abstraction`).
+* Technical details are isolated in a **worker**.
 * The Proxy acts as a **clone of the abstraction**, rectifying what it wants — whether by shifting when workers are called (*lazy loading*), or by adding workers for logging, caching, or security.
 
 With Clprolf, we also see that Proxy has **two faces**:

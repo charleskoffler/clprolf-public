@@ -28,7 +28,7 @@ Clprolf enforces a simple but powerful rule:
 Every component must explicitly belong to one of two ontological categories:
 
 * **Domain (agent / model / abstraction)**
-* **Technical (worker_agent / infrastructure layer)**
+* **Technical (worker / infrastructure layer)**
 
 This is not a naming convention.
 It is a structural constraint.

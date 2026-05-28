@@ -23,11 +23,11 @@ Clprolf invites us to split them into **roles**.
 
 | Component                                       | Declension      | Responsibility                 |
 | ----------------------------------------------- | --------------- | ------------------------------ |
-| `Launcher`                                      | `@Worker_agent` | Starts the exploration         |
+| `Launcher`                                      | `@Worker` | Starts the exploration         |
 | `DirectoryExplorerImpl`                         | `@Agent`        | Performs the exploration       |
-| `DirectoryExplorerWorkerImpl`                   | `@Worker_agent` | Displays results               |
+| `DirectoryExplorerWorkerImpl`                   | `@Worker` | Displays results               |
 | `Directory`                                     | `@Model`        | Represents one directory node  |
-| `DirectoryExplorer` / `DirectoryExplorerWorker` | `@Version_inh`  | Define contracts between roles |
+| `DirectoryExplorer` / `DirectoryExplorerWorker` | `@Family_interf`  | Define contracts between roles |
 
 ---
 
@@ -37,7 +37,7 @@ The entry point is as simple as it looks.
 It prepares the environment and delegates the job to the proper agent.
 
 ```java
-@Worker_agent
+@Worker
 public class Launcher {
 
     public static void main(String[] args) {
@@ -122,7 +122,7 @@ Responsible for showing the result, not for computing it.
 Again, we separate *doing* from *showing*.
 
 ```java
-@Worker_agent
+@Worker
 public class DirectoryExplorerWorkerImpl implements @Contracts DirectoryExplorerWorker {
 
     public void displayResult(List<Directory> foldersList) {
@@ -171,13 +171,13 @@ No logic, no side effects. Just structure.
 
 ```java
 @Agent
-@Version_inh
+@Family_interf
 public interface DirectoryExplorer {
     void breadthFirstFolders(Path directoryPath);
 }
 
-@Worker_agent
-@Version_inh
+@Worker
+@Family_interf
 public interface DirectoryExplorerWorker {
     void displayResult(List<Directory> foldersList);
 }

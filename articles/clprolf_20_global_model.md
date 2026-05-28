@@ -45,7 +45,7 @@ and indicate where exceptions must be explicitly acknowledged through `@Forc_pra
                                               │ uses
                                               ▼
                  ┌──────────────────────────────────────────────────┐
-                 │                   WORKER_AGENT                   │
+                 │                       WORKER                     │
                  │   (technical realization serving an Agent)       │
                  │                                                  │
                  │                                                  │

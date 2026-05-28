@@ -14,7 +14,7 @@ that builds **architectural meaning** into Java itself.
 | Annotation      | Role                                              |
 | --------------- | ------------------------------------------------- |
 | `@Agent`        | Domain logic — active and autonomous components   |
-| `@Worker_agent` | Technical performer (I/O, UI, OS, rendering)      |
+| `@Worker`       | Technical performer (I/O, UI, OS, rendering)      |
 | `@Abstraction`  | Conceptual contract or system-level interface     |
 | `@Model`        | Passive structure, pure data                      |
 | `@Underst`      | A “thinking” method — where reasoning matters     |
@@ -33,7 +33,7 @@ The game has five layers — all explicit:
 SnakeGameScene (Abstraction)
  ├── SnakeImpl (Agent)
  ├── FoodExpertImpl (Agent)
- ├── SnakeGameSceneRendererImpl (Worker_agent)
+ ├── SnakeGameSceneRendererImpl (Worker)
  ├── SnakeWindowImpl (Abstraction)
  └── SnakeGamePanelImpl (Abstraction + Swing Nature)
 ```
@@ -44,7 +44,7 @@ For instance, the `FoodExpert` agent handles food positions —
 but knows nothing about the UI, keyboard, or rendering:
 
 ```java
-@Agent(Gender.EXPERT_COMPONENT)
+@Agent
 public class FoodExpertImpl implements @Contracts FoodExpert {
     private @With_compat SnakeGameScene scene;
 
@@ -57,10 +57,10 @@ public class FoodExpertImpl implements @Contracts FoodExpert {
 }
 ```
 
-Meanwhile, the **Worker Agent** handles technical events and visual updates:
+Meanwhile, the **Worker** handles technical events and visual updates:
 
 ```java
-@Worker_agent
+@Worker
 public class SnakeGameSceneRendererImpl implements @Contracts SnakeGameSceneRenderer {
     private @With_compat SnakeGameScene scene;
 

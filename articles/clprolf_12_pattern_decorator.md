@@ -17,7 +17,7 @@ With Decorator, we don’t need a new class for every combination — we just co
 ### The Abstraction
 
 ```java
-public version_inh simu_real_obj CoffeeWithAdditional {
+public family_interf simu_real_obj CoffeeWithAdditional {
     public double getCost();
     public String getDescription();
 }

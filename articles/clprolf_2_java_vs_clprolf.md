@@ -92,8 +92,8 @@ This is **pure Java-style**: one class, multiple responsibilities.
 In Clprolf, we separate these roles into **distinct components**:
 
 * `@Agent` → QuickSort, the active sorting component.
-* `@Worker_agent` → Printer, the worker that handles display.
-* `@Worker_agent` → Launcher, the independent entry point (could also be `@Worker_agent(Gender.STATIC)`).
+* `@Worker` → Printer, the worker that handles display.
+* `@Worker` → Launcher, the independent entry point (could also be `@Worker`).
 
 This separation makes each component respect the **Single Responsibility Principle (SRP)**.
 
@@ -101,16 +101,16 @@ This separation makes each component respect the **Single Responsibility Princip
 @Agent // QuickSort is an active agent performing the sorting
 public class QuickSort {
 
-    private Printer workerAgent;
+    private Printer worker;
 
-    public QuickSort(Printer workerAgent) {
-        this.workerAgent = workerAgent;
+    public QuickSort(Printer worker) {
+        this.worker = worker;
     }
 
     public void sort(int[] array) {
-        workerAgent.printArray("Unsorted array:", array);
+        worker.printArray("Unsorted array:", array);
         quickSort(array, 0, array.length - 1);
-        workerAgent.printArray("Sorted array:", array);
+        worker.printArray("Sorted array:", array);
     }
 
     private void quickSort(int[] array, int low, int high) {
@@ -145,7 +145,7 @@ public class QuickSort {
     }
 }
 
-@Worker_agent // Worker agent dedicated to printing
+@Worker // Worker agent dedicated to printing
 public class Printer {
 
     public void printArray(String message, int[] array) {
@@ -157,7 +157,7 @@ public class Printer {
     }
 }
 
-@Worker_agent // Independent launcher
+@Worker // Independent launcher
 public class Launcher {
     public static void main(String[] args) {
         Printer worker = new Printer();

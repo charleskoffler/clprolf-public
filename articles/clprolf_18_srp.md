@@ -203,7 +203,7 @@ micro-method minimalism.
 In Clprolf, method-level SRP is guaranteed structurally:
 
 * An **agent** may contain **only business logic**.
-* A **worker_agent** may contain **only technical logic**.
+* A **worker** may contain **only technical logic**.
 * A **model** contains no logic at all.
 * An **abstraction** has no domain-specific code.
 

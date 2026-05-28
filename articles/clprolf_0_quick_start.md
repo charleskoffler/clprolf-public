@@ -47,13 +47,13 @@ public agent OrderProcessor {
 
 ---
 
-### ⚙️ 2. `worker_agent` → technical work
+### ⚙️ 2. `worker` → technical work
 
 * performs machine-related tasks
 * database, I/O, UI, infrastructure
 
 ```clprolf
-public worker_agent OrderRepository {
+public worker OrderRepository {
     public void save(Order order) {
         // DB logic
     }
@@ -84,7 +84,7 @@ nature
 So:
 
 * an `agent` inherits from an `agent`
-* a `worker_agent` inherits from a `worker_agent`
+* a `worker` inherits from a `worker`
 * otherwise → use composition
 
 ---
@@ -122,8 +122,8 @@ class OrderManager {
 
 ```clprolf
 agent OrderProcessor
-worker_agent OrderRepository
-worker_agent OrderNotifier
+worker OrderRepository
+worker OrderNotifier
 ```
 
 👉 clear separation

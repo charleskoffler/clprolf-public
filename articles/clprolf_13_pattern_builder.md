@@ -76,7 +76,7 @@ public agent HouseBuilder {
 ### The Launcher
 
 ```java
-public worker_agent Launcher {
+public worker Launcher {
     public static void main(String[] args){
         House villa = new HouseBuilder()
             .withName("Villa Clprolf")

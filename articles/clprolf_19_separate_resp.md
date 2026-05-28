@@ -10,7 +10,7 @@ You simply add a declension to each class, and Clprolf helps maintain a clear se
 ## 🌐 Why the term “declension”?
 
 The word *declension* is borrowed from languages, where a word changes form depending on its use while keeping the same core identity.
-Clprolf applies the idea to objects: a **declension** tells whether a class belongs to the **business/domain layer** (`agent`) or the **technical layer** (`worker_agent`).
+Clprolf applies the idea to objects: a **declension** tells whether a class belongs to the **business/domain layer** (`agent`) or the **technical layer** (`worker`).
 
 Within a declension, synonyms simply refine the intention without changing the domain:
 
@@ -31,7 +31,7 @@ Every class with methods must declare its domain through one of two declensions:
 
 Business logic, domain concepts, abstractions, simulation entities.
 
-### **🔹 worker_agent**
+### **🔹 worker**
 
 Technical components: repositories, display logic, file operations, system interactions, launchers.
 
@@ -51,9 +51,9 @@ Declensions also have synonyms, allowing the developer to choose the term that b
   > A `List` **is an abstraction**, not a technical component.
 * **simu_real_obj** — for objects inside a simulation
 
-### For **worker_agent**:
+### For **worker**:
 
-* **worker_agent** — main synonym
+* **worker** — main synonym
 * **comp_as_worker** — same meaning, with a simulation nuance
 
 These synonyms do not change the actual domain; they simply refine how the developer describes their component.
@@ -75,13 +75,13 @@ A typical mapping is:
 
 | Component type   | Declension   |
 | ---------------- | ------------ |
-| Repository / DAO | worker_agent |
+| Repository / DAO | worker |
 | Service          | agent        |
 | Controller       | agent        |
 
 Clprolf then supervises inheritance between these components **indirectly**:
 
-* A `worker_agent` **cannot** inherit from an `agent`
+* A `worker` **cannot** inherit from an `agent`
   → a Repository cannot inherit from a Service
 * An `agent` cannot inherit from a technical class
 * Two synonyms of the same declension may inherit, but a warning indicates differing perspectives
@@ -90,7 +90,7 @@ This approach ensures that **your components remain clean and simple**, and rema
 
 **Note:**
 *Different teams may interpret controllers differently.
-Clprolf maps them to `agent` because they coordinate domain behavior rather than executing technical work. Still, if a particular architecture treats controllers as purely technical endpoints, using `worker_agent` is acceptable as long as the choice remains consistent across the application.*
+Clprolf maps them to `agent` because they coordinate domain behavior rather than executing technical work. Still, if a particular architecture treats controllers as purely technical endpoints, using `worker` is acceptable as long as the choice remains consistent across the application.*
 
 ---
 
@@ -104,7 +104,7 @@ Because the domain is declared in the class, inheritance remains coherent.
 
 ### ❌ Not allowed
 
-* `worker_agent` → `agent`
+* `worker` → `agent`
 * DAO → Service
 * Technical → Business
 
@@ -138,7 +138,7 @@ This aligns naturally with the **Single Responsibility Principle**.
 A class belongs to exactly one domain, expressed through its declension.
 Its methods then follow that domain.
 
-Furthermore, **Clprolf interfaces can target these class roles**, allowing version and capacity interfaces to match the intended domain of the classes that implement them.
+Furthermore, **Clprolf interfaces can target these class roles**, allowing family and trait interfaces to match the intended domain of the classes that implement them.
 
 This gives developers a clear, structured way to define both **what an object is** and **what kind of work it performs**, while remaining fully compatible with established SOLID principles.
 
@@ -152,7 +152,7 @@ DDD focuses on how to *model* the domain, while Clean Architecture defines how t
 Clprolf is closest to Clean Architecture in spirit, but with a key difference:
 **it enforces architecturally clean boundaries at the language level.**
 
-* Domain classes (`agent`) and technical classes (`worker_agent`) cannot be mixed through inheritance.
+* Domain classes (`agent`) and technical classes (`worker`) cannot be mixed through inheritance.
 * Abstractions (`abstraction`) remain structural domain concepts, never technical utilities.
 * Technical components cannot “leak” into domain logic by accident.
 
@@ -171,7 +171,7 @@ Where DDD and Clean Architecture rely on discipline and conventions,
 
 ## 📌 Is Clprolf too rigid?
 
-Clprolf may appear strict at first because it enforces a clear boundary between domain classes (`agent`) and technical classes (`worker_agent`).
+Clprolf may appear strict at first because it enforces a clear boundary between domain classes (`agent`) and technical classes (`worker`).
 But this strictness is no greater than what developers already follow with the Single Responsibility Principle.
 
 In practice, Clprolf simply makes explicit what good design requires anyway:
@@ -196,7 +196,7 @@ public class OrderService {
         // Business logic
         System.out.println("Validating order " + orderId);
 
-        // Technical operation delegated to a worker_agent
+        // Technical operation delegated to a worker
         repository.save(orderId);
     }
 }
@@ -210,7 +210,7 @@ public class OrderService {
 ### ✅ Example 2 — A simple Repository (technical layer)
 
 ```java
-@Worker_agent
+@Worker
 public class OrderRepository {
 
     public void save(String orderId) {
@@ -227,10 +227,10 @@ public class OrderRepository {
 ### ❌ Example 3 — Forbidden inheritance (Repository → Service)
 
 ```java
-@Worker_agent
+@Worker
 public class WrongRepo extends OrderService {
     // ❌ Compilation error:
-    // A worker_agent cannot inherit from an agent.
+    // A worker cannot inherit from an agent.
 }
 ```
 
@@ -276,7 +276,7 @@ public class CheckoutService {
 ### 🟦 What these examples demonstrate
 
 * You keep your usual components: **Service, Repository, Controller…**
-* Clprolf adds **@Agent** or **@Worker_agent** on top
+* Clprolf adds **@Agent** or **@Worker** on top
 * The service naturally *contains* its technical worker (Repository)
 * **Inheritance stays clean**: business ←→ technical separation is preserved
 * The domain is easier to maintain and reason about

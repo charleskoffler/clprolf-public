@@ -562,16 +562,11 @@ In order to drastically reduce complexity:
 * `abstraction`
 * `simu_real_obj`
 * `comp_as_worker`
-* renaming `worker_agent` to `worker`
-* renaming `version_inh` to `family_interf`
-* renaming `capacity_inh` to `trait_interf`
 * `nature`
 * `contracts`
 * `underst`
 * `with_compat`
-* genders
 * synonyms
-* interface advices replaced with a target role
 * advanced concurrency/parallelism mechanisms
 
 have been removed from the minimalist version.

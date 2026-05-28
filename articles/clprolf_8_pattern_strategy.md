@@ -11,7 +11,7 @@ Example: apply different **discount** policies without changing the checkout cod
 
 In Clprolf:
 
-* a strategy is modeled as a **`version_inh abstraction`** (a simple, swappable rule),
+* a strategy is modeled as a **`family_interf abstraction`** (a simple, swappable rule),
 * each concrete strategy is also an **`abstraction`** that **contracts** the base one,
 * the context declares its dependency with `with_compat`.
 
@@ -32,7 +32,7 @@ Then a `Checkout` context that uses whichever discount it’s given.
 
 ```java
 // 1) Strategy contract (a generic rule for discounts)
-public version_inh abstraction Discount {
+public family_interf abstraction Discount {
     int apply(int price);
 }
 
@@ -72,7 +72,7 @@ public agent Checkout {
 ## 👀 Bonus: Demo with swappable discounts
 
 ```java
-public worker_agent StrategyDemo {
+public worker StrategyDemo {
     public static void main(String[] args) {
         int[] cart = new int[] { 4000, 2000, 1500 }; // total = 7500
 
@@ -93,7 +93,7 @@ public worker_agent StrategyDemo {
 
 ## 🔎 Why this is clear in Clprolf
 
-* `version_inh abstraction` shows immediately that a discount is a **generic, swappable rule**, not a central agent.
+* `family_interf abstraction` shows immediately that a discount is a **generic, swappable rule**, not a central agent.
 * `contracts` makes each concrete discount a true implementation of that rule.
 * `with_compat` declares the dependency directly: the checkout expects “a discount,” no hidden wiring.
 * Swapping is just supplying a different **abstraction** — the context stays untouched.
@@ -119,11 +119,11 @@ But in reality, it already carries a **business role**: “choosing a behavior.�
 
 * Here, the role is `abstraction` → a discount is a rule, not an agent.
 * In another case, a Strategy could be an `agent` (e.g., choosing a routing algorithm).
-* For technical variations, it might be a `worker_agent` (like multiple DAO implementations).
+* For technical variations, it might be a `worker` (like multiple DAO implementations).
 
 **This is where Clprolf innovates:**
 
-> Design patterns don’t just solve problems — they map naturally to roles (`agent`, `abstraction`, `worker_agent`).
+> Design patterns don’t just solve problems — they map naturally to roles (`agent`, `abstraction`, `worker`).
 > And when the role is explicit, the pattern’s intent becomes crystal clear.
 
 ---

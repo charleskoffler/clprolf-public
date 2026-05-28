@@ -134,10 +134,10 @@ After (SRP made explicit)
 OrderProcessor (agent)
  ├─ business decision
 
-OrderRepository (worker_agent)
+OrderRepository (worker)
  └─ persistence
 
-OrderNotifier (worker_agent)
+OrderNotifier (worker)
  ├─ logging
  └─ messaging
 ```
@@ -175,17 +175,17 @@ The **agent**:
 
 ---
 
-### ⚙️ Technical Responsibilities → `worker_agent`
+### ⚙️ Technical Responsibilities → `worker`
 
 ```clprolf
-public worker_agent OrderRepository {
+public worker OrderRepository {
 
     public void save(Order order) {
         System.out.println("Saving order " + order.getId());
     }
 }
 
-public worker_agent OrderNotifier {
+public worker OrderNotifier {
 
     public void notify(Order order) {
         log(order);

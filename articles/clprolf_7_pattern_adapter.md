@@ -15,7 +15,7 @@ That’s where the **Adapter** comes in.
 
 In Clprolf, the rule is simple:
 
-* A concrete **agent** can contract **only one** `version_inh`.
+* A concrete **agent** can contract **only one** `family_inh`.
 * So you **cannot make the same class both an “old” and a “modern” implementation**.
 * Instead, you **create a new agent — the Adapter — which contracts the modern version, and internally uses the old one via `with_compat`.**
 
@@ -29,13 +29,13 @@ Old Java APIs used `Enumeration`, but modern code expects `Iterator`. We want to
 
 ```java
 // 1. Old contract (an abstraction)
-public version_inh abstraction Enumeration<E> {
+public family_interf abstraction Enumeration<E> {
     boolean hasMoreElements();
     E nextElement();
 }
 
 // 2. Modern contract (an agent)
-public version_inh agent Iterator<E> {
+public family_interf agent Iterator<E> {
     boolean hasNext();
     E next();
 }
@@ -62,7 +62,7 @@ public agent EnumToIterAdapter<E> contracts Iterator<E> {
 
 ## 🔎 Why this is clear in Clprolf
 
-* `version_inh` makes it explicit: these are **role contracts meant to be implemented** by agents.
+* `family_interf` makes it explicit: these are **role contracts meant to be implemented** by agents.
 * `contracts` shows clearly: the Adapter **is a modern `Iterator`**.
 * `with_compat` highlights the dependency on the old `Enumeration`.
 * No hidden tricks: we see immediately that the Adapter is **a new agent** created for translation.
@@ -92,7 +92,7 @@ For completeness, here’s how a client would actually use the Adapter.
 Even if the old API gives you an `Enumeration`, the Adapter lets you treat it as a modern `Iterator`:
 
 ```java
-public worker_agent AdapterDemo {
+public worker AdapterDemo {
     public static void main(String[] args) {
         Vector<String> legacyVector = new Vector<>();
         legacyVector.add("one");

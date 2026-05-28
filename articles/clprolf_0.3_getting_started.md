@@ -60,7 +60,7 @@ public class_for agent OrderProcessor { }
 or
 
 ```clprolf
-public class_for worker_agent OrderRepository { }
+public class_for worker OrderRepository { }
 ```
 
 Each class has a **declension** (its architectural nature).
@@ -68,7 +68,7 @@ Each class has a **declension** (its architectural nature).
 The core declensions are:
 
 * `agent` → business responsibility
-* `worker_agent` → technical execution
+* `worker` → technical execution
 * `model` → passive domain entity
 * `information` → technical data container
 * `indef_obj` → transitional, undefined role
@@ -123,8 +123,8 @@ public class_for agent OrderProcessor {
 ```
 
 ```clprolf
-public class_for worker_agent OrderRepository { ... }
-public class_for worker_agent OrderNotifier { ... }
+public class_for worker OrderRepository { ... }
+public class_for worker OrderNotifier { ... }
 ```
 
 The behavior is unchanged.
@@ -144,7 +144,7 @@ Example:
 public class_for agent A1AnimalImpl nature AnimalWorker { }
 ```
 
-This attempts to inherit a `worker_agent` from an `agent`.
+This attempts to inherit a `worker` from an `agent`.
 
 Result:
 
