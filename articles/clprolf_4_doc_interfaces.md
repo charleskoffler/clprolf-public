@@ -1,6 +1,6 @@
 # Clprolf Docs #4 — Interfaces in Clprolf: A Complete Overview
 
-In Clprolf Minimalist, interfaces are viewed as:
+In Clprolf, interfaces are viewed as:
 
 > abstract forms of inheritance.
 
