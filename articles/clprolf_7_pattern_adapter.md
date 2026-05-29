@@ -17,7 +17,7 @@ In Clprolf, the rule is simple:
 
 * A concrete **agent** can implement **only one** `family_inh`.
 * So you **cannot make the same class both an “old” and a “modern” implementation**.
-* Instead, you **create a new agent — the Adapter — which implements the modern version, and internally uses the old one via `with_compat`.**
+* Instead, you **create a new agent — the Adapter — which implements the modern version, and internally uses the old one.**
 
 ---
 
@@ -42,9 +42,9 @@ public family_interf agent Iterator<E> {
 
 // 3. Adapter agent: implements the modern version
 public agent EnumToIterAdapter<E> implements Iterator<E> {
-    private with_compat Enumeration<E> enumeration;
+    private Enumeration<E> enumeration;
 
-    public EnumToIterAdapter(with_compat Enumeration<E> enumeration) {
+    public EnumToIterAdapter(Enumeration<E> enumeration) {
         this.enumeration = enumeration;
     }
 
@@ -94,9 +94,9 @@ public worker AdapterDemo {
         Vector<String> legacyVector = new Vector<>();
         legacyVector.add("one");
         legacyVector.add("two");
-        with_compat Enumeration<String> enumeration = legacyVector.elements();
+        Enumeration<String> enumeration = legacyVector.elements();
 
-        with_compat Iterator<String> iterator = new EnumToIterAdapter<>(enumeration);
+        Iterator<String> iterator = new EnumToIterAdapter<>(enumeration);
 
         while (iterator.hasNext()) {
             System.out.println(iterator.next());
