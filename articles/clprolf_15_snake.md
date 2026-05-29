@@ -13,13 +13,8 @@ that builds **architectural meaning** into Java itself.
 
 | Annotation      | Role                                              |
 | --------------- | ------------------------------------------------- |
-| `@Agent`        | Domain logic — active and autonomous components   |
+| `@Agent`        | Domain logic                                      |
 | `@Worker`       | Technical performer (I/O, UI, OS, rendering)      |
-| `@Abstraction`  | Conceptual contract or system-level interface     |
-| `@Model`        | Passive structure, pure data                      |
-| `@Underst`      | A “thinking” method — where reasoning matters     |
-| `@Long_action`  | A time-based or continuous process                |
-| `@With_compat`  | Declares a safe compatibility link between agents |
 
 When you read Clprolf code, you see **intent**, not just syntax.
 
@@ -30,12 +25,12 @@ When you read Clprolf code, you see **intent**, not just syntax.
 The game has five layers — all explicit:
 
 ```
-SnakeGameScene (Abstraction)
+SnakeGameScene (Agent)
  ├── SnakeImpl (Agent)
  ├── FoodExpertImpl (Agent)
  ├── SnakeGameSceneRendererImpl (Worker)
- ├── SnakeWindowImpl (Abstraction)
- └── SnakeGamePanelImpl (Abstraction + Swing Nature)
+ ├── SnakeWindowImpl (Agent)
+ └── SnakeGamePanelImpl (Agent, Swing-based UI component)
 ```
 
 Each one knows **exactly what it should know**, and **nothing more**.
@@ -45,8 +40,8 @@ but knows nothing about the UI, keyboard, or rendering:
 
 ```java
 @Agent
-public class FoodExpertImpl implements @Contracts FoodExpert {
-    private @With_compat SnakeGameScene scene;
+public class FoodExpertImpl implements FoodExpert {
+    private SnakeGameScene scene;
 
     public void positionFood() {
         Random random = new Random();
@@ -61,10 +56,10 @@ Meanwhile, the **Worker** handles technical events and visual updates:
 
 ```java
 @Worker
-public class SnakeGameSceneRendererImpl implements @Contracts SnakeGameSceneRenderer {
-    private @With_compat SnakeGameScene scene;
+public class SnakeGameSceneRendererImpl implements SnakeGameSceneRenderer {
+    private SnakeGameScene scene;
 
-    public SnakeGameSceneRendererImpl(@With_compat SnakeGameScene scene) {
+    public SnakeGameSceneRendererImpl( SnakeGameScene scene) {
         this.scene = scene;
         EventQueue.invokeLater(this); // Executed in AWT thread
     }
@@ -85,8 +80,6 @@ It shows how **Clprolf models living behavior**:
 sliding, growing, interacting — without spaghetti code.
 
 ```java
-@Underst
-@Long_action
 protected void continueSliding() {
     if (this.lastSlidingType == SlidingType.STOPPED) return;
 
@@ -98,8 +91,6 @@ protected void continueSliding() {
 }
 ```
 
-The `@Underst` annotation reminds that the logic involves **reasoning** —
-not just a trivial mechanical step.
 Each call represents an *intention* (“continue sliding”, “handle food”, “grow body”).
 The structure itself communicates **meaning**.
 
@@ -125,44 +116,22 @@ public void paintComponent(Graphics g) {
 ```
 
 So the **render loop and game loop are naturally synchronized** —
-without timers, threads, or complicated scheduling.
+without custom game threads or complex scheduling.
 
 ---
 
-### 🪢 5. Loose Coupling by Design — Not by Effort
-
-With `@With_compat`, compatibility is both explicit and enforced:
-
-```java
-public class SnakeImpl implements @Contracts Snake {
-    protected @With_compat SnakeGameScene scene;
-}
-```
-
-If a component tries to depend on something it shouldn’t —
-Clprolf makes it visible, conceptually and syntactically.
-You see the architecture *as you read the code.*
-
----
-
-### 💡 6. What We Learn from This Example
+### 💡 5. What We Learn from This Example
 
 * You can build a **complete game architecture** without losing clarity.
-* **Long actions** and **reasoning methods** bring life-like modeling.
 * **Workers** act as true performers, keeping the domain clean.
-* **Compatibility links** replace DI frameworks and reflection.
 * The **render loop** stays synchronous, transparent, and elegant.
 
-> The result? A Snake that’s both fun and architecturally flawless.
+> The result? A Snake that’s both fun and architecturally explicit.
 
 ---
 
 ### 🏁 Conclusion
 
-Clprolf isn’t about writing fancy syntax.
-It’s about making **clarity a property of the codebase itself.**
-
-From **clear code** to **clear game**,
-we didn’t just rewrite Snake — we **understood it**.
+We did not just implement Snake. We made its responsibilities visible: the scene owns the game state, agents express domain behavior, and workers perform technical execution.
 
 ---
