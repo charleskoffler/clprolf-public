@@ -33,8 +33,7 @@ Clprolf is intended for contexts where early architectural control and long-term
 ### 🚀 Why Clprolf?
 
 * **Safer architecture**: compile-time errors prevent invalid dependencies
-* **Clear concurrency**: intent expressed with `one_at_a_time`, `turn_monitor`, etc.
-* **Readable design**: class roles (`agent`, `worker`, `model`) explain themselves
+* **Readable design**: class roles (`agent`, `worker`) explain themselves
 
 ---
 
@@ -42,7 +41,7 @@ Clprolf is intended for contexts where early architectural control and long-term
 
 ```java
 public class_for agent OrderService {
-    with_compat OrderRepository repo;
+    OrderRepository repo;
     void checkout(Order o) { repo.save(o); }
 }
 ```
@@ -53,8 +52,8 @@ public class_for agent OrderService {
 
 ### ✨ Key Ideas
 
-* Role-based classes: `agent`, `worker`, `model`, `information`, `indef_obj`
-* Modifiers for real-world complexity: `long_action`, `one_at_a_time`, `dependent_activity`
+* Role-based classes: `agent`, `worker`,`indef_obj`
+* Simpler interfaces
 * Works two ways:
 
   * **Framework** (annotations for Java, C#, PHP 8+)

@@ -8,17 +8,21 @@ To fully benefit from this guide, readers should already be familiar with:
 
 * the fundamentals of OOP,
 * inheritance and composition,
-* basic design principles and common patterns.
+* basic design principles.
+
+---
 
 ## Making Responsibilities Explicit
 
 Clprolf is a language and framework designed to make architectural roles explicit.
 
-In most object-oriented systems, separation of responsibilities relies on discipline.
+In many object-oriented systems, separation of responsibilities relies primarily on conventions and developer discipline.
 
-Clprolf encodes that discipline structurally.
+As projects evolve, responsibilities may gradually become mixed, making the original architecture harder to understand and maintain.
 
-Every class declares what it is.
+Clprolf addresses this by making architectural intent part of the language itself.
+
+Every class explicitly declares its nature.
 
 ---
 
@@ -27,31 +31,45 @@ Every class declares what it is.
 Clprolf is based on two core principles:
 
 1. A class is either technical or organized around a well-defined class domain.
-2. Inheritance must preserve the class domain; if it does not, composition is used instead.
+2. Inheritance must preserve the class domain; otherwise, composition should be used.
 
-These principles define how Clprolf structures components and relationships.
-
----
-
-The class domain is the central subject around which a class is organized.
-It defines what the class fundamentally represents and what it is responsible for.
-
-* A `File` class has a class domain related to file handling.
-
-A technical class, by contrast, does not represent a conceptual domain.
-It provides technical support (e.g., logging, parsing, low-level utilities).
+These principles define how Clprolf structures classes and relationships.
 
 ---
 
-## 1️⃣ Declaring a Role
+### What Is a Class Domain?
 
-Instead of writing:
+A class domain is the central subject around which a class is organized.
+
+It represents what the class fundamentally models and what it is primarily responsible for.
+
+Examples:
+
+* a `File` class belongs to a file-management domain,
+* a `Connection` class belongs to a connection-management domain,
+* a `RandomGenerator` class belongs to a random-generation domain,
+* an `OrderProcessor` class belongs to an order-processing domain.
+
+A technical class is different.
+
+Rather than representing a conceptual domain, it provides technical support such as:
+
+* logging,
+* parsing,
+* infrastructure services,
+* low-level utilities.
+
+---
+
+## 1️⃣ Declaring a Nature
+
+In classical OOP, a class is typically declared as:
 
 ```java
 public class OrderManager { }
 ```
 
-In Clprolf you declare the role:
+In Clprolf, the architectural nature is made explicit:
 
 ```clprolf
 public class_for agent OrderProcessor { }
@@ -63,80 +81,87 @@ or
 public class_for worker OrderRepository { }
 ```
 
-Each class has a **declension** (its architectural nature).
+Each class declares its nature from the beginning.
 
-The core declensions are:
+The core natures are:
 
-* `agent` → business responsibility
-* `worker` → technical execution
-* `model` → passive domain entity
-* `information` → technical data container
-* `indef_obj` → transitional, undefined role
+* `agent` → domain-oriented responsibility
+* `worker` → technical responsibility
+* `indef_obj` → temporary undefined responsibility
 
 ---
 
-## 2️⃣ Start Flexible: `indef_obj`
+## 2️⃣ Starting Flexible with `indef_obj`
 
-Clprolf does not require architectural clarity upfront.
+Architectural clarity is not always immediate.
 
-You can begin with:
+During prototyping or exploration, a class may begin as:
 
 ```clprolf
 public class_for indef_obj OrderManager {
+
     public void process(Order order) {
         validate(order);
         save(order);
         notify(order);
     }
+
 }
 ```
 
 `indef_obj` represents a temporary state.
 
-Refactoring can happen later.
+The responsibility can be clarified later through refactoring.
 
 ---
 
 ## 3️⃣ Making Responsibilities Explicit
 
-After identifying responsibilities:
+After analyzing the class, we identify several distinct responsibilities:
 
-| Concern             | Nature    |
-| ------------------- | --------- |
-| Business validation | Business  |
-| Persistence         | Technical |
-| Notification        | Technical |
+| Responsibility        | Nature    |
+| --------------------- | --------- |
+| Order processing      | Domain    |
+| Persistence           | Technical |
+| Notification delivery | Technical |
 
-You refactor:
+The class can then be reorganized:
 
 ```clprolf
 public class_for agent OrderProcessor {
+
     private OrderRepository repository;
     private OrderNotifier notifier;
 
     public void process(Order order) {
+
         validate(order);
+
         repository.save(order);
+
         notifier.notify(order);
     }
+
 }
 ```
 
 ```clprolf
 public class_for worker OrderRepository { ... }
+
 public class_for worker OrderNotifier { ... }
 ```
 
-The behavior is unchanged.
+The behavior remains unchanged.
+
 The architecture becomes explicit.
 
 ---
 
 ## 4️⃣ Structural Rules Are Enforced
 
-Clprolf does not only suggest discipline.
+Clprolf does not merely recommend architectural discipline.
 
-It enforces structural coherence.
+It can enforce structural coherence.
 
 Example:
 
@@ -144,11 +169,11 @@ Example:
 public class_for agent A1AnimalImpl nature AnimalWorker { }
 ```
 
-This attempts to inherit a `worker` from an `agent`.
+This attempts to inherit from a class of a different nature.
 
 Result:
 
-```
+```text
 ARCH-A1 => Class A1AnimalImpl:
 the parent class should be an agent (AnimalWorker)
 ```
@@ -163,25 +188,64 @@ Clprolf rejects it as architecturally inconsistent.
 
 ---
 
+## 5️⃣ Structured Interfaces
+
+Clprolf also introduces structured interface categories.
+
+### `family_interf`
+
+Represents an abstract family of related implementations.
+
+```clprolf
+public family_interf agent Animal {
+
+    void eat(int quantity);
+
+}
+```
+
+### `trait_interf`
+
+Represents a capability shared across multiple families.
+
+```clprolf
+public trait_interf agent Payable {
+
+    void pay();
+
+}
+```
+
+### `compat_interf`
+
+Represents a flexible compatibility interface without a predefined structural role.
+
+```clprolf
+public compat_interf ExternalApi {
+}
+```
+
+Unlike traditional interfaces, Clprolf interfaces participate in the structural model of the system.
+
+---
+
 ## 6️⃣ What Clprolf Changes
 
 Clprolf does not change:
 
-* algorithms
-* execution flow
-* runtime model
+* algorithms,
+* execution flow,
+* runtime behavior.
 
-It changes:
+Instead, it changes:
 
-* role visibility
-* inheritance coherence
-* architectural guarantees
+* role visibility,
+* architectural clarity,
+* inheritance consistency,
+* structural guarantees.
 
 ---
 
 ## 7️⃣ Philosophy in One Sentence
 
-Clprolf encodes architectural responsibility at the language level
-instead of leaving it to convention.
-
----
+> Clprolf encodes architectural responsibility at the language level instead of leaving it entirely to convention.

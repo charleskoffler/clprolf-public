@@ -1,201 +1,205 @@
-# Clprolf — A new way to express your talent with OOP
+# Clprolf — A New Way to Express Your Talent with OOP
 
-🚀 Clprolf — Quick Entry
+> **A structured approach to object-oriented programming.**
+> Roles and responsibilities become explicit.
+
+Clprolf is both a language and a framework designed to make architectural intent visible within object-oriented systems.
+
+Its goal is not to replace classical OOP, but to make certain important distinctions explicit:
+
+* business responsibilities versus technical responsibilities,
+* coherent inheritance versus composition,
+* the primary responsibility of a class.
+
+---
 
 ## 🎯 The Problem
 
-In classical OOP, classes tend to drift over time:
+In traditional object-oriented systems, class responsibilities often become unclear over time.
 
-* a class starts simple
-* responsibilities accumulate
-* business logic and technical code get mixed
-* structure becomes unclear
+A class may start with a well-defined purpose, but gradually accumulate additional concerns:
 
-👉 Result: **blurred architecture and hard maintenance**
+* business rules,
+* technical implementation details,
+* infrastructure logic,
+* unrelated responsibilities.
 
----
-
-## 💡 The Clprolf Idea
-
-Clprolf enforces one simple rule:
-
-> **A class must declare what it is — and never drift away from it.**
-
-This leads to a simple and explicit structural model
+As systems grow, architectural intent becomes harder to understand and maintain.
 
 ---
 
-## 🧱 Two Kinds of Classes
+## 💡 The Clprolf Approach
 
-### 🔵 1. `agent` → business logic
+Clprolf encourages developers to identify and express the primary responsibility of each class.
 
-* represents a clear domain responsibility
-* contains decisions and rules
-* does NOT perform technical work
+The language is based on a simple idea:
 
-Example:
+> **A class should clearly express its primary role.**
+
+To support this idea, Clprolf introduces explicit class roles and structural guidelines.
+
+---
+
+## 🧱 Class Roles
+
+### `agent`
+
+An `agent` represents a business or conceptual responsibility.
+
+Typical examples include:
+
+* business logic,
+* simulations,
+* orchestration,
+* decision-making processes.
 
 ```clprolf
 public agent OrderProcessor {
+
+    private OrderRepository repository;
+
     public void process(Order order) {
-        if (order.total() <= 0) throw Error;
+
+        if(order.total() <= 0) {
+            throw Error;
+        }
+
         repository.save(order);
-        notifier.notify(order);
     }
 }
 ```
 
+An agent primarily focuses on business concerns.
+
+When appropriate, technical work can be delegated to one or more workers.
+
 ---
 
-### ⚙️ 2. `worker` → technical work
+### `worker`
 
-* performs machine-related tasks
-* database, I/O, UI, infrastructure
+A `worker` represents a technical responsibility.
+
+Typical examples include:
+
+* database access,
+* networking,
+* file management,
+* infrastructure services.
 
 ```clprolf
 public worker OrderRepository {
+
     public void save(Order order) {
-        // DB logic
+
+        // database access
+
     }
+}
+```
+
+Workers provide technical capabilities that can be used by agents.
+
+---
+
+### `indef_obj`
+
+An `indef_obj` represents an object whose role has not yet been clearly identified.
+
+It can be useful during:
+
+* prototyping,
+* refactoring,
+* exploratory development.
+
+```clprolf
+public indef_obj TemporaryManager {
 }
 ```
 
 ---
 
-## 🔥 Core Rule
+## 🧠 Inheritance
 
-> ❌ Never mix business logic and technical code
-> ✅ Agents delegate technical work to workers
-
----
-
-## 🧠 Inheritance (Simple)
-
-Clprolf replaces `extends` with:
+Clprolf encourages inheritance only between classes belonging to the same conceptual domain.
 
 ```clprolf
-nature
-```
+public agent Animal {
+}
 
-👉 Meaning:
-
-> “inheritance within the same nature”
-
-So:
-
-* an `agent` inherits from an `agent`
-* a `worker` inherits from a `worker`
-* otherwise → use composition
-
----
-
-## ⚖️ What You Get
-
-With these rules:
-
-* ✔️ clear class roles
-* ✔️ no mixing of concerns
-* ✔️ meaningful inheritance
-* ✔️ stable architecture over time
-
----
-
-## 🧪 Before / After
-
-### ❌ Classical OOP
-
-```java
-class OrderManager {
-    void process() {
-        validate();
-        saveToDB();
-        sendEmail();
-    }
+public agent Dog extends Animal {
 }
 ```
 
-👉 everything mixed together
-
----
-
-### ✅ Clprolf
+When domains do not match, composition is generally preferred.
 
 ```clprolf
-agent OrderProcessor
-worker OrderRepository
-worker OrderNotifier
+public worker DatabaseConnection {
+}
+
+public agent Dog extends DatabaseConnection {
+}
 ```
 
-👉 clear separation
+In this case, composition would usually provide a clearer design.
 
 ---
 
-## 🎯 In One Sentence
+## 🔗 Interfaces
 
-> **Clprolf makes explicit what developers already try to enforce implicitly.**
+Clprolf extends the same philosophy to interfaces.
 
----
+Three interface categories are available:
 
-## 🔚 Conclusion
+* `family_interf` — an abstract family of related implementations,
+* `trait_interf` — a shared capability across multiple families,
+* `compat_interf` — a flexible compatibility interface.
 
-Clprolf does not add arbitrary complexity.
+Family and trait interfaces also declare a target role:
 
-👉 It makes structure explicit:
+* `agent`
+* `worker`
 
-* one responsibility
-* clear separation
-* coherent architecture
-
----
-
-## 🎯 When should you use Clprolf?
-
-Use Clprolf when architectural clarity matters more than flexibility
+This allows abstractions to remain consistent with the roles of their implementations.
 
 ---
 
-### ✅ Good fit
+## ⚖️ What Clprolf Provides
 
-Clprolf is well-suited for:
+By making roles explicit, Clprolf helps developers:
 
-* **Complex systems**
-  where responsibilities tend to drift over time
+* understand class responsibilities more quickly,
+* maintain clearer architectural boundaries,
+* build more coherent inheritance hierarchies,
+* reduce architectural drift over time.
 
-* **Long-lived projects**
-  where architectural stability is critical
-
-* **Educational contexts**
-  to teach clear separation of concerns
-
-* **Simulation and multi-agent systems**
-  where roles and interactions must remain explicit
+The language acts primarily as a structural guide rather than a rigid architectural framework.
 
 ---
 
-### ⚖️ Trade-off
+## 🎯 When to Use Clprolf
 
-Clprolf introduces **structural constraints**:
+Clprolf is particularly well suited for:
 
-* classes must declare a clear nature
-* inheritance must preserve that nature
-* technical and business logic are strictly separated
-
-👉 This reduces ambiguity, but also reduces freedom.
-
----
-
-### ❌ Less suited for
-
-Clprolf may not be ideal for:
-
-* **small or short-lived projects**
-* **rapid prototyping**
-* **cases where flexibility is preferred over structure**
+* long-lived software projects,
+* complex systems,
+* educational environments,
+* simulation and multi-agent systems,
+* projects where architectural clarity is an important goal.
 
 ---
 
-## 🎯 In short
+## ⚖️ Philosophy
 
-> **Use Clprolf when you want your architecture to stay clear, stable, and explicit over time.**
+Clprolf intentionally introduces structural constraints.
+
+These constraints are not designed to restrict creativity, but to make architectural decisions explicit.
+
+Developers who prefer unrestricted object modeling may find traditional object-oriented languages more appropriate.
+
+Developers who value long-term clarity and structural consistency may benefit from the additional guidance provided by Clprolf.
 
 ---
+
+## 🔚 In One Sentence
+
+> **Clprolf makes explicit what many developers already try to enforce implicitly.**
