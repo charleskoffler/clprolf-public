@@ -14,10 +14,10 @@ With Decorator, we don’t need a new class for every combination — we just co
 
 ---
 
-### The Abstraction
+### The agent
 
 ```java
-public family_interf simu_real_obj CoffeeWithAdditional {
+public family_interf agent Coffee {
     public double getCost();
     public String getDescription();
 }
@@ -31,10 +31,10 @@ public family_interf simu_real_obj CoffeeWithAdditional {
 ### The Abstract Decorator
 
 ```java
-public abstract simu_real_obj CoffeeWithAdditionalImpl contracts CoffeeWithAdditional {
-    private final with_compat CoffeeWithAdditional decoratedCoffee;
+public abstract agent CoffeeDecorator implements Coffee {
+    private final Coffee decoratedCoffee;
 
-    public CoffeeWithAdditionalImpl(with_compat CoffeeWithAdditional decoratedCoffee) {
+    public CoffeeDecorator(Coffee decoratedCoffee) {
         this.decoratedCoffee = decoratedCoffee;
     }
 
@@ -58,7 +58,7 @@ It forwards calls to the wrapped coffee and lets subclasses add extra behavior.
 ### The Concrete Product
 
 ```java
-public simu_real_obj SimpleCoffee contracts CoffeeWithAdditional {
+public agent SimpleCoffee implements Coffee {
     @Override
     public double getCost() {
         return 2.0; // Base cost of simple coffee
@@ -76,8 +76,8 @@ public simu_real_obj SimpleCoffee contracts CoffeeWithAdditional {
 ### The Concrete Decorators
 
 ```java
-public simu_real_obj CoffeeWithMilk nature CoffeeWithAdditionalImpl {
-    public CoffeeWithMilk(with_compat CoffeeWithAdditional decoratedCoffee) {
+public agent CoffeeWithMilk extends CoffeeDecorator {
+    public CoffeeWithMilk(Coffee decoratedCoffee) {
         super(decoratedCoffee);
     }
 
@@ -92,8 +92,8 @@ public simu_real_obj CoffeeWithMilk nature CoffeeWithAdditionalImpl {
     }
 }
 
-public simu_real_obj CoffeeWithSugar nature CoffeeWithAdditionalImpl {
-    public CoffeeWithSugar(with_compat CoffeeWithAdditional decoratedCoffee) {
+public agent CoffeeWithSugar extends CoffeeDecorator {
+    public CoffeeWithSugar(Coffee decoratedCoffee) {
         super(decoratedCoffee);
     }
 
@@ -114,10 +114,10 @@ public simu_real_obj CoffeeWithSugar nature CoffeeWithAdditionalImpl {
 ### The Launcher
 
 ```java
-public worker_agent CoffeeShopMaker {
+public worker CoffeeShopMaker {
     public static void main(String[] args) {
         // Order a simple coffee
-        with_compat CoffeeWithAdditional coffee = new SimpleCoffee();
+        Coffee coffee = new SimpleCoffee();
         System.out.println("Cost: $" + coffee.getCost());
         System.out.println("Description: " + coffee.getDescription());
 
@@ -154,10 +154,9 @@ Description: Simple Coffee, with Milk, with Sugar
 In traditional OOP, the **Decorator** often looks confusingly close to a **Proxy** or an **Adapter**.
 With **Clprolf**, the roles become explicit:
 
-* All coffees (`SimpleCoffee`, `CoffeeWithMilk`, `CoffeeWithSugar`) are **`simu_real_obj`**.
+* All coffees (`SimpleCoffee`, `CoffeeWithMilk`, `CoffeeWithSugar`) are **`agent`**.
   👉 They all represent the same *real-world object*: a coffee.
-* The abstract decorator (`CoffeeWithAdditionalImpl`) is also a **`simu_real_obj`**, ensuring the chain of decorations is still the same object type.
-* `with_compat` makes the recursive structure visible and safe.
+* The abstract decorator (`CoffeeDecorator`) is also a **`agent`**, ensuring the chain of decorations is still the same object type.
 
 The result: there is **only one coffee** — multiple instances are just a technical solution to decorate it.
 
@@ -169,8 +168,8 @@ The result: there is **only one coffee** — multiple instances are just a techn
 | -------------------------------------------- | --------------------------------------------------- |
 | Controls or delays access (technical intent) | Adds responsibilities or features (business intent) |
 | Example: `ProxyImage` loads an image lazily  | Example: `CoffeeWithMilk` adds cost + description   |
-| Different reason for existence               | Same abstraction, but enriched                      |
-| Often a sibling `abstraction`                | Always a `simu_real_obj` of the same family         |
+| Different reason for existence               | Same agent, but enriched                      |
+| Usually a sibling `agent`                      | Always an `agent` of the same family         |
 
 👉 In Clprolf, the intent is visible in the **declension**.
 
@@ -180,9 +179,8 @@ The result: there is **only one coffee** — multiple instances are just a techn
 
 The **Decorator Pattern in Clprolf** becomes simpler and more consistent:
 
-* There is always **one real object** (`simu_real_obj`) being enriched.
+* There is always **one real object** (`agent`) being enriched.
 * The abstract decorator ensures chaining works naturally.
-* `with_compat` makes recursive composition explicit.
 
 ✨ With Clprolf, the Decorator is no longer a confusing “wrapper.”
 It is clearly a way to **enrich a simulated real object** step by step, without cluttering your code with endless subclasses.
