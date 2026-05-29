@@ -7,7 +7,7 @@ The result is confusing, and the object ends up polluted with initialization log
 In Clprolf, the solution is clearer:
 
 * The **Builder** is an **agent** dedicated to **dynamic construction**.
-* The **Product** is usually a **`simu_real_obj`** (an object from the real domain we simulate) or sometimes an **`abstraction`**.
+* The **Product** is usually an **`agent`**.
 * The Builder composes and prepares the product step by step, then delivers it with `build()`.
 
 ---
@@ -21,8 +21,8 @@ Instead of multiple constructors, we use a **Builder Agent**.
 
 ### The Product (Simulated Real Object)
 
-```java
-public simu_real_obj House {
+```clprolf
+public agent House {
     String name;
     int floors;
     boolean garage;
@@ -37,7 +37,7 @@ public simu_real_obj House {
 
 ### The Builder Agent (Composition)
 
-```java
+```clprolf
 public agent HouseBuilder {
     private House house = new House(); // composition
 
@@ -67,7 +67,7 @@ public agent HouseBuilder {
 
 👉 Here:
 
-* `House` is a **simu_real_obj** — the product we want to build.
+* `House` is an **agent** — the product we want to build.
 * `HouseBuilder` is an **agent** that prepares it step by step.
 * No duplication of attributes: the Builder works directly with the object in composition.
 
@@ -75,7 +75,7 @@ public agent HouseBuilder {
 
 ### The Launcher
 
-```java
+```clprolf
 public worker Launcher {
     public static void main(String[] args){
         House villa = new HouseBuilder()
@@ -116,12 +116,12 @@ For simpler objects, a constructor is enough.
 
 Both Factory and Builder are **creational patterns**, but they solve different problems:
 
-| **Factory (abstraction)**                            | **Builder (agent)**                                                |
+| **Factory (agent)**                                  | **Builder (agent)**                                                |
 | ---------------------------------------------------- | ------------------------------------------------------------------ |
 | Decides **which variant** of an object to create     | Prepares **how to construct** an object step by step               |
 | Often returns different implementations              | Always prepares the same type, with variations                     |
 | Example: `CarFactory` → `ElectricCar` or `DieselCar` | Example: `HouseBuilder` → builds one `House` with flexible options |
-| Declension: `abstraction`                            | Declension: `agent`                                                |
+| Declension: `agent`      `                           | Declension: `agent`                                                |
 
 👉 Factory answers *“which object?”*
 👉 Builder answers *“how to assemble it?”*
@@ -149,8 +149,8 @@ This style makes the Builder look almost as natural as a constructor, but withou
 
 Sometimes, the Builder is placed **inside the product class**.
 
-```java
-public simu_real_obj House {
+```clprolf
+public agent House {
     String name;
     int floors;
     boolean garage;
@@ -220,7 +220,7 @@ House villa = new House.Builder()
 
 In Clprolf, the **Builder Pattern** becomes clearer:
 
-* The product is usually a **`simu_real_obj`** (a real-world object simulated in code).
+* The product is usually an **`agent`**.
 * The Builder is an **agent** that constructs it step by step.
 * Fluent style makes the usage compact and natural.
 * And the separation of roles is explicit: one class simulates the object, the other acts as the constructor agent.
