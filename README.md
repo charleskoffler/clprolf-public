@@ -13,7 +13,7 @@ Feel free to reach out if you're interested.
 
 ## Articles
 
-* [**Clprolf Minimalist — Official Documentation**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_24_minimalist.md)
+* [**Clprolf — Official Documentation**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_24_official_doc.md)
 
 * [**Introducing Flexibility Without Losing Structure in Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_24_minimalist.md)
 
