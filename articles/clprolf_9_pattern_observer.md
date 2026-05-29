@@ -22,8 +22,8 @@ The challenge:
 In Clprolf:
 
 * The **Observer role** is a `family_interf agent`.
-* Observers are declared with `contracts`.
-* The **Subject** is an `agent` that declares its observers with `with_compat`.
+* Observers are declared.
+* The **Subject** is an `agent` that declares its observers.
 
 Result: the intent (*who observes whom*) is **explicit in the code**.
 
@@ -48,10 +48,10 @@ public family_interf agent StockObserver {
 }
 
 // 2) Neutral observer: no business logic, pure delegation
-public agent PriceNotifier contracts StockObserver {
-    private with_compat DisplayWorker display;
+public agent PriceNotifier implements StockObserver {
+    private DisplayWorker display;
 
-    public PriceNotifier(with_compat DisplayWorker display) {
+    public PriceNotifier(DisplayWorker display) {
         this.display = display;
     }
 
@@ -61,11 +61,11 @@ public agent PriceNotifier contracts StockObserver {
 }
 
 // 3) Business observer: applies rules (domain logic)
-public agent TrendAnalyzer contracts StockObserver {
+public agent TrendAnalyzer implements StockObserver {
     private int lastPrice = -1;
-    private with_compat DisplayWorker display;
+    private DisplayWorker display;
 
-    public TrendAnalyzer(with_compat DisplayWorker display) {
+    public TrendAnalyzer( DisplayWorker display) {
         this.display = display;
     }
 
@@ -88,11 +88,11 @@ public worker DisplayWorker {
 
 // 5) Subject: manages state and observers
 public agent Stock {
-    private List<with_compat StockObserver> observers = new ArrayList<>();
+    private List<StockObserver> observers = new ArrayList<>();
     private int price;
 
-    public void addObserver(with_compat StockObserver obs) { observers.add(obs); }
-    public void removeObserver(with_compat StockObserver obs) { observers.remove(obs); }
+    public void addObserver(StockObserver obs) { observers.add(obs); }
+    public void removeObserver(StockObserver obs) { observers.remove(obs); }
 
     public void setPrice(int newPrice) {
         this.price = newPrice;
@@ -100,7 +100,7 @@ public agent Stock {
     }
 
     private void notifyObservers() {
-        for (with_compat StockObserver obs : observers) {
+        for (StockObserver obs : observers) {
             obs.update(price);
         }
     }
@@ -109,10 +109,10 @@ public agent Stock {
 // 6) Demo
 public worker ObserverDemo {
     public static void main(String[] args) {
-        with_compat DisplayWorker display = new DisplayWorker();
+        DisplayWorker display = new DisplayWorker();
 
-        with_compat StockObserver notifier = new PriceNotifier(display);   // neutral observer
-        with_compat StockObserver analyzer = new TrendAnalyzer(display);  // business observer
+        StockObserver notifier = new PriceNotifier(display);   // neutral observer
+        StockObserver analyzer = new TrendAnalyzer(display);  // business observer
 
         Stock apple = new Stock();
         apple.addObserver(notifier);
@@ -144,8 +144,7 @@ Notice the difference:
 ## 🔎 Why this is clear in Clprolf
 
 * `family_interf agent StockObserver` → shows immediately that an Observer is a role.
-* `contracts` → concrete observers are bound by contract, no ambiguity.
-* `with_compat` → Subject’s dependencies are **declared explicitly** as observers.
+*  Subject’s dependencies are **declared explicitly** as observers.
 * `worker DisplayWorker` → keeps technical concerns isolated.
 
 ---
@@ -167,9 +166,9 @@ Design patterns are more than technical tricks — they carry **implicit roles**
 
 * Observer → a subject and its observers.
 * Strategy → a context and interchangeable rules.
-* Adapter → an agent that adapts.
+* Adapter → an agent when it adapts a conceptual model, a worker when it adapts technical infrastructure.
 
-👉 In Clprolf, these roles are not hidden — they are **explicit keywords** (`agent`, `abstraction`, `worker`).
+👉 In Clprolf, these roles are not hidden — they are **explicit keywords** (`agent`, `worker`).
 That’s why patterns feel simpler and more natural here.
 
 ---
