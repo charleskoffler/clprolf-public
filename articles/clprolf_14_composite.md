@@ -21,9 +21,9 @@ It works, but the design often feels implicit: we must *know* by convention that
 
 With **Clprolf**, roles and contracts make the Composite **explicit**:
 
-* `FileSystemComponent` is the contract for all components.
-* `File` is a **Leaf**: an `abstraction` with no extra methods.
-* `Folder` is a **Composite**: an `abstraction` with `add()` / `remove()` methods for direct children.
+* `FileSystemComponent` is the family of all components.
+* `File` is a **Leaf**: an `agent` with no extra methods.
+* `Folder` is a **Composite**: an `agent` with `add()` / `remove()` methods for direct children.
 * Implementations (`FileImpl`, `FolderImpl`) respect these roles with `contracts`.
 * A `worker` launcher builds the tree and calls `done()`.
 
@@ -33,24 +33,23 @@ The result: we can read the **roles and hierarchy** directly in the contracts â€
 
 ## Example
 
-```java
-public family_interf FileSystemComponent {
+```clprolf
+public family_interf agent FileSystemComponent {
     void done();
 }
 
-public family_interf abstraction File nature FileSystemComponent { }
+public family_interf agent File extends FileSystemComponent { }
 
-public  family_interf abstraction  Folder nature FileSystemComponent {
-    void add(with_compat FileSystemComponent component);
-    void remove(with_compat FileSystemComponent component);
+public family_interf agent  Folder extends FileSystemComponent {
+    void add(FileSystemComponent component);
+    void remove(FileSystemComponent component);
 }
 ```
 
 ### Leaf
 
-```java
-@Forced_pract_code
-public abstraction FileImpl contracts File {
+```clprolf
+public agent FileImpl implements File {
     private String name;
 
     public FileImpl(String name) { this.name = name; }
@@ -61,38 +60,37 @@ public abstraction FileImpl contracts File {
 
 ### Composite
 
-```java
-@Forced_pract_code
-public abstraction FolderImpl contracts Folder {
+```clprolf
+public agent FolderImpl implements Folder {
     private String name;
     private List<FileSystemComponent> children = new ArrayList<>();
 
     public FolderImpl(String name) { this.name = name; }
 
-    public void add(with_compat FileSystemComponent component) {
+    public void add(FileSystemComponent component) {
         children.add(component);
     }
 
-    public void remove(with_compat FileSystemComponent component) {
+    public void remove(FileSystemComponent component) {
         children.remove(component);
     }
 
     public void done() {
         System.out.println("Composite Folder: " + name);
-        for (with_compat FileSystemComponent c : children) c.done();
+        for ( FileSystemComponent c : children) c.done();
     }
 }
 ```
 
 ### Launcher
 
-```java
+```clprolf
 
 public worker CompositePatternLauncher {
     public static void main(String[] args) {
-        FolderImpl root = new FolderImpl("Root");
-        FolderImpl documents = new FolderImpl("Documents");
-        FileImpl file1 = new FileImpl("File1.txt");
+        Folder root = new FolderImpl("Root");
+        Folder documents = new FolderImpl("Documents");
+        File file1 = new FileImpl("File1.txt");
 
         documents.add(file1);
         root.add(documents);
@@ -116,7 +114,7 @@ Leaf File: File1.txt
 
 ## Why Clprolf Makes Composite Clear
 
-1. **Contracts show everything**
+1. **Families show everything**
 
    * `File` is a Leaf (no extra methods).
    * `Folder` is a Composite (can add/remove children).
@@ -136,8 +134,8 @@ Leaf File: File1.txt
 In OOP, the Composite is often taught as a trick with interfaces and polymorphism.
 In **Clprolf**, it becomes obvious:
 
-* A **Leaf** is an `abstraction` without children.
-* A **Composite** is an `abstraction` with children of type `FileSystemComponent`.
+* A **Leaf** is an `agent` without children.
+* A **Composite** is an `agent` with children of type `FileSystemComponent`.
 
 ðŸ‘‰ The pattern is no longer something to memorize, but something you can **read directly in the contracts**.
 
