@@ -15,6 +15,8 @@ Feel free to reach out if you're interested.
 
 * [**Clprolf — Official Documentation**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_24_official_doc.md)
 
+* [French][**Clprolf — Documentation Officielle**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_25_french_official_doc.md)
+
 * [**Introducing Flexibility Without Losing Structure in Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_24_minimalist.md)
 
 * [**Preventing Architectural Drift in Object-Oriented Systems — A Structural Approach with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_22_prevent_drift.md)
