@@ -11,9 +11,9 @@ Example: apply different **discount** policies without changing the checkout cod
 
 In Clprolf:
 
-* a strategy is modeled as a **`family_interf abstraction`** (a simple, swappable rule),
-* each concrete strategy is also an **`abstraction`** that **contracts** the base one,
-* the context declares its dependency with `with_compat`.
+* a strategy is modeled as a **`family_interf agent`** (a simple, swappable rule),
+* each concrete strategy is also an **`agent`** that **implements** the base one,
+* the context declares its dependency.
 
 Result: the strategy’s role, implementations, and dependency are **explicit**.
 
@@ -32,16 +32,16 @@ Then a `Checkout` context that uses whichever discount it’s given.
 
 ```java
 // 1) Strategy contract (a generic rule for discounts)
-public family_interf abstraction Discount {
+public family_interf agent Discount {
     int apply(int price);
 }
 
 // 2) Concrete strategies
-public abstraction NoDiscount contracts Discount {
+public agent NoDiscount implements Discount {
     public int apply(int price) { return price; }
 }
 
-public abstraction PercentageDiscount contracts Discount {
+public agent PercentageDiscount implements Discount {
     private int percent;
 
     public PercentageDiscount(int percent) { this.percent = percent; }
@@ -53,9 +53,9 @@ public abstraction PercentageDiscount contracts Discount {
 
 // 3) Context depending on a strategy
 public agent Checkout {
-    private with_compat Discount strategy;
+    private Discount strategy;
 
-    public Checkout(with_compat Discount strategy) {
+    public Checkout(Discount strategy) {
         this.strategy = strategy;
     }
 
@@ -77,12 +77,12 @@ public worker StrategyDemo {
         int[] cart = new int[] { 4000, 2000, 1500 }; // total = 7500
 
         // No discount
-        with_compat Discount none = new NoDiscount();
+        Discount none = new NoDiscount();
         Checkout checkoutNone = new Checkout(none);
         System.out.println(checkoutNone.total(cart)); // 7500
 
         // 15% discount
-        with_compat Discount promo15 = new PercentageDiscount(15);
+        Discount promo15 = new PercentageDiscount(15);
         Checkout checkout15 = new Checkout(promo15);
         System.out.println(checkout15.total(cart)); // 6375
     }
@@ -93,10 +93,8 @@ public worker StrategyDemo {
 
 ## 🔎 Why this is clear in Clprolf
 
-* `family_interf abstraction` shows immediately that a discount is a **generic, swappable rule**, not a central agent.
-* `contracts` makes each concrete discount a true implementation of that rule.
-* `with_compat` declares the dependency directly: the checkout expects “a discount,” no hidden wiring.
-* Swapping is just supplying a different **abstraction** — the context stays untouched.
+* `family_interf agent` shows immediately that a discount is a **generic, swappable rule**.
+* Swapping is just supplying a different **agent** — the context stays untouched.
 
 ---
 
@@ -104,7 +102,7 @@ public worker StrategyDemo {
 
 In Clprolf, Strategy is not a trick — it’s simply:
 
-> **Declare a rule (`abstraction`), provide implementations, and swap them with `with_compat`.**
+> **Declare a rule (`agent`), provide implementations, and swap them.**
 
 Behavior becomes interchangeable, and the intent is visible in the syntax.
 
@@ -117,13 +115,13 @@ But in reality, it already carries a **business role**: “choosing a behavior.�
 
 👉 Clprolf makes this dimension explicit.
 
-* Here, the role is `abstraction` → a discount is a rule, not an agent.
+* Here, the role is `agent` → a discount is a rule.
 * In another case, a Strategy could be an `agent` (e.g., choosing a routing algorithm).
 * For technical variations, it might be a `worker` (like multiple DAO implementations).
 
 **This is where Clprolf innovates:**
 
-> Design patterns don’t just solve problems — they map naturally to roles (`agent`, `abstraction`, `worker`).
+> Design patterns don’t just solve problems — they map naturally to roles (`agent`, `agent`, `worker`).
 > And when the role is explicit, the pattern’s intent becomes crystal clear.
 
 ---
