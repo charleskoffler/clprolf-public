@@ -173,7 +173,7 @@ Secondary responsibilities may exist as long as they remain consistent with that
 
 ---
 
-## II.5) Freedom of Interpretation
+## II.5) Freedom of Interpretation and Language Recommendations
 
 The choice between `agent` and `worker` is left to the developer.
 
@@ -182,9 +182,9 @@ Some responsibilities may be interpreted differently depending on the adopted ar
 For example, a connection may be represented:
 
 * as an `agent` if viewed as a functional abstraction;
-* as a `worker` if viewed as a purely technical mechanism.
+* or as a `worker` if viewed as a purely technical mechanism.
 
-If a clear separation between connection logic and technical implementation is desired, one may use:
+However, in these cases, Clprolf recommends using an agent. For example, for a `Connection` class:
 
 * an `agent` to represent the connection,
 * and delegate technical code to one or more `worker` classes.
