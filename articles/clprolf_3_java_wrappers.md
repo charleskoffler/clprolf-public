@@ -1,67 +1,78 @@
-# Clprolf Docs #3 — Learning Class Roles Through Java Wrappers
+# Clprolf Docs #3 — Understanding Class Roles Through Java Wrappers
 
-## Learning the Class Roles Through Java Wrappers
+## Introduction
 
-One of the easiest ways to understand **Clprolf class roles** is to look at **wrappers** of well-known Java classes.
-By re-expressing familiar components like `Socket`, `Scanner`, or `System`, we can immediately see how Clprolf’s declensions clarify their **nature** and **responsibility**.
-Each wrapper highlights a specific situation: abstract concepts, expert components, active agents, or static utilities.
-This makes wrappers both **practical** (they can replace Java classes through polymorphism) and **educational** (they illustrate how to apply Clprolf roles consistently).
+One of the easiest ways to understand Clprolf class roles is to reinterpret familiar Java classes through the Clprolf lens.
 
----
+By creating wrappers around well-known classes such as `Socket`, `Scanner`, `String`, or `System`, we can explore a simple question:
 
-## The Java Wrappers Project
+> What does this class fundamentally represent?
 
-A project exists in the Clprolf sources, under the package `clprolf.wrappers.java`.
-It shows concrete **examples of class roles**, by writing wrappers for the Java Standard Library.
+The answer often determines whether the class naturally becomes an `@Agent` or a `@Worker`.
 
-Thanks to polymorphism, these wrappers can directly replace the equivalent Java classes or interfaces. They also serve as **educational examples** of how to apply Clprolf declensions.
+Wrappers therefore serve not only as integration tools but also as educational examples of Clprolf's architectural philosophy.
 
 ---
 
-## Examples
+## The Question Behind Every Role
 
-### ClpSocket Wrapper
+When assigning a role in Clprolf, we first ask:
 
-Here, `ClpSocket` is declared as an `@Abstraction`.
-Since inheritance from Java classes is not natural in Clprolf, we use `@Forced_inh`.
+> Does this class represent a coherent domain?
 
-We choose **Abstraction** because a socket is an abstract system concept. Equivalent roles could work, but abstraction fits best.
+If the answer is yes, the class will usually become an `@Agent`.
 
-```java
-package clprolf.wrappers.java.net;
+If the class primarily exists to provide technical support, execution facilities, infrastructure access, or operating-system interaction, it will usually become a `@Worker`.
 
-import java.net.Socket;
-import org.simol.simolframework.java.Abstraction;
-import org.simol.simolframework.java.Forced_inh;
-import org.simol.simolframework.java.Nature;
+In simplified form:
 
-@Forced_inh // Not allowed except with this
-@Abstraction
-public class ClpSocket extends @Nature Socket {
-
-}
+```text
+Agent  → represents a domain
+Worker → supports a domain
 ```
 
 ---
 
-### ClpSocketServer Wrapper
+## ClpSocket
 
-Here, the name is slightly adapted: `SocketServer` instead of Java’s `ServerSocket`.
+A socket represents a well-defined subject:
+
+```text
+network communication endpoint
+```
+
+It has its own identity, state, and behavior.
+
+For this reason, it naturally becomes an `@Agent`.
 
 ```java
-package clprolf.wrappers.java.net;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import org.simol.simolframework.java.Forced_inh;
-import org.simol.simolframework.java.Nature;
-import org.simol.simolframework.java.Role;
-import org.simol.simolframework.java.Agent;
-
-@Forced_inh
 @Agent
-public class ClpSocketServer extends @Nature ServerSocket {
+public class ClpSocket extends Socket {
+
+}
+```
+
+The socket is not merely a technical helper.
+
+It is the subject being manipulated.
+
+---
+
+## ClpSocketServer
+
+A socket server also represents a coherent domain:
+
+```text
+accepting and managing network connections
+```
+
+Its purpose is not to assist another component.
+
+It represents a system concept in its own right.
+
+```java
+@Agent
+public class ClpSocketServer extends ServerSocket {
 
     public ClpSocketServer() throws IOException {
         super();
@@ -75,7 +86,8 @@ public class ClpSocketServer extends @Nature ServerSocket {
         super(port, backlog);
     }
 
-    public ClpSocketServer(int port, int backlog, InetAddress bindAddr) throws IOException {
+    public ClpSocketServer(int port, int backlog, InetAddress bindAddr)
+            throws IOException {
         super(port, backlog, bindAddr);
     }
 }
@@ -83,43 +95,42 @@ public class ClpSocketServer extends @Nature ServerSocket {
 
 ---
 
-### Swing JButton Wrapper
+## ClpJButton
 
-For `JButton`, it is natural to use `@Abstraction`.
+A button is more than a utility function.
 
-* It is an abstraction.
+It represents a user-interface component with its own state and behavior.
+
+Its domain is:
+
+```text
+graphical user interaction
+```
+
+Therefore, it can naturally be modeled as an `@Agent`.
 
 ```java
-package clprolf.wrappers.javax.swing;
-
-import javax.swing.JButton;
-import org.simol.simolframework.java.Forced_inh;
-import org.simol.simolframework.java.Abstraction;
-import org.simol.simolframework.java.Role;
-
-@Forced_inh
-@Abstraction
-public class ClpJButton extends @Nature JButton {
+@Agent
+public class ClpJButton extends JButton {
 
 }
 ```
 
 ---
 
-### Scanner Wrapper
+## ClpScanner
 
-`ClpScanner` shows that even system abstractions can be modeled as `@Agent`.
-It plays an active role in applications — scanning is its autonomous responsibility.
-We don’t need to add `EXPERT_COMPONENT` here, as `Agent` is already explicit enough.
+The scanner is organized around a clear domain:
+
+```text
+input scanning
+```
+
+It performs a coherent responsibility and remains meaningful when considered independently.
 
 ```java
-package clprolf.wrappers.java.util;
-
-import java.util.Scanner;
-import org.simol.simolframework.java.Agent;
-
 @Agent
-public final class ClpScanner { // Java Scanner is final, so we use composition
+public final class ClpScanner {
 
     private final Scanner internal;
 
@@ -128,69 +139,29 @@ public final class ClpScanner { // Java Scanner is final, so we use composition
     }
 
     public String nextLine() {
-        return this.internal.nextLine();
+        return internal.nextLine();
     }
 }
 ```
 
+For this reason, it is naturally modeled as an `@Agent`.
+
 ---
 
-### System Wrapper
+## ClpString
 
-`System` is unusual:
+A string represents textual content.
 
-* It is `final`.
-* It only has **static methods**.
+Its domain is:
 
-This makes it a perfect fit for `@Abstraction`.
-We see it as a **singleton abstraction of the operating system**.
-
-```java
-package clprolf.wrappers.java.lang;
-
-import java.io.Console;
-import java.io.InputStream;
-import java.io.PrintStream;
-import org.simol.simolframework.java.Abstraction;
-import org.simol.simolframework.java.Role;
-
-@Abstraction
-public final class ClpSystem {
-
-    public static final PrintStream getOut() {
-        return System.out;
-    }
-
-    public static final InputStream getIn() {
-        return System.in;
-    }
-
-    public static final PrintStream getErr() {
-        return System.err;
-    }
-
-    public static Console console() {
-        return System.console();
-    }
-}
+```text
+textual data
 ```
 
----
-
-### String Wrapper
-
-`String` is also `final`, so the wrapper must use composition.
-
-Here, the class is an abstraction of the concept → `@Abstraction`.
-
+Even though Java declares `String` as `final`, the Clprolf interpretation remains the same.
 
 ```java
-package clprolf.wrappers.java.lang;
-
-import org.simol.simolframework.java.Abstraction;
-import org.simol.simolframework.java.Role;
-
-@Abstraction
+@Agent
 public final class ClpString {
 
     private final String internal;
@@ -203,22 +174,106 @@ public final class ClpString {
         return internal;
     }
 
-    // Static methods belong to the static aspect
     public static String valueOf(int i) {
         return String.valueOf(i);
     }
 }
 ```
 
+The wrapper therefore uses composition while preserving the role of the original concept.
+
 ---
+
+## ClpSystem
+
+`System` is different.
+
+Unlike the previous examples, it does not primarily represent a domain object.
+
+Instead, it exposes technical services such as:
+
+* standard input,
+* standard output,
+* error streams,
+* console access.
+
+Its role is to support other components.
+
+For this reason, it is naturally modeled as a `@Worker`.
+
+```java
+@Worker
+public final class ClpSystem {
+
+    public static PrintStream getOut() {
+        return System.out;
+    }
+
+    public static InputStream getIn() {
+        return System.in;
+    }
+
+    public static PrintStream getErr() {
+        return System.err;
+    }
+
+    public static Console console() {
+        return System.console();
+    }
+}
+```
+
+---
+
+## What These Examples Teach Us
+
+These wrappers reveal an important aspect of Clprolf:
+
+The distinction is not primarily:
+
+```text
+business vs technical
+```
+
+Instead, it is closer to:
+
+```text
+represents a subject
+vs
+supports a subject
+```
+
+Examples:
+
+```text
+Socket         → Agent
+SocketServer   → Agent
+Scanner        → Agent
+JButton        → Agent
+String         → Agent
+System         → Worker
+```
+
+An agent may represent a business concept, a system concept, a technical concept, or a scientific concept.
+
+What matters is that it possesses a coherent domain.
+
+A worker exists primarily to assist such agents.
+
+---
+
 ## Conclusion
 
-Clprolf wrappers are both **useful and educational**:
+Java wrappers provide a practical way to understand Clprolf roles.
 
-* They illustrate class and interface roles clearly.
-* They allow Clprolf to bridge naturally with Java’s standard library.
-* They are excellent examples for contributors who want to extend the framework.
+They demonstrate how familiar classes can be interpreted through the concept of class domain.
 
-👉 Wrappers fill the gap between the **Java world** and the **Clprolf world**!
+When creating a wrapper, a useful question is:
 
----
+> Does this class represent a coherent subject?
+
+If the answer is yes, it will usually become an `@Agent`.
+
+If it primarily provides technical support to other components, it will usually become a `@Worker`.
+
+This simple principle helps make architectural intent explicit while remaining compatible with the Java ecosystem.

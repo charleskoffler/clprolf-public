@@ -12,15 +12,15 @@ trait_interf   = trait, shared capability between families
 compat_interf  = unrestricted interface
 ```
 
-In Clprolf, interfaces are not viewed as simple technical contracts.
+In Clprolf, interfaces are not viewed solely as technical contracts.
 
-The `nature` and `contracts` relationships are considered genuine forms of conceptual inheritance, hence the term “family”.
+They also participate in the structural organization of domains and capabilities.
 
 ---
 
 ## 1) `family_interf`
 
-Interface representing an abstract family.
+Interface representing an abstract family of related components sharing the same domain.
 
 Used for:
 
@@ -58,11 +58,11 @@ public family_interf agent Horse extends Animal {
 And will naturally lead to:
 
 ```clprolf
-public agent AnimalImpl contracts Animal { (...) }
+public agent AnimalImpl implements Animal { (...) }
 ```
 
 ```clprolf
-public agent HorseImpl nature AnimalImpl contracts Horse { (...) }
+public agent HorseImpl extends AnimalImpl implements Horse { (...) }
 ```
 
 ---
@@ -78,7 +78,7 @@ Traits use a target role, just like `family_interf`:
 
 ---
 
-## Business-side example
+## Agent Example
 
 ```clprolf
 public trait_interf agent Payable {
@@ -88,7 +88,7 @@ public trait_interf agent Payable {
 
 ---
 
-## Technical-side example
+## Worker example
 
 ```clprolf
 public trait_interf worker Persistable {
@@ -126,7 +126,7 @@ A class may implement only one main `family_interf` at a time, and the role of t
 
 Clprolf therefore uses simple interface implementation, in the same way that Java uses simple class inheritance.
 
-Indeed, a `family_interf` is always the structural reflection of its implementation.
+A `family_interf` is the abstract structural reflection of its future implementations.
 This notably enables systematic loose coupling.
 
 ---
@@ -155,31 +155,3 @@ Interface inheritance forcing remains possible with `@Forc_int_inh` above the in
 
 ---
 
-
-## 5) `with_compat`
-
-Whenever a variable, parameter, or field uses an interface type, it must be preceded by `with_compat` (or `@With_compat` in the framework).
-This marks the point of **loose coupling**.
-
-Exception: method return types do not require `with_compat`.
-
-```java
-@With_compat UserDAO dao;
-```
-
----
-
-## 6) `contracts`
-
-The Java keyword `implements` is replaced by `contracts`.
-A class lists all the contracts (interfaces) it fulfills.
-In the framework, use `@Contracts`.
-
-```java
-@Worker
-public class UserDAOImpl implements @Contracts UserDAO {
-    public User getUser(int id) { /* … */ }
-}
-```
-
----

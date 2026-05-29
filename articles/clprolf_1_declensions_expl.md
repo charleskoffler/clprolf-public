@@ -4,163 +4,286 @@
 
 Clprolf is based on two core principles:
 
-1. A class is either technical or organized around a well-defined class domain.
-2. Inheritance must preserve the class domain; if it does not, composition is used instead.
+1. A class is either organized around a well-defined class domain or exists to provide technical support to other classes.
+2. Inheritance must preserve the class domain; otherwise, composition should be used.
 
 These principles define how Clprolf structures components and relationships.
 
 ---
 
-The class domain is the central subject around which a class is organized.
+## What Is a Class Domain?
+
+A class domain is the central subject around which a class is organized.
+
 It defines what the class fundamentally represents and what it is responsible for.
 
-For example:
+Examples:
 
-* A `File` class has a class domain related to file handling.
-* A `Random` class has a class domain related to random generation.
-* A `Connection` class has a class domain related to connection management.
-* A `PdfGenerator` class has a class domain related to PDF generation.
+* `Animal`
+* `File`
+* `Connection`
+* `Parser`
+* `JsonSerializer`
+* `RandomGenerator`
+* `Scheduler`
+* `Controller`
+* `PdfGenerator`
+* `PaymentService`
 
-A technical class, by contrast, does not represent a conceptual domain.
-It provides technical support (e.g., logging, parsing, low-level utilities).
+Each of these classes is organized around a coherent subject.
+
+A class domain does not need to be business-related.
+
+It may represent:
+
+* a business concept,
+* a system concept,
+* a technical concept,
+* a scientific concept,
+* a simulation entity,
+* a service,
+* or any other coherent subject.
 
 ---
 
 ## What Is a Declension?
 
-A **declension** expresses the *nature* of a class — its fundamental role in the system.
-Clprolf defines only a few basic roles, which keeps design unambiguous and intuitive.
+A **declension** expresses the nature of a class.
 
-The five available declensions are:
+Rather than treating every class as a generic object, Clprolf makes its role explicit.
+
+The available declensions are:
 
 1. **`agent`**
-   Synonyms: `abstraction`, `simu_real_obj`.
-
 2. **`worker`**
-   Synonyms: `comp_as_worker`.
+3. **`indef_obj`**
 
-3. **`model`**
-   (no synonyms).
-
-4. **`information`**
-   (no synonyms).
-
-5. **`indef_obj`**
-   A flexible object without explicit role, behaving like a traditional OO class.
+These roles are intentionally few in number to keep the model simple and easy to understand.
 
 ---
 
-## Synonyms and Aspects
+## `agent`
 
-Each declension keeps only a minimal set of synonyms, and every synonym reflects a specific aspect:
+An `agent` is a class organized around a clearly identifiable domain.
 
-* **Agent declension** → `agent` (agent aspect), `abstraction` (object aspect), `simu_real_obj` (simulation aspect)
-* **Worker_agent declension** → `worker` (agent aspect), `comp_as_worker` (simulation aspect)
-* **Model declension** → `model`
-* **Information declension** → `information`
-* **Indef_obj declension** → `indef_obj`
+An agent represents something.
 
-This structure makes the system both easy to memorize and easy to teach.
-Synonyms are no longer arbitrary alternatives but clearly justified by the perspective they express.
+Its identity comes from the domain it models rather than from the technical operations it performs.
 
----
+Examples:
 
-## Domain Objects
+```text
+Animal
+File
+Connection
+Parser
+JsonSerializer
+Scheduler
+Controller
+PaymentService
+InventoryService
+```
 
-These objects represent **real-world abstractions** or domain concepts.
+An agent may contain technical code when appropriate.
 
-* **`agent`**: the active actor.
-
-  * `agent` emphasizes action.
-  * `simu_real_obj` emphasizes simulation.
-  * `abstraction` emphasizes conceptual encapsulation (e.g., a `Connection`, a `Socket`).
-
-* **`abstraction`**: for abstract concepts and system elements (connections, sockets, system utilities).
-  
-* **`simu_real_obj`**: a micro-simulation of a real-world entity.
-  Example: a `Giraffe` class with states and behaviors simulating how a giraffe acts.
-
-* **`model`**: a passive entity with no behavior — just attributes.
-  Example: a `Customer` with fields but no methods.
+However, its primary identity always comes from its domain.
 
 ---
 
-## Technical Objects
+## `worker`
 
-These objects handle **purely computational or support tasks**.
-Here, the **computer itself** is seen as the actor.
+A `worker` is a technical support class.
 
-* **`worker`**: the computer as a worker executing algorithms.
-  Synonyms: `comp_as_worker`.
+It exists primarily to help one or more agents perform technical operations.
 
-* **`information`**: a coherent data container, used by workers in algorithms.
-  ⚠️ Unlike `model`, it does not represent a real-world entity, only technical data.
+A worker typically provides:
 
-Examples: system utilities, DAOs, repositories, low-level services, or MVC *view* components.
+* execution support,
+* operating-system interaction,
+* rendering,
+* launching,
+* infrastructure access,
+* platform-specific functionality.
+
+Examples:
+
+```text
+AnimalWorker
+ApplicationLauncher
+AgentLauncher
+ProcessLauncher
+SystemExecutor
+OperatingSystemWorker
+ControllerWorker
+```
+
+Unlike an agent, a worker does not primarily represent a domain.
+
+Its role is to provide technical support.
+
+---
+
+## `indef_obj`
+
+An `indef_obj` is an object whose nature has not yet been identified.
+
+It behaves similarly to a traditional object-oriented class.
+
+Typical use cases include:
+
+* prototyping,
+* exploratory development,
+* refactoring,
+* incremental migration to Clprolf.
+
+Example:
+
+```clprolf
+public class_for indef_obj TemporaryManager {
+}
+```
+
+The role can be refined later into either `agent` or `worker`.
 
 ---
 
 ## Inheritance Consistency
 
-Clprolf enforces that inheritance stays **role-consistent**:
+Clprolf encourages inheritance only when domain continuity exists.
 
-* Domain and technical objects cannot be mixed in the same hierarchy.
-* Synonyms of a declension are accepted with a warning.
-* Exceptions may be forced with `@Forced_inh`.
+Example:
+
+```text
+Animal
+  └─ Dog
+```
+
+Both classes belong to the same conceptual domain.
+
+Inheritance is therefore coherent.
+
+However:
+
+```text
+Dog
+  └─ DatabaseConnection
+```
+
+introduces a different domain.
+
+Composition is generally preferred.
+
+Clprolf uses this principle to help maintain coherent hierarchies.
+
+Inheritance exceptions may still be forced through:
+
+```text
+@Forced_inh
+```
+
+when required.
 
 ---
 
 ## Using Declensions
 
-In pure Clprolf, the declension **replaces the `class` keyword**.
-In the framework, it appears as an annotation above the class.
+In pure Clprolf, the declension replaces the traditional `class` keyword.
 
-Example:
+Examples:
 
 ```clprolf
-public class_for agent Animal { ... }
+public class_for agent Animal {
+}
 ```
 
-```java
-@Agent
-public class Animal { ... }
+```clprolf
+public class_for worker AnimalWorker {
+}
+```
+
+```clprolf
+public class_for indef_obj TemporaryManager {
+}
+```
+
+The shorter syntax is also possible:
+
+```clprolf
+public agent Animal {
+}
 ```
 
 ---
 
-## Algorithm for Choosing a Declension
+## Framework Usage
 
-Every class must declare a role.
+When using Clprolf as a framework, declensions are expressed through annotations.
 
-**Step 1 – Does the class have methods?**
+```java
+@Agent
+public class Animal {
+}
+```
 
-* Yes → it is **active** → choose `@Agent` or `@Worker_agent`.
-* No → it is **passive** → use `@Model` (entity) or `@Information` (technical container).
+```java
+@Worker
+public class AnimalWorker {
+}
+```
 
-**Step 2 – Is the responsibility domain or technical?**
+```java
+@Indef_obj
+public class TemporaryManager {
+}
+```
 
-* Business/Domain logic or expert knowledge → `@Agent`.
-* Technical or support layer → `@Worker_agent`.
+---
+
+## Practical Guidelines
+
+When a class clearly represents a coherent subject, it is usually an `agent`.
+
+Examples:
+
+```text
+File
+Parser
+Connection
+Controller
+Scheduler
+PaymentService
+Microservice
+```
+
+When a class primarily exists to support, execute, launch, render, or technically assist another class, it is usually a `worker`.
+
+Examples:
+
+```text
+AnimalWorker
+ControllerWorker
+ApplicationLauncher
+ProcessLauncher
+OperatingSystemWorker
+SystemExecutor
+```
+
+Some situations may admit multiple interpretations.
+
+Clprolf provides guidance, but the final architectural interpretation remains the developer's responsibility.
 
 ---
 
 ## Summary
 
-* Declensions make objects into **components** with explicit roles.
-* Roles clarify responsibilities, improve readability, and ensure inheritance coherence.
-* Synonyms keep flexibility while preserving consistency.
+Declensions transform classes into explicit architectural components.
 
-Result: a simpler, more maintainable system, where every object is clearly positioned.
+They make responsibilities visible and provide a common vocabulary for reasoning about systems.
 
----
+```text
+agent     → represents a domain
+worker    → supports a domain
+indef_obj → undefined role
+```
 
-### Notice
-
-If the class already fits one of the well-known architectural categories, you can directly assign a matching role:
-
-* A service → `@Agent`
-* A helper → `@Agent` or `@Worker`
-* A DAO or repository → `@Worker`
-* A controller → `@Agent`
-
----
+By making these distinctions explicit, Clprolf helps maintain readable structures, coherent inheritance hierarchies, and long-term architectural clarity.

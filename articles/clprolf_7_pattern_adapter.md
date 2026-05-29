@@ -15,9 +15,9 @@ That’s where the **Adapter** comes in.
 
 In Clprolf, the rule is simple:
 
-* A concrete **agent** can contract **only one** `family_inh`.
+* A concrete **agent** can implement **only one** `family_inh`.
 * So you **cannot make the same class both an “old” and a “modern” implementation**.
-* Instead, you **create a new agent — the Adapter — which contracts the modern version, and internally uses the old one via `with_compat`.**
+* Instead, you **create a new agent — the Adapter — which implements the modern version, and internally uses the old one via `with_compat`.**
 
 ---
 
@@ -28,8 +28,8 @@ Old Java APIs used `Enumeration`, but modern code expects `Iterator`. We want to
 ### Clprolf Code
 
 ```java
-// 1. Old contract (an abstraction)
-public family_interf abstraction Enumeration<E> {
+// 1. Old contract (an agent)
+public family_interf agent Enumeration<E> {
     boolean hasMoreElements();
     E nextElement();
 }
@@ -40,8 +40,8 @@ public family_interf agent Iterator<E> {
     E next();
 }
 
-// 3. Adapter agent: contracts the modern version
-public agent EnumToIterAdapter<E> contracts Iterator<E> {
+// 3. Adapter agent: implements the modern version
+public agent EnumToIterAdapter<E> implements Iterator<E> {
     private with_compat Enumeration<E> enumeration;
 
     public EnumToIterAdapter(with_compat Enumeration<E> enumeration) {
@@ -62,16 +62,13 @@ public agent EnumToIterAdapter<E> contracts Iterator<E> {
 
 ## 🔎 Why this is clear in Clprolf
 
-* `family_interf` makes it explicit: these are **role contracts meant to be implemented** by agents.
-* `contracts` shows clearly: the Adapter **is a modern `Iterator`**.
-* `with_compat` highlights the dependency on the old `Enumeration`.
+* `family_interf` makes it explicit: these are **family interfaces meant to be implemented** by agents.
 * No hidden tricks: we see immediately that the Adapter is **a new agent** created for translation.
 
 And here’s an important detail:
 
-* **`Enumeration` is an abstraction** (a very minimal contract, part of the `agent` declension in Clprolf).
+* **`Enumeration` is an agent**
 * **`Iterator` is a full agent**, representing the modern iteration model.
-* So the Adapter not only bridges old to new, but also shows a **shift in philosophy**: from abstraction to agent.
 
 ---
 
@@ -80,7 +77,7 @@ And here’s an important detail:
 In Clprolf, the Adapter is never a “magical disguise.”
 It’s simply:
 
-> **A new agent that contracts the modern interface, and delegates to an old implementation through `with_compat`.**
+> **A new agent that translates one family interface into another.**
 
 This removes confusion and makes the intent crystal clear.
 
