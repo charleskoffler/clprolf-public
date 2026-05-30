@@ -1,209 +1,352 @@
 # A Global Model of How Classes Relate to Each Other in Clprolf
 
-Clprolf introduces simple declensions (Agent, Worker, Abstraction…) that clarify **the natural place of each class in a project**.
-Many developers asked for a **global picture** showing how these classes interact, how they depend on each other, and how domain-level classes stay cleanly separated from technical ones.
+Clprolf introduces simple declensions such as `agent` and `worker` to clarify the natural place of each class in a project.
 
-This article presents **a conceptual model** that explains:
+Many developers understand the basic distinction:
 
-* how each **class type** fits into the architecture,
-* how domain classes interact with technical classes,
-* how pure abstractions differ from system abstractions,
-* and where `@Forc_pract_code` is used when crossing boundaries.
+* an `agent` carries meaning, intention, or domain behavior;
+* a `worker` performs technical execution.
 
-This is not a compiler rule-set.
-It is simply a **mental model** that makes Clprolf’s design easier to understand and that helps classify new classes intuitively.
+But when a project grows, another question appears:
 
-Below is the complete model, with diagram and detailed explanations.
+> How do these classes relate to each other globally?
+
+This document provides a conceptual overview of how the main Clprolf roles interact in practice.
+
+It explains:
+
+* how agents and workers depend on each other;
+* how domain-level classes stay separated from technical classes;
+* how system-oriented objects such as streams, sockets, files, or threads can be understood;
+* how workers act as bridges between conceptual objects and low-level execution.
+
+This is not a formal compiler rule-set.
+
+It is a **mental model**: a guide that helps developers classify new classes more naturally and understand Clprolf architecture as a whole.
 
 ---
 
-This document provides a conceptual overview of how the main Clprolf declensions relate to each other in practice.
-It is **not a formal set of compiler rules**, but a conceptual guide that helps developers understand how each declension fits into a coherent architectural model.
+## 1. The basic idea
 
-The goal is simple:
-**clarify the natural relationships between Agents, Abstractions, Workers, and System Abstractions**,
-and indicate where exceptions must be explicitly acknowledged through `@Forc_pract_code`.
+The core model is simple:
 
----
-
-```
-                         ┌──────────────────────────────────────────┐
-                         │              PURE ABSTRACTION            │
-                         │ (concepts usable by ALL other roles)     │
-                         │   - no workers                           │
-                         │   - no system calls                      │
-                         └───────────────────────┬──────────────────┘
-                                                 │  used by anyone
-                                                 ▼
-                  ┌──────────────────────────────────────────────────┐
-                  │                       AGENT                      │
-                  │        (domain-level behavior & logic)           │
-                  │                                                  │
-                  │      [Optionally: simu_real_obj available]       │
-                  └───────────────────────────┬──────────────────────┘
-                                              │
-                                              │ uses
-                                              ▼
-                 ┌──────────────────────────────────────────────────┐
-                 │                       WORKER                     │
-                 │   (technical realization serving an Agent)       │
-                 │                                                  │
-                 │                                                  │
-                 └──────────────────────────┬───────────────────────┘
-                                             │
-                                             │ calls
-                                             ▼
-         ┌────────────────────────────────────────────────────────────────┐
-         │                        SYSTEM ABSTRACTION                      │
-         │      (agent-like, system domain; may call workers or           │
-         │       other system abstractions; uses @Forc_pract_code as      │
-         │       declaration when needed)                                 │
-         └────────────────────────────────┬───────────────────────────────┘
-                                          │
-                                          │ calls
-                                          ▼
-                   ┌──────────────────────────────────────────────────┐
-                   │                        WORKER                    │
-                   │   (low-level technical or native operations)     │
-                   └──────────────────────────────────────────────────┘
+```text
+Agent  = meaning
+Worker = execution
 ```
 
----
+An `agent` represents something conceptually meaningful in the program.
 
-#### **1. Agent**
+A `worker` performs the technical work needed to support agents, the application, or the system.
 
-An **Agent** represents a meaningful domain object.
-It carries intention, behavior, and domain responsibility.
-
-##### **Agent rules**
-
-* An Agent **may call its Worker** (its technical realization).
-* An Agent **may call other Agents**.
-* An Agent **may use pure Abstractions**.
-* An Agent **must not directly use System Abstractions**.
-  If a domain object needs access to a system feature, **its Worker handles it**.
-
----
-
-#### **2. Worker**
-
-A **Worker** performs technical tasks on behalf of its Agent.
-
-Typical examples include:
-
-* network senders/receivers,
-* file or database handlers,
-* UI adapters.
-
-##### **Worker rules**
-
-* A Worker **may call other Workers**.
-* A Worker **may use System Abstractions**.
-* A Worker **may use pure Abstractions**.
-* A Worker **may call its Agent** to trigger domain operations (UI events, callbacks, etc.).
-* A Worker **must not expose domain intelligence**: its responsibility is purely technical.
-
-Workers are the only declension allowed to bridge the domain world and system-level operations.
-
----
-
-#### **3. Pure Abstraction**
-
-A **pure Abstraction** is a conceptual type with no system interaction.
-Its behavior is fully defined by logic, data, or mathematical structure.
-
-Examples: collections, geometry, colors, numeric models, conceptual structures.
-
-##### **Pure Abstraction rules**
-
-* It **may call other pure Abstractions**.
-* It **may call Agents** (same declension family).
-* It **must not use System Abstractions**.
-* It **must not use Workers**.
-* It normally **does not have a Worker**: memory itself provides the “technical realization”.
-
-Pure Abstractions represent stable logic that does not depend on the environment.
-
----
-
-#### **4. System Abstraction**
-
-A **System Abstraction** is an abstraction that *simulates* a system resource or capability.
+In many systems, we also encounter classes that are close to the operating system or runtime, but still have a conceptual identity.
 
 Examples:
 
-* Streams
-* Channels
-* Sockets
-* Threads
-* File abstractions
+* `Stream`
+* `Socket`
+* `Thread`
+* `Channel`
+* `File`
+* `Window`
+* `Button`
 
-These objects have conceptual methods (e.g., read, write, open) but **their internal realization requires system-level operations** provided by a Worker.
+These can be understood as **system-oriented agents**.
 
-##### **System Abstraction rules**
+They are still agents because they represent conceptual objects, but their internal behavior often depends on low-level workers.
 
-* A System Abstraction **may use its Worker** for technical realization.
-* A System Abstraction **may call other System Abstractions** only when they belong to the same underlying domain of functionality.
-* A System Abstraction **may not call Agents**.
-* Any usage of external system abstractions or utilities must be annotated with `@Forc_pract_code`.
+A system-oriented agent is not necessarily a new official declension.
 
-The annotation confirms that the developer intentionally breaks the purity of the abstraction for practical reasons.
+It is a conceptual category:
+
+> an agent whose domain is connected to a system capability.
 
 ---
 
-#### **5. Exceptions with `@Forc_pract_code`**
+## 2. Global conceptual diagram
 
-Whenever a class must call an element that normally belongs outside its allowed scope, the developer must explicitly annotate the class or method with:
-
+```text
+┌────────────────────────────────────────────────────┐
+│                       AGENT                        │
+│       conceptual behavior, domain responsibility   │
+│                                                    │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ uses / delegates to
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                       WORKER                       │
+│        technical execution serving an agent        │
+│                                                    │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ may use
+                          ▼
+┌────────────────────────────────────────────────────┐
+│              SYSTEM-ORIENTED AGENT                 │
+│   conceptual object connected to system behavior   │
+│   examples: stream, socket, thread, file, window   │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ delegates low-level work to
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                    LOW-LEVEL WORKER                │
+│     native call, rendering, I/O, OS/runtime work   │
+└────────────────────────────────────────────────────┘
 ```
-@Forc_pract_code
+
+This diagram should not be read as a strict one-way call graph.
+
+It shows the natural direction of responsibility:
+
+```text
+meaning → execution → system capability → low-level operation
 ```
 
-This annotation expresses:
+---
 
-* “I acknowledge that I am breaking the usual boundaries.”
-* “This is done for practical, controlled reasons.”
-* “This code is still correct within the intended model.”
+## 3. Agent
 
-Typical cases:
+An `agent` represents a meaningful object or behavior.
 
-* A System Abstraction relying on a helper System Abstraction indirectly.
-* A System Abstraction using a utility normally reserved to another domain.
-* Exceptional bridging between system-level abstractions.
+It carries intention, responsibility, and conceptual identity.
+
+Examples:
+
+* `OrderProcessor`
+* `CheckoutService`
+* `Snake`
+* `FoodExpert`
+* `WindowObserver`
+* `Button`
+* `DirectoryExplorer`
+* `Animal`
+
+An agent answers questions such as:
+
+* What does this object mean?
+* What responsibility does it carry?
+* What behavior belongs to its domain?
+
+### Agent guidelines
+
+An agent may:
+
+* call other agents;
+* delegate technical work to workers;
+* hold domain state;
+* express business, application, simulation, or UI meaning.
+
+An agent should avoid:
+
+* directly performing heavy technical work;
+* depending directly on low-level system mechanisms when a worker can handle them;
+* becoming a mixed class where domain decisions and technical execution are indistinguishable.
+
+If an agent needs system-level behavior, it usually delegates it to a worker.
 
 ---
 
-#### **6. Summary Table**
+## 4. Worker
 
-Here is a simplified summary of allowed direct usage:
+A `worker` performs technical execution.
 
-| From / To              | Agent         | Worker         | Pure Abstraction | System Abstraction |
-| ---------------------- | ------------- | -------------- | ---------------- | ------------------ |
-| **Agent**              | ✔             | ✔              | ✔                | ✘                  |
-| **Worker**             | ✔ (its Agent) | ✔              | ✔                | ✔                  |
-| **Pure Abstraction**   | ✔             | ✘              | ✔                | ✘                  |
-| **System Abstraction** | ✘             | ✔ (its Worker) | ✔                | ✔ (same domain)    |
+It does not primarily represent a domain concept.
+It performs work for an agent, the application, or the system.
 
-`@Forc_pract_code` may be added where exceptions are intentional and justified.
+Examples:
+
+* `OrderRepository`
+* `FileWriterWorker`
+* `DatabaseWorker`
+* `RendererWorker`
+* `Launcher`
+* `SocketWorker`
+* `SwingRenderer`
+* `DirectoryExplorerWorker`
+
+A worker answers questions such as:
+
+* What technical operation must be performed?
+* What system, framework, I/O, or rendering mechanism must be called?
+* What concrete execution is needed by an agent?
+
+### Worker guidelines
+
+A worker may:
+
+* call other workers;
+* use system-oriented agents;
+* perform I/O, rendering, persistence, networking, or launching;
+* call back an agent when acting as a technical bridge, such as in UI events, callbacks, adapters, or asynchronous notifications.
+
+A worker should avoid:
+
+* containing domain decisions;
+* becoming the conceptual brain of the application;
+* hiding business rules inside technical code.
+
+A worker can bridge the domain world and the system world, but it should not absorb the domain.
 
 ---
 
-#### **7. Purpose of This Model**
+## 5. System-oriented agent
 
-This article does not add rules to the compiler.
-It simply clarifies the **intuitive structure** that naturally emerges from Clprolf:
+A **system-oriented agent** is an agent whose conceptual domain is connected to a system capability.
 
-* Agents = meaning
-* Workers = execution
-* Pure Abstractions = logic
-* System Abstractions = simulated system capabilities
+It is not simply a worker, because it represents an object with meaning.
+
+Examples:
+
+* a `Stream` represents a flow of data;
+* a `Socket` represents a communication endpoint;
+* a `Thread` represents an execution path;
+* a `File` represents a filesystem object;
+* a `Window` represents a visible interaction space;
+* a `Button` represents a clickable UI object.
+
+These objects are conceptually meaningful.
+
+However, their implementation often requires technical operations:
+
+* native calls,
+* OS interaction,
+* rendering,
+* I/O,
+* event dispatching,
+* memory or runtime management.
+
+That low-level work should be handled internally by workers.
+
+### System-oriented agent guidelines
+
+A system-oriented agent may:
+
+* expose conceptual methods such as `open()`, `read()`, `write()`, `click()`, `show()`, or `close()`;
+* delegate its technical realization to workers;
+* interact with other system-oriented agents in the same coherent system domain.
+
+A system-oriented agent should avoid:
+
+* calling unrelated domain agents directly;
+* mixing high-level business decisions with low-level system mechanics;
+* exposing technical implementation details as its main identity.
+
+The key idea is:
+
+> A system-oriented agent represents a system capability as a meaningful object.
+> A worker performs the low-level execution behind it.
+
+---
+
+## 6. Summary table
+
+Here is a simplified model of direct usage.
+
+| From / To                 |                        Agent | Worker |      System-oriented agent |
+| ------------------------- | ---------------------------: | -----: | -------------------------: |
+| **Agent**                 |                          Yes |    Yes |                 Usually no |
+| **Worker**                | Controlled callback / bridge |    Yes |                        Yes |
+| **System-oriented agent** |                   Usually no |    Yes | Yes, if same system domain |
+
+This table is a guide, not a rigid rule-set.
+
+The important idea is not to forbid every possible dependency.
+
+The important idea is to preserve the direction of meaning:
+
+```text
+agents carry meaning
+workers execute
+system-oriented agents represent system capabilities
+low-level workers perform the technical realization
+```
+
+---
+
+## 7. Purpose of this model
 
 This model helps developers:
 
-* classify new classes correctly,
-* avoid mixing concerns accidentally,
-* navigate and design complex systems more safely,
-* recognize patterns inside existing codebases (e.g., Java libraries),
-* understand how system-oriented classes are structured internally.
+* classify new classes correctly;
+* avoid accidental mixing of concerns;
+* navigate complex systems more safely;
+* recognize patterns inside existing codebases;
+* understand why some system classes still feel like agents;
+* decide when a UI object, listener, socket, stream, or file should be modeled as an agent or as a worker.
+
+It also explains why Clprolf is not just:
+
+```text
+business = agent
+technical = worker
+```
+
+The real model is slightly richer:
+
+```text
+agent  = conceptual meaning
+worker = technical execution
+```
+
+Some conceptual objects are close to the system.
+
+That does not automatically make them workers.
+
+A button can be an agent.
+A listener can be an observer agent.
+A stream can be a system-oriented agent.
+Their rendering, event dispatching, or native operations can be workers.
 
 ---
+
+## 8. Final synthesis
+
+Clprolf gives each class a natural place.
+
+At the highest level:
+
+```text
+Agent  = meaning
+Worker = execution
+```
+
+Then the model expands:
+
+```text
+Domain agent
+    → carries business, application, simulation, or UI meaning
+
+Worker
+    → performs technical execution
+
+System-oriented agent
+    → represents a conceptual system capability
+
+Low-level worker
+    → performs native, rendering, I/O, or runtime operations
+```
+
+This model keeps Clprolf simple while explaining real-world cases more accurately.
+
+It avoids a false choice between “everything technical is worker” and “everything conceptual is pure business.”
+
+Instead, it asks one practical question:
+
+> What is the main responsibility of this class?
+
+If the class represents something meaningful, it is probably an agent.
+
+If it mainly executes technical work, it is probably a worker.
+
+That is the global logic of Clprolf.
+
+---
+
+## Final line
+
+> Agents carry meaning.
+> Workers perform execution.
+> System-oriented agents represent meaningful system capabilities.
+> Together, they make architecture easier to read, reason about, and maintain.
