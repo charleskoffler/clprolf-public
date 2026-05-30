@@ -24,7 +24,7 @@ but we **explicitly declare the roles** of each component.
 
 | Component           | Clprolf Role                   | Description                                 |
 | ------------------- | ------------------------------ | ------------------------------------------- |
-| `WeatherApp`        | `@Worker`       | The system launcher (like Spring Boot main) |
+| `WeatherApp`        | `@Worker`                      | The system launcher (like Spring Boot main) |
 | `WeatherController` | `@Agent`                       | The “brain” that coordinates the logic      |
 | `WeatherRepository` | `@Worker`                      | Technical layer fetching data               |
 | `WeatherRenderer`   | `@Worker`                      | The View layer (UI and user input)          |

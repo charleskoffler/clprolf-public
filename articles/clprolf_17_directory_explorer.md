@@ -21,14 +21,14 @@ We want to:
 Instead of mixing logic, display, and data handling,
 Clprolf invites us to split them into **roles**.
 
-| Component                                       | Declension      | Responsibility                 |
-| ----------------------------------------------- | --------------- | ------------------------------ |
-| `Launcher`                                      | `@Worker` | Starts the exploration         |
-| `DirectoryExplorerImpl`                         | `@Agent`        | Performs the exploration       |
-| `DirectoryExplorerWorkerImpl`                   | `@Worker` | Displays results               |
-| `Directory`                                     | `@Model`        | Represents one directory node  |
-| `DirectoryExplorer` / `DirectoryExplorerWorker` | `@Family_interf`  | Define contracts between roles |
-
+| Component                                       | Declension              | Responsibility                         |
+| ----------------------------------------------- | ----------------------- | -------------------------------------- |
+| `Launcher`                                      | `@Worker`               | Starts the exploration                 |
+| `DirectoryExplorerImpl`                         | `@Agent`                | Performs the exploration               |
+| `DirectoryExplorerWorkerImpl`                   | `@Worker`               | Displays results                       |
+| `Directory`                                     | `@Agent`                | Represents one directory node          |
+| `DirectoryExplorer`                             | `@Agent @Family_interf` | The family of the agent                |
+| `DirectoryExplorerWorker`                       | `@Worker @Family_interf`| The family of the worker for the agent |
 ---
 
 ### ⚙️ 2. The Launcher
@@ -41,7 +41,7 @@ It prepares the environment and delegates the job to the proper agent.
 public class Launcher {
 
     public static void main(String[] args) {
-        @With_compat Path path = Paths.get(args.length > 0 ? args[0] : System.getProperty("user.home"));
+        Path path = Paths.get(args.length > 0 ? args[0] : System.getProperty("user.home"));
         try { path = path.toRealPath(LinkOption.NOFOLLOW_LINKS); } catch (Exception ignored) {}
 
         if (!Files.isDirectory(path)) {
@@ -49,7 +49,7 @@ public class Launcher {
             System.exit(1);
         }
 
-        @With_compat DirectoryExplorer explorer = new DirectoryExplorerImpl();
+        DirectoryExplorer explorer = new DirectoryExplorerImpl();
         explorer.breadthFirstFolders(path);
     }
 }
@@ -69,17 +69,17 @@ The agent collaborates with a worker, manipulates a model, and manages a queue.
 @Agent
 public class DirectoryExplorerImpl implements @Contracts DirectoryExplorer {
 
-    private @With_compat DirectoryExplorerWorker worker;
+    private DirectoryExplorerWorker worker;
 
     public DirectoryExplorerImpl() {
         this.worker = new DirectoryExplorerWorkerImpl();
     }
 
-    public void breadthFirstFolders(@With_compat Path directoryPath) {
+    public void breadthFirstFolders(Path directoryPath) {
         directoryPath = directoryPath.normalize().toAbsolutePath();
 
-        @With_compat List<Directory> foldersList = new ArrayList<>();
-        @With_compat Queue<Directory> directoryToExplore = new LinkedList<>();
+        List<Directory> foldersList = new ArrayList<>();
+        Queue<Directory> directoryToExplore = new LinkedList<>();
 
         directoryToExplore.add(new Directory(directoryPath, List.of(0)));
 
@@ -116,7 +116,7 @@ No recursion, no confusion.
 
 ---
 
-### 👷 4. The Worker Agent
+### 👷 4. The Worker
 
 Responsible for showing the result, not for computing it.
 Again, we separate *doing* from *showing*.
@@ -144,11 +144,8 @@ Simple, explicit, human-readable.
 
 ### 📦 5. The Model
 
-A `@Model` in Clprolf is always clear:
-it represents data, and nothing more.
-
 ```java
-@Model
+@Agent
 public class Directory {
     private Path path;
     private List<Integer> hierarchicalId;
@@ -162,8 +159,6 @@ public class Directory {
     public List<Integer> getHierarchicalId() { return hierarchicalId; }
 }
 ```
-
-No logic, no side effects. Just structure.
 
 ---
 
@@ -183,9 +178,6 @@ public interface DirectoryExplorerWorker {
 }
 ```
 
-Contracts make the collaboration explicit.
-No hidden dependencies, no tight coupling — just clear communication.
-
 ---
 
 ### 🪶 7. Why it matters
@@ -196,8 +188,6 @@ What matters here is **how naturally the architecture expresses itself**:
 * The launcher launches.
 * The agent explores.
 * The worker displays.
-* The model represents.
-* The contract binds.
 
 Clprolf doesn’t just help you code — it helps you **think**.
 The structure emerges from the intention.
