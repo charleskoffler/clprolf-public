@@ -92,10 +92,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import org.clprolf.framework.java.Agent;
-import org.clprolf.framework.java.Contracts;
-import org.clprolf.framework.java.Nature;
 import org.clprolf.framework.java.Worker;
-import org.clprolf.framework.java.Advice;
 
 @Worker
 public class WeatherRenderer {
@@ -107,10 +104,10 @@ public class WeatherRenderer {
 
     @Agent
     @Family_interf
-    private static interface WindowObserver extends @Nature ActionListener { }
+    private static interface WindowObserver extends ActionListener { }
 
     @Agent
-    private class WindowObserverImpl implements @Contracts WindowObserver {
+    private class WindowObserverImpl implements WindowObserver {
         
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -198,9 +195,9 @@ That’s exactly what a `Repository` or `Service` does in Spring MVC.
 ## 🔄 3. The MVC Flow
 
 ```
-User (View) → WeatherRenderer (worker_agent)
+User (View) → WeatherRenderer (worker)
              → WeatherController (agent)
-             → WeatherRepository (worker_agent)
+             → WeatherRepository (worker)
              → back to WeatherRenderer
 ```
 
@@ -229,7 +226,7 @@ you *declare it* — explicitly.
 
 > A `Controller` is an **Agent**.
 > A `Repository` is a **Worker**.
-> A `Launcher` is a **Static Worker**.
+> A `Launcher` is a **Worker**.
 > A `View` is also a **Worker** — the interface between human and machine.
 
 In short:
@@ -249,7 +246,7 @@ Clprolf doesn’t reinvent MVC — it **makes it self-explanatory**.
 ---
 
 > 🌤️ *“It acts as a living interface between human and machine —
-> the very essence of the worker_agent.”*
+> the very essence of the worker.”*
 
 That’s the clarity and beauty of Clprolf.
 
