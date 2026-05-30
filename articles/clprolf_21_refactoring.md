@@ -207,7 +207,7 @@ public worker OrderNotifier {
 }
 ```
 
-Workers may mix technical concerns freely:
+Workers may group related technical concerns when they serve the same technical purpose:
 
 * I/O,
 * formatting,
