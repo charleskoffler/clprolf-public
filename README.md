@@ -64,4 +64,4 @@ Feel free to reach out by email if you want more information
 
 ## Checker for Clprolf framework
 
-* [**ArchUnit Checker for the Clprolf Framework**](https://github.com/charleskoffler/clprolf-public/clprolf_checker/)
+* [**ArchUnit Checker for the Clprolf Framework**](https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker)
