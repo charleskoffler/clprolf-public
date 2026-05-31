@@ -2,14 +2,9 @@
 
 A new way to express your talent with OOP.
 
-## Status
+## Information
 
-Clprolf is currently under private development.
-Access is limited to collaborators and testers.
-
-## Collaboration
-
-Feel free to reach out if you're interested.
+Feel free to reach out by email if you want more information
 
 ## Articles
 
