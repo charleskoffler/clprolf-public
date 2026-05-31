@@ -533,7 +533,37 @@ Il cherche à rendre explicites certaines distinctions importantes :
 * responsabilité principale d’une classe.
 ---
 
-# IX) Résumé
+# IX) Checker ArchUnit pour le Framework Clprolf
+
+Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé d'une classe ClprolfArchTest. Il détecte sept types d'erreur:
+
+clprolf_classes_must_not_mix_agent_and_worker:
+Une classe ne peut pas être annotée à la fois @Agent et @Worker
+
+agent_worker_inheritance_must_not_mix
+Une classe @Worker ne peut pas hériter d'une classe @Agent, et inversement.
+
+class_should_not_implement_trait_directly
+Une classe ne peut pas implémenter directement une interface @Trait_interf (à moins d'utiliser @Forc_int_inh)
+
+class_must_implement_only_one_family_interface
+Une classe Clprolf ne peut implémenter qu'une interface @Family_interf. Forçage possible avec @Forc_int_inh
+
+family_interface_role_must_match_implementation
+Le rôle cible d'une interface @Family_interf, doit être similaire au rôle de la classe d'implémentation(@Agent ou @Worker). Forçage possible avec @Forc_inh.
+
+trait_interfaces_must_extend_only_trait_interfaces
+Les interfaces @Trait_interf ne peuvent hériter que d'autres @Trait_interf. Forçage possible avec @Forc_int_inh.
+
+clprolf_interfaces_must_have_target_role
+Les interfaces Clprolf (@Family_interf ou @Trait_interf) doivent avoir un rôle cible (@Agent ou @Worker).
+
+# X) Clprolf et les architectures existantes
+
+Clprolf, langage et Framework, est compatible avec les architectures DDD, MVC, Clean architecture, architecture hexagonale, etc. C'est une couche entre la POO et les architectures, qui vient compléter et sécuriser les architectures connues.
+
+
+# XI) Résumé
 
 Clprolf ajoute très peu de concepts.
 ---

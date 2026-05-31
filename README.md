@@ -61,3 +61,7 @@ Feel free to reach out by email if you want more information
 * [**Clprolf — A new way to express your talent with OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_0_quick_start.md)
 
 * [**Introducing Clprolf: a New Programming Language for Clear OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_introduc.md)
+
+## Checker for Clprolf framework
+
+* [**ArchUnit Checker for the Clprolf Framework**](https://github.com/charleskoffler/clprolf-public/clprolf_checker/)

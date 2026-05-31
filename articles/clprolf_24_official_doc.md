@@ -546,7 +546,49 @@ It aims to make certain important distinctions explicit:
 
 ---
 
-# IX) Summary
+# IX) ArchUnit Checker for the Clprolf Framework
+
+An ArchUnit-based checker is available for the Clprolf Framework on GitHub. It is open-source and consists of a single `ClprolfArchTest` class. It detects seven types of violations:
+
+### clprolf_classes_must_not_mix_agent_and_worker
+
+A class cannot be annotated with both `@Agent` and `@Worker`.
+
+### agent_worker_inheritance_must_not_mix
+
+A `@Worker` class cannot inherit from an `@Agent` class, and vice versa.
+
+### class_should_not_implement_trait_directly
+
+A class cannot directly implement a `@Trait_interf` interface (unless `@Forc_int_inh` is used).
+
+### class_must_implement_only_one_family_interface
+
+A Clprolf class may implement only one `@Family_interf` interface. This restriction can be overridden using `@Forc_int_inh`.
+
+### family_interface_role_must_match_implementation
+
+The target role of a `@Family_interf` interface must match the role of its implementing class (`@Agent` or `@Worker`). This restriction can be overridden using `@Forc_inh`.
+
+### trait_interfaces_must_extend_only_trait_interfaces
+
+A `@Trait_interf` interface may inherit only from other `@Trait_interf` interfaces. This restriction can be overridden using `@Forc_int_inh`.
+
+### clprolf_interfaces_must_have_target_role
+
+Clprolf interfaces (`@Family_interf` and `@Trait_interf`) must define a target role (`@Agent` or `@Worker`).
+
+
+# X) Clprolf and Existing Architectures
+
+Clprolf, both as a language and as a framework, is compatible with existing architectural approaches such as Domain-Driven Design (DDD), Model-View-Controller (MVC), Clean Architecture, Hexagonal Architecture, and others.
+
+Rather than replacing these architectures, Clprolf acts as an additional layer between Object-Oriented Programming (OOP) and software architecture. Its purpose is to complement, clarify, and reinforce existing architectural principles by making class roles and inheritance relationships more explicit.
+
+In this way, Clprolf helps improve architectural consistency while remaining fully compatible with established design practices.
+
+
+# XI) Summary
 
 Clprolf introduces very few concepts.
 
