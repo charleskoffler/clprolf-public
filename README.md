@@ -8,6 +8,8 @@ Feel free to reach out by email if you want more information
 
 ## Articles
 
+* [**Clprolf ArchUnit Checker — Enforce Your Architecture at Build Time](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_26_clprolf_checker.md)
+
 * [**Clprolf — Official Documentation**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_24_official_doc.md)
 
 * [French][**Clprolf — Documentation Officielle**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_25_french_official_doc.md)

@@ -206,10 +206,10 @@ public agent Dog extends Animal {
 ## Exemple déconseillé
 
 ```clprolf
-public worker DatabaseConnection {
+public worker ClientRepository {
 }
 
-public agent Dog extends DatabaseConnection {
+public agent Dog extends ClientRepository {
 }
 ```
 
