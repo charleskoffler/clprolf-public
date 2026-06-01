@@ -1,7 +1,5 @@
 # Clprolf
 
-# Clprolf
-
 Clprolf is a lightweight architectural-role framework for object-oriented systems.
 
 It helps Java teams make class responsibilities explicit by distinguishing:
