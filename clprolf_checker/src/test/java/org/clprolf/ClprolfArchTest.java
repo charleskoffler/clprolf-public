@@ -6,8 +6,6 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -88,69 +86,6 @@ public class ClprolfArchTest {
                                                 + " because Clprolf inheritance must preserve the role"
                                 ));
                             });
-                        }
-                    });
-
-    @ArchTest
-    static final ArchRule class_should_not_implement_trait_directly =
-            classes()
-                    .that().areNotInterfaces()
-                    .should(new ArchCondition<JavaClass>("avoid direct implementation of @Trait_interf") {
-                        @Override
-                        public void check(JavaClass clazz, ConditionEvents events) {
-                            if (!clazz.isAnnotatedWith(Agent.class)
-                                    && !clazz.isAnnotatedWith(Worker.class)) {
-                                return;
-                            } // Java class
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
-                                return;
-                            }
-
-                            for (JavaClass interf : clazz.getRawInterfaces()) {
-                                boolean ok = !interf.isAnnotatedWith(Trait_interf.class)
-                                        || clazz.isAnnotatedWith(Forc_int_inh.class);
-
-                                events.add(new SimpleConditionEvent(
-                                        clazz,
-                                        ok,
-                                        clazz.getName() + " directly implements trait "
-                                                + interf.getName()
-                                                + "; prefer family_interf -> trait_interf"
-                                ));
-                            }
-                        }
-                    });
-
-    @ArchTest
-    static final ArchRule class_must_implement_only_one_family_interface =
-            classes()
-                    .that().areNotInterfaces()
-                    .should(new ArchCondition<JavaClass>("implement at most one @Family_interf") {
-                        @Override
-                        public void check(JavaClass clazz, ConditionEvents events) {
-                            if (!clazz.isAnnotatedWith(Agent.class)
-                                    && !clazz.isAnnotatedWith(Worker.class)) {
-                                return;
-                            } // Java class
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
-                                return;
-                            }
-
-                            long count = clazz.getRawInterfaces()
-                                    .stream()
-                                    .filter(i -> i.isAnnotatedWith(Family_interf.class))
-                                    .count();
-
-                            boolean ok = count <= 1 || clazz.isAnnotatedWith(Forc_int_inh.class);
-
-                            events.add(new SimpleConditionEvent(
-                                    clazz,
-                                    ok,
-                                    clazz.getName()
-                                            + " implements "
-                                            + count
-                                            + " @Family_interf interfaces, maximum is 1"
-                            ));
                         }
                     });
 

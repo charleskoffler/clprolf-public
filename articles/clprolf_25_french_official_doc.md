@@ -359,11 +359,11 @@ Elles sont destinées à être implémentées par une ou plusieurs futures class
 Elles possèdent donc un rôle cible (`agent` ou `worker`).
 
 Une classe ne peut implémenter qu’une seule `family_interf` principale à la fois, et le rôle de la classe doit correspondre au rôle cible de l’interface.
-
-Clprolf utilise ainsi une implémentation simple des interfaces, de la même manière que Java utilise un héritage simple des classes.
-
-En effet, une `family_interf` est toujours le reflet structurel de son implémentation.
-Cela permet notamment d’obtenir un loose coupling systématique.
+Clprolf utilise ainsi une implémentation simple des interfaces, de la même manière que Java utilise un héritage simple des classes. En effet, une `family_interf` est toujours le reflet structurel de son implémentation.Cela permet notamment d’obtenir un loose coupling systématique.
+Toutefois, l’implémentation multiple n’est pas supprimée, mais déplacée vers la `family_interf` implémentée par la classe.
+Cette interface de famille peut elle-même hériter de plusieurs interfaces `family_interf` ou `trait_interf`.
+Ainsi, les interfaces qui auraient été implémentées directement par la classe sont regroupées au niveau de sa `family_interf` principale.
+Clprolf conserve donc la richesse de l’héritage multiple des interfaces, tout en maintenant une structure simple et cohérente pour les classes concrètes.
 
 ---
 
@@ -535,28 +535,38 @@ Il cherche à rendre explicites certaines distinctions importantes :
 
 # IX) Checker ArchUnit pour le Framework Clprolf
 
-Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé d'une classe ClprolfArchTest. Il détecte sept types d'erreur:
+Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé de deux classes ClprolfArchTest, et ClprolfStrictArchTest. Il détecte neuf types d'erreur.
+Les règles de ClprolfStrictArchTest sont optionnelles. De même, il est facile de changer le nom des annotations, si on préfère un autre vocabulaire.
 
-clprolf_classes_must_not_mix_agent_and_worker:
+### clprolf_classes_must_not_mix_agent_and_worker:
 Une classe ne peut pas être annotée à la fois @Agent et @Worker
 
-agent_worker_inheritance_must_not_mix
+### agent_worker_inheritance_must_not_mix
 Une classe @Worker ne peut pas hériter d'une classe @Agent, et inversement.
 
-class_should_not_implement_trait_directly
-Une classe ne peut pas implémenter directement une interface @Trait_interf (à moins d'utiliser @Forc_int_inh)
-
-class_must_implement_only_one_family_interface
-Une classe Clprolf ne peut implémenter qu'une interface @Family_interf. Forçage possible avec @Forc_int_inh
-
-family_interface_role_must_match_implementation
+### family_interface_role_must_match_implementation
 Le rôle cible d'une interface @Family_interf, doit être similaire au rôle de la classe d'implémentation(@Agent ou @Worker). Forçage possible avec @Forc_inh.
 
-trait_interfaces_must_extend_only_trait_interfaces
+### trait_interfaces_must_extend_only_trait_interfaces
 Les interfaces @Trait_interf ne peuvent hériter que d'autres @Trait_interf. Forçage possible avec @Forc_int_inh.
 
-clprolf_interfaces_must_have_target_role
+### clprolf_interfaces_must_have_target_role
 Les interfaces Clprolf (@Family_interf ou @Trait_interf) doivent avoir un rôle cible (@Agent ou @Worker).
+
+Règles plus stricts:
+
+### optional_all_classes_should_have_clprolf_role 
+Toutes les classes doivent avoir un rôle Clprolf (@Agent, @Worker ou @Indef_obj)
+
+### optional_all_interfaces_should_have_clprolf_role 
+Toutes les interfaces doivent avoir un rôle Clprolf(@Family_interf, @Trait_interf ou @Compat_interf)
+
+### optional_class_should_not_implement_trait_directly
+Une classe ne peut pas implémenter directement une interface @Trait_interf (à moins d'utiliser @Forc_int_inh)
+
+### optional_class_must_implement_only_one_family_interface (OPTIONNELLE)
+Une classe Clprolf ne peut implémenter qu'une interface @Family_interf. Forçage possible avec @Forc_int_inh
+
 
 # X) Clprolf et les architectures existantes
 

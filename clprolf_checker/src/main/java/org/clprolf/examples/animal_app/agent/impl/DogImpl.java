@@ -13,6 +13,4 @@ public class DogImpl extends AnimalImpl implements Dog, Animal, Growable {
 
     }
 
-    public static class MyJavaClass {
-    }
 }

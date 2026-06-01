@@ -361,7 +361,7 @@ public compat_interf ExternalApi {
 
 ---
 
-## V.4) Interface Usage
+# V.4) Interface Usage
 
 In Clprolf, `family_interf` interfaces are the equivalent of pure abstract classes.
 
@@ -369,13 +369,17 @@ They are intended to be implemented by one or more future Clprolf classes.
 
 They therefore possess a target role (`agent` or `worker`).
 
-A class may implement only one primary `family_interf` at a time, and the class role must match the interface target role.
+A class may implement only one primary `family_interf` at a time, and the role of the class must match the target role of the interface.
 
-Clprolf thus adopts a simple interface implementation model, similar to Java's single class inheritance.
+Clprolf therefore adopts a simple interface implementation model, in the same way that Java uses single class inheritance. Indeed, a `family_interf` is always the structural reflection of its implementation. This notably enables systematic loose coupling.
 
-Indeed, a `family_interf` is always the structural reflection of its implementation.
+However, multiple interface implementation is not removed; it is simply moved to the `family_interf` implemented by the class.
 
-This enables systematic loose coupling.
+This family interface may itself inherit from multiple `family_interf` and/or `trait_interf` interfaces.
+
+As a result, interfaces that would otherwise have been implemented directly by the class are grouped at the level of its primary `family_interf`.
+
+Clprolf therefore preserves the expressive power of multiple interface inheritance while maintaining a simple and coherent structure for concrete classes.
 
 ---
 
@@ -548,7 +552,11 @@ It aims to make certain important distinctions explicit:
 
 # IX) ArchUnit Checker for the Clprolf Framework
 
-An ArchUnit-based checker is available for the Clprolf Framework on GitHub. It is open-source and consists of a single `ClprolfArchTest` class. It detects seven types of violations:
+An ArchUnit-based checker is available for the Clprolf Framework on GitHub. It is open-source and consists of two classes: `ClprolfArchTest` and `ClprolfStrictArchTest`.
+
+It detects nine types of violations.
+
+The rules contained in `ClprolfStrictArchTest` are optional. Likewise, the annotation names can easily be changed if a different vocabulary is preferred.
 
 ### clprolf_classes_must_not_mix_agent_and_worker
 
@@ -557,14 +565,6 @@ A class cannot be annotated with both `@Agent` and `@Worker`.
 ### agent_worker_inheritance_must_not_mix
 
 A `@Worker` class cannot inherit from an `@Agent` class, and vice versa.
-
-### class_should_not_implement_trait_directly
-
-A class cannot directly implement a `@Trait_interf` interface (unless `@Forc_int_inh` is used).
-
-### class_must_implement_only_one_family_interface
-
-A Clprolf class may implement only one `@Family_interf` interface. This restriction can be overridden using `@Forc_int_inh`.
 
 ### family_interface_role_must_match_implementation
 
@@ -577,6 +577,24 @@ A `@Trait_interf` interface may inherit only from other `@Trait_interf` interfac
 ### clprolf_interfaces_must_have_target_role
 
 Clprolf interfaces (`@Family_interf` and `@Trait_interf`) must define a target role (`@Agent` or `@Worker`).
+
+## Stricter Rules
+
+### optional_all_classes_should_have_clprolf_role
+
+Every class should declare a Clprolf role (`@Agent`, `@Worker`, or `@Indef_obj`).
+
+### optional_all_interfaces_should_have_clprolf_role
+
+Every interface should declare a Clprolf role (`@Family_interf`, `@Trait_interf`, or `@Compat_interf`).
+
+### optional_class_should_not_implement_trait_directly
+
+A class should not directly implement a `@Trait_interf` interface (unless `@Forc_int_inh` is used).
+
+### optional_class_must_implement_only_one_family_interface
+
+A Clprolf class should implement only one `@Family_interf` interface. This restriction can be overridden using `@Forc_int_inh`.
 
 
 # X) Clprolf and Existing Architectures
