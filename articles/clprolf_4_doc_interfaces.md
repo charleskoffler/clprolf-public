@@ -1,5 +1,6 @@
 # Clprolf Docs #4 — Interfaces in Clprolf: A Complete Overview
 
+
 In Clprolf, interfaces are viewed as:
 
 > abstract forms of inheritance.
@@ -7,20 +8,20 @@ In Clprolf, interfaces are viewed as:
 They therefore participate in the structural continuity of the system.
 
 ```text
-family_interf  = primary interface of a family
-trait_interf   = trait, shared capability between families
-compat_interf  = unrestricted interface
+family_interf = primary family interface
+trait_interf  = trait, shared capability between families
+compat_interf = unrestricted interface
 ```
 
-In Clprolf, interfaces are not viewed solely as technical contracts.
+In Clprolf, interfaces are not viewed as simple technical contracts.
 
-They also participate in the structural organization of domains and capabilities.
+Both `extends` and `implements` relationships are considered genuine conceptual inheritance relationships.
 
 ---
 
 ## 1) `family_interf`
 
-Interface representing an abstract family of related components sharing the same domain.
+An interface representing an abstract family.
 
 Used for:
 
@@ -28,7 +29,7 @@ Used for:
 * decoupling,
 * implementation variants.
 
-Family interfaces also possess a target role:
+Family interfaces also have a target role:
 
 * `agent`
 * or `worker`
@@ -55,7 +56,7 @@ public family_interf agent Horse extends Animal {
 }
 ```
 
-And will naturally lead to:
+Which may lead to:
 
 ```clprolf
 public agent AnimalImpl implements Animal { (...) }
@@ -69,16 +70,16 @@ public agent HorseImpl extends AnimalImpl implements Horse { (...) }
 
 ## 2) `trait_interf`
 
-Interface representing a shared functionality between several `family_interf`.
+An interface representing a shared capability across multiple `family_interf`.
 
-Traits use a target role, just like `family_interf`:
+Traits also use a target role:
 
 * `agent`
 * `worker`
 
 ---
 
-## Agent Example
+### Business Example
 
 ```clprolf
 public trait_interf agent Payable {
@@ -88,7 +89,7 @@ public trait_interf agent Payable {
 
 ---
 
-## Worker example
+### Technical Example
 
 ```clprolf
 public trait_interf worker Persistable {
@@ -100,13 +101,13 @@ public trait_interf worker Persistable {
 
 ## 3) `compat_interf`
 
-Generic interface without any particular role.
+A generic interface without a specific role.
 
-Allows the system to remain flexible.
+Allows flexibility.
 
 ---
 
-## Example
+### Example
 
 ```clprolf
 public compat_interf ExternalApi {
@@ -115,43 +116,48 @@ public compat_interf ExternalApi {
 
 ---
 
-## 4) Interface Usage
+# 4) Interface Usage
 
 In Clprolf, `family_interf` interfaces are the equivalent of pure abstract classes.
 
 They are intended to be implemented by one or more future Clprolf classes.
+
 They therefore possess a target role (`agent` or `worker`).
 
-A class may implement only one main `family_interf` at a time, and the role of the class must match the target role of the interface.
+A class may implement only one primary `family_interf` at a time, and the role of the class must match the target role of the interface.
 
-Clprolf therefore uses simple interface implementation, in the same way that Java uses simple class inheritance.
+Clprolf therefore adopts a simple interface implementation model, in the same way that Java uses single class inheritance. Indeed, a `family_interf` is always the structural reflection of its implementation. This notably enables systematic loose coupling.
 
-A `family_interf` is the abstract structural reflection of its future implementations.
-This notably enables systematic loose coupling.
+However, multiple interface implementation is not removed; it is simply moved to the `family_interf` implemented by the class.
+
+This family interface may itself inherit from multiple `family_interf` and/or `trait_interf` interfaces.
+
+As a result, interfaces that would otherwise have been implemented directly by the class are grouped at the level of its primary `family_interf`.
+
+Clprolf therefore preserves the expressive power of multiple interface inheritance while maintaining a simple and coherent structure for concrete classes.
 
 ---
 
-`trait_interf` interfaces express a shared functionality between several `family_interf` interfaces.
+`trait_interf` interfaces express a capability shared among multiple `family_interf` interfaces.
 
-A `trait_interf` therefore represents a transversal trait shared across multiple families.
+A `trait_interf` therefore represents a cross-cutting trait shared by several families.
 
-Normally, a `trait_interf` may only be inherited by a `family_interf` interface, and not directly by a class.
+Normally, a `trait_interf` may only be inherited by a `family_interf`, not directly by a class.
 
-However, in Clprolf Minimalist, direct implementation of a `trait_interf` by a class remains tolerated, although discouraged.
+However, direct implementation of a `trait_interf` by a class remains tolerated in Clprolf, although discouraged.
 
 ```text
-Concrete class
-    ↓ implements
+Concrete Class
+      ↓ implements
 family_interf
-    ↓ inherits from
+      ↓ inherits from
 trait_interf
 ```
 
-Note: a `family_interf` interface may inherit from multiple `family_interf` or `trait_interf` interfaces.
+A `family_interf` may inherit from multiple `family_interf` and/or `trait_interf`.
 
-A `trait_interf` interface may inherit only from other `trait_interf` interfaces, because a trait remains a trait.
+A `trait_interf` may inherit only from other `trait_interf`, since a trait remains a trait.
 
-Interface inheritance forcing remains possible with `@Forc_int_inh` above the interface (or `@Forc_inh` to force inheritance between different target roles).
+Interface inheritance may still be forced using `@Forc_int_inh` (or `@Forc_inh` when forcing inheritance across different target roles).
 
 ---
-
