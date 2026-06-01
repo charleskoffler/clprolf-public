@@ -1,6 +1,16 @@
 # Clprolf
 
-A new way to express your talent with OOP.
+# Clprolf
+
+Clprolf is a lightweight architectural-role framework for object-oriented systems.
+
+It helps Java teams make class responsibilities explicit by distinguishing:
+
+- `@Agent`: business or conceptual classes
+- `@Worker`: technical or infrastructure classes
+- `@Indef_obj`: temporarily undefined classes
+
+With the ArchUnit checker, Clprolf rules can be verified automatically during tests and CI.
 
 ## Information
 
