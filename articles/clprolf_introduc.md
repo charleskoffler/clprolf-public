@@ -3,14 +3,15 @@
 > **A structured approach to object-oriented programming.**
 > Roles and responsibilities become explicit.
 
-> Clprolf is a **structured object-oriented language and framework** that adds a conceptual layer on top of Java/C#/PHP.
+Clprolf is a **lightweight architectural-role framework for object-oriented systems**.
 
-> Roles, contracts, and structural rules are **first-class language elements**.
-You model systems with **agents, workers, family_interf, and trait_interf**, while the compiler enforces clarity.
+It adds a conceptual layer on top of Java/C#/PHP-style OOP by making roles, responsibilities, and structural rules explicit.
+
+You model systems with **agents**, **workers**, **family interfaces**, and **trait interfaces**, while architectural rules can be verified through automated checks.
 
 ---
 
-### Scope and Positioning
+## Scope and Positioning
 
 Clprolf is not intended as a mainstream replacement for Java or other general-purpose languages.
 
@@ -22,7 +23,8 @@ It is designed for:
 * systems requiring strong predictability and structural discipline.
 
 Clprolf introduces explicit structural constraints through predefined roles and natures.
-These constraints are intentional and form part of the language’s philosophy.
+
+These constraints are intentional and form part of the framework’s philosophy.
 
 Developers who prefer unrestricted class modeling and complete architectural freedom may find traditional object-oriented languages more suitable.
 
@@ -30,46 +32,64 @@ Clprolf is intended for contexts where early architectural control and long-term
 
 ---
 
-### 🚀 Why Clprolf?
+## 🚀 Why Clprolf?
 
-* **Safer architecture**: compile-time errors prevent invalid dependencies
-* **Readable design**: class roles (`agent`, `worker`) explain themselves
+* **Safer architecture**: automated checks help detect invalid role relationships.
+* **Readable design**: class roles such as `agent` and `worker` explain architectural intent.
+* **Clearer inheritance**: inheritance must preserve the class domain; otherwise, composition is preferred.
+* **Progressive adoption**: Clprolf can be used as a framework with annotations in existing projects.
 
 ---
 
-### 📝 Quick Example
+## 📝 Quick Example
 
 ```java
-public class_for agent OrderService {
-    OrderRepository repo;
-    void checkout(Order o) { repo.save(o); }
+@Agent
+public class OrderService {
+    private final OrderRepository repo;
+
+    public void checkout(Order order) {
+        repo.save(order);
+    }
+}
+
+@Worker
+public class OrderRepository {
+    public void save(Order order) {
+        // database access
+    }
 }
 ```
 
-> In plain OOP: architectural intent often remains implicit.
-> With Clprolf: contracts explicit, roles clear, design rules enforced.
----
+In plain OOP, architectural intent often remains implicit.
 
-### ✨ Key Ideas
-
-* Role-based classes: `agent`, `worker`,`indef_obj`
-* Simpler interfaces
-* Works two ways:
-
-  * **Framework** (annotations for Java, C#, PHP 8+)
-  * **Language** (compiles into pure Java)
+With Clprolf, roles are explicit, responsibilities are clearer, and structural rules can be checked automatically.
 
 ---
 
-### 🎯 Perfect For
+## ✨ Key Ideas
+
+* Role-based classes: `agent`, `worker`, `indef_obj`
+* Structured interfaces: `family_interf`, `trait_interf`, `compat_interf`
+* Domain-preserving inheritance
+* Composition when inheritance would mix incompatible domains
+* Usable as:
+
+  * a **framework** with annotations for Java, C#, PHP 8+
+  * a **language-oriented model** close to Java
+
+---
+
+## 🎯 Perfect For
 
 * Teaching OOP and architectural thinking through structural guarantees
-* Large simulations & multi-agent systems
-* Scientific prototypes with interacting “actors”
+* Large simulations and multi-agent-like systems
+* Scientific prototypes with interacting actors
+* Codebases where long-term architectural coherence matters
 
 ---
 
-👉 With Clprolf, your code doesn’t just run — **it explains itself.**
+> With Clprolf, your code doesn’t just run — **it explains itself.**
 
 ---
 
@@ -84,7 +104,10 @@ These principles define how Clprolf structures components and relationships.
 
 ---
 
+## Class Domain
+
 The class domain is the central subject around which a class is organized.
+
 It defines what the class fundamentally represents and what it is responsible for.
 
 For example:
@@ -95,6 +118,5 @@ For example:
 * A `PdfGenerator` class has a class domain related to PDF generation.
 
 A technical class, by contrast, does not represent a conceptual domain.
-It provides technical support (e.g., logging, parsing, low-level utilities).
 
----
+It provides technical support, such as logging, parsing, low-level utilities, infrastructure access, or other support mechanisms.
