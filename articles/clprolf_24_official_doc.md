@@ -97,6 +97,8 @@ An `agent`:
 * makes decisions,
 * avoids heavy technical code.
 
+Note: entities and DTOs are typically classified as agents, since they represent domain data.
+
 Example:
 
 ```clprolf
@@ -321,6 +323,10 @@ Traits also use a target role:
 
 * `agent`
 * `worker`
+
+> **Note: a `@Trait_interf` may be annotated with both `@Agent` and `@Worker`.**
+>
+> **This exception is reserved for genuinely cross-cutting traits that can be used by both agents and workers.**
 
 ---
 
@@ -552,49 +558,79 @@ It aims to make certain important distinctions explicit:
 
 # IX) ArchUnit Checker for the Clprolf Framework
 
-An ArchUnit-based checker is available for the Clprolf Framework on GitHub. It is open-source and consists of two classes: `ClprolfArchTest` and `ClprolfStrictArchTest`.
+An ArchUnit-based checker is available for the Clprolf Framework on GitHub.
+It is open source and consists of two classes: ClprolfArchTest and ClprolfStrictArchTest.
 
-It detects nine types of violations.
+It validates the semantic rules of Clprolf.
 
-The rules contained in `ClprolfStrictArchTest` are optional. Likewise, the annotation names can easily be changed if a different vocabulary is preferred.
+The rules contained in ClprolfStrictArchTest are optional.
+Likewise, annotation names can easily be customized if another vocabulary is preferred.
 
 ### clprolf_classes_must_not_mix_agent_and_worker
 
-A class cannot be annotated with both `@Agent` and `@Worker`.
+A class cannot be annotated with both @Agent and @Worker.
 
 ### agent_worker_inheritance_must_not_mix
 
-A `@Worker` class cannot inherit from an `@Agent` class, and vice versa.
+A @Worker class cannot inherit from an @Agent class, and vice versa.
 
 ### family_interface_role_must_match_implementation
 
-The target role of a `@Family_interf` interface must match the role of its implementing class (`@Agent` or `@Worker`). This restriction can be overridden using `@Forc_inh`.
+The target role of a @Family_interf must match the role of its implementing class (@Agent or @Worker).
+
+Can be overridden using @Forc_inh.
+
+### (non-strict mode) trait_interface_role_must_match_direct_implementation
+
+A class that directly implements a trait must have a compatible role.
+
+Can be overridden using @Forc_inh.
+
+Direct trait implementation is forbidden in strict mode.
 
 ### trait_interfaces_must_extend_only_trait_interfaces
 
-A `@Trait_interf` interface may inherit only from other `@Trait_interf` interfaces. This restriction can be overridden using `@Forc_int_inh`.
+A @Trait_interf may only extend other @Trait_interf interfaces.
+
+Can be overridden using @Forc_int_inh.
 
 ### clprolf_interfaces_must_have_target_role
 
-Clprolf interfaces (`@Family_interf` and `@Trait_interf`) must define a target role (`@Agent` or `@Worker`).
+A @Family_interf must declare exactly one target role:
+@Agent or @Worker.
+
+A @Trait_interf must declare at least one target role:
+@Agent, @Worker, or exceptionally both.
+
+### trait_interface_target_role_must_match_inheriting_interface
+
+Any interface (family or trait) inheriting from a trait must have a role compatible with that trait.
+
+Can be overridden using @Forc_inh.
 
 ## Stricter Rules
 
 ### optional_all_classes_should_have_clprolf_role
 
-Every class should declare a Clprolf role (`@Agent`, `@Worker`, or `@Indef_obj`).
+Every class should declare a Clprolf role:
+@Agent, @Worker, or @Indef_obj.
 
 ### optional_all_interfaces_should_have_clprolf_role
 
-Every interface should declare a Clprolf role (`@Family_interf`, `@Trait_interf`, or `@Compat_interf`).
+Every interface should declare a Clprolf interface role:
+@Family_interf, @Trait_interf, or @Compat_interf.
 
 ### optional_class_should_not_implement_trait_directly
 
-A class should not directly implement a `@Trait_interf` interface (unless `@Forc_int_inh` is used).
+A class should not directly implement a @Trait_interf.
+
+Use @Forc_int_inh if this behavior is intentionally required.
 
 ### optional_class_must_implement_only_one_family_interface
 
-A Clprolf class should implement only one `@Family_interf` interface. This restriction can be overridden using `@Forc_int_inh`.
+A Clprolf class should implement at most one @Family_interf.
+
+Can be overridden using @Forc_int_inh.
 
 
 # X) Clprolf and Existing Architectures

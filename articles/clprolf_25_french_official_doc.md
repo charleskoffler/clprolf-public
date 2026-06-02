@@ -111,6 +111,8 @@ public agent OrderProcessor {
 }
 ```
 
+Remarque: les entity, ou DTOs, sont agent, car les données sont métiers.
+
 ---
 
 ## II.2) `worker`
@@ -314,6 +316,11 @@ Les traits utilisent un rôle cible, tout comme les family_interf :
 
 * agent
 * worker
+
+Remarque: une interface @Trait_interf peut être annotée à la fois @Agent et @Worker.
+Cette exception est réservée aux traits véritablement transversaux,
+utilisables aussi bien par des agents que par des workers.
+
 ---
 
 ## Exemple côté métier
@@ -535,7 +542,7 @@ Il cherche à rendre explicites certaines distinctions importantes :
 
 # IX) Checker ArchUnit pour le Framework Clprolf
 
-Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé de deux classes ClprolfArchTest, et ClprolfStrictArchTest. Il détecte neuf types d'erreur.
+Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé de deux classes ClprolfArchTest, et ClprolfStrictArchTest. Il valide les règles sémantiques.
 Les règles de ClprolfStrictArchTest sont optionnelles. De même, il est facile de changer le nom des annotations, si on préfère un autre vocabulaire.
 
 ### clprolf_classes_must_not_mix_agent_and_worker:
@@ -547,11 +554,19 @@ Une classe @Worker ne peut pas hériter d'une classe @Agent, et inversement.
 ### family_interface_role_must_match_implementation
 Le rôle cible d'une interface @Family_interf, doit être similaire au rôle de la classe d'implémentation(@Agent ou @Worker). Forçage possible avec @Forc_inh.
 
+### (mode non strict)trait_interface_role_must_match_direct_implementation
+Une classe qui implémente directement un trait doit avoir un rôle compatible (sauf si forçage avec @Forc_inh). Interdit en mode strict.
+
 ### trait_interfaces_must_extend_only_trait_interfaces
 Les interfaces @Trait_interf ne peuvent hériter que d'autres @Trait_interf. Forçage possible avec @Forc_int_inh.
 
 ### clprolf_interfaces_must_have_target_role
-Les interfaces Clprolf (@Family_interf ou @Trait_interf) doivent avoir un rôle cible (@Agent ou @Worker).
+Les interfaces @Family_interf doivent avoir un seul rôle cible : @Agent ou @Worker.
+Les interfaces @Trait_interf doivent avoir au moins un rôle cible : @Agent, @Worker,
+ou exceptionnellement les deux.
+
+### trait_interface_target_role_must_match_inheriting_interface
+Les interfaces (family ou trait) qui héritent d'un trait doivent avoir un rôle compatible avec le trait (sauf si forçage avec @Forc_inh).
 
 Règles plus stricts:
 

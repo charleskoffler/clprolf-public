@@ -26,11 +26,11 @@ public class ClprolfArchTest {
                     .should(new ArchCondition<JavaClass>("not mix @Agent and @Worker") {
                         @Override
                         public void check(JavaClass clazz, ConditionEvents events) {
-                            if (!clazz.isAnnotatedWith(Agent.class) // Java class
-                                    && !clazz.isAnnotatedWith(Worker.class)) {
+                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
                                 return;
                             }
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
+                            if (!clazz.isAnnotatedWith(Agent.class) // Java class
+                                    && !clazz.isAnnotatedWith(Worker.class)) {
                                 return;
                             }
 
@@ -56,11 +56,11 @@ public class ClprolfArchTest {
                     .should(new ArchCondition<JavaClass>("inherit only from same Clprolf role unless @Forc_inh") {
 
                         public void check(JavaClass clazz, ConditionEvents events) {
-                            if (!clazz.isAnnotatedWith(Agent.class) // Java class
-                                    && !clazz.isAnnotatedWith(Worker.class)) {
+                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
                                 return;
                             }
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
+                            if (!clazz.isAnnotatedWith(Agent.class) // Java class
+                                    && !clazz.isAnnotatedWith(Worker.class)) {
                                 return;
                             }
 
@@ -96,11 +96,12 @@ public class ClprolfArchTest {
                     .should(new ArchCondition<JavaClass>("implement only matching @Family_interf role") {
                         @Override
                         public void check(JavaClass clazz, ConditionEvents events) {
-                            if (!clazz.isAnnotatedWith(Agent.class) // Java class
-                                    && !clazz.isAnnotatedWith(Worker.class)) {
+                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
                                 return;
                             }
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
+
+                            if (!clazz.isAnnotatedWith(Agent.class) // Java class
+                                    && !clazz.isAnnotatedWith(Worker.class)) {
                                 return;
                             }
 
@@ -131,10 +132,6 @@ public class ClprolfArchTest {
 
                         @Override
                         public void check(JavaClass trait, ConditionEvents events) {
-                            if (!trait.isAnnotatedWith(Family_interf.class)
-                                    && !trait.isAnnotatedWith(Trait_interf.class)) {
-                                return;
-                            } // Java interface
                             if (trait.isAnnotatedWith(Compat_interf.class)) {
                                 return;
                             }
@@ -163,27 +160,121 @@ public class ClprolfArchTest {
                     .that().areInterfaces()
                     .and().areAnnotatedWith(Family_interf.class)
                     .or().areAnnotatedWith(Trait_interf.class)
-                    .should(new ArchCondition<JavaClass>("have a target role @Agent or @Worker") {
+                    .should(new ArchCondition<JavaClass>(
+                            "have a valid target role @Agent and/or @Worker"
+                    ) {
                         @Override
                         public void check(JavaClass interf, ConditionEvents events) {
-                            if (!interf.isAnnotatedWith(Family_interf.class)
-                                    && !interf.isAnnotatedWith(Trait_interf.class)) {
-                                return;
-                            } // Java interface
-                            if (interf.isAnnotatedWith(Indef_obj.class)) {
+
+                            boolean isFamily = interf.isAnnotatedWith(Family_interf.class);
+                            boolean isTrait = interf.isAnnotatedWith(Trait_interf.class);
+
+                            if (!isFamily && !isTrait) { //Java interface or Compat_interf
                                 return;
                             }
+
                             boolean hasAgent = interf.isAnnotatedWith(Agent.class);
                             boolean hasWorker = interf.isAnnotatedWith(Worker.class);
 
-                            boolean ok = hasAgent ^ hasWorker; // exactement un des deux
+                            boolean ok;
+
+                            if (isFamily) {
+                                ok = hasAgent ^ hasWorker;
+                            } else {
+                                ok = hasAgent || hasWorker;
+                            }
 
                             events.add(new SimpleConditionEvent(
                                     interf,
                                     ok,
                                     interf.getName()
-                                            + " must have exactly one target role: @Agent or @Worker"
+                                            + " must have a valid target role: "
+                                            + "@Family_interf requires exactly one of @Agent or @Worker; "
+                                            + "@Trait_interf requires at least one of @Agent or @Worker"
                             ));
+                        }
+                    });
+
+    @ArchTest
+    static final ArchRule trait_interface_target_role_must_match_inheriting_interface =
+            classes()
+                    .that().areInterfaces()
+                    .and().areAnnotatedWith(Family_interf.class)
+                    .or().areAnnotatedWith(Trait_interf.class)
+                    .should(new ArchCondition<JavaClass>(
+                            "inherit only trait interfaces with compatible target roles"
+                    ) {
+                        @Override
+                        public void check(JavaClass interf, ConditionEvents events) {
+
+                            boolean inheritorIsAgent = interf.isAnnotatedWith(Agent.class);
+                            boolean inheritorIsWorker = interf.isAnnotatedWith(Worker.class);
+
+                            for (JavaClass parent : interf.getRawInterfaces()) {
+
+                                if (!parent.isAnnotatedWith(Trait_interf.class)) {
+                                    continue;
+                                }
+
+                                boolean parentIsAgent = parent.isAnnotatedWith(Agent.class);
+                                boolean parentIsWorker = parent.isAnnotatedWith(Worker.class);
+
+                                boolean compatible =
+                                        interf.isAnnotatedWith(Forc_inh.class)
+                                                || (inheritorIsAgent && parentIsAgent)
+                                                || (inheritorIsWorker && parentIsWorker);
+
+                                events.add(new SimpleConditionEvent(
+                                        interf,
+                                        compatible,
+                                        interf.getName()
+                                                + " cannot inherit trait interface "
+                                                + parent.getName()
+                                                + " because their target roles are incompatible"
+                                ));
+                            }
+                        }
+                    });
+
+    /**
+     * Only for non-strict mode.
+     */
+    @ArchTest
+    static final ArchRule trait_interface_role_must_match_direct_implementation =
+            classes()
+                    .that().areNotInterfaces()
+                    .should(new ArchCondition<JavaClass>("implement only matching @Trait_interf role") {
+                        @Override
+                        public void check(JavaClass clazz, ConditionEvents events) {
+                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
+                                return;
+                            }
+                            if (!clazz.isAnnotatedWith(Agent.class) // Java class
+                                    && !clazz.isAnnotatedWith(Worker.class)) {
+                                return;
+                            }
+
+                            for (JavaClass interf : clazz.getRawInterfaces()) {
+                                if (!interf.isAnnotatedWith(Trait_interf.class)) {
+                                    continue;
+                                }
+
+                                boolean ok =
+                                        clazz.isAnnotatedWith(Forc_inh.class)
+                                                || (clazz.isAnnotatedWith(Agent.class)
+                                                && interf.isAnnotatedWith(Agent.class))
+                                                || (clazz.isAnnotatedWith(Worker.class)
+                                                && interf.isAnnotatedWith(Worker.class));
+
+                                events.add(new SimpleConditionEvent(
+                                        clazz,
+                                        ok,
+                                        clazz.getName()
+                                                + " implements "
+                                                + interf.getName()
+                                                + " but class role and @Trait_interf target role do not match"
+                                ));
+                            }
                         }
                     });
 }

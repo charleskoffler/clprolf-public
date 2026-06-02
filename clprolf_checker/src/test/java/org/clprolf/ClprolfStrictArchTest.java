@@ -69,13 +69,13 @@ public class ClprolfStrictArchTest {
                     .should(new ArchCondition<JavaClass>("avoid direct implementation of @Trait_interf") {
                         @Override
                         public void check(JavaClass clazz, ConditionEvents events) {
+                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
+                                return;
+                            }
                             if (!clazz.isAnnotatedWith(Agent.class)
                                     && !clazz.isAnnotatedWith(Worker.class)) {
                                 return;
                             } // Java class
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
-                                return;
-                            }
 
                             for (JavaClass interf : clazz.getRawInterfaces()) {
                                 boolean ok = !interf.isAnnotatedWith(Trait_interf.class)
@@ -99,13 +99,13 @@ public class ClprolfStrictArchTest {
                     .should(new ArchCondition<JavaClass>("implement at most one @Family_interf") {
                         @Override
                         public void check(JavaClass clazz, ConditionEvents events) {
+                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
+                                return;
+                            }
                             if (!clazz.isAnnotatedWith(Agent.class)
                                     && !clazz.isAnnotatedWith(Worker.class)) {
                                 return;
                             } // Java class
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
-                                return;
-                            }
 
                             long count = clazz.getRawInterfaces()
                                     .stream()
