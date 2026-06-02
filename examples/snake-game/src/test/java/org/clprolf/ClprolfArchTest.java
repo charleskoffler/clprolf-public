@@ -79,7 +79,7 @@ public class ClprolfArchTest {
                                         (childAgent && parentAgent) ||
                                                 (childWorker && parentWorker) ||
                                                 parent.isAnnotatedWith(Indef_obj.class) ||
-                                                // Java class
+                                // Java class
                                                 (!parentAgent && !parentWorker);
 
                                 events.add(new SimpleConditionEvent(
