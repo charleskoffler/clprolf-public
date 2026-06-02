@@ -86,6 +86,50 @@ This keeps interface inheritance structurally coherent.
 
 Every `@Family_interf` and `@Trait_interf` must explicitly declare whether it belongs to the Agent world or the Worker world.
 
+A @Family_interf must declare exactly one target role: @Agent or @Worker.
+A @Trait_interf must declare at least one target role: @Agent, @Worker, or exceptionally both.
+
+---
+
+### Trait interfaces must have compatible inheriting interfaces
+
+When an interface inherits from a `@Trait_interf`, its target role must be compatible with the role of that trait.
+For example, an `@Agent` family interface may inherit from an `@Agent` trait, but not from a `@Worker` trait.
+Traits annotated with both `@Agent` and `@Worker` are considered compatible with either role.
+The rule may be overridden using `@Forc_inh`.
+
+---
+
+### Direct trait implementation must respect trait roles
+
+Although direct implementation of a `@Trait_interf` by a concrete class is tolerated in non-strict mode, the class must still have a role compatible with the trait.
+
+For example:
+
+```java
+@Agent
+public class Order implements Payable {
+}
+```
+
+is valid if `Payable` is an `@Agent` trait.
+
+However:
+
+```java
+@Agent
+public class Order implements Persistable {
+}
+```
+
+is invalid if `Persistable` is a `@Worker` trait.
+
+Traits annotated with both `@Agent` and `@Worker` are compatible with either type of class.
+
+The rule may be overridden using `@Forc_inh`.
+
+---
+
 ## Optional Strict Validation
 
 A second checker, `ClprolfStrictArchTest`, provides stricter validation rules.
