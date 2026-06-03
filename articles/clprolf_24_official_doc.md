@@ -602,11 +602,16 @@ A @Family_interf must declare exactly one target role:
 A @Trait_interf must declare at least one target role:
 @Agent, @Worker, or exceptionally both.
 
-### trait_interface_target_role_must_match_inheriting_interface
+### inheriting_interface_role_must_match_trait_interface_target_role
 
 Any interface (family or trait) inheriting from a trait must have a role compatible with that trait.
 
 Can be overridden using @Forc_inh.
+
+### family_interface_target_role_must_match_inherited_family_interface
+
+Family interfaces inherited by another family interface must have a compatible target role, unless overridden with @Forc_inh.
+
 
 ## Stricter Rules
 

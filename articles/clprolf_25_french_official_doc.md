@@ -565,8 +565,11 @@ Les interfaces @Family_interf doivent avoir un seul rôle cible : @Agent ou @Wor
 Les interfaces @Trait_interf doivent avoir au moins un rôle cible : @Agent, @Worker,
 ou exceptionnellement les deux.
 
-### trait_interface_target_role_must_match_inheriting_interface
+### inheriting_interface_role_must_match_trait_interface_target_role
 Les interfaces (family ou trait) qui héritent d'un trait doivent avoir un rôle compatible avec le trait (sauf si forçage avec @Forc_inh).
+
+### family_interface_target_role_must_match_inherited_family_interface
+Les interfaces family dont hérite une interface family doivent avoir un rôle compatible, à moins d'utiliser @Forc_inh.
 
 Règles plus stricts:
 
