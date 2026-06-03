@@ -91,14 +91,19 @@ A @Trait_interf must declare at least one target role: @Agent, @Worker, or excep
 
 ---
 
-### Trait interfaces must have compatible inheriting interfaces
+### Inheriting interfaces must have a role compatible with inherited traits
 
-When an interface inherits from a `@Trait_interf`, its target role must be compatible with the role of that trait.
+When a `@Family_interf` or `@Trait_interf` inherits from a `@Trait_interf`, its target role must be compatible with the role of the inherited trait.
 For example, an `@Agent` family interface may inherit from an `@Agent` trait, but not from a `@Worker` trait.
 Traits annotated with both `@Agent` and `@Worker` are considered compatible with either role.
 The rule may be overridden using `@Forc_inh`.
 
----
+### Family interfaces must have compatible inherited family interfaces
+
+When a `@Family_interf` inherits from another `@Family_interf`, both interfaces must have compatible target roles.
+For example, an `@Agent` family interface may inherit from another `@Agent` family interface, but not from a `@Worker` family interface.
+This rule preserves the conceptual domain across family interface hierarchies.
+The rule may be overridden using `@Forc_inh`.
 
 ### Direct trait implementation must respect trait roles
 
