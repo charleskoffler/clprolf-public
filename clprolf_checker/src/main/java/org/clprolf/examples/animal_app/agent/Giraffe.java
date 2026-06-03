@@ -5,5 +5,5 @@ import org.clprolf.framework.Worker;
 
 @Agent
 @Worker
-public class Giraffe {
+public interface Giraffe extends Animal {
 }

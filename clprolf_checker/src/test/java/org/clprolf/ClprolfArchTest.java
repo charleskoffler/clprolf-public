@@ -15,7 +15,7 @@ import org.clprolf.framework.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @AnalyzeClasses(
-        packages = "org.clprolf.examples.snake_game",
+        packages = "org.clprolf.examples.animal_app",
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 public class ClprolfArchTest {
@@ -197,7 +197,7 @@ public class ClprolfArchTest {
                     });
 
     @ArchTest
-    static final ArchRule trait_interface_target_role_must_match_inheriting_interface =
+    static final ArchRule inheriting_interface_role_must_match_trait_interface_target_role =
             classes()
                     .that().areInterfaces()
                     .and().areAnnotatedWith(Family_interf.class)
@@ -230,6 +230,46 @@ public class ClprolfArchTest {
                                         compatible,
                                         interf.getName()
                                                 + " cannot inherit trait interface "
+                                                + parent.getName()
+                                                + " because their target roles are incompatible"
+                                ));
+                            }
+                        }
+                    });
+
+    @ArchTest
+    static final ArchRule family_interface_target_role_must_match_inherited_family_interface =
+            classes()
+                    .that().areInterfaces()
+                    .and().areAnnotatedWith(Family_interf.class)
+                    .should(new ArchCondition<JavaClass>(
+                            "inherit only family interfaces with compatible target roles"
+                    ) {
+                        @Override
+                        public void check(JavaClass interf, ConditionEvents events) {
+
+                            boolean childIsAgent = interf.isAnnotatedWith(Agent.class);
+                            boolean childIsWorker = interf.isAnnotatedWith(Worker.class);
+
+                            for (JavaClass parent : interf.getRawInterfaces()) {
+
+                                if (!parent.isAnnotatedWith(Family_interf.class)) {
+                                    continue;
+                                }
+
+                                boolean parentIsAgent = parent.isAnnotatedWith(Agent.class);
+                                boolean parentIsWorker = parent.isAnnotatedWith(Worker.class);
+
+                                boolean compatible =
+                                        interf.isAnnotatedWith(Forc_inh.class)
+                                                || (childIsAgent && parentIsAgent)
+                                                || (childIsWorker && parentIsWorker);
+
+                                events.add(new SimpleConditionEvent(
+                                        interf,
+                                        compatible,
+                                        interf.getName()
+                                                + " cannot inherit family interface "
                                                 + parent.getName()
                                                 + " because their target roles are incompatible"
                                 ));
