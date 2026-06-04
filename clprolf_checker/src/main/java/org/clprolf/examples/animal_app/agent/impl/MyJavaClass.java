@@ -1,7 +1,7 @@
 package org.clprolf.examples.animal_app.agent.impl;
 
-import org.clprolf.framework.Indef_obj;
+import org.clprolf.framework.ClDraft;
 
-@Indef_obj
+@ClDraft
 public class MyJavaClass {
 }

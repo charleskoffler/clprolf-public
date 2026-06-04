@@ -1,11 +1,10 @@
 package org.clprolf.examples.animal_app.agent;
 
-import org.clprolf.framework.Agent;
-import org.clprolf.framework.Family_interf;
-import org.clprolf.framework.Worker;
+import org.clprolf.framework.ClAgent;
+import org.clprolf.framework.ClFamily;
 
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface Animal {
     public void eat(int quantity);
 }

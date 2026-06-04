@@ -1,9 +1,9 @@
 package org.clprolf.examples.animal_app.agent;
 
-import org.clprolf.framework.Agent;
-import org.clprolf.framework.Worker;
+import org.clprolf.framework.ClAgent;
+import org.clprolf.framework.ClWorker;
 
-@Agent
-@Worker
+@ClAgent
+@ClWorker
 public interface Giraffe extends Animal {
 }

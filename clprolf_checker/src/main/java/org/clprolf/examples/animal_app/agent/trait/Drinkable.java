@@ -1,11 +1,10 @@
 package org.clprolf.examples.animal_app.agent.trait;
 
-import org.clprolf.framework.Agent;
-import org.clprolf.framework.Trait_interf;
-import org.clprolf.framework.Worker;
+import org.clprolf.framework.ClTrait;
+import org.clprolf.framework.ClWorker;
 
-@Worker //Bad role
-@Trait_interf
+@ClWorker //Bad role
+@ClTrait
 public interface Drinkable
 {
 }

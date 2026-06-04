@@ -1,9 +1,9 @@
 package org.clprolf.examples.animal_app.agent.impl;
 
-import org.clprolf.framework.Agent;
-import org.clprolf.framework.Worker;
+import org.clprolf.framework.ClAgent;
+import org.clprolf.framework.ClWorker;
 
-@Worker
-@Agent // Impossible to have Agent and Worker for a class
+@ClWorker
+@ClAgent // Impossible to have ClAgent and ClWorker for a class
 public class CarImpl {
 }

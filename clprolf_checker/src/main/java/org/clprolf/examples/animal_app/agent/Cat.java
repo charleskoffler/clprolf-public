@@ -1,8 +1,8 @@
 package org.clprolf.examples.animal_app.agent;
 
-import org.clprolf.framework.Family_interf;
+import org.clprolf.framework.ClFamily;
 
 // Missing a role
-@Family_interf
+@ClFamily
 public interface Cat {
 }

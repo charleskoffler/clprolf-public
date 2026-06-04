@@ -1,10 +1,9 @@
 package org.clprolf.examples.animal_app.agent;
 
-import org.clprolf.framework.Agent;
-import org.clprolf.framework.Family_interf;
-import org.clprolf.framework.Worker;
+import org.clprolf.framework.ClFamily;
+import org.clprolf.framework.ClWorker;
 
-@Worker // Bad role
-@Family_interf
+@ClWorker // Bad role
+@ClFamily
 public interface Dog extends Animal /* Not same role in inheritance */{
 }

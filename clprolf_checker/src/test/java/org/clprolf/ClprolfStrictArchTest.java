@@ -34,15 +34,15 @@ public class ClprolfStrictArchTest {
                                 return;
                             }
                             boolean hasRole =
-                                    clazz.isAnnotatedWith(Agent.class)
-                                            || clazz.isAnnotatedWith(Worker.class)
-                                            || clazz.isAnnotatedWith(Indef_obj.class);
+                                    clazz.isAnnotatedWith(ClAgent.class)
+                                            || clazz.isAnnotatedWith(ClWorker.class)
+                                            || clazz.isAnnotatedWith(ClDraft.class);
 
                             events.add(new SimpleConditionEvent(
                                     clazz,
                                     hasRole,
                                     clazz.getName()
-                                            + " should declare a Clprolf role: @Agent, @Worker, or @Indef_obj"
+                                            + " should declare a Clprolf role: @ClAgent, @ClWorker, or @ClDraft"
                             ));
                         }
                     });
@@ -56,15 +56,15 @@ public class ClprolfStrictArchTest {
                         public void check(JavaClass interf, ConditionEvents events) {
 
                             boolean hasRole =
-                                    interf.isAnnotatedWith(Family_interf.class)
-                                            || interf.isAnnotatedWith(Trait_interf.class)
-                                            || interf.isAnnotatedWith(Compat_interf.class);
+                                    interf.isAnnotatedWith(ClFamily.class)
+                                            || interf.isAnnotatedWith(ClTrait.class)
+                                            || interf.isAnnotatedWith(ClFree.class);
 
                             events.add(new SimpleConditionEvent(
                                     interf,
                                     hasRole,
                                     interf.getName()
-                                            + " should declare a Clprolf interface role: @Family_interf, @Trait_interf, or @Compat_interf"
+                                            + " should declare a Clprolf interface role: @ClFamily, @ClTrait, or @ClFree"
                             ));
                         }
                     });
@@ -73,20 +73,20 @@ public class ClprolfStrictArchTest {
     static final ArchRule optional_class_should_not_implement_trait_directly =
             classes()
                     .that().areNotInterfaces()
-                    .should(new ArchCondition<JavaClass>("avoid direct implementation of @Trait_interf") {
+                    .should(new ArchCondition<JavaClass>("avoid direct implementation of @ClTrait") {
                         @Override
                         public void check(JavaClass clazz, ConditionEvents events) {
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
+                            if (clazz.isAnnotatedWith(ClDraft.class)) {
                                 return;
                             }
-                            if (!clazz.isAnnotatedWith(Agent.class)
-                                    && !clazz.isAnnotatedWith(Worker.class)) {
+                            if (!clazz.isAnnotatedWith(ClAgent.class)
+                                    && !clazz.isAnnotatedWith(ClWorker.class)) {
                                 return;
                             } // Java class
 
                             for (JavaClass interf : clazz.getRawInterfaces()) {
-                                boolean ok = !interf.isAnnotatedWith(Trait_interf.class)
-                                        || clazz.isAnnotatedWith(Forc_int_inh.class);
+                                boolean ok = !interf.isAnnotatedWith(ClTrait.class)
+                                        || clazz.isAnnotatedWith(ClInterfaceBypass.class);
 
                                 events.add(new SimpleConditionEvent(
                                         clazz,
@@ -103,23 +103,23 @@ public class ClprolfStrictArchTest {
     static final ArchRule optional_class_must_implement_only_one_family_interface =
             classes()
                     .that().areNotInterfaces()
-                    .should(new ArchCondition<JavaClass>("implement at most one @Family_interf") {
+                    .should(new ArchCondition<JavaClass>("implement at most one @ClFamily") {
                         @Override
                         public void check(JavaClass clazz, ConditionEvents events) {
-                            if (clazz.isAnnotatedWith(Indef_obj.class)) {
+                            if (clazz.isAnnotatedWith(ClDraft.class)) {
                                 return;
                             }
-                            if (!clazz.isAnnotatedWith(Agent.class)
-                                    && !clazz.isAnnotatedWith(Worker.class)) {
+                            if (!clazz.isAnnotatedWith(ClAgent.class)
+                                    && !clazz.isAnnotatedWith(ClWorker.class)) {
                                 return;
                             } // Java class
 
                             long count = clazz.getRawInterfaces()
                                     .stream()
-                                    .filter(i -> i.isAnnotatedWith(Family_interf.class))
+                                    .filter(i -> i.isAnnotatedWith(ClFamily.class))
                                     .count();
 
-                            boolean ok = count <= 1 || clazz.isAnnotatedWith(Forc_int_inh.class);
+                            boolean ok = count <= 1 || clazz.isAnnotatedWith(ClInterfaceBypass.class);
 
                             events.add(new SimpleConditionEvent(
                                     clazz,
@@ -127,7 +127,7 @@ public class ClprolfStrictArchTest {
                                     clazz.getName()
                                             + " implements "
                                             + count
-                                            + " @Family_interf interfaces, maximum is 1"
+                                            + " @ClFamily interfaces, maximum is 1"
                             ));
                         }
                     });
