@@ -472,6 +472,7 @@ public class OldPrinterImpl implements OldPrinter {
 public class ModernPrinterImpl implements ModernPrinter {
     // (...)
 }
+```
 
 # VI) General Architecture
 
