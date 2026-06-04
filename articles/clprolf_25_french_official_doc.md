@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**Clprolf** est un framework pour Java (et C#).
+**Clprolf**("Clear PROgramming Language and Framework") est un framework pour Java (et C#).
 
 Son objectif est de rendre explicites certaines bonnes pratiques de la programmation orientée objet, sans introduire une architecture lourde ni une courbe d’apprentissage importante.
 
