@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**Clprolf** is both a language and an equivalent framework.
+**Clprolf** is Java (or C#) framework.
 
 Its goal is to make certain object-oriented programming best practices explicit, without introducing heavy architecture or a steep learning curve.
 
@@ -10,14 +10,12 @@ Clprolf is based on a simple idea:
 
 > A class should clearly express its primary role.
 
-The language helps to:
+The framework helps to:
 
 * separate business logic from technical code,
 * limit architectural drift,
 * make inheritance more coherent,
 * improve system readability.
-
-Clprolf remains fully object-oriented and close to Java.
 
 ---
 
@@ -44,7 +42,7 @@ Examples:
 
 These classes are declared using:
 
-```clprolf
+```java
 agent
 ```
 
@@ -62,7 +60,7 @@ The class performs a technical task:
 
 These classes are declared using:
 
-```clprolf
+```java
 worker
 ```
 
@@ -101,8 +99,9 @@ Note: entities and DTOs are typically classified as agents, since they represent
 
 Example:
 
-```clprolf
-public agent OrderProcessor {
+```java
+@Agent
+public class OrderProcessor {
 
     private OrderRepository repository;
 
@@ -129,8 +128,9 @@ A `worker`:
 
 Example:
 
-```clprolf
-public worker OrderRepository {
+```java
+@Worker
+public class OrderRepository {
 
     public void save(Order order) {
 
@@ -154,8 +154,9 @@ Used:
 
 Example:
 
-```clprolf
-public indef_obj TemporaryManager {
+```java
+@Indef_obj
+public class TemporaryManager {
 }
 ```
 
@@ -175,7 +176,7 @@ Secondary responsibilities may exist as long as they remain consistent with that
 
 ---
 
-## II.5) Freedom of Interpretation and Language Recommendations
+## II.5) Freedom of Interpretation and framework Recommendations
 
 The choice between `agent` and `worker` is left to the developer.
 
@@ -201,11 +202,13 @@ However, in these cases, Clprolf recommends using an agent. For example, for a `
 
 ## Valid Example
 
-```clprolf
-public agent Animal {
+```java
+@Agent
+public class Animal {
 }
 
-public agent Dog extends Animal {
+@Agent
+public class Dog extends Animal {
 }
 ```
 
@@ -213,11 +216,13 @@ public agent Dog extends Animal {
 
 ## Discouraged Example
 
-```clprolf
-public worker ClientRepository {
+```java
+@Worker
+public class ClientRepository {
 }
 
-public agent Dog extends ClientRepository {
+@Agent
+public class Dog extends ClientRepository {
 }
 ```
 
@@ -240,7 +245,7 @@ The developer therefore keeps their freedom:
 * compatibility with existing code,
 * while always maintaining a primary domain.
 
-The language mainly acts as:
+The framework mainly acts as:
 
 > a structural guide.
 
@@ -285,8 +290,10 @@ Family interfaces also have a target role:
 
 ## Example
 
-```clprolf
-public family_interf agent Animal {
+```java
+@Agent
+@Family_interf
+public interface Animal {
 
     void eat(int quantity);
 
@@ -295,8 +302,10 @@ public family_interf agent Animal {
 
 The hierarchy of `family_interf` interfaces naturally reflects the hierarchy of concrete classes.
 
-```clprolf
-public family_interf agent Horse extends Animal {
+```java
+@Agent
+@Family_interf
+public interface Horse extends Animal {
 
     void jump(int height);
 
@@ -305,12 +314,14 @@ public family_interf agent Horse extends Animal {
 
 Which may lead to:
 
-```clprolf
-public agent AnimalImpl implements Animal { (...) }
+```java
+@Agent
+public class AnimalImpl implements Animal { (...) }
 ```
 
-```clprolf
-public agent HorseImpl extends AnimalImpl implements Horse { (...) }
+```java
+@Agent
+public class HorseImpl extends AnimalImpl implements Horse { (...) }
 ```
 
 ---
@@ -332,8 +343,10 @@ Traits also use a target role:
 
 ### Business Example
 
-```clprolf
-public trait_interf agent Payable {
+```java
+@Agent
+@Trait_interf
+public interface agent Payable {
     void pay();
 }
 ```
@@ -342,8 +355,10 @@ public trait_interf agent Payable {
 
 ### Technical Example
 
-```clprolf
-public trait_interf worker Persistable {
+```java
+@Worker
+@Trait_interf
+public interface worker Persistable {
     void save();
 }
 ```
@@ -360,14 +375,15 @@ Allows flexibility.
 
 ### Example
 
-```clprolf
-public compat_interf ExternalApi {
+```java
+@Compat_interf
+public interface ExternalApi {
 }
 ```
 
 ---
 
-# V.4) Interface Usage
+## V.4) Interface Usage
 
 In Clprolf, `family_interf` interfaces are the equivalent of pure abstract classes.
 
@@ -413,6 +429,50 @@ Interface inheritance may still be forced using `@Forc_int_inh` (or `@Forc_inh` 
 
 ---
 
+## V.5) Note on Clprolf and the Interface Segregation Principle (ISP)
+
+Clprolf inherently respects the ISP; it is simply a matter of adapting the design of your classes and interfaces using the appropriate families and traits:
+
+```java
+@Agent
+@Trait_interf
+public interface Scanner {
+    void scan(Document doc);
+}
+
+@Agent
+@Trait_interf
+public interface Fax {
+    void fax(Document doc);
+}
+
+@Agent
+@Trait_interf
+public interface Printer {
+    void print(Document doc);
+}
+
+@Agent
+@Family_interf
+public interface OldPrinter extends Printer {
+    
+}
+
+@Agent
+@Family_interf
+public interface ModernPrinter extends OldPrinter, Scanner, Fax {
+}
+
+@Agent
+public class OldPrinterImpl implements OldPrinter {
+    // (...)
+}
+
+@Agent
+public class ModernPrinterImpl implements ModernPrinter {
+    // (...)
+}
+
 # VI) General Architecture
 
 Clprolf naturally encourages a simple architecture.
@@ -441,110 +501,7 @@ A worker serves the agent.
 
 ---
 
-# VII) Clprolf Framework
-
-Clprolf can also be used as a framework within an existing language such as Java.
-
-In that case, keywords are replaced with annotations.
-
----
-
-## VII.1) Classes
-
-### Agent
-
-```java
-@Agent
-public class OrderProcessor {
-}
-```
-
-### Worker
-
-```java
-@Worker
-public class OrderRepository {
-}
-```
-
-### Indefinite Object
-
-```java
-@Indef_obj
-public class TemporaryManager {
-}
-```
-
----
-
-## VII.2) Family Interfaces
-
-Family interfaces use two annotations:
-
-* a role annotation,
-* plus `@Family_interf`.
-
-### Business Example
-
-```java
-@Agent
-@Family_interf
-public interface PaymentService {
-}
-```
-
-### Technical Example
-
-```java
-@Worker
-@Family_interf
-public interface DatabaseStorage {
-}
-```
-
----
-
-## VII.3) Trait Interfaces
-
-Trait interfaces use:
-
-```java
-@Trait_interf
-```
-
-along with a target role.
-
-### Business Example
-
-```java
-@Agent
-@Trait_interf
-public interface Payable {
-}
-```
-
-### Technical Example
-
-```java
-@Worker
-@Trait_interf
-public interface Persistable {
-}
-```
-
----
-
-## VII.4) Free Compatibility
-
-```java
-@Compat_interf
-public interface ExternalApi {
-}
-```
-
----
-
-# VIII) Purpose of the Language
+# VIII) Purpose of the framework
 
 Clprolf does not aim to replace classical OOP.
 
@@ -640,7 +597,7 @@ Can be overridden using @Forc_int_inh.
 
 # X) Clprolf and Existing Architectures
 
-Clprolf, both as a language and as a framework, is compatible with existing architectural approaches such as Domain-Driven Design (DDD), Model-View-Controller (MVC), Clean Architecture, Hexagonal Architecture, and others.
+Clprolf is compatible with existing architectural approaches such as Domain-Driven Design (DDD), Model-View-Controller (MVC), Clean Architecture, Hexagonal Architecture, and others.
 
 Rather than replacing these architectures, Clprolf acts as an additional layer between Object-Oriented Programming (OOP) and software architecture. Its purpose is to complement, clarify, and reinforce existing architectural principles by making class roles and inheritance relationships more explicit.
 
