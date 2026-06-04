@@ -43,7 +43,7 @@ Exemples :
 Ces classes sont déclarées avec :
 
 ```java
-@Agent
+@ClAgent
 ```
 ---
 
@@ -60,7 +60,7 @@ La classe effectue un travail technique :
 Ces classes sont déclarées avec :
 
 ```java
-@Worker
+@ClWorker
 ```
 ---
 
@@ -82,7 +82,7 @@ Clprolf possède seulement trois types de classes.
 
 ---
 
-## II.1) `agent`
+## II.1) `ClAgent`
 
 Représente une classe métier ou conceptuelle.
 
@@ -96,7 +96,7 @@ Un `agent` :
 Exemple :
 
 ```java
-@Agent
+@ClAgent
 public class OrderProcessor {
 
     private OrderRepository repository;
@@ -114,7 +114,7 @@ Remarque: les entity, ou DTOs, sont agent, car les données sont métiers.
 
 ---
 
-## II.2) `worker`
+## II.2) `ClWorker`
 
 Représente une classe technique.
 
@@ -127,7 +127,7 @@ Un `worker` :
 Exemple :
 
 ```java
-@Worker
+@ClWorker
 public class OrderRepository {
 
     public void save(Order order) {
@@ -140,7 +140,7 @@ public class OrderRepository {
 
 ---
 
-## II.3) `indef_obj`
+## II.3) `ClDraft`
 
 Objet sans rôle défini.
 
@@ -153,12 +153,12 @@ Utilisé :
 Exemple :
 
 ```java
-@Indef_obj
+@ClDraft
 public class TemporaryManager {
 }
 ```
 
-`@Indef_obj` permet une approche flexible proche de l’OOP classique.
+`@ClDraft` permet une approche flexible proche de l’OOP classique.
 
 ---
 
@@ -198,11 +198,11 @@ Cependant, dans ces cas, Clprolf recommande d'utiliser un agent. Par exemple, po
 ## Exemple valide
 
 ```java
-@Agent
+@ClAgent
 public class Animal {
 }
 
-@Agent
+@ClAgent
 public class Dog extends Animal {
 }
 ```
@@ -211,11 +211,11 @@ public class Dog extends Animal {
 ## Exemple déconseillé
 
 ```java
-@Worker
+@ClWorker
 public class ClientRepository {
 }
 
-@Agent
+@ClAgent
 public class Dog extends ClientRepository {
 }
 ```
@@ -223,7 +223,7 @@ public class Dog extends ClientRepository {
 Ici, les domaines sont incompatibles.
 Il faut utiliser la composition.
 
-Un forçage de l'héritage de classe est possible avec @Forc_inh, au-dessus de la classe.
+Un forçage de l'héritage de classe est possible avec @ClBypass, au-dessus de la classe.
 ---
 
 # IV) Flexibilité
@@ -250,9 +250,9 @@ Dans Clprolf, les interfaces sont vues comme :
 
 Elles participent donc à la continuité structurelle du système.
 
-family_interf  = interface principale d’une famille
-trait_interf = trait, capacité commune entre familles
-compat_interf = interface libre
+ClFamily  = interface principale d’une famille
+ClTrait = trait, capacité commune entre familles
+ClFree = interface libre
 
 Dans Clprolf, les interfaces ne sont pas vues comme de simples
 contrats techniques.
@@ -262,7 +262,7 @@ de véritables relations d’héritage conceptuel, d'où "family".
 
 ---
 
-## V.1) `family_interf`
+## V.1) `ClFamily`
 
 Interface représentant une famille abstraite.
 
@@ -274,15 +274,15 @@ Utilisée pour :
 
 Les interfaces de famille possèdent également un rôle cible :
 
-* `@Agent`
-* ou `@Worker`
+* `@ClAgent`
+* ou `@ClWorker`
 ---
 
 ## Exemple
 
 ```java
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface agent Animal {
 
     void manger(int quantite);
@@ -290,11 +290,11 @@ public interface agent Animal {
 }
 ```
 
-La hiérarchie des interfaces family_interf reflète naturellement la hiérarchie des classes concrètes.
+La hiérarchie des interfaces ClFamily reflète naturellement la hiérarchie des classes concrètes.
 
 ```java
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public class agent Horse extends Animal {
 
     void sauter(int hauteur);
@@ -306,36 +306,36 @@ Et aura
 
 ```java
 
-@Agent
+@ClAgent
 public class AnimalImpl implements Animal { (...) }
 
 ```
 
 ```java
 
-@Agent
+@ClAgent
 public class HorseImpl extends AnimalImpl implements Horse { (...) }
 
 ```
 
 ---
 
-## V.2) `trait_interf`
+## V.2) `ClTrait`
 
-Interface représentant une fonctionnalité commune entre plusieurs family_interf.
-Les traits utilisent un rôle cible, tout comme les family_interf :
+Interface représentant une fonctionnalité commune entre plusieurs ClFamily.
+Les traits utilisent un rôle cible, tout comme les ClFamily :
 
-* @Agent
-* @Worker
+* @ClAgent
+* @ClWorker
 
-Remarque: une interface @Trait_interf peut être annotée à la fois @Agent et @Worker.
+Remarque: une interface @ClTrait peut être annotée à la fois @ClAgent et @ClWorker.
 Cette exception est réservée aux traits véritablement transversaux,
 utilisables aussi bien par des agents que par des workers.
 
 ```java
-@Agent
-@Worker
-@Trait_interf
+@ClAgent
+@ClWorker
+@ClTrait
 public interface Runnable {
     public void run();
 }
@@ -346,8 +346,8 @@ public interface Runnable {
 
 ```java
 
-@Agent
-@Trait_interf
+@ClAgent
+@ClTrait
 public interface Payable {
     void pay();
 }
@@ -358,15 +358,15 @@ public interface Payable {
 
 ```java
 
-@Worker
-@Trait_interf
+@ClWorker
+@ClTrait
 public interface Launcher {
     void start();
 }
 ```
 ---
 
-## V.3) `@Compat_interf`
+## V.3) `@ClFree`
 
 Interface générique sans rôle particulier.
 Permet de rester flexible.
@@ -376,7 +376,7 @@ Permet de rester flexible.
 ## Exemple
 
 ```java
-@Compat_interf
+@ClFree
 public interface ExternalApi {
 }
 ```
@@ -384,41 +384,41 @@ public interface ExternalApi {
 
 ## V.4) Utilisation des interfaces
 
-En Clprolf, les interfaces `family_interf` sont l’équivalent de classes abstraites pures.
+En Clprolf, les interfaces `Family` sont l’équivalent de classes abstraites pures.
 
 Elles sont destinées à être implémentées par une ou plusieurs futures classes Clprolf.
 Elles possèdent donc un rôle cible (`agent` ou `worker`).
 
-Une classe ne peut implémenter qu’une seule `family_interf` principale à la fois, et le rôle de la classe doit correspondre au rôle cible de l’interface.
-Clprolf utilise ainsi une implémentation simple des interfaces, de la même manière que Java utilise un héritage simple des classes. En effet, une `family_interf` est toujours le reflet structurel de son implémentation.Cela permet notamment d’obtenir un loose coupling systématique.
-Toutefois, l’implémentation multiple n’est pas supprimée, mais déplacée vers la `family_interf` implémentée par la classe.
-Cette interface de famille peut elle-même hériter de plusieurs interfaces `family_interf` ou `trait_interf`.
-Ainsi, les interfaces qui auraient été implémentées directement par la classe sont regroupées au niveau de sa `family_interf` principale.
+Une classe ne peut implémenter qu’une seule `Family` principale à la fois, et le rôle de la classe doit correspondre au rôle cible de l’interface.
+Clprolf utilise ainsi une implémentation simple des interfaces, de la même manière que Java utilise un héritage simple des classes. En effet, une `Family` est toujours le reflet structurel de son implémentation.Cela permet notamment d’obtenir un loose coupling systématique.
+Toutefois, l’implémentation multiple n’est pas supprimée, mais déplacée vers la `Family` implémentée par la classe.
+Cette interface de famille peut elle-même hériter de plusieurs interfaces `Family` ou `Trait`.
+Ainsi, les interfaces qui auraient été implémentées directement par la classe sont regroupées au niveau de sa `Family` principale.
 Clprolf conserve donc la richesse de l’héritage multiple des interfaces, tout en maintenant une structure simple et cohérente pour les classes concrètes.
 
 ---
 
-Les interfaces `trait_interf` expriment une fonctionnalité commune entre plusieurs interfaces `family_interf`.
+Les interfaces `Trait` expriment une fonctionnalité commune entre plusieurs interfaces `Family`.
 
-Un `trait_interf` représente donc un trait transversal partagé entre plusieurs familles.
+Un `Trait` représente donc un trait transversal partagé entre plusieurs familles.
 
-Normalement, un `trait_interf` ne peut être hérité que par une interface `family_interf`, et non directement par une classe.
+Normalement, un `Trait` ne peut être hérité que par une interface `Family`, et non directement par une classe.
 
-Cependant, en Clprolf, l’implémentation directe d’un `trait_interf` par une classe reste tolérée, bien que déconseillée.
+Cependant, en Clprolf, l’implémentation directe d’un `Trait` par une classe reste tolérée, bien que déconseillée.
 
 ```text
 Classe concrète
     ↓ implémente
-family_interf
+ClFamily
     ↓ hérite de
-trait_interf
+ClTrait
 ```
 
-Note : une interface `family_interf` peut hériter de plusieurs interfaces `family_interf` ou `trait_interf`.
+Note : une interface `Family` peut hériter de plusieurs interfaces `Family` ou `Trait`.
 
-Une interface `trait_interf` ne peut hériter que d’autres `trait_interf`, car un trait reste un trait.
+Une interface `Trait` ne peut hériter que d’autres `Trait`, car un trait reste un trait.
 
-Un forçage de l’héritage d’interfaces reste possible avec `@Forc_int_inh` au-dessus de l’interface (ou `@Forc_inh` pour forcer l’héritage entre rôles cibles différents).
+Un forçage de l’héritage d’interfaces reste possible avec `@ClInterfaceBypass` au-dessus de l’interface (ou `@ClBypass` pour forcer l’héritage entre rôles cibles différents).
 
 ---
 
@@ -427,41 +427,41 @@ Un forçage de l’héritage d’interfaces reste possible avec `@Forc_int_inh` 
 Clprolf respecte l'ISP, il suffit d'adapter le design des classes et interfaces avec les bonnes familles et traits:
 
 ```java
-@Agent
-@Trait_interf
+@ClAgent
+@ClTrait
 public interface Scanner {
 	void scan(Document doc);
 }
 
-@Agent
-@Trait_interf
+@ClAgent
+@ClTrait
 public interface Fax {
 	void fax(Document doc);
 }
 
-@Agent
-@Trait_interf
+@ClAgent
+@ClTrait
 public interface Printer {
 	void print(Document doc);
 }
 
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface OldPrinter extends Printer  {
 	
 }
 
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface ModernPrinter extends OldPrinter, Scanner, Fax {
 }
 
-@Agent
+@ClAgent
 public class OldPrinterImpl implements OldPrinter {
 //(…)
 }
 
-@Agent
+@ClAgent
 public class ModernPrinterImpl implements ModernPrinter {
 //(…)
 }
@@ -511,44 +511,44 @@ Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Gith
 Les règles de ClprolfStrictArchTest sont optionnelles. De même, il est facile de changer le nom des annotations, si on préfère un autre vocabulaire.
 
 ### clprolf_classes_must_not_mix_agent_and_worker:
-Une classe ne peut pas être annotée à la fois @Agent et @Worker
+Une classe ne peut pas être annotée à la fois @ClAgent et @ClWorker
 
 ### agent_worker_inheritance_must_not_mix
-Une classe @Worker ne peut pas hériter d'une classe @Agent, et inversement.
+Une classe @ClWorker ne peut pas hériter d'une classe @ClAgent, et inversement.
 
-### family_interface_role_must_match_implementation
-Le rôle cible d'une interface @Family_interf, doit être similaire au rôle de la classe d'implémentation(@Agent ou @Worker). Forçage possible avec @Forc_inh.
+### family_role_must_match_implementation
+Le rôle cible d'une interface @ClFamily, doit être similaire au rôle de la classe d'implémentation(@ClAgent ou @ClWorker). Forçage possible avec @ClBypass.
 
 ### (mode non strict)trait_interface_role_must_match_direct_implementation
-Une classe qui implémente directement un trait doit avoir un rôle compatible (sauf si forçage avec @Forc_inh). Interdit en mode strict.
+Une classe qui implémente directement un trait doit avoir un rôle compatible (sauf si forçage avec @ClBypass). Interdit en mode strict.
 
 ### trait_interfaces_must_extend_only_trait_interfaces
-Les interfaces @Trait_interf ne peuvent hériter que d'autres @Trait_interf. Forçage possible avec @Forc_int_inh.
+Les interfaces @ClTrait ne peuvent hériter que d'autres @ClTrait. Forçage possible avec @ClInterfaceBypass.
 
 ### clprolf_interfaces_must_have_target_role
-Les interfaces @Family_interf doivent avoir un seul rôle cible : @Agent ou @Worker.
-Les interfaces @Trait_interf doivent avoir au moins un rôle cible : @Agent, @Worker,
+Les interfaces @ClFamily doivent avoir un seul rôle cible : @ClAgent ou @ClWorker.
+Les interfaces @ClTrait doivent avoir au moins un rôle cible : @ClAgent, @ClWorker,
 ou exceptionnellement les deux.
 
 ### inheriting_interface_role_must_match_trait_interface_target_role
-Les interfaces (family ou trait) qui héritent d'un trait doivent avoir un rôle compatible avec le trait (sauf si forçage avec @Forc_inh).
+Les interfaces (family ou trait) qui héritent d'un trait doivent avoir un rôle compatible avec le trait (sauf si forçage avec @ClBypass).
 
 ### family_interface_target_role_must_match_inherited_family_interface
-Les interfaces family dont hérite une interface family doivent avoir un rôle compatible, à moins d'utiliser @Forc_inh.
+Les interfaces family dont hérite une interface family doivent avoir un rôle compatible, à moins d'utiliser @ClBypass.
 
 Règles plus stricts:
 
 ### optional_all_classes_should_have_clprolf_role 
-Toutes les classes doivent avoir un rôle Clprolf (@Agent, @Worker ou @Indef_obj)
+Toutes les classes doivent avoir un rôle Clprolf (@ClAgent, @ClWorker ou @ClDraft)
 
 ### optional_all_interfaces_should_have_clprolf_role 
-Toutes les interfaces doivent avoir un rôle Clprolf(@Family_interf, @Trait_interf ou @Compat_interf)
+Toutes les interfaces doivent avoir un rôle Clprolf(@ClFamily, @ClTrait ou @ClFree)
 
 ### optional_class_should_not_implement_trait_directly
-Une classe ne peut pas implémenter directement une interface @Trait_interf (à moins d'utiliser @Forc_int_inh)
+Une classe ne peut pas implémenter directement une interface @ClTrait (à moins d'utiliser @ClInterfaceBypass)
 
 ### optional_class_must_implement_only_one_family_interface (OPTIONNELLE)
-Une classe Clprolf ne peut implémenter qu'une interface @Family_interf. Forçage possible avec @Forc_int_inh
+Une classe Clprolf ne peut implémenter qu'une interface @ClFamily. Forçage possible avec @ClInterfaceBypass
 
 
 # X) Clprolf et les architectures existantes
@@ -564,18 +564,18 @@ Clprolf ajoute très peu de concepts.
 ## Classes
 
 ```text
-@Agent
-@Worker
-@Indef_obj
+@ClAgent
+@ClWorker
+@ClDraft
 ```
 ---
 
 ## Interfaces
 
 ```text
-@Family_interf
-@Trait_interf
-@Compat_interf
+@ClFamily
+@ClTrait
+@ClFree
 ```
 ---
 
