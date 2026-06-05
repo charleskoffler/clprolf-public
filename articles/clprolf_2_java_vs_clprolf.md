@@ -1,7 +1,6 @@
 # Clprolf Docs #2 — QuickSort: Thinking in Agents and Workers
 
-One of the easiest ways to understand Clprolf is to compare a simple program written in traditional Java and in the Clprolf style.
-
+One of the easiest ways to understand Clprolf is to compare a simple program written in traditional Java and with the Clprolf framework.
 The goal is not to change the algorithm.
 
 The goal is to change how responsibilities are expressed.
@@ -74,7 +73,7 @@ However, the different responsibilities remain mixed together.
 
 ## Identifying the Domain
 
-Before writing Clprolf code, we ask a simple question:
+Before writing Clprolf framework code, we ask a simple question:
 
 > What is the main subject of this class?
 
@@ -97,12 +96,12 @@ Therefore, it naturally becomes an `agent`.
 ### The Agent
 
 ```java
-@Agent
+@ClAgent
 public class QuickSort {
 
-    private Printer worker;
+    private QuickSortSupport worker;
 
-    public QuickSort(Printer worker) {
+    public QuickSort(QuickSortSupport worker) {
         this.worker = worker;
     }
 
@@ -136,8 +135,8 @@ It is therefore modeled as an `agent`.
 ### The Worker
 
 ```java
-@Worker
-public class Printer {
+@ClWorker
+public class QuickSortSupport {
 
     public void printArray(String message, int[] array) {
 
@@ -152,7 +151,7 @@ public class Printer {
 }
 ```
 
-The printer does not represent the main subject of the system.
+QuickSortSupport does not represent the main subject of the system.
 
 Its purpose is to provide a technical service to the agent.
 
@@ -163,14 +162,14 @@ It is therefore modeled as a `worker`.
 ### The Launcher
 
 ```java
-@Worker
+@ClWorker
 public class Launcher {
 
     public static void main(String[] args) {
 
-        Printer printer = new Printer();
+        QuickSortSupport worker = new QuickSortSupport();
 
-        QuickSort sorter = new QuickSort(printer);
+        QuickSort sorter = new QuickSort(worker);
 
         int[] array = {34, 7, 23, 32, 5, 62, 32, 6};
 
@@ -217,7 +216,7 @@ What changed is the visibility of responsibilities.
 
 ```text
 QuickSort          → agent
-Printer            → worker
+QuickSortSupport   → worker
 Launcher           → worker
 ```
 
@@ -229,7 +228,7 @@ Each component now explicitly declares its role.
 
 Some developers initially associate agents with business concepts.
 
-In Clprolf, the notion is broader.
+In Clprolf framework, the notion is broader.
 
 An agent is any class organized around a coherent domain.
 
@@ -252,7 +251,7 @@ They are therefore natural candidates for the `agent` role.
 
 ---
 
-## Why Printer and Launcher Are Workers
+## Why QuickSortSupport and Launcher Are Workers
 
 Workers exist primarily to support agents.
 
@@ -261,13 +260,13 @@ They often:
 * launch execution,
 * interact with the operating system,
 * provide rendering,
-* perform infrastructure tasks,
+* perform infrastructure tasks on behalf of agent classes,
 * execute technical procedures.
 
 Examples include:
 
 ```text
-Printer
+QuickSortSupport
 AnimalWorker
 ApplicationLauncher
 ProcessLauncher
