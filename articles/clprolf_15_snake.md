@@ -1,20 +1,18 @@
-# 🐍 Revisiting Snake in Java with Clprolf — From Clear Code to Clear Game
+# 🐍 Revisiting Snake in Java with Clprolf Framework
 
 What if writing a small game could prove that architecture can be both **clean** and **alive**?
-Let’s revisit the classic **Snake** game — but built with **Clprolf**,
-a paradigm that turns *clarity* into a coding language.
+Let’s revisit the classic **Snake** game — but built with **Clprolf framework**.
 
 ---
 
 ### 🧠 1. From OOP to Clarity-Oriented Programming
 
-Clprolf isn’t a framework. It’s a **language layer + methodology**
-that builds **architectural meaning** into Java itself.
+Clprolf is a framework that builds **architectural meaning** into Java itself.
 
 | Annotation      | Role                                              |
 | --------------- | ------------------------------------------------- |
-| `@Agent`        | Domain logic                                      |
-| `@Worker`       | Technical performer (I/O, UI, OS, rendering)      |
+| `@ClAgent`        | Domain logic                                      |
+| `@ClWorker`       | Technical performer (I/O, UI, OS, rendering)      |
 
 When you read Clprolf code, you see **intent**, not just syntax.
 
@@ -25,12 +23,12 @@ When you read Clprolf code, you see **intent**, not just syntax.
 The game has five layers — all explicit:
 
 ```
-SnakeGameScene (Agent)
- ├── SnakeImpl (Agent)
- ├── FoodExpertImpl (Agent)
- ├── SnakeGameSceneRendererImpl (Worker)
- ├── SnakeWindowImpl (Agent)
- └── SnakeGamePanelImpl (Agent, Swing-based UI component)
+SnakeGameScene (ClAgent)
+ ├── SnakeImpl (ClAgent)
+ ├── FoodExpertImpl (ClAgent)
+ ├── SnakeGameSceneRendererImpl (ClWorker)
+ ├── SnakeWindowImpl (ClAgent)
+ └── SnakeGamePanelImpl (ClAgent, Swing-based UI component)
 ```
 
 Each one knows **exactly what it should know**, and **nothing more**.
@@ -39,7 +37,7 @@ For instance, the `FoodExpert` agent handles food positions —
 but knows nothing about the UI, keyboard, or rendering:
 
 ```java
-@Agent
+@ClAgent
 public class FoodExpertImpl implements FoodExpert {
     private SnakeGameScene scene;
 
@@ -55,7 +53,7 @@ public class FoodExpertImpl implements FoodExpert {
 Meanwhile, the **Worker** handles technical events and visual updates:
 
 ```java
-@Worker
+@ClWorker
 public class SnakeGameSceneRendererImpl implements SnakeGameSceneRenderer {
     private SnakeGameScene scene;
 
