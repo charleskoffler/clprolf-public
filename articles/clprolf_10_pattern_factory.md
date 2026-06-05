@@ -1,4 +1,4 @@
-# Factory Method in Clprolf Framework: Clear Rules for Object Creation
+# Factory Pattern in Clprolf Framework: Clear Rules for Object Creation
 
 ## 🤔 The Problem
 
@@ -200,7 +200,7 @@ public class FactoryDemo {
 
 ## 🎯 Key takeaway
 
-In Clprolf framework, the Factory Method pattern is just:
+In Clprolf framework, the Factory pattern is just:
 
 > **Use `@ClFamily` for product, factor common logic in a base implementation, and `@ClFamily` for the factory role.**
 
