@@ -1,12 +1,12 @@
-# Builder Pattern in Clprolf — Example with a House
+# Builder Pattern in Clprolf framework — Example with a House
 
 In traditional OOP, the Builder pattern was invented to avoid **telescoping constructors**:
 classes with too many parameters, often optional, that force you to write many overloaded constructors.
 The result is confusing, and the object ends up polluted with initialization logic.
 
-In Clprolf, the solution is clearer:
+In Clprolf framework, the solution is clear:
 
-* The **Builder** is an **agent** dedicated to **dynamic construction**.
+* The **Builder** is an **agent** dedicated to the construction of another agent.
 * The **Product** is usually an **`agent`**.
 * The Builder composes and prepares the product step by step, then delivers it with `build()`.
 
@@ -21,8 +21,9 @@ Instead of multiple constructors, we use a **Builder Agent**.
 
 ### The Product (Simulated Real Object)
 
-```clprolf
-public agent House {
+```java
+@ClAgent
+public class House {
     String name;
     int floors;
     boolean garage;
@@ -37,8 +38,9 @@ public agent House {
 
 ### The Builder Agent (Composition)
 
-```clprolf
-public agent HouseBuilder {
+```java
+@ClAgent
+public class HouseBuilder {
     private House house = new House(); // composition
 
     public HouseBuilder withName(String name){
@@ -75,8 +77,9 @@ public agent HouseBuilder {
 
 ### The Launcher
 
-```clprolf
-public worker Launcher {
+```java
+@ClWorker
+public class Launcher {
     public static void main(String[] args){
         House villa = new HouseBuilder()
             .withName("Villa Clprolf")
@@ -112,7 +115,7 @@ For simpler objects, a constructor is enough.
 
 ---
 
-## Factory vs Builder in Clprolf
+## Factory vs Builder in Clprolf framework
 
 Both Factory and Builder are **creational patterns**, but they solve different problems:
 
@@ -121,7 +124,7 @@ Both Factory and Builder are **creational patterns**, but they solve different p
 | Decides **which variant** of an object to create     | Prepares **how to construct** an object step by step               |
 | Often returns different implementations              | Always prepares the same type, with variations                     |
 | Example: `CarFactory` → `ElectricCar` or `DieselCar` | Example: `HouseBuilder` → builds one `House` with flexible options |
-| Declension: `agent`      `                           | Declension: `agent`                                                |
+| Class role: `agent`      `                           | Class role: `agent`                                                |
 
 👉 Factory answers *“which object?”*
 👉 Builder answers *“how to assemble it?”*
@@ -149,8 +152,9 @@ This style makes the Builder look almost as natural as a constructor, but withou
 
 Sometimes, the Builder is placed **inside the product class**.
 
-```clprolf
-public agent House {
+```java
+@ClAgent
+public class House {
     String name;
     int floors;
     boolean garage;
@@ -159,7 +163,8 @@ public agent House {
         System.out.println("House " + name + ", " + floors + " floors, garage: " + garage);
     }
 
-    public static agent Builder {
+    @ClAgent
+    public static class Builder {
     
         private House house;
 
@@ -218,7 +223,7 @@ House villa = new House.Builder()
 
 ## Conclusion
 
-In Clprolf, the **Builder Pattern** becomes clearer:
+In Clprolf framework, the **Builder Pattern** becomes clearer:
 
 * The product is usually an **`agent`**.
 * The Builder is an **agent** that constructs it step by step.
