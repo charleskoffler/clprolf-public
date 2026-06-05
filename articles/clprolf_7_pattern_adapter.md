@@ -1,4 +1,4 @@
-# Adapter Pattern in Clprolf: From Enumeration to Iterator
+# Adapter Pattern in Clprolf framework: From Enumeration to Iterator
 
 ## 🤔 The Problem
 
@@ -24,24 +24,30 @@ In Clprolf, the rule is simple:
 ## 📝 Example: Enumeration → Iterator
 
 Old Java APIs used `Enumeration`, but modern code expects `Iterator`. We want to reuse existing `Enumeration` implementations without rewriting them.
+For illustration purposes, the examples below re-declare simplified versions of the Java interfaces.
 
 ### Clprolf Code
 
 ```java
 // 1. Old contract (an agent)
-public family_interf agent Enumeration<E> {
+@ClAgent
+@ClFamily
+public interface Enumeration<E> {
     boolean hasMoreElements();
     E nextElement();
 }
 
 // 2. Modern contract (an agent)
-public family_interf agent Iterator<E> {
+@ClAgent
+@ClFamily
+public interface Iterator<E> {
     boolean hasNext();
     E next();
 }
 
 // 3. Adapter agent: implements the modern version
-public agent EnumToIterAdapter<E> implements Iterator<E> {
+@ClAgent
+public class EnumToIterAdapter<E> implements Iterator<E> {
     private Enumeration<E> enumeration;
 
     public EnumToIterAdapter(Enumeration<E> enumeration) {
@@ -60,21 +66,24 @@ public agent EnumToIterAdapter<E> implements Iterator<E> {
 
 ---
 
-## 🔎 Why this is clear in Clprolf
+## 🔎 Why this is clear in Clprolf Framework
 
-* `family_interf` makes it explicit: these are **family interfaces meant to be implemented** by agents.
-* No hidden tricks: we see immediately that the Adapter is **a new agent** created for translation.
+* `family` makes it explicit: these are **family interfaces meant to be implemented** by agents.
+* No hidden tricks: we immediately see that the Adapter is **a new agent** created for translation.
 
 And here’s an important detail:
 
 * **`Enumeration` is an agent**
 * **`Iterator` is a full agent**, representing the modern iteration model.
 
+Both represent coherent iteration domains.
+The adapter exists because the domains are related but structurally distinct.
+
 ---
 
 ## 🎯 Key takeaway
 
-In Clprolf, the Adapter is never a “magical disguise.”
+In Clprolf framework, the Adapter is never a “magical disguise.”
 It’s simply:
 
 > **A new agent that translates one family interface into another.**
@@ -89,7 +98,8 @@ For completeness, here’s how a client would actually use the Adapter.
 Even if the old API gives you an `Enumeration`, the Adapter lets you treat it as a modern `Iterator`:
 
 ```java
-public worker AdapterDemo {
+@ClWorker
+public class AdapterDemo {
     public static void main(String[] args) {
         Vector<String> legacyVector = new Vector<>();
         legacyVector.add("one");
