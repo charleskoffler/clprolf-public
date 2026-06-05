@@ -1,12 +1,11 @@
-# Proxy Pattern in Clprolf — Example with an Image
+# Proxy Pattern in Clprolf framework — Example with an Image
 
 In traditional OOP, the **Proxy** is used to control access to another object. The proxy has the same interface as the real subject and delegates calls, while possibly adding **lazy loading, security checks, caching, or network indirection**.
 
-In **Clprolf**, the Proxy becomes clearer and safer:
+In **Clprolf Framework**, the Proxy becomes clearer and safer:
 
-* Both the proxy and the real subject are **siblings in the same agent family** (`family_interf`).
-* Technical work is delegated to a **`worker`**, so business and technical responsibilities remain separated.
-* `with_compat` enforces loose coupling.
+* Both the proxy and the real subject are **siblings in the same agent family** (`@ClFamily`).
+* Technical work is delegated to a **`@ClWorker`**, so business and technical responsibilities remain separated.
 
 ---
 
@@ -16,10 +15,12 @@ Imagine we want to work with a very large image file. Loading it into memory is 
 
 ---
 
-### The Version (agent)
+### The family (agent)
 
 ```java
-public family_interf agent IImage {
+@ClAgent
+@ClFamily`
+public interface IImage {
     void show();
 }
 ```
@@ -29,7 +30,8 @@ public family_interf agent IImage {
 ### The Real Subject (agent)
 
 ```java
-public agent BigImage implements IImage {
+@ClAgent
+public class BigImage implements IImage {
     private WorkerImageHandler handler;
     private String displayMode; // business attribute: "fullscreen", "thumbnail", etc.
 
@@ -50,7 +52,8 @@ public agent BigImage implements IImage {
 ### The Worker (Technical Responsibility)
 
 ```java
-public worker WorkerImageHandler {
+@ClWorker
+public class WorkerImageHandler {
     private String filename;
 
     public WorkerImageHandler(String filename){
@@ -72,7 +75,8 @@ public worker WorkerImageHandler {
 ### The Proxy (Sibling agent)
 
 ```java
-public agent ProxyImage implements IImage {
+@ClAgent
+public class ProxyImage implements IImage {
     private BigImage realImage;
     private String filename;
     private String displayMode;
@@ -96,9 +100,10 @@ public agent ProxyImage implements IImage {
 ### The Launcher
 
 ```java
-public worker Launcher {
+@ClWorker
+public class Launcher {
     public static void main(String[] args){
-        with_compat IImage image = new ProxyImage("big_photo.jpg", "fullscreen");
+        IImage image = new ProxyImage("big_photo.jpg", "fullscreen");
 
         System.out.println("Proxy created, but image not loaded yet.");
         image.show();  // only here, BigImage + WorkerImageHandler are instantiated
@@ -120,12 +125,12 @@ Displaying big_photo.jpg in mode: fullscreen
 
 ## Why Proxy Is Clearer in Clprolf
 
-* `IImage` → **`family_interf agent`**, defines the family of Image.
+* `IImage` → **`family agent`**, defines the family of Image.
 * `BigImage` → **agent**, a concrete member of that family.
 * `ProxyImage` → **agent**, another member of the same family, acting as a clone with a different behavior (lazy loading).
 * `WorkerImageHandler` → **worker**, handling the technical responsibility of file loading and display.
 
-In traditional OOP, `Image` often mixes both business and technical code. In Clprolf, the split is natural, and the Proxy fits in seamlessly.
+In classic Java or C#, `Image` often mixes both business and technical code. In Clprolf, the split is natural, and the Proxy fits in seamlessly.
 
 ---
 
@@ -135,7 +140,7 @@ One might ask: *“Why not subclass `BigImage`?”*
 
 The difference is crucial:
 
-| **Inheritance**                                                 | **Proxy (`family_interf agent`)**                                 |
+| **Inheritance**                                                 | **Proxy (`family agent`)**                                 |
 | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | Creates a **child class**                                                  | Creates another **sibling in the same family**                        |
 | Parent’s constructor is **always called** → heavy load happens immediately | The real subject is created **only when needed**                      |
@@ -147,10 +152,10 @@ The difference is crucial:
 
 ---
 
-## Why `family_interf` matters for Proxy in Clprolf
+## Why `family` matters for Proxy in Clprolf
 
 In traditional OOP, the Proxy is described as “an object with the same interface as another.”
-In Clprolf, this intent becomes **visible in the code** because we use **`family_interf`** to define the family of agents.
+In Clprolf, this intent becomes **visible in the code** because we use **`family`** to define the family of agents.
 
 * The real subject (`BigImage`) and the proxy (`ProxyImage`) are **siblings** in the same family.
 * They are not subclasses of each other, but two different implementations of the same agent.
@@ -185,7 +190,8 @@ In our first version, `BigImage` loads the file immediately in its constructor.
 But we could also decide that the **real subject itself** only loads at display time:
 
 ```java
-public agent BigImage implements IImage {
+@ClAgent
+public class BigImage implements IImage {
     private WorkerImageHandler handler;
     private String displayMode;
 
@@ -212,7 +218,7 @@ This makes the distinction even clearer:
 
 The **Proxy Pattern in Clprolf** becomes simpler and more consistent:
 
-* Proxy and real subject are **siblings in the same agent family** (`family_interf agent`).
+* Proxy and real subject are **siblings in the same agent family** (`family agent`).
 * Technical details are isolated in a **worker**.
 * The Proxy acts as a **clone of the agent**, rectifying what it wants — whether by shifting when workers are called (*lazy loading*), or by adding workers for logging, caching, or security.
 
@@ -224,7 +230,7 @@ With Clprolf, we also see that Proxy has **two faces**:
 Even subtle variations, like moving the worker call from the constructor to the `show()` method, are made explicit.
 The intent is no longer hidden — it’s visible in the grammar.
 
-✨ In the end, Clprolf doesn’t reinvent design patterns.
+✨ In the end, Clprolf framework doesn’t reinvent design patterns.
 It **clarifies them**, makes their business and technical intent **explicit**, and prevents them from turning into blind dogma.
 
 ---
