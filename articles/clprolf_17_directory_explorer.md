@@ -1,10 +1,9 @@
-# 🗂️ Clprolf Directory Explorer — When Breadth-First Becomes Intuitive
+# 🗂️ Clprolf Framework Directory Explorer
 
 Everyone knows that exploring directories can quickly turn into a messy technical exercise:
 loops, recursion, stacks, file filters… and code that loses all readability.
 
-With **Clprolf**, clarity is built-in.
-You don’t just write *code* — you design **agents**, **workers**, and **models** that reflect what really happens.
+With **Clprolf framework**, clarity is built-in.
 Let’s see how a simple *directory explorer* can become a beautifully structured program.
 
 ---
@@ -23,12 +22,12 @@ Clprolf invites us to split them into **roles**.
 
 | Component                                       | Declension              | Responsibility                         |
 | ----------------------------------------------- | ----------------------- | -------------------------------------- |
-| `Launcher`                                      | `@Worker`               | Starts the exploration                 |
-| `DirectoryExplorerImpl`                         | `@Agent`                | Performs the exploration               |
-| `DirectoryExplorerWorkerImpl`                   | `@Worker`               | Displays results                       |
-| `Directory`                                     | `@Agent`                | Represents one directory node          |
-| `DirectoryExplorer`                             | `@Agent @Family_interf` | The family of the agent                |
-| `DirectoryExplorerWorker`                       | `@Worker @Family_interf`| The family of the worker for the agent |
+| `Launcher`                                      | `@ClWorker`             | Starts the exploration                 |
+| `DirectoryExplorerImpl`                         | `@ClAgent`              | Performs the exploration               |
+| `DirectoryExplorerWorkerImpl`                   | `@ClWorker`             | Displays results                       |
+| `Directory`                                     | `@ClAgent`              | Represents one directory node          |
+| `DirectoryExplorer`                             | `@ClAgent @ClFamily`    | The family of the agent                |
+| `DirectoryExplorerWorker`                       | `@ClWorker @ClFamily`   | The family of the worker for the agent |
 ---
 
 ### ⚙️ 2. The Launcher
@@ -37,7 +36,7 @@ The entry point is as simple as it looks.
 It prepares the environment and delegates the job to the proper agent.
 
 ```java
-@Worker
+@ClWorker
 public class Launcher {
 
     public static void main(String[] args) {
@@ -66,8 +65,8 @@ Here lies the real exploration logic.
 The agent collaborates with a worker, manipulates a model, and manages a queue.
 
 ```java
-@Agent
-public class DirectoryExplorerImpl implements @Contracts DirectoryExplorer {
+@ClAgent
+public class DirectoryExplorerImpl implements DirectoryExplorer {
 
     private DirectoryExplorerWorker worker;
 
@@ -122,8 +121,8 @@ Responsible for showing the result, not for computing it.
 Again, we separate *doing* from *showing*.
 
 ```java
-@Worker
-public class DirectoryExplorerWorkerImpl implements @Contracts DirectoryExplorerWorker {
+@ClWorker
+public class DirectoryExplorerWorkerImpl implements DirectoryExplorerWorker {
 
     public void displayResult(List<Directory> foldersList) {
         for (Directory dir : foldersList) {
@@ -145,7 +144,7 @@ Simple, explicit, human-readable.
 ### 📦 5. The Model
 
 ```java
-@Agent
+@ClAgent
 public class Directory {
     private Path path;
     private List<Integer> hierarchicalId;
@@ -162,17 +161,17 @@ public class Directory {
 
 ---
 
-### 🤝 6. The Contracts
+### 🤝 6. The interfaces
 
 ```java
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface DirectoryExplorer {
     void breadthFirstFolders(Path directoryPath);
 }
 
-@Worker
-@Family_interf
+@ClWorker
+@ClFamily
 public interface DirectoryExplorerWorker {
     void displayResult(List<Directory> foldersList);
 }
@@ -189,9 +188,6 @@ What matters here is **how naturally the architecture expresses itself**:
 * The agent explores.
 * The worker displays.
 
-Clprolf doesn’t just help you code — it helps you **think**.
-The structure emerges from the intention.
-
 ---
 
 ### ✨ Final Thoughts
@@ -201,7 +197,6 @@ The structure emerges from the intention.
 > In Clprolf, each role finds its natural place.
 > The result is simple, explicit, and readable — even for someone who never wrote Java before.
 
-Clprolf brings **clarity back into architecture**,
-and even the smallest utilities become examples of well-designed software.
+Clprolf brings **clarity back into architecture**.
 
 ---

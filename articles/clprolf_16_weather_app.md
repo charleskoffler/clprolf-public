@@ -1,13 +1,9 @@
-# ☀️ WeatherApp MVC — When Clprolf Meets Spring MVC Philosophy
+# ☀️ WeatherApp MVC in Clprolf Framework
 
 Everyone knows the **MVC pattern**.
-But what if you could make it **even clearer**, more **structurally explicit**, and **compatible** with both *desktop* and *web* architectures?
-
-That’s what **Clprolf** does —
-it turns the philosophy of **clarity-oriented programming** into real, verifiable structure.
 
 Let’s look at a simple example:
-a *WeatherApp* written in Java + Clprolf annotations —
+a *WeatherApp* written in Java + Clprolf framework —
 which behaves like a **Spring MVC** application,
 but runs locally in Swing.
 
@@ -24,10 +20,10 @@ but we **explicitly declare the roles** of each component.
 
 | Component           | Clprolf Role                   | Description                                 |
 | ------------------- | ------------------------------ | ------------------------------------------- |
-| `WeatherApp`        | `@Worker`                      | The system launcher (like Spring Boot main) |
-| `WeatherController` | `@Agent`                       | The “brain” that coordinates the logic      |
-| `WeatherRepository` | `@Worker`                      | Technical layer fetching data               |
-| `WeatherRenderer`   | `@Worker`                      | The View layer (UI and user input)          |
+| `WeatherApp`        | `@ClWorker`                      | The system launcher (like Spring Boot main) |
+| `WeatherController` | `@ClAgent`                       | The “brain” that coordinates the logic      |
+| `WeatherRepository` | `@ClWorker`                      | Technical layer fetching data               |
+| `WeatherRenderer`   | `@ClWorker`                      | The View layer (UI and user input)          |
 
 ---
 
@@ -38,7 +34,7 @@ package org.clprolf.examples.design_patterns.mvc;
 
 import org.clprolf.framework.java.Worker;
 
-@Worker
+@ClWorker
 public class WeatherApp {
     public static void main(String[] args) {
         WeatherController controller = new WeatherController();
@@ -55,7 +51,7 @@ package org.clprolf.examples.design_patterns.mvc;
 
 import org.clprolf.framework.java.Agent;
 
-@Agent
+@ClAgent
 public class WeatherController {
     private WeatherRepository model;
     private WeatherRenderer view;
@@ -94,7 +90,7 @@ import javax.swing.*;
 import org.clprolf.framework.java.Agent;
 import org.clprolf.framework.java.Worker;
 
-@Worker
+@ClWorker
 public class WeatherRenderer {
 
     private JFrame frame;
@@ -102,11 +98,11 @@ public class WeatherRenderer {
     private JTextArea forecastArea;
     private WeatherController expert;
 
-    @Agent
-    @Family_interf
+    @ClAgent
+    @ClFamily
     private static interface WindowObserver extends ActionListener { }
 
-    @Agent
+    @ClAgent
     private class WindowObserverImpl implements WindowObserver {
         
         @Override
@@ -168,7 +164,7 @@ package org.clprolf.examples.design_patterns.mvc;
 
 import org.clprolf.framework.java.Worker;
 
-@Worker
+@ClWorker
 class WeatherRepository {
     private String location;
     private String forecast;
@@ -208,7 +204,7 @@ but here, everything runs locally and instantly.
 
 ## 🧠 4. Why It Matters
 
-This example shows that **Clprolf integrates seamlessly** with existing patterns.
+This example shows that **Clprolf framework integrates seamlessly** with existing patterns.
 It doesn’t replace MVC, Spring, or OOP —
 it simply **clarifies and strengthens** them.
 
@@ -238,16 +234,9 @@ Clprolf doesn’t reinvent MVC — it **makes it self-explanatory**.
 
 | Traditional Role | Clprolf Equivalent             | Layer            |
 | ---------------- | ------------------------------ | ---------------- |
-| Controller       | `@Agent`                       | Logic / Domain   |
-| Repository       | `@Worker`                | Data / Technical |
-| View             | `@Worker`                | Presentation     |
-| Launcher         | `@Worker` | System entry     |
-
----
-
-> 🌤️ *“It acts as a living interface between human and machine —
-> the very essence of the worker.”*
-
-That’s the clarity and beauty of Clprolf.
+| Controller       | `@ClAgent`                     | Logic / Domain   |
+| Repository       | `@ClWorker`                    | Data / Technical |
+| View             | `@ClWorker`                    | Presentation     |
+| Launcher         | `@ClWorker`                    | System entry     |
 
 ---
