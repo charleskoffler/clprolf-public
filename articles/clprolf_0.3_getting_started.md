@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-Clprolf builds upon classical Object-Oriented Programming.
+Clprolf (CLear PROgramming Language and Framework) builds upon classical Object-Oriented Programming.
 
 To fully benefit from this guide, readers should already be familiar with:
 
@@ -14,13 +14,13 @@ To fully benefit from this guide, readers should already be familiar with:
 
 ## Making Responsibilities Explicit
 
-Clprolf is a language and framework designed to make architectural roles explicit.
+Clprolf is a Java and C# framework designed to make architectural roles explicit.
 
 In many object-oriented systems, separation of responsibilities relies primarily on conventions and developer discipline.
 
 As projects evolve, responsibilities may gradually become mixed, making the original architecture harder to understand and maintain.
 
-Clprolf addresses this by making architectural intent part of the language itself.
+Clprolf addresses this by making architectural intent part of the programming model itself.
 
 Every class explicitly declares its nature.
 
@@ -50,14 +50,19 @@ Examples:
 * a `RandomGenerator` class belongs to a random-generation domain,
 * an `OrderProcessor` class belongs to an order-processing domain.
 
+Low-level technical abstractions such as File, Connection, Logger or Parser still possess their own class domain and are therefore typically modeled as agents.
+
 A technical class is different.
 
-Rather than representing a conceptual domain, it provides technical support such as:
+A technical class is primarily intended to support agent classes rather than be organized around a class domain.
+Workers provide technical support and infrastructure services. They may coordinate or use low-level agent classes such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
+Instead, it exists to support other components through technical mechanisms, infrastructure access, application startup, operating-system interaction, or similar responsibilities.
 
-* logging,
-* parsing,
-* infrastructure services,
-* low-level utilities.
+A `worker`:
+
+* provides technical support,
+* manages infrastructure and execution mechanisms,
+* contains technical code.
 
 ---
 
@@ -71,14 +76,16 @@ public class OrderManager { }
 
 In Clprolf, the architectural nature is made explicit:
 
-```clprolf
-public class_for agent OrderProcessor { }
+```java
+@ClAgent
+public class OrderProcessor { }
 ```
 
 or
 
-```clprolf
-public class_for worker OrderRepository { }
+```java
+@ClWorker
+public class OrderRepository { }
 ```
 
 Each class declares its nature from the beginning.
@@ -86,19 +93,20 @@ Each class declares its nature from the beginning.
 The core natures are:
 
 * `agent` → domain-oriented responsibility
-* `worker` → technical responsibility
-* `indef_obj` → temporary undefined responsibility
+* `worker` → support/technical responsibility
+* `draft` → temporary undefined responsibility
 
 ---
 
-## 2️⃣ Starting Flexible with `indef_obj`
+## 2️⃣ Starting Flexible with `draft`
 
 Architectural clarity is not always immediate.
 
 During prototyping or exploration, a class may begin as:
 
-```clprolf
-public class_for indef_obj OrderManager {
+```java
+@ClDraft
+public class OrderManager {
 
     public void process(Order order) {
         validate(order);
@@ -109,7 +117,7 @@ public class_for indef_obj OrderManager {
 }
 ```
 
-`indef_obj` represents a temporary state.
+`draft` represents a temporary state.
 
 The responsibility can be clarified later through refactoring.
 
@@ -127,8 +135,9 @@ After analyzing the class, we identify several distinct responsibilities:
 
 The class can then be reorganized:
 
-```clprolf
-public class_for agent OrderProcessor {
+```java
+@ClAgent
+public class OrderProcessor {
 
     private OrderRepository repository;
     private OrderNotifier notifier;
@@ -145,10 +154,12 @@ public class_for agent OrderProcessor {
 }
 ```
 
-```clprolf
-public class_for worker OrderRepository { ... }
+```java
+@ClWorker
+public class OrderRepository { ... }
 
-public class_for worker OrderNotifier { ... }
+@ClWorker
+public class OrderNotifier { ... }
 ```
 
 The behavior remains unchanged.
@@ -165,23 +176,19 @@ It can enforce structural coherence.
 
 Example:
 
-```clprolf
-public class_for agent A1AnimalImpl nature AnimalWorker { }
+```java
+@ClAgent
+public class AnimalImpl extends AnimalWorker { }
 ```
 
 This attempts to inherit from a class of a different nature.
 
-Result:
-
-```text
-ARCH-A1 => Class A1AnimalImpl:
-the parent class should be an agent (AnimalWorker)
-```
+This is considered as a violation by the ArchUnit checker.
 
 The equivalent Java code would compile:
 
 ```java
-public class A1AnimalImpl extends AnimalWorker { }
+public class AnimalImpl extends AnimalWorker { }
 ```
 
 Clprolf rejects it as architecturally inconsistent.
@@ -192,36 +199,41 @@ Clprolf rejects it as architecturally inconsistent.
 
 Clprolf also introduces structured interface categories.
 
-### `family_interf`
+### `family`
 
 Represents an abstract family of related implementations.
 
 ```clprolf
-public family_interf agent Animal {
+@ClAgent
+@ClFamily
+public interface Animal {
 
     void eat(int quantity);
 
 }
 ```
 
-### `trait_interf`
+### `trait`
 
 Represents a capability shared across multiple families.
 
-```clprolf
-public trait_interf agent Payable {
+```java
+@ClAgent
+@ClTrait
+public interface Payable {
 
     void pay();
 
 }
 ```
 
-### `compat_interf`
+### `free`
 
-Represents a flexible compatibility interface without a predefined structural role.
+Represents a flexible interface without a predefined structural role.
 
-```clprolf
-public compat_interf ExternalApi {
+```java
+@ClFree
+public interface ExternalApi {
 }
 ```
 
