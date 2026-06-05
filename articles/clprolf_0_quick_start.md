@@ -1,13 +1,13 @@
-# Clprolf — A New Way to Express Your Talent with OOP
+# Clprolf — CLear PROgramming Language and Framework
 
 > **A structured approach to object-oriented programming.**
 > Roles and responsibilities become explicit.
 
-Clprolf is both a language and a framework designed to make architectural intent visible within object-oriented systems.
+Clprolf is both a Java and C# framework designed to make architectural intent visible within object-oriented systems.
 
 Its goal is not to replace classical OOP, but to make certain important distinctions explicit:
 
-* business responsibilities versus technical responsibilities,
+* business or domain responsibilities versus technical/support responsibilities,
 * coherent inheritance versus composition,
 * the primary responsibility of a class.
 
@@ -32,7 +32,7 @@ As systems grow, architectural intent becomes harder to understand and maintain.
 
 Clprolf encourages developers to identify and express the primary responsibility of each class.
 
-The language is based on a simple idea:
+The framework is based on a simple idea:
 
 > **A class should clearly express its primary role.**
 
@@ -44,50 +44,55 @@ To support this idea, Clprolf introduces explicit class roles and structural gui
 
 ### `agent`
 
-An `agent` represents a business or conceptual responsibility.
+Represents a business or conceptual class.
 
-Typical examples include:
+An `agent`:
 
-* business logic,
-* simulations,
-* orchestration,
-* decision-making processes.
+* contains business logic,
+* orchestrates processes,
+* makes decisions,
+* avoids heavy technical code.
 
-```clprolf
-public agent OrderProcessor {
+Note: entities and DTOs are typically classified as agents, since they represent domain data.
+
+Example:
+
+```java
+@ClAgent
+public class OrderProcessor {
 
     private OrderRepository repository;
 
     public void process(Order order) {
-
         if(order.total() <= 0) {
             throw Error;
         }
-
         repository.save(order);
     }
 }
 ```
 
-An agent primarily focuses on business concerns.
-
-When appropriate, technical work can be delegated to one or more workers.
-
 ---
 
 ### `worker`
 
-A `worker` represents a technical responsibility.
+Represents a technical class.
 
-Typical examples include:
+A technical class is primarily intended to support agent classes rather than be organized around a class domain.
+Workers provide technical support and infrastructure services. They may coordinate or use low-level agent classes such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
+Instead, it exists to support other components through technical mechanisms, infrastructure access, application startup, operating-system interaction, or similar responsibilities.
 
-* database access,
-* networking,
-* file management,
-* infrastructure services.
+A `worker`:
 
-```clprolf
-public worker OrderRepository {
+* provides technical support,
+* manages infrastructure and execution mechanisms,
+* contains technical code.
+
+Example:
+
+```java
+@ClWorker
+public class OrderRepository {
 
     public void save(Order order) {
 
@@ -97,24 +102,27 @@ public worker OrderRepository {
 }
 ```
 
-Workers provide technical capabilities that can be used by agents.
-
 ---
 
-### `indef_obj`
+### `draft`
 
-An `indef_obj` represents an object whose role has not yet been clearly identified.
+An object without a defined role.
 
-It can be useful during:
+Used:
 
-* prototyping,
-* refactoring,
-* exploratory development.
+* during prototyping,
+* during refactoring,
+* when the role is not yet clear.
 
-```clprolf
-public indef_obj TemporaryManager {
+Example:
+
+```java
+@ClDraft
+public class TemporaryManager {
 }
 ```
+
+`ClDraft` enables a flexible approach similar to classical OOP.
 
 ---
 
@@ -122,21 +130,25 @@ public indef_obj TemporaryManager {
 
 Clprolf encourages inheritance only between classes belonging to the same conceptual domain.
 
-```clprolf
-public agent Animal {
+```java
+@Agent
+public class Animal {
 }
 
-public agent Dog extends Animal {
+@Agent
+public class Dog extends Animal {
 }
 ```
 
 When domains do not match, composition is generally preferred.
 
-```clprolf
-public worker DatabaseConnection {
+```java
+@ClWorker
+public class AppLauncher {
 }
 
-public agent Dog extends DatabaseConnection {
+@ClAgent
+public class Dog extends AppLauncher {
 }
 ```
 
@@ -150,9 +162,9 @@ Clprolf extends the same philosophy to interfaces.
 
 Three interface categories are available:
 
-* `family_interf` — an abstract family of related implementations,
-* `trait_interf` — a shared capability across multiple families,
-* `compat_interf` — a flexible compatibility interface.
+* `family` — an abstract family of related implementations,
+* `trait` — a shared capability across multiple families,
+* `free` — a flexible interface.
 
 Family and trait interfaces also declare a target role:
 
@@ -172,31 +184,27 @@ By making roles explicit, Clprolf helps developers:
 * build more coherent inheritance hierarchies,
 * reduce architectural drift over time.
 
-The language acts primarily as a structural guide rather than a rigid architectural framework.
+The framework acts primarily as a structural guide rather than a rigid architectural framework.
 
 ---
 
 ## 🎯 When to Use Clprolf
 
-Clprolf is particularly well suited for:
+Clprolf is well suited for:
 
-* long-lived software projects,
+* teams that want a lightweight structural guide for object-oriented design without adopting a heavy architectural framework,
+* educational contexts focused on architectural clarity,
 * complex systems,
-* educational environments,
-* simulation and multi-agent systems,
-* projects where architectural clarity is an important goal.
+* simulation and MAS-like applications,
+* long-lived codebases where explicit responsibilities and coherent inheritance are important.
 
 ---
 
 ## ⚖️ Philosophy
 
-Clprolf intentionally introduces structural constraints.
+Clprolf intentionally introduces light structural constraints.
 
 These constraints are not designed to restrict creativity, but to make architectural decisions explicit.
-
-Developers who prefer unrestricted object modeling may find traditional object-oriented languages more appropriate.
-
-Developers who value long-term clarity and structural consistency may benefit from the additional guidance provided by Clprolf.
 
 ---
 
