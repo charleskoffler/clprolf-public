@@ -1,4 +1,4 @@
-# Refactoring Your Classes with Clprolf and `indef_obj`
+# Refactoring Your Classes with Clprolf framework
 
 Most developers agree on the **Single Responsibility Principle (SRP)**.
 The real difficulty is not *what* to do — it’s **when** to do it.
@@ -9,7 +9,7 @@ In real projects, we usually:
 2. understand it better over time,
 3. refactor when responsibilities become clearer.
 
-**Clprolf fits naturally into this workflow** by supporting postponed architectural decisions through refactoring.
+**Clprolf framework fits naturally into this workflow** by supporting postponed architectural decisions through refactoring.
 
 ---
 
@@ -63,15 +63,16 @@ Everyone has written something like this.
 
 ---
 
-## 2️⃣ Using Clprolf Without Thinking About Roles
+## 2️⃣ Using Clprolf framework Without Thinking About Roles
 
 In Clprolf, you can start **exactly the same way**.
 
 No need to decide anything upfront.
 You simply acknowledge that the architectural role is **not yet clear**.
 
-```clprolf
-public indef_obj OrderManager {
+```java
+@ClDraft
+public class OrderManager {
 
     public void processOrder(Order order) {
         if (order.getTotal() <= 0) {
@@ -98,7 +99,7 @@ At this stage:
 * no architectural commitment is made,
 * the code can remain like this for a while.
 
-`indef_obj` behaves like classic OOP — **but consciously**.
+`ClDraft` behaves like classic OOP — **but consciously**.
 
 ---
 
@@ -120,7 +121,7 @@ This is where **Clprolf becomes useful**.
 ## 4️⃣ Refactoring into Explicit Responsibilities
 
 ```
-Before (indef_obj)
+Before (ClDraft)
 
 OrderManager
  ├─ business rule
@@ -131,29 +132,30 @@ OrderManager
 
 After (SRP made explicit)
 
-OrderProcessor (agent)
+OrderProcessor (ClAgent)
  ├─ business decision
 
-OrderRepository (worker)
+OrderRepository (ClWorker)
  └─ persistence
 
-OrderNotifier (worker)
+OrderNotifierWorker (ClWorker)
  ├─ logging
  └─ messaging
 ```
 
 ### 🎯 Business Responsibility → `agent`
 
-```clprolf
-public agent OrderProcessor {
+```java
+@ClAgent
+public class OrderProcessor {
 
     private final OrderRepository repository;
-    private final OrderNotifier notifier;
+    private final OrderNotifierWorker worker;
 
     public OrderProcessor(OrderRepository repository,
-                          OrderNotifier notifier) {
+                          OrderNotifierWorker worker) {
         this.repository = repository;
-        this.notifier = notifier;
+        this.worker = worker;
     }
 
     public void process(Order order) {
@@ -162,7 +164,7 @@ public agent OrderProcessor {
         }
 
         repository.save(order);
-        notifier.notify(order);
+        worker.notify(order);
     }
 }
 ```
@@ -177,15 +179,17 @@ The **agent**:
 
 ### ⚙️ Technical Responsibilities → `worker`
 
-```clprolf
-public worker OrderRepository {
+```java
+@ClWorker
+public class OrderRepository {
 
     public void save(Order order) {
         System.out.println("Saving order " + order.getId());
     }
 }
 
-public worker OrderNotifier {
+@ClWorker
+public class OrderNotifierWorker {
 
     public void notify(Order order) {
         log(order);
@@ -214,7 +218,7 @@ Workers may group related technical concerns when they serve the same technical 
 * logging,
 * infrastructure.
 
-This is **acceptable** because business meaning remains in the agent.
+This is **acceptable** because business meaning remains in the agent. And because most of the time, the worker supports an agent.
 
 ---
 
@@ -239,10 +243,8 @@ This is simply **SRP applied structurally**.
 
 ## 🧩 Conclusion
 
-Clprolf does **not** ask developers to think harder —
-and certainly not earlier.
-
-It allows them to think **when they are ready**.
+Clprolf framework does **not** ask developers to think harder —
+and not earlier.
 
 You can:
 
@@ -250,10 +252,9 @@ You can:
 * understand it later,
 * refactor responsibilities when needed.
 
-`indef_obj` is **not a goal** —
+`ClDraft` is **not a goal** —
 it is a **temporary state** that supports real-world development.
 
-In that sense, **Clprolf is not just a language**.
-It is a **refactoring tool for architectural clarity**.
+Clprolf framework can work as a **refactoring tool for architectural clarity**.
 
 ---

@@ -1,6 +1,6 @@
-# A Global Model of How Classes Relate to Each Other in Clprolf
+# A Global Model of How Classes Relate to Each Other in Clprolf framework
 
-Clprolf introduces simple declensions such as `agent` and `worker` to clarify the natural place of each class in a project.
+Clprolf framework introduces simple class roles to clarify the natural place of each class in a project.
 
 Many developers understand the basic distinction:
 
@@ -55,7 +55,7 @@ These can be understood as **system-oriented agents**.
 
 They are still agents because they represent conceptual objects, but their internal behavior often depends on low-level workers.
 
-A system-oriented agent is not necessarily a new official declension.
+A system-oriented agent is not necessarily a new official class role.
 
 It is a conceptual category:
 
@@ -83,7 +83,7 @@ It is a conceptual category:
                           │ may use
                           ▼
 ┌────────────────────────────────────────────────────┐
-│              SYSTEM-ORIENTED AGENT                 │
+│              (SYSTEM-ORIENTED) AGENT               │
 │   conceptual object connected to system behavior   │
 │   examples: stream, socket, thread, file, window   │
 └─────────────────────────┬──────────────────────────┘
@@ -91,7 +91,7 @@ It is a conceptual category:
                           │ delegates low-level work to
                           ▼
 ┌────────────────────────────────────────────────────┐
-│                    LOW-LEVEL WORKER                │
+│                    (LOW-LEVEL WORKER)              │
 │     native call, rendering, I/O, OS/runtime work   │
 └────────────────────────────────────────────────────┘
 ```
