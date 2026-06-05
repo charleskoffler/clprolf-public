@@ -1,4 +1,4 @@
-# Decorator Pattern in Clprolf — Example with Coffee
+# Decorator Pattern in Clprolf Framework — Example with Coffee
 
 In traditional OOP, the **Decorator** is used to dynamically add responsibilities to objects. Instead of creating subclasses for every combination of features, we compose them step by step.
 
@@ -17,13 +17,15 @@ With Decorator, we don’t need a new class for every combination — we just co
 ### The agent
 
 ```java
-public family_interf agent Coffee {
+@ClAgent
+@ClFamily
+public interface Coffee {
     public double getCost();
     public String getDescription();
 }
 ```
 
-👉 This is the **family contract**: every coffee, decorated or not, must provide a `cost` and a `description`.
+👉 This is the **family interface**: every coffee, decorated or not, must provide a `cost` and a `description`.
 
 ---
 
@@ -31,7 +33,8 @@ public family_interf agent Coffee {
 ### The Abstract Decorator
 
 ```java
-public abstract agent CoffeeDecorator implements Coffee {
+@ClAgent
+public abstract class CoffeeDecorator implements Coffee {
     private final Coffee decoratedCoffee;
 
     public CoffeeDecorator(Coffee decoratedCoffee) {
@@ -58,7 +61,8 @@ It forwards calls to the wrapped coffee and lets subclasses add extra behavior.
 ### The Concrete Product
 
 ```java
-public agent SimpleCoffee implements Coffee {
+@ClAgent
+public class SimpleCoffee implements Coffee {
     @Override
     public double getCost() {
         return 2.0; // Base cost of simple coffee
@@ -76,7 +80,8 @@ public agent SimpleCoffee implements Coffee {
 ### The Concrete Decorators
 
 ```java
-public agent CoffeeWithMilk extends CoffeeDecorator {
+@ClAgent
+public class CoffeeWithMilk extends CoffeeDecorator {
     public CoffeeWithMilk(Coffee decoratedCoffee) {
         super(decoratedCoffee);
     }
@@ -92,7 +97,8 @@ public agent CoffeeWithMilk extends CoffeeDecorator {
     }
 }
 
-public agent CoffeeWithSugar extends CoffeeDecorator {
+@ClAgent
+public class CoffeeWithSugar extends CoffeeDecorator {
     public CoffeeWithSugar(Coffee decoratedCoffee) {
         super(decoratedCoffee);
     }
@@ -114,7 +120,8 @@ public agent CoffeeWithSugar extends CoffeeDecorator {
 ### The Launcher
 
 ```java
-public worker CoffeeShopMaker {
+@ClWorker
+public class CoffeeShopMaker {
     public static void main(String[] args) {
         // Order a simple coffee
         Coffee coffee = new SimpleCoffee();
@@ -149,7 +156,7 @@ Description: Simple Coffee, with Milk, with Sugar
 
 ---
 
-## Why Decorator Is Clearer in Clprolf
+## Why Decorator Is Clear in Clprolf framework
 
 In traditional OOP, the **Decorator** often looks confusingly close to a **Proxy** or an **Adapter**.
 With **Clprolf**, the roles become explicit:
@@ -171,13 +178,13 @@ The result: there is **only one coffee** — multiple instances are just a techn
 | Different reason for existence               | Same agent, but enriched                      |
 | Usually a sibling `agent`                      | Always an `agent` of the same family         |
 
-👉 In Clprolf, the intent is visible in the **declension**.
+👉 In Clprolf, the intent is visible in the **class role**.
 
 ---
 
 ## Conclusion
 
-The **Decorator Pattern in Clprolf** becomes simpler and more consistent:
+The **Decorator Pattern in Clprolf framework** becomes simpler and more consistent:
 
 * There is always **one real object** (`agent`) being enriched.
 * The abstract decorator ensures chaining works naturally.

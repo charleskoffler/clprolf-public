@@ -19,7 +19,7 @@ Imagine we want to work with a very large image file. Loading it into memory is 
 
 ```java
 @ClAgent
-@ClFamily`
+@ClFamily
 public interface IImage {
     void show();
 }
