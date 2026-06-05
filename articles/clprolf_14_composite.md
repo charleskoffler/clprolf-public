@@ -1,4 +1,4 @@
-# Composite Pattern in Clprolf — Example with Files and Folders
+# Composite Pattern in Clprolf framework — Example with Files and Folders
 
 The **Composite pattern** solves a classic problem:
 👉 *How to treat simple objects (“leaves”) and groups of objects (“composites”) in the same way?*
@@ -17,30 +17,36 @@ It works, but the design often feels implicit: we must *know* by convention that
 
 ---
 
-## In Clprolf
+## In Clprolf framework
 
-With **Clprolf**, roles and contracts make the Composite **explicit**:
+With **Clprolf**, roles and interfaces make the Composite **explicit**:
 
 * `FileSystemComponent` is the family of all components.
 * `File` is a **Leaf**: an `agent` with no extra methods.
 * `Folder` is a **Composite**: an `agent` with `add()` / `remove()` methods for direct children.
-* Implementations (`FileImpl`, `FolderImpl`) respect these roles with `contracts`.
+* Implementations (`FileImpl`, `FolderImpl`) respect these roles when implementing.
 * A `worker` launcher builds the tree and calls `done()`.
 
-The result: we can read the **roles and hierarchy** directly in the contracts — no ambiguity.
+The result: we can read the **roles and hierarchy** directly in the interfaces — no ambiguity.
 
 ---
 
 ## Example
 
-```clprolf
-public family_interf agent FileSystemComponent {
+```java
+@ClAgent
+@ClFamily
+public interface FileSystemComponent {
     void done();
 }
 
-public family_interf agent File extends FileSystemComponent { }
+@ClAgent
+@ClFamily
+public interface File extends FileSystemComponent { }
 
-public family_interf agent  Folder extends FileSystemComponent {
+@ClAgent
+@ClFamily
+public interface Folder extends FileSystemComponent {
     void add(FileSystemComponent component);
     void remove(FileSystemComponent component);
 }
@@ -48,8 +54,9 @@ public family_interf agent  Folder extends FileSystemComponent {
 
 ### Leaf
 
-```clprolf
-public agent FileImpl implements File {
+```java
+@ClAgent
+public class FileImpl implements File {
     private String name;
 
     public FileImpl(String name) { this.name = name; }
@@ -60,8 +67,9 @@ public agent FileImpl implements File {
 
 ### Composite
 
-```clprolf
-public agent FolderImpl implements Folder {
+```java
+@ClAgent
+public class FolderImpl implements Folder {
     private String name;
     private List<FileSystemComponent> children = new ArrayList<>();
 
@@ -84,9 +92,9 @@ public agent FolderImpl implements Folder {
 
 ### Launcher
 
-```clprolf
-
-public worker CompositePatternLauncher {
+```java
+@ClWorker
+public class CompositePatternLauncher {
     public static void main(String[] args) {
         Folder root = new FolderImpl("Root");
         Folder documents = new FolderImpl("Documents");
@@ -132,11 +140,11 @@ Leaf File: File1.txt
 ## Conclusion
 
 In OOP, the Composite is often taught as a trick with interfaces and polymorphism.
-In **Clprolf**, it becomes obvious:
+In **Clprolf  framework**, it becomes obvious:
 
 * A **Leaf** is an `agent` without children.
 * A **Composite** is an `agent` with children of type `FileSystemComponent`.
 
-👉 The pattern is no longer something to memorize, but something you can **read directly in the contracts**.
+👉 The pattern is no longer something to memorize, but something you can **read directly in the interfaces**.
 
 ---
