@@ -15,7 +15,7 @@ import org.clprolf.framework.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @AnalyzeClasses(
-        packages = "org.clprolf.examples.snake_game",
+        packages = "org.clprolf.examples.games.snake_game",
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 public class ClprolfArchTest {
