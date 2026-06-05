@@ -1,12 +1,12 @@
-# Clprolf
+# Clprolf (CLear Programming Language and Framework)
 
-Clprolf is a lightweight architectural-role framework for object-oriented systems.
+Clprolf is a lightweight architectural-role framework for Java and C#.
 
 It helps Java teams make class responsibilities explicit by distinguishing:
 
-- `@Agent`: business or conceptual classes
-- `@Worker`: technical or infrastructure classes
-- `@Indef_obj`: temporarily undefined classes
+- `@ClAgent`: business or conceptual classes
+- `@ClWorker`: technical or infrastructure classes
+- `@ClDraft`: temporarily undefined classes
 
 With the ArchUnit checker, Clprolf rules can be verified automatically during tests and CI.
 
@@ -72,12 +72,10 @@ Feel free to reach out by email if you want more information
 
 * [**Introducing Clprolf: a New Programming Language for Clear OOP**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_introduc.md)
 
-## Checker for Clprolf framework
+## Checker for Clprolf
 
-* [**ArchUnit Checker for the Clprolf Framework**](https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker)
+* [**ArchUnit Checker and framework annotations **](https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker)
 
 ## Examples
-
-### Games
 
 * [**Snake**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/snake-game)

@@ -118,27 +118,17 @@ Remarque: les entity, ou DTOs, sont agent, car les données sont métiers.
 
 Représente une classe technique.
 
+Une classe technique a principalement pour vocation de soutenir les classes agent plutôt que d'être organisée autour d'un domaine de classe.
+
+Les workers fournissent des services techniques et d'infrastructure. Ils peuvent coordonner ou utiliser des agents de bas niveau tels que `File`, `Connection`, `Random`, `Logger` ou `Parser`, mais contrairement à ces classes, un worker n'est pas organisé autour d'un domaine de classe qui lui est propre.
+
+Il existe avant tout pour assister d'autres composants au travers de mécanismes techniques, d'accès à l'infrastructure, du démarrage de l'application, d'interactions avec le système d'exploitation ou d'autres responsabilités similaires.
+
 Un `worker` :
 
-* réalise les tâches machine,
-* gère l’infrastructure,
-* contient le code technique.
-
-Exemple :
-
-```java
-@ClWorker
-public class OrderRepository {
-
-    public void save(Order order) {
-
-        // accès base de données
-
-    }
-}
-```
-
----
+* fournit un support technique ;
+* gère l'infrastructure et les mécanismes d'exécution ;
+* contient du code technique.
 
 ## II.3) `ClDraft`
 

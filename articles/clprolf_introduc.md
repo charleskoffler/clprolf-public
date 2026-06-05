@@ -1,11 +1,13 @@
-# Clprolf — A new way to express your talent with OOP
+# Clprolf — Introduction
+
+Clprolf stands for CLear PROgramming Language and Framework.
 
 > **A structured approach to object-oriented programming.**
 > Roles and responsibilities become explicit.
 
-Clprolf is a **lightweight architectural-role framework for object-oriented systems**.
+Clprolf is a **lightweight architectural-role framework for Java and C#**.
 
-It adds a conceptual layer on top of Java/C#/PHP-style OOP by making roles, responsibilities, and structural rules explicit.
+It adds a conceptual layer on top of Java/C# OOP by making roles, responsibilities, and structural rules explicit.
 
 You model systems with **agents**, **workers**, **family interfaces**, and **trait interfaces**, while architectural rules can be verified through automated checks.
 
@@ -13,14 +15,13 @@ You model systems with **agents**, **workers**, **family interfaces**, and **tra
 
 ## Scope and Positioning
 
-Clprolf is not intended as a mainstream replacement for Java or other general-purpose languages.
+It is particularly suited to:
 
-It is designed for:
-
+* teams that want a lightweight structural guide for object-oriented design without adopting a heavy architectural framework,
 * educational contexts focused on architectural clarity,
 * complex systems,
 * simulation and MAS-like applications,
-* systems requiring strong predictability and structural discipline.
+* long-lived codebases where explicit responsibilities and coherent inheritance are important.
 
 Clprolf introduces explicit structural constraints through predefined roles and natures.
 
@@ -44,7 +45,7 @@ Clprolf is intended for contexts where early architectural control and long-term
 ## 📝 Quick Example
 
 ```java
-@Agent
+@ClAgent
 public class OrderService {
     private final OrderRepository repo;
 
@@ -53,7 +54,7 @@ public class OrderService {
     }
 }
 
-@Worker
+@ClWorker
 public class OrderRepository {
     public void save(Order order) {
         // database access
@@ -69,14 +70,11 @@ With Clprolf, roles are explicit, responsibilities are clearer, and structural r
 
 ## ✨ Key Ideas
 
-* Role-based classes: `agent`, `worker`, `indef_obj`
-* Structured interfaces: `family_interf`, `trait_interf`, `compat_interf`
+* Role-based classes: `agent`, `worker`, `draft`
+* Structured interfaces: `family`, `trait`, `free`
 * Domain-preserving inheritance
 * Composition when inheritance would mix incompatible domains
-* Usable as:
-
-  * a **framework** with annotations for Java, C#, PHP 8+
-  * a **language-oriented model** close to Java
+* a **framework** with annotations for Java, C#
 
 ---
 
@@ -117,6 +115,10 @@ For example:
 * A `Connection` class has a class domain related to connection management.
 * A `PdfGenerator` class has a class domain related to PDF generation.
 
-A technical class, by contrast, does not represent a conceptual domain.
+It is thanks to the class domain that the boundaries between roles remain clear.
 
-It provides technical support, such as logging, parsing, low-level utilities, infrastructure access, or other support mechanisms.
+A technical class is primarily intended to support agent classes rather than be organized around a class domain.
+
+Workers provide technical support and infrastructure services. They may coordinate or use low-level agent classes such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
+
+Instead, it exists to support other components through technical mechanisms, infrastructure access, application startup, operating-system interaction, or similar responsibilities.

@@ -120,10 +120,14 @@ public class OrderProcessor {
 
 Represents a technical class.
 
+A technical class is primarily intended to support agent classes rather than be organized around a class domain.
+Workers provide technical support and infrastructure services. They may coordinate or use low-level agent classes such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
+Instead, it exists to support other components through technical mechanisms, infrastructure access, application startup, operating-system interaction, or similar responsibilities.
+
 A `worker`:
 
-* performs machine-oriented tasks,
-* manages infrastructure,
+* provides technical support,
+* manages infrastructure and execution mechanisms,
 * contains technical code.
 
 Example:
