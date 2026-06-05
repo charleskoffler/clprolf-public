@@ -350,7 +350,7 @@ Traits also use a target role:
 ```java
 @ClAgent
 @ClTrait
-public interface agent Payable {
+public interface Payable {
     void pay();
 }
 ```

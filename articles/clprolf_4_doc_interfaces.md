@@ -1,6 +1,5 @@
 # Clprolf Docs #4 — Interfaces in Clprolf: A Complete Overview
 
-
 In Clprolf, interfaces are viewed as:
 
 > abstract forms of inheritance.
@@ -8,9 +7,9 @@ In Clprolf, interfaces are viewed as:
 They therefore participate in the structural continuity of the system.
 
 ```text
-family_interf = primary family interface
-trait_interf  = trait, shared capability between families
-compat_interf = unrestricted interface
+ClFamily = primary family interface
+ClTrait  = trait, shared capability between families
+ClDraft = unrestricted interface
 ```
 
 In Clprolf, interfaces are not viewed as simple technical contracts.
@@ -19,7 +18,7 @@ Both `extends` and `implements` relationships are considered genuine conceptual 
 
 ---
 
-## 1) `family_interf`
+## 1) `ClFamily`
 
 An interface representing an abstract family.
 
@@ -31,25 +30,29 @@ Used for:
 
 Family interfaces also have a target role:
 
-* `agent`
-* or `worker`
+* `ClAgent`
+* or `ClWorker`
 
 ---
 
 ## Example
 
-```clprolf
-public family_interf agent Animal {
+```java
+@ClAgent
+@ClFamily
+public interface Animal {
 
     void eat(int quantity);
 
 }
 ```
 
-The hierarchy of `family_interf` interfaces naturally reflects the hierarchy of concrete classes.
+The hierarchy of `ClFamily` interfaces naturally reflects the hierarchy of concrete classes.
 
-```clprolf
-public family_interf agent Horse extends Animal {
+```java
+@ClAgent
+@ClFamily
+public interface Horse extends Animal {
 
     void jump(int height);
 
@@ -58,31 +61,39 @@ public family_interf agent Horse extends Animal {
 
 Which may lead to:
 
-```clprolf
-public agent AnimalImpl implements Animal { (...) }
+```java
+@ClAgent
+public class AnimalImpl implements Animal { (...) }
 ```
 
-```clprolf
-public agent HorseImpl extends AnimalImpl implements Horse { (...) }
+```java
+@ClAgent
+public class HorseImpl extends AnimalImpl implements Horse { (...) }
 ```
 
 ---
 
-## 2) `trait_interf`
+## 2) `ClTrait`
 
-An interface representing a shared capability across multiple `family_interf`.
+An interface representing a shared capability across multiple `ClFamily`.
 
 Traits also use a target role:
 
-* `agent`
-* `worker`
+* `ClAgent`
+* `ClWorker`
+
+> **Note: a `@ClTrait` may be annotated with both `@ClAgent` and `@ClWorker`.**
+>
+> **This exception is reserved for genuinely cross-cutting traits that can be used by both agents and workers.**
 
 ---
 
 ### Business Example
 
-```clprolf
-public trait_interf agent Payable {
+```java
+@ClAgent
+@ClTrait
+public interface Payable {
     void pay();
 }
 ```
@@ -91,15 +102,17 @@ public trait_interf agent Payable {
 
 ### Technical Example
 
-```clprolf
-public trait_interf worker Persistable {
+```java
+@ClWorker
+@ClTrait
+public interface worker Persistable {
     void save();
 }
 ```
 
 ---
 
-## 3) `compat_interf`
+## 3) `ClFree`
 
 A generic interface without a specific role.
 
@@ -109,55 +122,100 @@ Allows flexibility.
 
 ### Example
 
-```clprolf
-public compat_interf ExternalApi {
+```java
+@ClFree
+public interface ExternalApi {
 }
 ```
 
 ---
 
-# 4) Interface Usage
+## 4) Interface Usage
 
-In Clprolf, `family_interf` interfaces are the equivalent of pure abstract classes.
+In Clprolf, `ClFamily` interfaces are the equivalent of pure abstract classes.
 
 They are intended to be implemented by one or more future Clprolf classes.
 
 They therefore possess a target role (`agent` or `worker`).
 
-A class may implement only one primary `family_interf` at a time, and the role of the class must match the target role of the interface.
+A class may implement only one primary `ClFamily` at a time, and the role of the class must match the target role of the interface.
 
-Clprolf therefore adopts a simple interface implementation model, in the same way that Java uses single class inheritance. Indeed, a `family_interf` is always the structural reflection of its implementation. This notably enables systematic loose coupling.
+Clprolf therefore adopts a simple interface implementation model, in the same way that Java uses single class inheritance. Indeed, a `ClFamily` is always the structural reflection of its implementation. This notably enables systematic loose coupling.
 
-However, multiple interface implementation is not removed; it is simply moved to the `family_interf` implemented by the class.
+However, multiple interface implementation is not removed; it is simply moved to the `Family` implemented by the class.
 
-This family interface may itself inherit from multiple `family_interf` and/or `trait_interf` interfaces.
+This family interface may itself inherit from multiple `Family` and/or `Trait`` interfaces.
 
-As a result, interfaces that would otherwise have been implemented directly by the class are grouped at the level of its primary `family_interf`.
+As a result, interfaces that would otherwise have been implemented directly by the class are grouped at the level of its primary `Family`.
 
 Clprolf therefore preserves the expressive power of multiple interface inheritance while maintaining a simple and coherent structure for concrete classes.
 
 ---
 
-`trait_interf` interfaces express a capability shared among multiple `family_interf` interfaces.
+`Trait` interfaces express a capability shared among multiple `Family` interfaces.
 
-A `trait_interf` therefore represents a cross-cutting trait shared by several families.
+A `Trait` therefore represents a cross-cutting trait shared by several families.
 
-Normally, a `trait_interf` may only be inherited by a `family_interf`, not directly by a class.
+Normally, a `Trait` may only be inherited by a `Family`, not directly by a class.
 
-However, direct implementation of a `trait_interf` by a class remains tolerated in Clprolf, although discouraged.
+However, direct implementation of a `Trait` by a class remains tolerated in Clprolf, although discouraged.
 
 ```text
 Concrete Class
       ↓ implements
-family_interf
+ClFamily
       ↓ inherits from
-trait_interf
+ClTrait
 ```
 
-A `family_interf` may inherit from multiple `family_interf` and/or `trait_interf`.
+A `Family` may inherit from multiple `Family` and/or `Trait`.
 
-A `trait_interf` may inherit only from other `trait_interf`, since a trait remains a trait.
+A `Trait` may inherit only from other `Trait`, since a trait remains a trait.
 
-Interface inheritance may still be forced using `@Forc_int_inh` (or `@Forc_inh` when forcing inheritance across different target roles).
+Interface inheritance may still be forced using `@ClInterfaceBypass` (or `@ClBypass` when forcing inheritance across different target roles).
 
 ---
+
+## 5) Note on Clprolf and the Interface Segregation Principle (ISP)
+
+Clprolf inherently respects the ISP; it is simply a matter of adapting the design of your classes and interfaces using the appropriate families and traits:
+
+```java
+@ClAgent
+@ClTrait
+public interface Scanner {
+    void scan(Document doc);
+}
+
+@ClAgent
+@ClTrait
+public interface Fax {
+    void fax(Document doc);
+}
+
+@ClAgent
+@ClTrait
+public interface Printer {
+    void print(Document doc);
+}
+
+@ClAgent
+@ClFamily
+public interface OldPrinter extends Printer {
+    
+}
+
+@ClAgent
+@ClFamily
+public interface ModernPrinter extends OldPrinter, Scanner, Fax {
+}
+
+@ClAgent
+public class OldPrinterImpl implements OldPrinter {
+    // (...)
+}
+
+@ClAgent
+public class ModernPrinterImpl implements ModernPrinter {
+    // (...)
+}

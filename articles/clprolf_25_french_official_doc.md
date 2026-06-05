@@ -273,7 +273,7 @@ Les interfaces de famille possèdent également un rôle cible :
 ```java
 @ClAgent
 @ClFamily
-public interface agent Animal {
+public interface Animal {
 
     void manger(int quantite);
 
