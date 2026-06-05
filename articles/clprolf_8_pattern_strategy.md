@@ -1,4 +1,4 @@
-# Strategy Pattern in Clprolf: Clear Roles for Swappable Behavior
+# Strategy Pattern in Clprolf Framework: Clear Roles for Swappable Behavior
 
 ## 🤔 The Problem
 
@@ -9,10 +9,11 @@ Example: apply different **discount** policies without changing the checkout cod
 
 ## ✅ The Clprolf Solution
 
-In Clprolf:
+In Clprolf Framework:
 
-* a strategy is modeled as a **`family_interf agent`** (a simple, swappable rule),
-* each concrete strategy is also an **`agent`** that **implements** the base one,
+* a strategy is typically modeled as a `family agent` (a simple, swappable rule),
+* for technical variations, it may instead be modeled as a `family worker`,
+* each concrete strategy implements the base family and adopts the same role,
 * the context declares its dependency.
 
 Result: the strategy’s role, implementations, and dependency are **explicit**.
@@ -32,16 +33,20 @@ Then a `Checkout` context that uses whichever discount it’s given.
 
 ```java
 // 1) Strategy contract (a generic rule for discounts)
-public family_interf agent Discount {
+@ClAgent
+@ClFamily
+public interface Discount {
     int apply(int price);
 }
 
 // 2) Concrete strategies
-public agent NoDiscount implements Discount {
+@ClAgent
+public class NoDiscount implements Discount {
     public int apply(int price) { return price; }
 }
 
-public agent PercentageDiscount implements Discount {
+@ClAgent
+public class PercentageDiscount implements Discount {
     private int percent;
 
     public PercentageDiscount(int percent) { this.percent = percent; }
@@ -52,7 +57,8 @@ public agent PercentageDiscount implements Discount {
 }
 
 // 3) Context depending on a strategy
-public agent Checkout {
+@ClAgent
+public class Checkout {
     private Discount strategy;
 
     public Checkout(Discount strategy) {
@@ -72,7 +78,8 @@ public agent Checkout {
 ## 👀 Bonus: Demo with swappable discounts
 
 ```java
-public worker StrategyDemo {
+@ClWorker
+public class StrategyDemo {
     public static void main(String[] args) {
         int[] cart = new int[] { 4000, 2000, 1500 }; // total = 7500
 
@@ -91,9 +98,9 @@ public worker StrategyDemo {
 
 ---
 
-## 🔎 Why this is clear in Clprolf
+## 🔎 Why this is clear in Clprolf Framework
 
-* `family_interf agent` shows immediately that a discount is a **generic, swappable rule**.
+* `family agent` shows immediately that a discount is a **generic, swappable rule**.
 * Swapping is just supplying a different **agent** — the context stays untouched.
 
 ---
@@ -115,13 +122,13 @@ But in reality, it already carries a **business role**: “choosing a behavior.�
 
 👉 Clprolf makes this dimension explicit.
 
-* Here, the role is `agent` → a discount is a rule.
+* Here, the role is `agent` → a discount is a rule domain.
 * In another case, a Strategy could be an `agent` (e.g., choosing a routing algorithm).
 * For technical variations, it might be a `worker` (like multiple DAO implementations).
 
 **This is where Clprolf innovates:**
 
-> Design patterns don’t just solve problems — they map naturally to roles (`agent`, `agent`, `worker`).
+> Design patterns don’t just solve problems — they map naturally to roles (`agent`, `worker`).
 > And when the role is explicit, the pattern’s intent becomes crystal clear.
 
 ---
