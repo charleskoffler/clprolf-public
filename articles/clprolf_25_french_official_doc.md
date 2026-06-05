@@ -103,7 +103,7 @@ public class OrderProcessor {
 
     public void process(Order order) {
         if(order.total() <= 0) {
-            throw Error;
+            throw new Error();
         }
         repository.save(order);
     }
@@ -285,7 +285,7 @@ La hiérarchie des interfaces ClFamily reflète naturellement la hiérarchie des
 ```java
 @ClAgent
 @ClFamily
-public class agent Horse extends Animal {
+public class Horse extends Animal {
 
     void sauter(int hauteur);
 

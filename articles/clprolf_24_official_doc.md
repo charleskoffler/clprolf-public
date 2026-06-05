@@ -43,7 +43,7 @@ Examples:
 These classes are declared using:
 
 ```java
-agent
+@ClAgent
 ```
 
 ---
@@ -61,7 +61,7 @@ The class performs a technical task:
 These classes are declared using:
 
 ```java
-worker
+@ClWorker
 ```
 
 ---
@@ -107,7 +107,7 @@ public class OrderProcessor {
 
     public void process(Order order) {
         if(order.total() <= 0) {
-            throw Error;
+            throw new Error();
         }
         repository.save(order);
     }
