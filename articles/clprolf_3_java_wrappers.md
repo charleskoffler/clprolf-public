@@ -8,7 +8,7 @@ By creating wrappers around well-known classes such as `Socket`, `Scanner`, `Str
 
 > What does this class fundamentally represent?
 
-The answer often determines whether the class naturally becomes an `@Agent` or a `@Worker`.
+The answer often determines whether the class naturally becomes an `@ClAgent` or a `@ClWorker`.
 
 Wrappers therefore serve not only as integration tools but also as educational examples of Clprolf's architectural philosophy.
 
@@ -20,15 +20,15 @@ When assigning a role in Clprolf, we first ask:
 
 > Does this class represent a coherent domain?
 
-If the answer is yes, the class will usually become an `@Agent`.
+If the answer is yes, the class will usually become an `@ClAgent`.
 
-If the class primarily exists to provide technical support, execution facilities, infrastructure access, or operating-system interaction, it will usually become a `@Worker`.
+If the class primarily exists to provide technical support, execution facilities, infrastructure access, or operating-system interaction, it will usually become a `@ClWorker`.
 
 In simplified form:
 
 ```text
-Agent  → represents a domain
-Worker → supports a domain
+ClAgent  → represents a domain
+ClWorker → supports a domain
 ```
 
 ---
@@ -43,10 +43,10 @@ network communication endpoint
 
 It has its own identity, state, and behavior.
 
-For this reason, it naturally becomes an `@Agent`.
+For this reason, it naturally becomes an `@ClAgent`.
 
 ```java
-@Agent
+@ClAgent
 public class ClpSocket extends Socket {
 
 }
@@ -58,7 +58,7 @@ It is the subject being manipulated.
 
 ---
 
-## ClpSocketServer
+## ClpServerSocket
 
 A socket server also represents a coherent domain:
 
@@ -71,22 +71,22 @@ Its purpose is not to assist another component.
 It represents a system concept in its own right.
 
 ```java
-@Agent
-public class ClpSocketServer extends ServerSocket {
+@ClAgent
+public class ClpServerSocket extends ServerSocket {
 
-    public ClpSocketServer() throws IOException {
+    public ClpServerSocket() throws IOException {
         super();
     }
 
-    public ClpSocketServer(int port) throws IOException {
+    public ClpServerSocket(int port) throws IOException {
         super(port);
     }
 
-    public ClpSocketServer(int port, int backlog) throws IOException {
+    public ClpServerSocket(int port, int backlog) throws IOException {
         super(port, backlog);
     }
 
-    public ClpSocketServer(int port, int backlog, InetAddress bindAddr)
+    public ClpServerSocket(int port, int backlog, InetAddress bindAddr)
             throws IOException {
         super(port, backlog, bindAddr);
     }
@@ -107,10 +107,10 @@ Its domain is:
 graphical user interaction
 ```
 
-Therefore, it can naturally be modeled as an `@Agent`.
+Therefore, it can naturally be modeled as an `@ClAgent`.
 
 ```java
-@Agent
+@ClAgent
 public class ClpJButton extends JButton {
 
 }
@@ -129,7 +129,7 @@ input scanning
 It performs a coherent responsibility and remains meaningful when considered independently.
 
 ```java
-@Agent
+@ClAgent
 public final class ClpScanner {
 
     private final Scanner internal;
@@ -144,7 +144,7 @@ public final class ClpScanner {
 }
 ```
 
-For this reason, it is naturally modeled as an `@Agent`.
+For this reason, it is naturally modeled as an `@ClAgent`.
 
 ---
 
@@ -161,7 +161,7 @@ textual data
 Even though Java declares `String` as `final`, the Clprolf interpretation remains the same.
 
 ```java
-@Agent
+@ClAgent
 public final class ClpString {
 
     private final String internal;
@@ -199,10 +199,10 @@ Instead, it exposes technical services such as:
 
 Its role is to support other components.
 
-For this reason, it is naturally modeled as a `@Worker`.
+For this reason, it is naturally modeled as a `@ClWorker`.
 
 ```java
-@Worker
+@ClWorker
 public final class ClpSystem {
 
     public static PrintStream getOut() {
@@ -247,7 +247,7 @@ Examples:
 
 ```text
 Socket         → Agent
-SocketServer   → Agent
+ServerSocket   → Agent
 Scanner        → Agent
 JButton        → Agent
 String         → Agent
@@ -272,8 +272,8 @@ When creating a wrapper, a useful question is:
 
 > Does this class represent a coherent subject?
 
-If the answer is yes, it will usually become an `@Agent`.
+If the answer is yes, it will usually become an `@ClAgent`.
 
-If it primarily provides technical support to other components, it will usually become a `@Worker`.
+If it primarily provides technical support to other components, it will usually become a `@ClWorker`.
 
 This simple principle helps make architectural intent explicit while remaining compatible with the Java ecosystem.
