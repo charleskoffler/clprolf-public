@@ -62,7 +62,7 @@ Feel free to reach out by email if you want more information
 
 * [**Clprolf Docs #2 — A QuickSort Example: Java vs. Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_2_java_vs_clprolf.md)
 
-* [**Clprolf Docs #1 — Declensions Explained**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_1_declensions_expl.md)
+* [**Clprolf Docs #1 — Class Roles Explained**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_1_class_roles_expl.md)
 
 * [**🧱 Two Structural Principles behind Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_0.5_principles.md)
 

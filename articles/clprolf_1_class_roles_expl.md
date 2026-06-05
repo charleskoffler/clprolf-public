@@ -1,6 +1,6 @@
-# Clprolf Docs #1 — Declensions Explained
+# Clprolf Docs #1 — Clprolf Class Roles Explained
 
-## Foundational Principles of Clprolf
+## Foundational Principles of Clprolf (CLear PROgramming Language and Framework)
 
 Clprolf is based on two core principles:
 
@@ -46,17 +46,17 @@ It may represent:
 
 ---
 
-## What Is a Declension?
+## What Is a Class Role?
 
-A **declension** expresses the nature of a class.
+It expresses the role of a class.
 
 Rather than treating every class as a generic object, Clprolf makes its role explicit.
 
-The available declensions are:
+The available roles are:
 
 1. **`agent`**
 2. **`worker`**
-3. **`indef_obj`**
+3. **`draft`**
 
 These roles are intentionally few in number to keep the model simple and easy to understand.
 
@@ -92,7 +92,7 @@ However, its primary identity always comes from its domain.
 
 ## `worker`
 
-A `worker` is a technical support class.
+A worker is a class whose primary purpose is to provide technical support to other classes.
 
 It exists primarily to help one or more agents perform technical operations.
 
@@ -123,9 +123,9 @@ Its role is to provide technical support.
 
 ---
 
-## `indef_obj`
+## `draft`
 
-An `indef_obj` is an object whose nature has not yet been identified.
+A `draft` is an object whose domain has not yet been identified.
 
 It behaves similarly to a traditional object-oriented class.
 
@@ -139,7 +139,8 @@ Typical use cases include:
 Example:
 
 ```clprolf
-public class_for indef_obj TemporaryManager {
+@ClDraft
+public class TemporaryManager {
 }
 ```
 
@@ -178,61 +179,33 @@ Clprolf uses this principle to help maintain coherent hierarchies.
 Inheritance exceptions may still be forced through:
 
 ```text
-@Forced_inh
+@ClBypass
 ```
 
 when required.
 
 ---
 
-## Using Declensions
+## Using Class Roles
 
-In pure Clprolf, the declension replaces the traditional `class` keyword.
+In Clprolf, the class role is annotated on the class.
 
 Examples:
 
-```clprolf
-public class_for agent Animal {
-}
-```
-
-```clprolf
-public class_for worker AnimalWorker {
-}
-```
-
-```clprolf
-public class_for indef_obj TemporaryManager {
-}
-```
-
-The shorter syntax is also possible:
-
-```clprolf
-public agent Animal {
-}
-```
-
----
-
-## Framework Usage
-
-When using Clprolf as a framework, declensions are expressed through annotations.
-
 ```java
-@Agent
+@ClAgent
 public class Animal {
 }
 ```
 
 ```java
-@Worker
+@ClWorker
 public class AnimalWorker {
 }
 ```
 
 ```java
-@Indef_obj
+@ClDraft
 public class TemporaryManager {
 }
 ```
@@ -261,29 +234,24 @@ Examples:
 
 ```text
 AnimalWorker
-ControllerWorker
 ApplicationLauncher
 ProcessLauncher
 OperatingSystemWorker
 SystemExecutor
 ```
 
-Some situations may admit multiple interpretations.
-
-Clprolf provides guidance, but the final architectural interpretation remains the developer's responsibility.
-
 ---
 
 ## Summary
 
-Declensions transform classes into explicit architectural components.
+Class roles transform classes into explicit architectural components.
 
 They make responsibilities visible and provide a common vocabulary for reasoning about systems.
 
 ```text
 agent     → represents a domain
 worker    → supports a domain
-indef_obj → undefined role
+draft  → domain not yet identified
 ```
 
 By making these distinctions explicit, Clprolf helps maintain readable structures, coherent inheritance hierarchies, and long-term architectural clarity.
