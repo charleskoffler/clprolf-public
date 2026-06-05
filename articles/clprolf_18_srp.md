@@ -1,8 +1,6 @@
-# “One Reason to Change” — The Forgotten Logic Behind the SRP
+# “One Reason to Change” — The SRP in Clprolf Framework
 
-## And How Clprolf Makes It Visible
-
-## 1. The SRP is not wrong, just incomplete
+## 1. Trying to precise SRP
 
 The *Single Responsibility Principle* (SRP) is quoted everywhere.
 
@@ -77,7 +75,7 @@ Confusing method-level actions with class-level responsibility is what leads to 
 
 ---
 
-## 4. Misinterpretation alert — SRP does not mean “one method per class”
+## 4. "SRP does not mean “one method per class”
 
 A common misunderstanding says:
 
@@ -133,7 +131,7 @@ It confirms its role.
 
 ---
 
-## 6. Where Clprolf brings clarity
+## 6. Where Clprolf framework could bring clarity
 
 This is exactly where **Clprolf** goes beyond discussion.
 
@@ -144,7 +142,7 @@ In Clprolf:
 
 * every class declares its main role;
 * that role reveals the class’s conceptual nature;
-* its responsibility flows from that nature;
+* its responsibility flows from that domain;
 * its methods are expected to remain coherent with that responsibility.
 
 A class is no longer just a block of code.
@@ -153,7 +151,7 @@ It declares what kind of object it is.
 For example:
 
 ```java
-@Agent
+@ClAgent
 public class Doctor {
 }
 ```
@@ -165,20 +163,17 @@ This says:
 And:
 
 ```java
-@Worker
-public class DatabaseWriter {
+@ClWorker
+public class OrderDAO {
 }
 ```
 
 This says:
 
-> DatabaseWriter is a worker: a technical performer serving execution.
+> OrderDAO is a worker: a technical performer serving execution.
 
-Clprolf does not make bad design impossible.
+Clprolf framework does not make bad design impossible.
 But it makes incoherence visible.
-
-You do not merely try to obey the SRP silently.
-With Clprolf, you cannot violate it silently anymore.
 
 The class has declared its role, so any contradiction becomes easier to see, discuss, test, or even detect automatically.
 
@@ -186,20 +181,20 @@ The class has declared its role, so any contradiction becomes easier to see, dis
 
 ## 7. From moral advice to structural clarity
 
-Without Clprolf, SRP often remains a moral principle:
+SRP often remains a moral principle:
 
 > “Try to keep your classes focused.”
 
-With Clprolf, the principle becomes structural:
+With Clprolf framework, the principle becomes structural:
 
 ```java
-@Agent
+@ClAgent
 public class OrderProcessor {
 }
 ```
 
 ```java
-@Worker
+@ClWorker
 public class OrderRepository {
 }
 ```
@@ -289,10 +284,10 @@ This method mixes:
 
 The method has more than one reason to change.
 
-In Clprolf, the preferred structure would be:
+In Clprolf framework, the preferred structure would be:
 
 ```java
-@Agent
+@ClAgent
 public class OrderProcessor {
     private OrderRepository repository;
 
@@ -307,7 +302,7 @@ public class OrderProcessor {
 ```
 
 ```java
-@Worker
+@ClWorker
 public class OrderRepository {
     public void save(Order order) {
         // technical persistence code
@@ -355,7 +350,7 @@ The question is:
 
 ---
 
-## 11. Clprolf and inheritance coherence
+## 11. Clprolf framework and inheritance coherence
 
 SRP is also related to inheritance.
 
@@ -367,13 +362,13 @@ If a class inherits from another class, it should remain in the same coherent do
 For example:
 
 ```java
-@Agent
+@ClAgent
 public class Animal {
 }
 ```
 
 ```java
-@Agent
+@ClAgent
 public class Dog extends Animal {
 }
 ```
@@ -383,13 +378,13 @@ This is coherent: Dog remains in the same conceptual family as Animal.
 But this is not coherent:
 
 ```java
-@Worker
+@ClWorker
 public class DatabaseConnection {
 }
 ```
 
 ```java
-@Agent
+@ClAgent
 public class Dog extends DatabaseConnection {
 }
 ```
@@ -413,7 +408,7 @@ The SRP says:
 
 > A class should have only one reason to change.
 
-Clprolf asks:
+Clprolf framework asks:
 
 > Where does that reason come from?
 
@@ -442,7 +437,7 @@ It turns a slogan into something readable in code.
 
 | Concept            | Meaning                                        | Example               |
 | ------------------ | ---------------------------------------------- | --------------------- |
-| **Nature**         | What the class conceptually represents         | `Doctor`              |
+| **Domain**         | What the class conceptually represents         | `Doctor`              |
 | **Responsibility** | What the class is responsible for as a whole   | Caring for patients   |
 | **Methods**        | Concrete actions expressing the responsibility | `takeBloodPressure()` |
 | **Agent**          | Class with a conceptual/domain role            | `OrderProcessor`      |
@@ -468,20 +463,17 @@ If the class mixes unrelated responsibilities, every change becomes dangerous.
 
 That is what the SRP was trying to say.
 
-Clprolf makes it visible.
+Clprolf framework helps to make it visible.
 
 ---
 
 ## Conclusion
 
-The SRP was never the enemy.
-It simply stopped halfway.
-
-It told us:
+The SRP told us:
 
 > “A class should have only one reason to change.”
 
-Clprolf completes the sentence:
+Clprolf tries to complete the sentence:
 
 > **A class should have only one reason to change because its responsibility flows from one main nature, made visible by its declared role.**
 
