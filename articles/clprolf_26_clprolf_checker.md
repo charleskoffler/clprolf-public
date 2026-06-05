@@ -96,14 +96,14 @@ A @ClTrait must declare at least one target role: @ClAgent, @ClWorker, or except
 When a `@ClFamily` or `@ClTrait` inherits from a `@Trait_interf`, its target role must be compatible with the role of the inherited trait.
 For example, an `@ClAgent` family interface may inherit from an `@ClAgent` trait, but not from a `@ClWorker` trait.
 Traits annotated with both `@ClAgent` and `@ClWorker` are considered compatible with either role.
-The rule may be overridden using `@Forc_inh`.
+The rule may be overridden using `@ClBypass`.
 
 ### Family interfaces must have compatible inherited family interfaces
 
 When a `@ClFamily` inherits from another `@Family_interf`, both interfaces must have compatible target roles.
 For example, an `@ClAgent` family interface may inherit from another `@ClAgent` family interface, but not from a `@ClWorker` family interface.
 This rule preserves the conceptual domain across family interface hierarchies.
-The rule may be overridden using `@Forc_inh`.
+The rule may be overridden using `@ClBypass`.
 
 ### Direct trait implementation must respect trait roles
 
@@ -131,7 +131,7 @@ is invalid if `Persistable` is a `@ClWorker` trait.
 
 Traits annotated with both `@ClAgent` and `@ClWorker` are compatible with either type of class.
 
-The rule may be overridden using `@Forc_inh`.
+The rule may be overridden using `@ClBypass`.
 
 ---
 
