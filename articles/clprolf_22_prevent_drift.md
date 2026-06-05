@@ -1,6 +1,6 @@
-# Preventing Architectural Drift in Object-Oriented Systems
+# Preventing Architectural Drift in Object-Oriented Systems with Clprolf framework
 
-## A Structural Approach with Clprolf
+## A Structural Approach with Clprolf framework
 
 Most large object-oriented systems do not collapse because developers lack expressive tools.
 
@@ -43,15 +43,17 @@ Is it infrastructure?
 
 Clprolf makes the role explicit:
 
-```clprolf
-public agent Sorter {
+```java
+@ClAgent
+public class Sorter {
 }
 ```
 
 or:
 
-```clprolf
-public worker Sorter {
+```java
+@ClWorker
+public class Sorter {
 }
 ```
 
@@ -61,13 +63,9 @@ It declares its primary architectural role.
 
 An `agent` carries conceptual meaning, domain behavior, application logic, simulation logic, or coordination.
 
-A `worker` performs technical execution: I/O, rendering, persistence, networking, launching, system access, or other infrastructure work.
+A `worker` performs technical execution, for an agent( I/O, rendering, persistence, networking), launching, or system access.
 
-This small declaration changes the mindset.
-
-The class is no longer just “a class”.
-
-It is a class with a declared place in the architecture.
+The class becomes a class with a declared place in the architecture.
 
 ---
 
@@ -75,12 +73,13 @@ It is a class with a declared place in the architecture.
 
 A class name describes.
 
-A Clprolf declension commits.
+A Clprolf class role commits.
 
 For example:
 
-```clprolf
-public agent OrderProcessor {
+```java
+@ClAgent
+public class OrderProcessor {
 }
 ```
 
@@ -90,8 +89,9 @@ means:
 
 And:
 
-```clprolf
-public worker OrderRepository {
+```java
+@ClWorker
+public class OrderRepository {
 }
 ```
 
@@ -108,7 +108,7 @@ A technical helper becomes a hidden domain object.
 
 In traditional OOP, these shifts can happen silently.
 
-In Clprolf, they become visible because the class has already declared what kind of role it is supposed to play.
+In Clprolf framework, they become visible because the class has already declared what kind of role it is supposed to play.
 
 The declaration does not remove human judgment.
 
@@ -129,7 +129,7 @@ Many architectural principles already tell developers what to do:
 
 These principles are valuable, but they are often expressed as advice.
 
-Clprolf turns part of this advice into structure.
+Clprolf framework turns part of this advice into structure.
 
 It does not rely only on naming conventions or team memory.
 
@@ -137,13 +137,15 @@ It makes role separation visible in the code itself.
 
 For example:
 
-```clprolf
-public agent CheckoutService {
+```java
+@ClAgent
+public class CheckoutService {
 }
 ```
 
-```clprolf
-public worker PaymentRepository {
+```java
+@ClWorker
+public class PaymentRepository {
 }
 ```
 
@@ -176,11 +178,13 @@ That is why Clprolf enforces a simple rule:
 
 For example:
 
-```clprolf
-public agent Animal {
+```java
+@ClAgent
+public class Animal {
 }
 
-public agent Dog extends Animal {
+@ClAgent
+public class Dog extends Animal {
 }
 ```
 
@@ -190,18 +194,20 @@ This is coherent.
 
 But this is not coherent:
 
-```clprolf
-public worker DatabaseConnection {
+```java
+@ClWorker
+public class AnimalWorker {
 }
 
-public agent Dog extends DatabaseConnection {
+@ClAgent
+public class Dog extends AnimalWorker {
 }
 ```
 
 This inheritance mixes unrelated roles.
 
 `Dog` is a conceptual object.
-`DatabaseConnection` is technical infrastructure.
+`AnimalWorker` is a worker aiding an agent.
 
 The correct solution is composition.
 
@@ -225,25 +231,17 @@ Then business decisions from another domain.
 
 Eventually, the class still has the same name, but no longer the same responsibility.
 
-Clprolf prevents this migration from being silent.
+Clprolf framework prevents this migration from being silent.
 
 If a class is declared as an `agent`, technical work should remain secondary or be delegated to workers.
 
 If a class is declared as a `worker`, it should not become the place where domain decisions are made.
 
-This does not mean Clprolf is rigid.
-
-An agent may contain a reasonable amount of technical code when that improves simplicity or readability.
+An agent may contain a reasonable amount of technical code when that improves simplicity or readability, or having secondary domains.
 
 A worker may call back an agent when acting as a bridge, for example in UI events, callbacks, or adapters.
 
 But the primary role must remain clear.
-
-That is the structural lock.
-
-Not a prison.
-
-A visible boundary.
 
 ---
 
@@ -281,7 +279,7 @@ But it can no longer contradict its declared role silently.
 
 ---
 
-## 7. Clprolf and architectural maintenance
+## 7. Clprolf framework and architectural maintenance
 
 Clprolf is not only useful when writing new code.
 
@@ -291,7 +289,7 @@ When a class becomes hard to understand, Clprolf encourages a simple question:
 
 > What is the primary role of this class?
 
-If the answer is not clear, the class may temporarily remain an `indef_obj`.
+If the answer is not clear, the class may temporarily remain an `ClDraft`.
 
 If the answer becomes clear, it can be refactored into an `agent`, a `worker`, or several smaller classes with clearer responsibilities.
 
@@ -308,7 +306,7 @@ Clprolf therefore helps prevent architectural drift in two ways:
 
 ---
 
-## 8. What Clprolf does not do
+## 8. What Clprolf framework does not do
 
 Clprolf does not reduce what can be built.
 
@@ -319,16 +317,6 @@ It does not replace existing architectures such as MVC, Clean Architecture, or D
 It does not prevent developers from making decisions.
 
 Instead, it makes those decisions visible.
-
-Clprolf does not say:
-
-> “There is only one possible architecture.”
-
-It says:
-
-> “Declare the role of each class, and keep the structure coherent with that role.”
-
-That is a small rule with large consequences.
 
 ---
 
