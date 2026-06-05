@@ -22,8 +22,6 @@ Feel free to reach out by email if you want more information
 
 * [French][**Clprolf — Documentation Officielle**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_25_french_official_doc.md)
 
-* [**Introducing Flexibility Without Losing Structure in Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_24_minimalist.md)
-
 * [**Preventing Architectural Drift in Object-Oriented Systems — A Structural Approach with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_22_prevent_drift.md)
 
 * [**Refactoring Your Classes with Clprolf and `indef_obj`**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_21_refactoring.md)

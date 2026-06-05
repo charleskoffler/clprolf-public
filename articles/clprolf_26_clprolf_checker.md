@@ -17,13 +17,13 @@ Classes
 --------
 Agent
 Worker
-Indef_obj
+Draft
 
 Interfaces
 ----------
-Family_interf
-Trait_interf
-Compat_interf
+Family
+Trait
+Free
 ```
 
 The framework is based on two fundamental principles:
@@ -46,8 +46,8 @@ The `ClprolfArchTest` checker validates the framework's core rules.
 ### A class cannot be both Agent and Worker
 
 ```java
-@Agent
-@Worker
+@ClAgent
+@ClWorker
 public class InvalidClass {
 }
 ```
@@ -58,7 +58,7 @@ A class must have a single primary role.
 
 ### Inheritance must preserve the role
 
-A `@Worker` class cannot inherit from an `@Agent` class, and vice versa.
+A `@ClWorker` class cannot inherit from an `@ClAgent` class, and vice versa.
 
 This reflects one of Clprolf's central principles:
 
@@ -68,9 +68,9 @@ This reflects one of Clprolf's central principles:
 
 ### Family interfaces must match implementation roles
 
-A class implementing a `@Family_interf` must have a role compatible with the target role of that interface.
+A class implementing a `@ClFamily` must have a role compatible with the target role of that interface.
 
-For example, an `@Agent` family interface should normally be implemented by an `@Agent` class.
+For example, an `@ClAgent` family interface should normally be implemented by an `@ClAgent` class.
 
 ---
 
@@ -84,52 +84,52 @@ This keeps interface inheritance structurally coherent.
 
 ### Clprolf interfaces must declare a target role
 
-Every `@Family_interf` and `@Trait_interf` must explicitly declare whether it belongs to the Agent world or the Worker world.
+Every `@ClFamily` and `@ClTrait` must explicitly declare whether it belongs to the Agent world or the Worker world.
 
-A @Family_interf must declare exactly one target role: @Agent or @Worker.
-A @Trait_interf must declare at least one target role: @Agent, @Worker, or exceptionally both.
+A @ClFamily must declare exactly one target role: @ClAgent or @ClWorker.
+A @ClTrait must declare at least one target role: @ClAgent, @ClWorker, or exceptionally both.
 
 ---
 
 ### Inheriting interfaces must have a role compatible with inherited traits
 
-When a `@Family_interf` or `@Trait_interf` inherits from a `@Trait_interf`, its target role must be compatible with the role of the inherited trait.
-For example, an `@Agent` family interface may inherit from an `@Agent` trait, but not from a `@Worker` trait.
-Traits annotated with both `@Agent` and `@Worker` are considered compatible with either role.
+When a `@ClFamily` or `@ClTrait` inherits from a `@Trait_interf`, its target role must be compatible with the role of the inherited trait.
+For example, an `@ClAgent` family interface may inherit from an `@ClAgent` trait, but not from a `@ClWorker` trait.
+Traits annotated with both `@ClAgent` and `@ClWorker` are considered compatible with either role.
 The rule may be overridden using `@Forc_inh`.
 
 ### Family interfaces must have compatible inherited family interfaces
 
-When a `@Family_interf` inherits from another `@Family_interf`, both interfaces must have compatible target roles.
-For example, an `@Agent` family interface may inherit from another `@Agent` family interface, but not from a `@Worker` family interface.
+When a `@ClFamily` inherits from another `@Family_interf`, both interfaces must have compatible target roles.
+For example, an `@ClAgent` family interface may inherit from another `@ClAgent` family interface, but not from a `@ClWorker` family interface.
 This rule preserves the conceptual domain across family interface hierarchies.
 The rule may be overridden using `@Forc_inh`.
 
 ### Direct trait implementation must respect trait roles
 
-Although direct implementation of a `@Trait_interf` by a concrete class is tolerated in non-strict mode, the class must still have a role compatible with the trait.
+Although direct implementation of a `@ClTrait` by a concrete class is tolerated in non-strict mode, the class must still have a role compatible with the trait.
 
 For example:
 
 ```java
-@Agent
+@ClAgent
 public class Order implements Payable {
 }
 ```
 
-is valid if `Payable` is an `@Agent` trait.
+is valid if `Payable` is an `@ClAgent` trait.
 
 However:
 
 ```java
-@Agent
+@ClAgent
 public class Order implements Persistable {
 }
 ```
 
-is invalid if `Persistable` is a `@Worker` trait.
+is invalid if `Persistable` is a `@ClWorker` trait.
 
-Traits annotated with both `@Agent` and `@Worker` are compatible with either type of class.
+Traits annotated with both `@ClAgent` and `@ClWorker` are compatible with either type of class.
 
 The rule may be overridden using `@Forc_inh`.
 
@@ -146,19 +146,19 @@ These rules are optional and intended for teams that want complete Clprolf class
 Each class should explicitly be:
 
 ```java
-@Agent
+@ClAgent
 ```
 
 or
 
 ```java
-@Worker
+@ClWorker
 ```
 
 or
 
 ```java
-@Indef_obj
+@ClDraft
 ```
 
 ---
@@ -168,19 +168,19 @@ or
 Each interface should explicitly be:
 
 ```java
-@Family_interf
+@ClFamily
 ```
 
 or
 
 ```java
-@Trait_interf
+@ClTrait
 ```
 
 or
 
 ```java
-@Compat_interf
+@ClFree
 ```
 
 ---
@@ -200,8 +200,8 @@ This does not remove multiple interface inheritance. Instead, multiple inheritan
 For example:
 
 ```java
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface Horse
         extends Animal,
                 Mammal,
@@ -212,7 +212,7 @@ public interface Horse
 The concrete implementation remains simple:
 
 ```java
-@Agent
+@ClAgent
 public class HorseImpl implements Horse {
 }
 ```
