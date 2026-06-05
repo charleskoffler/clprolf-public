@@ -2,7 +2,7 @@ package org.clprolf.examples.games.snake_game.impl;
 
 import java.util.Random;
 
-import org.clprolf.framework.Agent;
+import org.clprolf.framework.ClAgent;
 import org.clprolf.examples.games.snake_game.interfaces.FoodExpert;
 import org.clprolf.examples.games.snake_game.interfaces.Snake;
 import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
@@ -11,7 +11,7 @@ import org.clprolf.examples.games.snake_game.workers.interfaces.SnakeGameSceneRe
 
 
 //Not a pure abstraction, because it has a worker.
-@Agent
+@ClAgent
 public class SnakeGameSceneImpl implements SnakeGameScene {
 	
 	private SnakeGameSceneRenderer renderer;
@@ -58,7 +58,7 @@ public class SnakeGameSceneImpl implements SnakeGameScene {
 	
 	//A simple class representing a location in the scene
 	// public real_world_obj Place
-	@Agent
+	@ClAgent
 	public static class Place {
 		int x;
 		int y;

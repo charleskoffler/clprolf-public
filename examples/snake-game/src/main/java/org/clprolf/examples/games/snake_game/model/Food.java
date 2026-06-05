@@ -1,8 +1,8 @@
 package org.clprolf.examples.games.snake_game.model;
 
-import org.clprolf.framework.Agent;
+import org.clprolf.framework.ClAgent;
 
-@Agent
+@ClAgent
 public class Food {
 	public enum FoodType {
 		APPLE, ORANGE

@@ -1,6 +1,6 @@
 package org.clprolf.examples.games.snake_game.workers.impl;
 
-import org.clprolf.framework.Worker;
+import org.clprolf.framework.ClWorker;
 import org.clprolf.examples.games.snake_game.impl.SnakeGameSceneImpl;
 import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
 
@@ -24,7 +24,7 @@ import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
  *
  */
 
-@Worker
+@ClWorker
 public class SnakeGameLauncher {
 	public static void main(String[] args) {
 		//Just create a scene, and the game will start.

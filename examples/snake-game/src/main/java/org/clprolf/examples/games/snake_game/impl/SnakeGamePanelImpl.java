@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.clprolf.framework.Agent;
+import org.clprolf.framework.ClAgent;
 import org.clprolf.examples.games.snake_game.impl.SnakeImpl.SnakeLink;
 import org.clprolf.examples.games.snake_game.interfaces.Snake;
 import org.clprolf.examples.games.snake_game.interfaces.SnakeGamePanel;
@@ -16,7 +16,7 @@ import org.clprolf.examples.games.snake_game.model.Food;
 /* The real drawing container. */
 
 // Inherit from a system abstraction
-@Agent
+@ClAgent
 public class SnakeGamePanelImpl extends JPanel implements SnakeGamePanel {
 
 	private SnakeWindow gameWindow;

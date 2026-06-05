@@ -3,7 +3,7 @@ package org.clprolf.examples.games.snake_game.impl;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 
-import org.clprolf.framework.Agent;
+import org.clprolf.framework.ClAgent;
 import org.clprolf.examples.games.snake_game.impl.SnakeImpl.SlidingType;
 import org.clprolf.examples.games.snake_game.interfaces.Snake;
 import org.clprolf.examples.games.snake_game.interfaces.SnakeGamePanel;
@@ -12,7 +12,7 @@ import org.clprolf.examples.games.snake_game.workers.interfaces.SnakeGameSceneRe
 
 // extends a Java class
 // System abstraction
-@Agent
+@ClAgent
 public class SnakeWindowImpl extends JFrame implements SnakeWindow {
 	//The thread abstraction
 	private Thread cyclesThread;

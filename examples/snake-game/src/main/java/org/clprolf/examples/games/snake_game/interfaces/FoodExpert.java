@@ -2,12 +2,12 @@ package org.clprolf.examples.games.snake_game.interfaces;
 
 import java.util.ArrayList;
 
-import org.clprolf.framework.Agent;
-import org.clprolf.framework.Family_interf;
+import org.clprolf.framework.ClAgent;
+import org.clprolf.framework.ClFamily;
 import org.clprolf.examples.games.snake_game.model.Food;
 
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface FoodExpert {
 	public SnakeGameScene getScene();
 

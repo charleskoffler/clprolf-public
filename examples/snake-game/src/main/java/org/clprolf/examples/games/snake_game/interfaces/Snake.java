@@ -2,13 +2,13 @@ package org.clprolf.examples.games.snake_game.interfaces;
 
 import java.util.ArrayList;
 
-import org.clprolf.framework.Agent;
-import org.clprolf.framework.Family_interf;
+import org.clprolf.framework.ClAgent;
+import org.clprolf.framework.ClFamily;
 import org.clprolf.examples.games.snake_game.impl.SnakeImpl.SlidingType;
 import org.clprolf.examples.games.snake_game.impl.SnakeImpl.SnakeLink;
 
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface Snake {
 	public int getSpeed();
 	

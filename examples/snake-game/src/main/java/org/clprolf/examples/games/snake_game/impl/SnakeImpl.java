@@ -3,12 +3,12 @@ package org.clprolf.examples.games.snake_game.impl;
 import java.util.ArrayList;
 import java.util.Random;
 
-import org.clprolf.framework.Agent;
+import org.clprolf.framework.ClAgent;
 import org.clprolf.examples.games.snake_game.interfaces.Snake;
 import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
 import org.clprolf.examples.games.snake_game.model.Food;
 
-@Agent
+@ClAgent
 public class SnakeImpl implements Snake {
 	public static int LINKS_NUMBER = 20;
 	public static int SPEED_STEP = 4; /* Three speed-gears with step of 4. */
@@ -40,7 +40,7 @@ public class SnakeImpl implements Snake {
 		STOPPED
 	}
 
-	@Agent
+	@ClAgent
 	public static class SnakeLink {
 		public int x;
 		public int y;

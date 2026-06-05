@@ -2,12 +2,12 @@ package org.clprolf.examples.games.snake_game.interfaces;
 
 import java.util.Random;
 
-import org.clprolf.framework.Agent;
-import org.clprolf.framework.Family_interf;
+import org.clprolf.framework.ClAgent;
+import org.clprolf.framework.ClFamily;
 import org.clprolf.examples.games.snake_game.workers.interfaces.SnakeGameSceneRenderer;
 
-@Agent
-@Family_interf
+@ClAgent
+@ClFamily
 public interface SnakeGameScene {
 	
 	public SnakeGameSceneRenderer getRenderer();
