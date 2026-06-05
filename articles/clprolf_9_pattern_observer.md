@@ -1,4 +1,4 @@
-# Observer Pattern in Clprolf: Clear Roles for Notifications
+# Observer Pattern in Clprolf framework: Clear Roles for Notifications
 
 ## 🤔 The Problem
 
@@ -19,9 +19,9 @@ The challenge:
 
 ## ✅ The Clprolf Solution
 
-In Clprolf:
+In Clprolf Framework:
 
-* The **Observer role** is a `family_interf agent`.
+* The **Observer role** is a `family agent`.
 * Observers are declared.
 * The **Subject** is an `agent` that declares its observers.
 
@@ -43,12 +43,15 @@ Both rely on a **DisplayWorker** for technical output.
 
 ```java
 // 1) Observer role
-public family_interf agent StockObserver {
+@ClAgent
+@ClFamily
+public interface StockObserver {
     void update(int price);
 }
 
 // 2) Neutral observer: no business logic, pure delegation
-public agent PriceNotifier implements StockObserver {
+@ClAgent
+public class PriceNotifier implements StockObserver {
     private DisplayWorker display;
 
     public PriceNotifier(DisplayWorker display) {
@@ -61,7 +64,8 @@ public agent PriceNotifier implements StockObserver {
 }
 
 // 3) Business observer: applies rules (domain logic)
-public agent TrendAnalyzer implements StockObserver {
+@ClAgent
+public class TrendAnalyzer implements StockObserver {
     private int lastPrice = -1;
     private DisplayWorker display;
 
@@ -80,14 +84,16 @@ public agent TrendAnalyzer implements StockObserver {
 }
 
 // 4) Technical worker: handles I/O
-public worker DisplayWorker {
+@ClWorker
+public class DisplayWorker {
     public void show(String msg) {
         System.out.println(msg);
     }
 }
 
 // 5) Subject: manages state and observers
-public agent Stock {
+@ClAgent
+public class Stock {
     private List<StockObserver> observers = new ArrayList<>();
     private int price;
 
@@ -107,7 +113,8 @@ public agent Stock {
 }
 
 // 6) Demo
-public worker ObserverDemo {
+@ClWorker
+public class ObserverDemo {
     public static void main(String[] args) {
         DisplayWorker display = new DisplayWorker();
 
@@ -168,11 +175,11 @@ Design patterns are more than technical tricks — they carry **implicit roles**
 * Strategy → a context and interchangeable rules.
 * Adapter → an agent when it adapts a conceptual model, a worker when it adapts technical infrastructure.
 
-👉 In Clprolf, these roles are not hidden — they are **explicit keywords** (`agent`, `worker`).
+👉 In Clprolf framework, these roles are not hidden — they are **explicit annotations** (`@ClAgent`, `@ClWorker`).
 That’s why patterns feel simpler and more natural here.
 
 ---
 
-✨ That’s it: familiar use case, clear Clprolf solution, and a proof that roles make design patterns self-explaining.
+✨ That’s it: familiar use case, clear Clprolf Framework solution, and a proof that roles make design patterns self-explaining.
 
 ---
