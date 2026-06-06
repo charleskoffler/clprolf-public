@@ -91,7 +91,7 @@ It is a conceptual category:
                           │ delegates low-level work to
                           ▼
 ┌────────────────────────────────────────────────────┐
-│                    (LOW-LEVEL WORKER)              │
+│                    (LOW-LEVEL) WORKER              │
 │     native call, rendering, I/O, OS/runtime work   │
 └────────────────────────────────────────────────────┘
 ```

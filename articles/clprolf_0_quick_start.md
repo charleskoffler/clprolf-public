@@ -1,4 +1,6 @@
-# Clprolf — CLear PROgramming Language and Framework
+# Clprolf — Quick Start
+
+Clprolf stands for CLear PROgramming Language and Framework.
 
 > **A structured approach to object-oriented programming.**
 > Roles and responsibilities become explicit.
