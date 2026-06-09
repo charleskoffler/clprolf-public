@@ -403,7 +403,7 @@ public interface Payable {
 ```java
 @ClWorker
 @ClTrait
-public interface worker Persistable {
+public interface Persistable {
     void save();
 }
 ```
