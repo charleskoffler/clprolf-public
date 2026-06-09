@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**Clprolf**("Clear PROgramming Language and Framework") est un framework pour Java (et C#).
+**Clprolf**("Clear PROgramming Language and Framework") est un framework pour Java et C# .net.
 
 Son objectif est de rendre explicites certaines bonnes pratiques de la programmation orientée objet, sans introduire une architecture lourde ni une courbe d’apprentissage importante.
 
@@ -16,6 +16,46 @@ Le framework aide ainsi à :
 * limiter la dérive architecturale,
 * rendre l’héritage plus cohérent,
 * améliorer la lisibilité des systèmes.
+
+---
+
+### En Java (ArchUnit)
+
+Dans l'écosystème Java, les composants sont marqués à l'aide d'annotations :
+
+```java
+import org.clprolf.framework.ClAgent;
+
+@ClAgent
+public class SnakeGameAgent implements IGameAgent {
+    // Logique de l'agent...
+}
+
+```
+
+### En C# (ArchUnitNET)
+
+Dans l'écosystème .NET, l'équivalent strict utilise les **Attributs C#** entre crochets `[...]` placés juste au-dessus de la classe :
+
+```csharp
+using Clprolf.ArchUnitNet.Attributes;
+
+namespace MyGame.Agents {
+
+    [ClAgent]
+    public class SnakeGameAgent : ISnakeGameAgent
+    {
+        // Logique de l'agent...
+    }
+
+}
+```
+
+---
+
+### 💡 Note pour les utilisateurs du Framework (.NET vs Java)
+
+* **Syntaxe :** Le `@Annotation` de Java devient `[Attribute]` en C#.
 
 ---
 
@@ -500,6 +540,24 @@ Il cherche à rendre explicites certaines distinctions importantes :
 Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé de deux classes ClprolfArchTest, et ClprolfStrictArchTest. Il valide les règles sémantiques.
 Les règles de ClprolfStrictArchTest sont optionnelles. De même, il est facile de changer le nom des annotations, si on préfère un autre vocabulaire.
 
+## 1. Version Java (ArchUnit)
+
+Disponible sur GitHub, le checker Java est open-source et s'articule autour de deux classes de tests principales :
+* **`ClprolfArchTest`** : Valide les règles sémantiques standard et fondamentales du framework.
+* **`ClprolfStrictArchTest`** : Regroupe des contraintes optionnelles et plus rigides pour les projets exigeants (comme l'interdiction pour une classe d'implémenter directement un `ClTrait`).
+Les checkers (Java et .Net) contiennent aussi les définitions des annotations (ou attributs) Clprolf.
+---
+
+## 2. Version C# .NET (ArchUnitNET)
+
+Le portage de l'extension .NET est disponible et publié sur GitHub :
+👉 [Clprolf.ArchUnitNet sur GitHub](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
+
+La solution Visual Studio (2022 à ce jour), contient un projet contenant le framework et les règles ArchUnit, et un projet xUnit pour les tests.
+Un troisième projet d'exemple est ajouté. Il y 8 tests obligatoires, et 4 tests stricts, actuellement.
+
+## Les règles à respecter
+
 ### clprolf_classes_must_not_mix_agent_and_worker:
 Une classe ne peut pas être annotée à la fois @ClAgent et @ClWorker
 
@@ -526,7 +584,7 @@ Les interfaces (family ou trait) qui héritent d'un trait doivent avoir un rôle
 ### family_interface_target_role_must_match_inherited_family_interface
 Les interfaces family dont hérite une interface family doivent avoir un rôle compatible, à moins d'utiliser @ClBypass.
 
-Règles plus stricts:
+Règles plus strictes:
 
 ### optional_all_classes_should_have_clprolf_role 
 Toutes les classes doivent avoir un rôle Clprolf (@ClAgent, @ClWorker ou @ClDraft)

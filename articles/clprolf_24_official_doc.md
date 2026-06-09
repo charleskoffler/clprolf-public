@@ -19,6 +19,47 @@ The framework helps to:
 
 ---
 
+### In Java (ArchUnit)
+
+In the Java ecosystem, components are marked using annotations:
+
+```java
+import org.clprolf.framework.ClAgent;
+
+@ClAgent
+public class SnakeGameAgent implements IGameAgent {
+    // Agent logic...
+}
+
+```
+
+### In C# (ArchUnitNET)
+
+In the .NET ecosystem, the strict equivalent uses **C# Attributes** enclosed in brackets `[...]` placed directly above the class:
+
+```csharp
+using Clprolf.ArchUnitNet.Attributes;
+
+namespace MyGame.Agents {
+
+    [ClAgent]
+    public class SnakeGameAgent : ISnakeGameAgent
+    {
+        // Agent logic...
+    }
+
+}
+
+```
+
+---
+
+### 💡 Note for Framework Users (.NET vs Java)
+
+* **Syntax:** Java's `@Annotation` becomes `[Attribute]` in C#.
+
+---
+
 # I) The Two Fundamental Principles
 
 Clprolf is built around two central principles.
@@ -517,86 +558,68 @@ It aims to make certain important distinctions explicit:
 
 ---
 
-# IX) ArchUnit Checker for the Clprolf Framework
+# IX) ArchUnit Checker
 
-An ArchUnit-based checker is available for the Clprolf Framework on GitHub.
-It is open source and consists of two classes: ClprolfArchTest and ClprolfStrictArchTest.
+An ArchUnit-based checker is available for the Clprolf Framework on GitHub. It is open-source and consists of two classes: `ClprolfArchTest` and `ClprolfStrictArchTest`. It validates semantic rules.
+The rules in `ClprolfStrictArchTest` are optional. Likewise, it is easy to change the annotation names if you prefer a different vocabulary.
 
-It validates the semantic rules of Clprolf.
+## 1. Java Version (ArchUnit)
 
-The rules contained in ClprolfStrictArchTest are optional.
-Likewise, annotation names can easily be customized if another vocabulary is preferred.
+Available on GitHub, the Java checker is open-source and centers around two main test classes:
+* **`ClprolfArchTest`**: Validates the standard and fundamental semantic rules of the framework.
+* **`ClprolfStrictArchTest`**: Gathers optional, more rigid constraints for demanding projects (such as forbidding a class from directly implementing a `ClTrait`).
+The checkers (both Java and .NET) also contain the definitions for Clprolf annotations (or attributes).
 
-### clprolf_classes_must_not_mix_agent_and_worker
+---
 
-A class cannot be annotated with both @ClAgent and @ClWorker.
+## 2. C# .NET Version (ArchUnitNET)
+
+The port of the .NET extension is available and published on GitHub:
+👉 [Clprolf.ArchUnitNet on GitHub](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
+
+The Visual Studio solution (2022 to date) contains a project with the framework and ArchUnit rules, along with an xUnit project for the tests.
+A third example project is also included. There are currently 8 mandatory tests and 4 strict tests.
+
+## Rules to Follow
+
+### clprolf_classes_must_not_mix_agent_and_worker:
+A class cannot be annotated as both `@ClAgent` and `@ClWorker`.
 
 ### agent_worker_inheritance_must_not_mix
+A `@ClWorker` class cannot inherit from a `@ClAgent` class, and vice versa.
 
-A @ClWorker class cannot inherit from an @ClAgent class, and vice versa.
-
-### family_interface_role_must_match_implementation
-
-The target role of a @ClFamily must match the role of its implementing class (@ClAgent or @ClWorker).
-
-Can be overridden using @ClBypass.
+### family_role_must_match_implementation
+The target role of a `@ClFamily` interface must match the role of the implementing class (`@ClAgent` or `@ClWorker`). Bypassing is possible using `@ClBypass`.
 
 ### (non-strict mode) trait_interface_role_must_match_direct_implementation
-
-A class that directly implements a trait must have a compatible role.
-
-Can be overridden using @ClBypass.
-
-Direct trait implementation is forbidden in strict mode.
+A class that directly implements a trait must have a compatible role (unless bypassed with `@ClBypass`). Forbidden in strict mode.
 
 ### trait_interfaces_must_extend_only_trait_interfaces
-
-A @ClTrait may only extend other @ClTrait interfaces.
-
-Can be overridden using @ClInterfaceBypass.
+`@ClTrait` interfaces can only inherit from other `@ClTrait` interfaces. Bypassing is possible using `@ClInterfaceBypass`.
 
 ### clprolf_interfaces_must_have_target_role
-
-A @ClFamily must declare exactly one target role:
-@ClAgent or @ClWorker.
-
-A @ClTrait must declare at least one target role:
-@ClAgent, @ClWorker, or exceptionally both.
+`@ClFamily` interfaces must have exactly one target role: `@ClAgent` or `@ClWorker`.
+`@ClTrait` interfaces must have at least one target role: `@ClAgent`, `@ClWorker`, or exceptionally both.
 
 ### inheriting_interface_role_must_match_trait_interface_target_role
-
-Any interface (family or trait) inheriting from a trait must have a role compatible with that trait.
-
-Can be overridden using @ClBypass.
+Interfaces (family or trait) that inherit from a trait must have a role compatible with that trait (unless bypassed with `@ClBypass`).
 
 ### family_interface_target_role_must_match_inherited_family_interface
+Family interfaces inherited by another family interface must have a compatible role, unless `@ClBypass` is used.
 
-Family interfaces inherited by another family interface must have a compatible target role, unless overridden with @ClBypass.
+Stricter Rules:
 
+### optional_all_classes_should_have_clprolf_role 
+All classes must have a Clprolf role (`@ClAgent`, `@ClWorker`, or `@ClDraft`).
 
-## Stricter Rules
-
-### optional_all_classes_should_have_clprolf_role
-
-Every class should declare a Clprolf role:
-@ClAgent, @ClWorker, or @ClDraft.
-
-### optional_all_interfaces_should_have_clprolf_role
-
-Every interface should declare a Clprolf interface role:
-@ClFamily, @ClTrait, or @ClFree.
+### optional_all_interfaces_should_have_clprolf_role 
+All interfaces must have a Clprolf role (`@ClFamily`, `@ClTrait`, or `@ClFree`).
 
 ### optional_class_should_not_implement_trait_directly
+A class cannot directly implement a `@ClTrait` interface (unless `@ClInterfaceBypass` is used).
 
-A class should not directly implement a @ClTrait.
-
-Use @ClInterfaceBypass if this behavior is intentionally required.
-
-### optional_class_must_implement_only_one_family_interface
-
-A Clprolf class should implement at most one @ClFamily.
-
-Can be overridden using @ClInterfaceBypass.
+### optional_class_must_implement_only_one_family_interface (OPTIONAL)
+A Clprolf class can only implement a single `@ClFamily` interface. Bypassing is possible using `@ClInterfaceBypass`.
 
 
 # X) Clprolf and Existing Architectures
