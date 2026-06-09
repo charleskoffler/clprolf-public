@@ -30,7 +30,7 @@ public class ClprolfStrictArchTest {
 
                             if (clazz.isAnonymousClass()
                                     || clazz.isLocalClass()
-                                   ) {
+                            ) {
                                 return;
                             }
                             boolean hasRole =
