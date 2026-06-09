@@ -574,8 +574,7 @@ The checkers (both Java and .NET) also contain the definitions for Clprolf annot
 
 ## 2. C# .NET Version (ArchUnitNET)
 
-The port of the .NET extension is available and published on GitHub:
-👉 [Clprolf.ArchUnitNet on GitHub](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
+The port of the .NET extension is available and published on GitHub.
 
 The Visual Studio solution (2022 to date) contains a project with the framework and ArchUnit rules, along with an xUnit project for the tests.
 A third example project is also included. There are currently 8 mandatory tests and 4 strict tests.

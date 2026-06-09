@@ -550,8 +550,7 @@ Les checkers (Java et .Net) contiennent aussi les définitions des annotations (
 
 ## 2. Version C# .NET (ArchUnitNET)
 
-Le portage de l'extension .NET est disponible et publié sur GitHub :
-👉 [Clprolf.ArchUnitNet sur GitHub](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
+Le portage de l'extension .NET est disponible et publié sur GitHub.
 
 La solution Visual Studio (2022 à ce jour), contient un projet contenant le framework et les règles ArchUnit, et un projet xUnit pour les tests.
 Un troisième projet d'exemple est ajouté. Il y 8 tests obligatoires, et 4 tests stricts, actuellement.
