@@ -2,13 +2,13 @@
 
 Clprolf is a lightweight architectural-role framework for Java and C#.
 
-It helps Java teams make class responsibilities explicit by distinguishing:
+It helps Java and .net teams make class responsibilities explicit by distinguishing:
 
-- `@ClAgent`: business or conceptual classes
-- `@ClWorker`: technical or infrastructure classes
-- `@ClDraft`: temporarily undefined classes
+- `@ClAgent` (or `[ClAgent]` in C#): business or conceptual classes
+- `@ClWorker` (or `[ClWorker]`): technical or infrastructure classes
+- `@ClDraft` (or `[ClDraft]`): temporarily undefined classes
 
-With the ArchUnit checker, Clprolf rules can be verified automatically during tests and CI.
+With the ArchUnit checker(for Java or C#), Clprolf rules can be verified automatically during tests and CI.
 
 ## Information
 
@@ -77,4 +77,4 @@ Feel free to reach out by email if you want more information
 
 ## Examples
 
-* [**Snake**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/snake-game)
+* [**Snake (Java example)**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/snake-game)
