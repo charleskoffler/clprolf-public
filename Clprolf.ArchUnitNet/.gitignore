@@ -1,0 +1,26 @@
+## Target directories (Compilation outputs)
+**/bin/
+**/obj/
+
+## Visual Studio Cache and settings
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## User-specific files
+*.suo
+*.userpreferences
+
+## Test results and coverage
+BenchmarkDotNet.Artifacts/
+TestResults/
+*.clog
+
+## Rider / JetBrains (au cas où tu alternes avec Rider)
+.idea/
+*.sln.iml
+
+## OS generated files
+.DS_Store
+Thumbs.db

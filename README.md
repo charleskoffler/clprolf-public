@@ -73,6 +73,7 @@ Feel free to reach out by email if you want more information
 ## Checker for Clprolf
 
 * [**ArchUnit Checker and framework annotations**](https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker)
+* [**ArchUnitNet Checker for .Net and framework C# attributes**](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
 
 ## Examples
 
