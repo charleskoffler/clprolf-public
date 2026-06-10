@@ -10,7 +10,7 @@ namespace Clprolf.Checker.ExampleApp.Samples.Agents
     [ClBypass]
     [ClAgent]
     [ClFamily]
-    internal interface InterfaceTargetRoleInterfaceBypass: IMyWorker
+    internal interface InterfaceTargetRoleBypass: IMyWorker
     {
     }
 }

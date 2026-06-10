@@ -4,5 +4,5 @@ import org.clprolf.framework.*;
 @ClBypass
 @ClAgent
 @ClFamily
-public interface InterfaceTargetRoleInterfaceBypass extends MyWorker {
+public interface InterfaceTargetRoleBypass extends MyWorker {
 }
