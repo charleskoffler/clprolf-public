@@ -27,7 +27,7 @@ In the Java ecosystem, components are marked using annotations:
 import org.clprolf.framework.ClAgent;
 
 @ClAgent
-public class SnakeGameAgent implements IGameAgent {
+public class CarImpl implements Car {
     // Agent logic...
 }
 
@@ -40,16 +40,15 @@ In the .NET ecosystem, the strict equivalent uses **C# Attributes** enclosed in 
 ```csharp
 using Clprolf.ArchUnitNet.Attributes;
 
-namespace MyGame.Agents {
+namespace MyApp.Agents {
 
     [ClAgent]
-    public class SnakeGameAgent : ISnakeGameAgent
+    public class Car : ICar
     {
         // Agent logic...
     }
 
 }
-
 ```
 
 ---
