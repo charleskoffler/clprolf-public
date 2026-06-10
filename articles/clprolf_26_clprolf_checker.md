@@ -1,7 +1,3 @@
-Voici l'article mis à jour pour inclonure pleinement l'écosystème .NET avec **ArchUnitNET**. L'article a été harmonisé pour présenter une solution véritablement miroir, multi-langage et multi-plateforme.
-
----
-
 # Introducing the ArchUnit Checker for the Clprolf Framework
 
 One of the most interesting aspects of architectural frameworks is not the rules themselves, but the ability to verify that those rules are actually being followed.
