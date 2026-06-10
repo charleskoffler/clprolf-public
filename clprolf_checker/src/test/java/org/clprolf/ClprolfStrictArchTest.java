@@ -15,7 +15,7 @@ import org.clprolf.framework.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @AnalyzeClasses(
-        packages = "org.clprolf.examples.animal_app",
+        packages = "org.clprolf.examples.learn_checker_app",
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 public class ClprolfStrictArchTest {
