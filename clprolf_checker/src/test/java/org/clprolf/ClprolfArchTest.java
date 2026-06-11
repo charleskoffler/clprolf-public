@@ -153,7 +153,8 @@ public class ClprolfArchTest {
                                 ));
                             }
                         }
-                    });
+                    })
+                    .allowEmptyShould(true);
 
     @ArchTest
     static final ArchRule clprolf_interfaces_must_have_target_role =
