@@ -201,6 +201,4 @@ By combining the runtime power of Spring Boot with the architectural guardrails 
 
 It’s not about restricting creativity; it’s about removing the anxiety of architectural erosion.
 
-*How do you enforce architectural boundaries in your Spring Boot applications? Let us know in the comments below!*
-
 ---
