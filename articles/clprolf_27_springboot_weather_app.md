@@ -20,7 +20,7 @@ Instead of relying solely on code reviews, we can use a declarative approach. By
 
 ## A Practical Example: The Weather Observation API
 
-Let’s look at a concrete implementation: a clean, batch-optimized Weather API. We organized our components using Clprolf's core concepts: `@ClAgent` (for functional components), `@ClFamily` (for contracts/interfaces), and `@ClWorker` (for implementation units).
+Let’s look at a concrete implementation: a clean, batch-optimized Weather API. We organized our components using Clprolf's core concepts: `@ClAgent` (for functional components), `@ClFamily` (for contracts/interfaces), and `@ClWorker` (for specialized execution units).
 
 ### 1. The Pure Contract (Interface)
 
