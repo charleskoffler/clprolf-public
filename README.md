@@ -16,6 +16,8 @@ Feel free to reach out by email if you want more information
 
 ## Articles
 
+* [**Securing Your Spring Boot Architecture: A Pragmatic Approach with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_27_springboot_weather_app)
+
 * [**Clprolf ArchUnit Checker — Enforce Your Architecture at Build Time**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_26_clprolf_checker.md)
 
 * [**Clprolf — Official Documentation**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_24_official_doc.md)
@@ -78,3 +80,5 @@ Feel free to reach out by email if you want more information
 ## Examples
 
 * [**Snake (Java example)**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/snake-game)
+
+* [**Spring boot integration example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/clprolf_weather)
