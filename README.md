@@ -81,6 +81,6 @@ Feel free to reach out by email if you want more information
 
 * [**Spring boot integration example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/clprolf_weather)
 
-* [**.Net C# WPF Example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/)
+* [**.Net C# WPF Example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/Clprolf.Examples.WPF)
 
 * [**Snake (Java example)**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/snake-game)
