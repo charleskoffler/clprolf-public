@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <Version>1.1.0</Version>
@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Clprolf.ArchUnitNet\Clprolf.ArchUnitNet.csproj" />
-    <ProjectReference Include="..\ExampleApp\Clprolf.Checker.ExampleApp.csproj" />
+    <ProjectReference Include="..\Clprolf.Examples.WPF\Clprolf.Examples.WPF.csproj" />
   </ItemGroup>
 
   <ItemGroup>

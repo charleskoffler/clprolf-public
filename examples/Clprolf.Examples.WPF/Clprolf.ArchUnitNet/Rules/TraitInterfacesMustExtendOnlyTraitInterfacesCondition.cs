@@ -14,7 +14,7 @@ internal sealed class TraitInterfacesMustExtendOnlyTraitInterfacesCondition : IC
     {
         foreach (var interf in objects)
         {
-
+      
             if (!interf.IsTrait())
             {
                 yield return new ConditionResult(
@@ -23,8 +23,8 @@ internal sealed class TraitInterfacesMustExtendOnlyTraitInterfacesCondition : IC
                     $"{interf.FullName} is ignored (Not a [ClTrait] interface)");
                 continue;
             }
-
-
+           
+           
             if (interf.ImplementedInterfaces.IsNullOrEmpty())
             {
                 yield return new ConditionResult(
@@ -33,7 +33,7 @@ internal sealed class TraitInterfacesMustExtendOnlyTraitInterfacesCondition : IC
                     $"{interf.FullName} has no parent interface");
                 continue;
             }
-
+           
             bool allParentsAreTraitsOrExternal = interf.ImplementedInterfaces.All(parent =>
                 parent.IsTrait() || !parent.IsClprolf()
             );
