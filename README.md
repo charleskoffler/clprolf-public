@@ -16,6 +16,8 @@ Feel free to reach out by email if you want more information
 
 ## Articles
 
+* [**A Semantic Approach to .Net WPF and MVVM with Clprolf framework**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_28_dotnet_wpf.md)
+
 * [**Securing Your Spring Boot Architecture: A Pragmatic Approach with Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_27_springboot_weather_app.md)
 
 * [**Clprolf ArchUnit Checker — Enforce Your Architecture at Build Time**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_26_clprolf_checker.md)
