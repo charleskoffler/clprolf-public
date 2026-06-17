@@ -85,4 +85,6 @@ Feel free to reach out by email if you want more information
 
 * [**.Net C# WPF Example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/Clprolf.Examples.WPF)
 
+* [**(Java)Graphs example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/java/examples.graphe)
+
 * [**Snake (Java example)**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/snake-game)
