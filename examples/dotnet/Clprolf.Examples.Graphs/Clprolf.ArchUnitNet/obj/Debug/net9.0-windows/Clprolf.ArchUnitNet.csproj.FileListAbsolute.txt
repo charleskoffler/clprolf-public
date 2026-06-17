@@ -1,0 +1,13 @@
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\bin\Debug\net9.0-windows\Clprolf.ArchUnitNet.deps.json
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\bin\Debug\net9.0-windows\Clprolf.ArchUnitNet.dll
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\bin\Debug\net9.0-windows\Clprolf.ArchUnitNet.pdb
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\Clprolf.ArchUnitNet.csproj.AssemblyReference.cache
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\Clprolf.ArchUnitNet.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\Clprolf.ArchUnitNet.AssemblyInfoInputs.cache
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\Clprolf.ArchUnitNet.AssemblyInfo.cs
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\Clprolf.ArchUnitNet.csproj.CoreCompileInputs.cache
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\Clprolf.ArchUnitNet.sourcelink.json
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\Clprolf.ArchUnitNet.dll
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\refint\Clprolf.ArchUnitNet.dll
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\Clprolf.ArchUnitNet.pdb
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\Clprolf.Examples.WPF\Clprolf.ArchUnitNet\obj\Debug\net9.0-windows\ref\Clprolf.ArchUnitNet.dll

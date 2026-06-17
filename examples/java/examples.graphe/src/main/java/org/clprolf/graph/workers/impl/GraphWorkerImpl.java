@@ -12,7 +12,7 @@ import java.util.Map;
 public class GraphWorkerImpl implements GraphWorker {
     private Graph graph;
 
-    public GraphWorkerImpl(GraphImpl theGraph){
+    public GraphWorkerImpl(Graph theGraph){
         this.graph = theGraph;
     }
 

@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "axE7hpHrxaY=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\sabag\\source\\repos\\charleskoffler\\clprolf-public\\examples\\dotnet\\Clprolf.Examples.Graphs\\Clprolf.ArchUnitNet\\Clprolf.ArchUnitNet.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\sabag\\.nuget\\packages\\cycledetection\\2.0.0\\cycledetection.2.0.0.nupkg.sha512",
+    "C:\\Users\\sabag\\.nuget\\packages\\jetbrains.annotations\\2025.2.2\\jetbrains.annotations.2025.2.2.nupkg.sha512",
+    "C:\\Users\\sabag\\.nuget\\packages\\mono.cecil\\0.11.6\\mono.cecil.0.11.6.nupkg.sha512",
+    "C:\\Users\\sabag\\.nuget\\packages\\newtonsoft.json\\13.0.4\\newtonsoft.json.13.0.4.nupkg.sha512",
+    "C:\\Users\\sabag\\.nuget\\packages\\system.valuetuple\\4.6.1\\system.valuetuple.4.6.1.nupkg.sha512",
+    "C:\\Users\\sabag\\.nuget\\packages\\tngtech.archunitnet\\0.13.3\\tngtech.archunitnet.0.13.3.nupkg.sha512"
+  ],
+  "logs": []
+}

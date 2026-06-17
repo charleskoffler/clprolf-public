@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../../Clprolf.Examples.WPF/Tests/Clprolf.ArchUnitNet.Tests.csproj" />
+  <Project Path="Clprolf.ArchUnitNet/Clprolf.ArchUnitNet.csproj" />
+  <Project Path="Clprolf.Examples.Graphs/Clprolf.Examples.Graphs.csproj" />
+</Solution>

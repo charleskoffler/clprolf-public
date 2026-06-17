@@ -1,0 +1,13 @@
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\bin\Debug\net10.0\Clprolf.ArchUnitNet.deps.json
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\bin\Debug\net10.0\Clprolf.ArchUnitNet.dll
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\bin\Debug\net10.0\Clprolf.ArchUnitNet.pdb
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\Clprolf.ArchUnitNet.csproj.AssemblyReference.cache
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\Clprolf.ArchUnitNet.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\Clprolf.ArchUnitNet.AssemblyInfoInputs.cache
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\Clprolf.ArchUnitNet.AssemblyInfo.cs
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\Clprolf.ArchUnitNet.csproj.CoreCompileInputs.cache
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\Clprolf.ArchUnitNet.sourcelink.json
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\Clprolf.ArchUnitNet.dll
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\refint\Clprolf.ArchUnitNet.dll
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\Clprolf.ArchUnitNet.pdb
+C:\Users\sabag\source\repos\charleskoffler\clprolf-public\examples\dotnet\Clprolf.Examples.Graphs\Clprolf.ArchUnitNet\obj\Debug\net10.0\ref\Clprolf.ArchUnitNet.dll
