@@ -92,36 +92,26 @@ However, its primary identity always comes from its domain.
 
 ## `worker`
 
-A worker is a class whose primary purpose is to provide technical support to other classes.
+Represents a system service.
 
-It exists primarily to help one or more agents perform technical operations.
+A worker class is primarily intended to support agent classes rather than be organized around a class domain.
 
-A worker typically provides:
+Workers provide technical and infrastructure services. They may coordinate or use low-level agents (system agents) such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
 
-* execution support,
-* operating-system interaction,
-* rendering,
-* launching,
-* infrastructure access,
-* platform-specific functionality.
+Instead, it exists to support other components through technical mechanisms, infrastructure access, application startup, operating-system interaction, or similar responsibilities.
 
-Examples:
+A `worker`:
 
-```text
-AnimalWorker
-ApplicationLauncher
-AgentLauncher
-ProcessLauncher
-SystemExecutor
-OperatingSystemWorker
-ControllerWorker
-```
-
-Unlike an agent, a worker does not primarily represent a domain.
-
-Its role is to provide technical support.
+* Is a system service;
+* Provides technical support;
+* Manages infrastructure and execution mechanisms;
+* Contains technical code;
+* Uses system abstractions, but is not one itself;
+* Is often there to assist an agent class (including system agents) with rendering/display, direct database access, etc.;
+* Allows for the separation of domain/functional code from purely technical code.
 
 ---
+
 
 ## `draft`
 
@@ -241,6 +231,67 @@ SystemExecutor
 ```
 
 ---
+
+## General Architecture
+
+Clprolf naturally encourages a simple architecture.
+
+```text
+agent
+    ↓ delegates to
+worker
+```
+
+`agent` classes contain:
+
+* business rules,
+* decisions,
+* orchestration.
+
+`worker` classes perform:
+
+* technical work,
+* system access,
+* machine operations.
+
+An `agent` delegates technical code to one or more `worker` classes.
+
+A worker serves the agent.
+
+
+```text
+┌────────────────────────────────────────────────────┐
+│                       AGENT                        │
+│       conceptual behavior, domain responsibility   │
+│                                                    │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ uses / delegates to
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                       WORKER                       │
+│  		 system service for technical execution      │
+│               serving an agent                     │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ may use
+                          ▼
+┌────────────────────────────────────────────────────┐
+│              (SYSTEM-ORIENTED) AGENT               │
+│   conceptual object connected to system behavior   │
+│   examples: stream, socket, thread, file, window   │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ delegates low-level work to
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                    (LOW-LEVEL) WORKER              │
+│     native call, rendering, I/O, OS/runtime work   │
+└────────────────────────────────────────────────────┘
+```
+
+---
+
 
 ## Summary
 
