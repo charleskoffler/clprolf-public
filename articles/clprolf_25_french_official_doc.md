@@ -206,9 +206,7 @@ Un agent possède toujours un domaine principal représentant sa responsabilité
 
 Des responsabilités secondaires peuvent exister tant qu’elles restent cohérentes avec ce domaine principal.
 
-## II.5) Liberté d’interprétation et recommandations du framework
-
-Le choix entre `agent` et `worker` reste laissé au développeur.
+## II.5) Un framework "opinionated" (d'opinion) pour le choix agent/worker
 
 Certaines responsabilités peuvent être interprétées de différentes manières selon la vision architecturale adoptée.
 
@@ -217,10 +215,14 @@ Par exemple, une connexion peut être représentée :
 * comme un `agent`, si elle est vue comme une abstraction fonctionnelle ;
 * ou comme un `worker`, si elle est considérée comme un mécanisme purement technique.
 
-Cependant, dans ces cas, Clprolf recommande d'utiliser un agent. Par exemple, pour une classe Connection:
+Cependant, dans ces cas, le framework Clprolf impose d'utiliser un agent. Par exemple, pour une classe Connection:
 
 * un `agent` pour représenter la connexion,
 * et déléguer le code technique à un ou plusieurs `worker`.
+
+C'est pour cela que Clprolf peut être qualifié de framework "opinionated" (framework d'opinion).
+Dès qu'il est possible de voir un domaine, il doit être choisi à la place de la vision worker. Ce choix est argumenté par le fait que les agents et abstractions sont plus faciles à manipuler et facilitent la conception.
+Mais dire que la classe Connection est `ClAgent` n'exclut pas qu'elle puisse posséder un worker pour ses propres besoins.
 
 ---
 

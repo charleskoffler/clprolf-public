@@ -214,23 +214,21 @@ Secondary responsibilities may exist as long as they remain consistent with that
 
 ---
 
-## II.5) Freedom of Interpretation and framework Recommendations
+## II.5) An "opinionated" framework for the agent/worker choice
 
-The choice between `agent` and `worker` is left to the developer.
+Some responsibilities can be interpreted in different ways depending on the architectural vision adopted.
 
-Some responsibilities may be interpreted differently depending on the adopted architectural vision.
+For example, a connection can be represented:
+* as an `agent`, if viewed as a functional abstraction;
+* or as a `worker`, if considered a purely technical mechanism.
 
-For example, a connection may be represented:
-
-* as an `agent` if viewed as a functional abstraction;
-* or as a `worker` if viewed as a purely technical mechanism.
-
-However, in these cases, Clprolf recommends using an agent. For example, for a `Connection` class:
-
+However, in such cases, the Clprolf framework imposes the use of an agent. For example, for a Connection class:
 * an `agent` to represent the connection,
-* and delegate technical code to one or more `worker` classes.
+* and delegate the technical code to one or more `worker` classes.
 
----
+This is why Clprolf can be described as an "opinionated" framework. 
+As soon as a domain can be identified, it must be chosen over the worker perspective. This choice is argued by the fact that agents and abstractions are easier to manipulate and facilitate design.
+However, declaring the Connection class as a `ClAgent` does not preclude it from having a worker for its own technical needs.
 
 # III) Inheritance
 

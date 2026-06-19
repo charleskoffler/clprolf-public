@@ -128,7 +128,7 @@ Typical use cases include:
 
 Example:
 
-```clprolf
+```java
 @ClDraft
 public class TemporaryManager {
 }
@@ -291,6 +291,23 @@ A worker serves the agent.
 ```
 
 ---
+
+
+## An "opinionated" framework for the agent/worker choice
+
+Some responsibilities can be interpreted in different ways depending on the architectural vision adopted.
+
+For example, a connection can be represented:
+* as an `agent`, if viewed as a functional abstraction;
+* or as a `worker`, if considered a purely technical mechanism.
+
+However, in such cases, the Clprolf framework imposes the use of an agent. For example, for a Connection class:
+* an `agent` to represent the connection,
+* and delegate the technical code to one or more `worker` classes.
+
+This is why Clprolf can be described as an "opinionated" framework. 
+As soon as a domain can be identified, it must be chosen over the worker perspective. This choice is argued by the fact that agents and abstractions are easier to manipulate and facilitate design.
+However, declaring the Connection class as a `ClAgent` does not preclude it from having a worker for its own technical needs.
 
 
 ## Summary
