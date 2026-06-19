@@ -158,7 +158,6 @@ Note: Entities are considered agents because they possess a domain, even without
 
 ---
 
-
 ## II.2) `ClWorker`
 
 Represents a system service.
@@ -436,7 +435,7 @@ Clprolf therefore adopts a simple interface implementation model, in the same wa
 
 However, multiple interface implementation is not removed; it is simply moved to the `Family` implemented by the class.
 
-This family interface may itself inherit from multiple `Family` and/or `Trait`` interfaces.
+This family interface may itself inherit from multiple `Family` and/or `Trait` interfaces.
 
 As a result, interfaces that would otherwise have been implemented directly by the class are grouped at the level of its primary `Family`.
 
@@ -452,13 +451,11 @@ Normally, a `Trait` may only be inherited by a `Family`, not directly by a class
 
 However, direct implementation of a `Trait` by a class remains tolerated in Clprolf, although discouraged.
 
-```text
-Concrete Class
-      ↓ implements
-ClFamily
-      ↓ inherits from
-ClTrait
-```
+> **Concrete Class**
+> ↓ *implements*
+> **ClFamily**
+> ↓ *inherits from*
+> **ClTrait**
 
 A `Family` may inherit from multiple `Family` and/or `Trait`.
 
@@ -511,6 +508,9 @@ public class OldPrinterImpl implements OldPrinter {
 public class ModernPrinterImpl implements ModernPrinter {
     // (...)
 }
+```
+
+---
 
 # VI) General Architecture
 
