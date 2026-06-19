@@ -5,7 +5,7 @@ Clprolf framework introduces simple class roles to clarify the natural place of 
 Many developers understand the basic distinction:
 
 * an `agent` carries meaning, intention, or domain behavior;
-* a `worker` performs technical execution.
+* a `worker` is a system service and performs technical execution.
 
 But when a project grows, another question appears:
 
@@ -37,7 +37,7 @@ Worker = execution
 
 An `agent` represents something conceptually meaningful in the program.
 
-A `worker` performs the technical work needed to support agents, the application, or the system.
+A `worker` is a system service. It performs the technical work needed to support agents, the application, or the system.
 
 In many systems, we also encounter classes that are close to the operating system or runtime, but still have a conceptual identity.
 
@@ -76,8 +76,8 @@ It is a conceptual category:
                           ▼
 ┌────────────────────────────────────────────────────┐
 │                       WORKER                       │
-│        technical execution serving an agent        │
-│                                                    │
+│  		 system service for technical execution      │
+│               serving an agent                     │
 └─────────────────────────┬──────────────────────────┘
                           │
                           │ may use
@@ -150,7 +150,7 @@ If an agent needs system-level behavior, it usually delegates it to a worker.
 
 ## 4. Worker
 
-A `worker` performs technical execution.
+A `worker` performs technical execution. It is a system service.
 
 It does not primarily represent a domain concept.
 It performs work for an agent, the application, or the system.

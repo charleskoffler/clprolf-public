@@ -150,25 +150,29 @@ public class OrderProcessor {
 }
 ```
 
-Remarque: les entity, ou DTOs, sont agent, car les données sont métiers.
+Remarque: les entity sont considérées agent, car ayant un domaine, même sans méthodes.
 
 ---
 
 ## II.2) `ClWorker`
 
-Représente une classe technique.
+Représente un service système.
 
-Une classe technique a principalement pour vocation de soutenir les classes agent plutôt que d'être organisée autour d'un domaine de classe.
+Une classe worker a principalement pour vocation de soutenir les classes agents plutôt que d'être organisée autour d'un domaine de classe.
 
-Les workers fournissent des services techniques et d'infrastructure. Ils peuvent coordonner ou utiliser des agents de bas niveau tels que `File`, `Connection`, `Random`, `Logger` ou `Parser`, mais contrairement à ces classes, un worker n'est pas organisé autour d'un domaine de classe qui lui est propre.
+Les workers fournissent des services techniques et d'infrastructure. Ils peuvent coordonner ou utiliser des agents de bas niveau (agents systèmes ) tels que `File`, `Connection`, `Random`, `Logger` ou `Parser`, mais contrairement à ces classes, un worker n'est pas organisé autour d'un domaine de classe qui lui est propre.
 
 Il existe avant tout pour assister d'autres composants au travers de mécanismes techniques, d'accès à l'infrastructure, du démarrage de l'application, d'interactions avec le système d'exploitation ou d'autres responsabilités similaires.
 
 Un `worker` :
 
+* C'est un service système
 * fournit un support technique ;
-* gère l'infrastructure et les mécanismes d'exécution ;
+* gère l'infrastructure et les mécanismes d'exécution
 * contient du code technique.
+* utilise des abstractions systèmes, mais n'en est pas une
+* Souvent là pour assister une classe agent (y compris les agents systèmes), pour l'affichage, l'accès direct à la base de donnée, etc.
+* Permet de séparer le code domaine/fonctionnel, du code purement technique.
 
 ## II.3) `ClDraft`
 
@@ -521,6 +525,38 @@ Les `worker` réalisent :
 
 Un agent délègue à un ou plusieurs worker, le code technique. Il peut en exécuter, mais en appelant une méthode d'un worker.
 Le worker est au service de l'agent.
+
+┌────────────────────────────────────────────────────┐
+│                       AGENT                        │
+│     			comportement conceptuel,  		     │
+│      		responsabilité domaine/métier            │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ utilise / délègue à
+                          │
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                       WORKER                       │
+│    service système pour l'exécution technique,     │
+│                 au service d'un agent              │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ peut utiliser
+                          │
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                  AGENT (SYSTÈME)                   │
+│    objet conceptuel lié au comportement système    │
+│ exemples : stream, socket, thread, fichier, window │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ délègue le travail bas niveau à
+                          │
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                 WORKER (BAS NIVEAU)                │
+│  appel natif, rendu, E/S, travail OS / runtime     │
+└────────────────────────────────────────────────────┘
 
 ---
 

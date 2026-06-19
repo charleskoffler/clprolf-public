@@ -154,35 +154,30 @@ public class OrderProcessor {
 }
 ```
 
+Note: Entities are considered agents because they possess a domain, even without methods.
+
 ---
+
 
 ## II.2) `ClWorker`
 
-Represents a technical class.
+Represents a system service.
 
-A technical class is primarily intended to support agent classes rather than be organized around a class domain.
-Workers provide technical support and infrastructure services. They may coordinate or use low-level agent classes such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
+A worker class is primarily intended to support agent classes rather than be organized around a class domain.
+
+Workers provide technical and infrastructure services. They may coordinate or use low-level agents (system agents) such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
+
 Instead, it exists to support other components through technical mechanisms, infrastructure access, application startup, operating-system interaction, or similar responsibilities.
 
 A `worker`:
 
-* provides technical support,
-* manages infrastructure and execution mechanisms,
-* contains technical code.
-
-Example:
-
-```java
-@ClWorker
-public class OrderRepository {
-
-    public void save(Order order) {
-
-        // database access
-
-    }
-}
-```
+* Is a system service;
+* Provides technical support;
+* Manages infrastructure and execution mechanisms;
+* Contains technical code;
+* Uses system abstractions, but is not one itself;
+* Is often there to assist an agent class (including system agents) with rendering/display, direct database access, etc.;
+* Allows for the separation of domain/functional code from purely technical code.
 
 ---
 
@@ -542,6 +537,38 @@ worker
 An `agent` delegates technical code to one or more `worker` classes.
 
 A worker serves the agent.
+
+
+```text
+┌────────────────────────────────────────────────────┐
+│                       AGENT                        │
+│       conceptual behavior, domain responsibility   │
+│                                                    │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ uses / delegates to
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                       WORKER                       │
+│  		 system service for technical execution      │
+│               serving an agent                     │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ may use
+                          ▼
+┌────────────────────────────────────────────────────┐
+│              (SYSTEM-ORIENTED) AGENT               │
+│   conceptual object connected to system behavior   │
+│   examples: stream, socket, thread, file, window   │
+└─────────────────────────┬──────────────────────────┘
+                          │
+                          │ delegates low-level work to
+                          ▼
+┌────────────────────────────────────────────────────┐
+│                    (LOW-LEVEL) WORKER              │
+│     native call, rendering, I/O, OS/runtime work   │
+└────────────────────────────────────────────────────┘
+```
 
 ---
 
