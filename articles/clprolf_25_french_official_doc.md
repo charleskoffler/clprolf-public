@@ -560,6 +560,7 @@ Les `worker` réalisent :
 Un agent délègue à un ou plusieurs worker, le code technique. Il peut en exécuter, mais en appelant une méthode d'un worker.
 Le worker est au service de l'agent.
 
+```text
 ┌────────────────────────────────────────────────────┐
 │                       AGENT                        │
 │     			comportement conceptuel,  		     │
@@ -591,6 +592,7 @@ Le worker est au service de l'agent.
 │                 WORKER (BAS NIVEAU)                │
 │  appel natif, rendu, E/S, travail OS / runtime     │
 └────────────────────────────────────────────────────┘
+```
 
 ---
 
