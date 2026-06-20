@@ -131,10 +131,11 @@ Représente une classe métier ou conceptuelle.
 
 Un `agent` :
 
-* contient la logique métier,
+* contient la logique métier ou conceptuelle,
 * orchestre les traitements,
 * prend des décisions,
-* évite le code technique lourd.
+* évite le code technique lourd, qui est souvent délégué à un worker associé
+* peut être orienté système comme Connection ou Socket
 
 Exemple :
 

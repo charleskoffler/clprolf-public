@@ -133,10 +133,11 @@ Represents a business or conceptual class.
 
 An `agent`:
 
-* contains business logic,
+* contains business or conceptual logic,
 * orchestrates processes,
 * makes decisions,
-* avoids heavy technical code.
+* avoids heavy technical code, which is often delegated to an associated worker,
+* can be system-oriented, such as `Connection` or `Socket`.
 
 Example:
 
@@ -153,6 +154,7 @@ public class OrderProcessor {
         repository.save(order);
     }
 }
+
 ```
 
 Note: Entities are considered agents because they possess a domain, even without methods.
