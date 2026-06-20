@@ -144,7 +144,7 @@ Clprolf therefore adopts a simple interface implementation model, in the same wa
 
 However, multiple interface implementation is not removed; it is simply moved to the `Family` implemented by the class.
 
-This family interface may itself inherit from multiple `Family` and/or `Trait`` interfaces.
+This family interface may itself inherit from multiple `Family` and/or `Trait` interfaces.
 
 As a result, interfaces that would otherwise have been implemented directly by the class are grouped at the level of its primary `Family`.
 
@@ -178,6 +178,7 @@ Interface inheritance may still be forced using `@ClInterfaceBypass` (or `@ClByp
 
 ## 5) Illustration of the Interface Family / Implementation Parallel
 
+```text
 [ABSTRACT WORLD / INTERFACES]          │    [CONCRETE WORLD / CLASSES]
                                        │
        @ClAgent @ClFamily              │        @ClAgent
@@ -201,6 +202,7 @@ Interface inheritance may still be forced using `@ClInterfaceBypass` (or `@ClByp
                │ (inherited by Family) │
                │                       │
      Horse extends Jumpable            │
+```
 
 ## 6) Note on Clprolf and the Interface Segregation Principle (ISP)
 
