@@ -65,7 +65,7 @@ Clprolf is built around two central principles.
 
 ---
 
-## 1. A class is either business-oriented or technical
+## 1. A class is either business/conceptual or technical
 
 Every class belongs to one of the following worlds:
 
@@ -78,33 +78,36 @@ Examples:
 * order management,
 * business logic,
 * simulation,
-* functional orchestration.
+* functional orchestration,
+* but also system-oriented agents.
 
 These classes are declared using:
 
 ```java
 @ClAgent
+
 ```
 
 ---
 
 ### Technical World
 
-The class performs a technical task:
+The class performs a technical task executed by the system:
 
-* database access,
-* networking,
-* file handling,
-* display,
-* infrastructure.
+* database access (via system agents),
+* networking (often by utilizing low-level agents),
+* file handling (most frequently with system-oriented agents),
+* display / rendering,
+* infrastructure,
+* no conceptual domain; it is just the system executing technical agents or starting an application,
+* generally a system technical service associated with an agent.
 
 These classes are declared using:
 
 ```java
 @ClWorker
-```
 
----
+```
 
 ## 2. Inheritance must preserve the domain
 
@@ -134,8 +137,6 @@ An `agent`:
 * orchestrates processes,
 * makes decisions,
 * avoids heavy technical code.
-
-Note: entities and DTOs are typically classified as agents, since they represent domain data.
 
 Example:
 

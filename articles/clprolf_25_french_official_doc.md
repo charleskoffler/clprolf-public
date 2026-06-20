@@ -65,7 +65,7 @@ Clprolf repose sur deux principes centraux.
 
 ---
 
-## 1. Une classe est soit métier, soit technique
+## 1. Une classe est soit métier/conceptuelle, soit technique
 
 Chaque classe appartient à l’un des deux mondes suivants :
 
@@ -79,6 +79,7 @@ Exemples :
 * logique métier,
 * simulation,
 * orchestration fonctionnelle.
+* mais aussi agents orientés systèmes
 
 Ces classes sont déclarées avec :
 
@@ -89,13 +90,15 @@ Ces classes sont déclarées avec :
 
 ### Monde technique
 
-La classe effectue un travail technique :
+La classe effectue un travail technique, effectué par le système :
 
-* accès base de données,
-* réseau,
-* fichiers,
+* accès base de données (par l'intermédiaire d'agents systèmes),
+* réseau (par utilisation d'agents bas niveaux souvent),
+* fichiers (le plus souvent avec des agents orientés systèmes),
 * affichage,
 * infrastructure.
+* pas de domaine conceptuel, juste le système qui exécute des agents techniques, ou qui démarre une appli
+* généralement un service technique système associé à un agent.
 
 Ces classes sont déclarées avec :
 
