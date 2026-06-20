@@ -406,6 +406,7 @@ public interface Persistable {
 
 ## V.3) Illustration of the Interface Family / Implementation Parallel
 
+```text
 [ABSTRACT WORLD / INTERFACES]          │    [CONCRETE WORLD / CLASSES]
                                        │
        @ClAgent @ClFamily              │        @ClAgent
@@ -429,6 +430,7 @@ public interface Persistable {
                │ (inherited by Family) │
                │                       │
      Horse extends Jumpable            │
+```
 
 ## V.4) `ClFree`
 

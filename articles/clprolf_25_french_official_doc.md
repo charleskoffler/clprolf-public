@@ -408,6 +408,7 @@ public interface Launcher {
 
 ## V.3) Illustration du parallèle interfaces familles / implémentations
 
+```text
 [MONDE ABSTRAIT / INTERFACES]          │    [MONDE CONCRET / CLASSES]
                                          │
        @ClAgent @ClFamily                │        @ClAgent
@@ -431,6 +432,7 @@ public interface Launcher {
                │ (hérité par la Family)  │
                │                         │
      Horse extends Jumpable              │
+```
 
 ## V.4) `@ClFree`
 
