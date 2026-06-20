@@ -176,7 +176,33 @@ Interface inheritance may still be forced using `@ClInterfaceBypass` (or `@ClByp
 
 ---
 
-## 5) Note on Clprolf and the Interface Segregation Principle (ISP)
+## 5) Illustration of the Interface Family / Implementation Parallel
+
+[ABSTRACT WORLD / INTERFACES]          │    [CONCRETE WORLD / CLASSES]
+                                       │
+       @ClAgent @ClFamily              │        @ClAgent
+        interface Animal               │       class AnimalImpl
+               ▲                       │               ▲
+               │ (extends)             │               │ (extends)
+               │                       │               │
+       @ClAgent @ClFamily              │        @ClAgent
+         interface Horse               │       class HorseImpl
+               ▲                       │               ▼ (implements)
+               │                       │       👉 implements Horse
+               └───────────────────────┼───────  (and extends AnimalImpl)
+                (Structural Inheritance)│
+                                       │
+ ──────────────────────────────────────┴─────────────────────────────────
+  👉 THE TRAIT (Cross-cutting):
+  
+       @ClAgent @ClTrait               │
+        interface Jumpable             │
+               ▲                       │
+               │ (inherited by Family) │
+               │                       │
+     Horse extends Jumpable            │
+
+## 6) Note on Clprolf and the Interface Segregation Principle (ISP)
 
 Clprolf inherently respects the ISP; it is simply a matter of adapting the design of your classes and interfaces using the appropriate families and traits:
 

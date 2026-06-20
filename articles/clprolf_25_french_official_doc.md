@@ -406,7 +406,33 @@ public interface Launcher {
 ```
 ---
 
-## V.3) `@ClFree`
+## V.3) Illustration du parallèle interfaces familles / implémentations
+
+[MONDE ABSTRAIT / INTERFACES]          │    [MONDE CONCRET / CLASSES]
+                                         │
+       @ClAgent @ClFamily                │        @ClAgent
+        interface Animal                 │       class AnimalImpl
+               ▲                         │               ▲
+               │ (extends)               │               │ (extends)
+               │                         │               │
+       @ClAgent @ClFamily                │        @ClAgent
+         interface Horse                 │       class HorseImpl
+               ▲                         │               ▼ (implements)
+               │                         │       👉 implémente Horse
+               └─────────────────────────┼───────  (et hérite de AnimalImpl)
+                 (Héritage de structure) │
+                                         │
+ ────────────────────────────────────────┴─────────────────────────────────
+  👉 LE TRAIT (Transversal) :
+  
+       @ClAgent @ClTrait                 │
+        interface Jumpable               │
+               ▲                         │
+               │ (hérité par la Family)  │
+               │                         │
+     Horse extends Jumpable              │
+
+## V.4) `@ClFree`
 
 Interface générique sans rôle particulier.
 Permet de rester flexible.
@@ -422,7 +448,7 @@ public interface ExternalApi {
 ```
 ---
 
-## V.4) Utilisation des interfaces
+## V.5) Utilisation des interfaces
 
 En Clprolf, les interfaces `Family` sont l’équivalent de classes abstraites pures.
 
@@ -462,7 +488,7 @@ Un forçage de l’héritage d’interfaces reste possible avec `@ClInterfaceByp
 
 ---
 
-## V.5) Remarque sur Clprolf et l'Interface Segregation Principle (ISP)
+## V.6) Remarque sur Clprolf et l'Interface Segregation Principle (ISP)
 
 Clprolf respecte l'ISP, il suffit d'adapter le design des classes et interfaces avec les bonnes familles et traits:
 

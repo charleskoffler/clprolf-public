@@ -404,7 +404,33 @@ public interface Persistable {
 
 ---
 
-## V.3) `ClFree`
+## V.3) Illustration of the Interface Family / Implementation Parallel
+
+[ABSTRACT WORLD / INTERFACES]          │    [CONCRETE WORLD / CLASSES]
+                                       │
+       @ClAgent @ClFamily              │        @ClAgent
+        interface Animal               │       class AnimalImpl
+               ▲                       │               ▲
+               │ (extends)             │               │ (extends)
+               │                       │               │
+       @ClAgent @ClFamily              │        @ClAgent
+         interface Horse               │       class HorseImpl
+               ▲                       │               ▼ (implements)
+               │                       │       👉 implements Horse
+               └───────────────────────┼───────  (and extends AnimalImpl)
+                (Structural Inheritance)│
+                                       │
+ ──────────────────────────────────────┴─────────────────────────────────
+  👉 THE TRAIT (Cross-cutting):
+  
+       @ClAgent @ClTrait               │
+        interface Jumpable             │
+               ▲                       │
+               │ (inherited by Family) │
+               │                       │
+     Horse extends Jumpable            │
+
+## V.4) `ClFree`
 
 A generic interface without a specific role.
 
@@ -422,7 +448,7 @@ public interface ExternalApi {
 
 ---
 
-## V.4) Interface Usage
+## V.5) Interface Usage
 
 In Clprolf, `ClFamily` interfaces are the equivalent of pure abstract classes.
 
@@ -466,7 +492,7 @@ Interface inheritance may still be forced using `@ClInterfaceBypass` (or `@ClByp
 
 ---
 
-## V.5) Note on Clprolf and the Interface Segregation Principle (ISP)
+## V.6) Note on Clprolf and the Interface Segregation Principle (ISP)
 
 Clprolf inherently respects the ISP; it is simply a matter of adapting the design of your classes and interfaces using the appropriate families and traits:
 
