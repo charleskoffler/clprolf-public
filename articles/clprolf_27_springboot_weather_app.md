@@ -95,6 +95,12 @@ public class ClprolfWeatherControllerImpl implements ClprolfWeatherController {
 
 ```
 
+> **💡 A Note on the Service Layer & Clprolf**
+> 
+> For brevity, this CRUD example connects the Controller directly to the Worker (DAO). In a real-world application, you would naturally introduce a Service layer to handle specific business rules. 
+> 
+> In the Clprolf ecosystem, this Service would simply be another `@ClAgent`. It is the core Domain Agent executing its specific functional job, sitting between the API entrypoint (the Controller) and the infrastructure worker (the DAO).
+
 ---
 
 ### 3. The Data Access Layer & Composite Identity
