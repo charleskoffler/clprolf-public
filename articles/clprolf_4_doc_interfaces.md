@@ -132,47 +132,42 @@ public interface ExternalApi {
 
 ## 4) Interface Usage
 
-In Clprolf, `ClFamily` interfaces are the equivalent of pure abstract classes.
+In Clprolf, `Family` interfaces closely resemble pure abstract classes.
 
 They are intended to be implemented by one or more future Clprolf classes.
+Therefore, they have a target role (`agent` or `worker`).
 
-They therefore possess a target role (`agent` or `worker`).
+A class can only implement a single main `Family` at a time, and the class role must match the target role of the interface.
+Clprolf thus uses single implementation for interfaces, in the same way that Java uses single inheritance for classes. Indeed, a `Family` is always the structural reflection of its implementation. This notably allows for systematic loose coupling.
+However, multiple implementation is not removed, but rather shifted to the `Family` implemented by the class.
+This family interface can itself inherit from multiple `Family` or `Trait` interfaces.
+Thus, the interfaces that would have been implemented directly by the class are grouped together at the level of its main `Family`.
+Clprolf therefore preserves the richness of multiple interface inheritance, while maintaining a simple and cohesive structure for concrete classes.
 
-A class may implement only one primary `ClFamily` at a time, and the role of the class must match the target role of the interface.
+## Note: In non-strict mode, it is possible for a class to implement multiple `ClFamily` interfaces, to stay closer to standard Java and C# practices.
 
-Clprolf therefore adopts a simple interface implementation model, in the same way that Java uses single class inheritance. Indeed, a `ClFamily` is always the structural reflection of its implementation. This notably enables systematic loose coupling.
+`Trait` interfaces express a common functionality across multiple `Family` interfaces.
 
-However, multiple interface implementation is not removed; it is simply moved to the `Family` implemented by the class.
+A `Trait` therefore represents a cross-cutting trait shared among several families.
 
-This family interface may itself inherit from multiple `Family` and/or `Trait` interfaces.
-
-As a result, interfaces that would otherwise have been implemented directly by the class are grouped at the level of its primary `Family`.
-
-Clprolf therefore preserves the expressive power of multiple interface inheritance while maintaining a simple and coherent structure for concrete classes.
-
----
-
-`Trait` interfaces express a capability shared among multiple `Family` interfaces.
-
-A `Trait` therefore represents a cross-cutting trait shared by several families.
-
-Normally, a `Trait` may only be inherited by a `Family`, not directly by a class.
-
-However, direct implementation of a `Trait` by a class remains tolerated in Clprolf, although discouraged.
+Normally, a `Trait` can only be inherited by a `Family` interface, and not directly implemented by a class.
 
 ```text
-Concrete Class
-      ↓ implements
+Concrete class
+    ↓ implements
 ClFamily
-      ↓ inherits from
+    ↓ inherits from
 ClTrait
+
 ```
 
-A `Family` may inherit from multiple `Family` and/or `Trait`.
+Note: A `Family` interface can inherit from multiple `Family` or `Trait` interfaces.
 
-A `Trait` may inherit only from other `Trait`, since a trait remains a trait.
+A `Trait` interface can only inherit from other `Traits`, because a trait remains a trait.
 
-Interface inheritance may still be forced using `@ClInterfaceBypass` (or `@ClBypass` when forcing inheritance across different target roles).
+Forcing interface inheritance remains possible using `@ClInterfaceBypass` above the interface (or `@ClBypass` to force inheritance between different target roles).
+
+Note: In non-strict mode, direct implementation of a `Trait` by a class is allowed.
 
 ---
 

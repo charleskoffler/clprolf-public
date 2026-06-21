@@ -452,7 +452,7 @@ public interface ExternalApi {
 
 ## V.5) Utilisation des interfaces
 
-En Clprolf, les interfaces `Family` sont l’équivalent de classes abstraites pures.
+En Clprolf, les interfaces `Family` se rapprochent des classes abstraites pures.
 
 Elles sont destinées à être implémentées par une ou plusieurs futures classes Clprolf.
 Elles possèdent donc un rôle cible (`agent` ou `worker`).
@@ -464,6 +464,7 @@ Cette interface de famille peut elle-même hériter de plusieurs interfaces `Fam
 Ainsi, les interfaces qui auraient été implémentées directement par la classe sont regroupées au niveau de sa `Family` principale.
 Clprolf conserve donc la richesse de l’héritage multiple des interfaces, tout en maintenant une structure simple et cohérente pour les classes concrètes.
 
+Remarque: en mode non strict, il est possible pour une classe d'implémenter plusieurs interfaces ClFamily, pour rester plus proche des habitudes en Java et C#.
 ---
 
 Les interfaces `Trait` expriment une fonctionnalité commune entre plusieurs interfaces `Family`.
@@ -471,8 +472,6 @@ Les interfaces `Trait` expriment une fonctionnalité commune entre plusieurs int
 Un `Trait` représente donc un trait transversal partagé entre plusieurs familles.
 
 Normalement, un `Trait` ne peut être hérité que par une interface `Family`, et non directement par une classe.
-
-Cependant, en Clprolf, l’implémentation directe d’un `Trait` par une classe reste tolérée, bien que déconseillée.
 
 ```text
 Classe concrète
@@ -487,6 +486,8 @@ Note : une interface `Family` peut hériter de plusieurs interfaces `Family` ou 
 Une interface `Trait` ne peut hériter que d’autres `Trait`, car un trait reste un trait.
 
 Un forçage de l’héritage d’interfaces reste possible avec `@ClInterfaceBypass` au-dessus de l’interface (ou `@ClBypass` pour forcer l’héritage entre rôles cibles différents).
+
+Remarque: en mode non strict, l’implémentation directe d’un `Trait` par une classe est autorisée.
 
 ---
 
