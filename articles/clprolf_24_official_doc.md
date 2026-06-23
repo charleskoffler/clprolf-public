@@ -672,8 +672,45 @@ A class cannot directly implement a `@ClTrait` interface (unless `@ClInterfaceBy
 ### optional_class_must_implement_only_one_family_interface (OPTIONAL)
 A Clprolf class can only implement a single `@ClFamily` interface. Bypassing is possible using `@ClInterfaceBypass`.
 
+---
 
-# X) Clprolf and Existing Architectures
+# X) Alignment with SOLID and Design Principles
+
+Clprolf does not aim to replace object-oriented programming best practices, but rather to offer a strict and verifiable structural framework to apply them naturally.
+
+## 1. Single Responsibility Principle (SRP) & Separation of Concerns
+
+Clprolf's first fundamental principle (Business vs. Technical) is a direct application of the SRP at the architectural level.
+
+* A `@ClAgent` focuses exclusively on the "what" (conceptual behavior and business rules).
+* A `@ClWorker` focuses on the "how" (infrastructure, technical aspects, and execution details).
+
+By enforcing this separation, Clprolf prevents the creation of "God Classes" that handle both business logic and network calls or SQL queries.
+
+## 2. "Favor Composition over Inheritance"
+
+This is one of Clprolf's core battles. Inheritance is too often misused for the sole purpose of reusing technical code (for example, making a business class inherit from a technical utility).
+
+Clprolf's rule stating that **a class can only inherit from another class within the same domain** eliminates this inappropriate coupling. If the domains diverge, the framework blocks the analysis and structurally pushes the developer to use **composition**.
+
+## 3. Liskov Substitution Principle (LSP)
+
+Clprolf secures the Liskov Substitution Principle. By prohibiting the mixing of roles (`@ClAgent` and `@ClWorker`) within the same inheritance hierarchy, the framework guarantees that subclasses share the same conceptual nature as their parent class. An agent will always substitute for an agent, without major behavioral or technical surprises.
+
+## 4. Interface Segregation Principle (ISP) & Loose Coupling
+
+Thanks to the clear distinction between `@ClFamily` and `@ClTrait`, Clprolf provides a precise semantic model for designing interfaces:
+
+* `@ClTrait` interfaces force the creation of small, specialized, and cross-cutting interfaces (such as `Scanner`, `Fax`, `Printer`), which is the very essence of the ISP.
+* The strict parallel between the abstract world (`ClFamily`) and the concrete world ensures systematic **loose coupling**, making the system natively ready for **Dependency Injection (DI)**.
+
+## 5. Open/Closed Principle (OCP)
+
+Clprolf's architecture (where concrete classes implement a `ClFamily` that aggregates various `ClTrait` interfaces) allows system capabilities to be extended without modifying existing code. New behaviors can be added by creating new traits or new family implementations, while the checker guarantees that the overall architecture remains impervious to drift.
+
+---
+
+# XI) Clprolf and Existing Architectures
 
 Clprolf is compatible with existing architectural approaches such as Domain-Driven Design (DDD), Model-View-Controller (MVC), Clean Architecture, Hexagonal Architecture, and others.
 
@@ -682,7 +719,7 @@ Rather than replacing these architectures, Clprolf acts as an additional layer b
 In this way, Clprolf helps improve architectural consistency while remaining fully compatible with established design practices.
 
 
-# XI) Summary
+# XII) Summary
 
 Clprolf introduces very few concepts.
 
