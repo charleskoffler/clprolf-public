@@ -690,6 +690,9 @@ Ce principe conseille qu'un client ne doit pas devoir implémenter des méthodes
 
 L'injection des dépendances suppose le loose coupling, le couplage faible avec les implémentations. Ce couplage faible est encouragé et facilité, avec les interfaces ClFamily qui sont intimement liéées aux classes.
 
+## "Composition plutôt qu'héritage" ("Favoring composition over inheritance")
+Le framework Clprolf permet de n'utiliser l'héritage qu'avec parcimonie et précision, et de se servir de la composition sinon.
+
 ---
 
 # XI) Clprolf et les architectures existantes

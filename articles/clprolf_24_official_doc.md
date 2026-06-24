@@ -697,6 +697,10 @@ This principle advises that a client should not be forced to implement methods i
 
 Dependency Injection implies loose coupling with implementations. This loose coupling is encouraged and facilitated by `ClFamily` interfaces, which are intimately bound to their respective classes.
 
+## "Favoring Composition over Inheritance"
+
+The Clprolf framework ensures that inheritance is used sparingly and with precision, while relying on composition for everything else.
+
 # XI) Clprolf and Existing Architectures
 
 Clprolf is compatible with existing architectural approaches such as Domain-Driven Design (DDD), Model-View-Controller (MVC), Clean Architecture, Hexagonal Architecture, and others.
