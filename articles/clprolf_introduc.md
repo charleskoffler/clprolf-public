@@ -7,7 +7,7 @@ Clprolf stands for CLear PROgramming Language and Framework.
 
 Clprolf is a **lightweight architectural-role framework for Java and C#**.
 
-It adds a conceptual layer on top of Java/C# OOP by making roles, responsibilities, and structural rules explicit.
+It adds a conceptual layer on top of Java/C# OOP by making roles, responsibilities, and structural rules explicit. The framework helps adhere to the well-known SOLID principles.
 
 You model systems with **agents**, **workers**, **family interfaces**, and **trait interfaces**, while architectural rules can be verified through automated checks.
 

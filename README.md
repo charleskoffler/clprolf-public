@@ -8,6 +8,8 @@ It helps Java and .net teams make class responsibilities explicit by distinguish
 - `@ClWorker` (or `[ClWorker]`): technical or infrastructure classes
 - `@ClDraft` (or `[ClDraft]`): temporarily undefined classes
 
+The framework helps adhere to the well-known SOLID principles.
+
 With the ArchUnit checker(for Java or C#), Clprolf rules can be verified automatically during tests and CI.
 
 ## Information

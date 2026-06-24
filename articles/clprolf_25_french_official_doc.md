@@ -5,6 +5,7 @@
 **Clprolf**("Clear PROgramming Language and Framework") est un framework pour Java et C# .net.
 
 Son objectif est de rendre explicites certaines bonnes pratiques de la programmation orientée objet, sans introduire une architecture lourde ni une courbe d’apprentissage importante.
+Ainsi, le framework aide à respecter les principes SOLID bien connus.
 
 Clprolf repose sur une idée simple :
 
@@ -670,37 +671,24 @@ Une classe ne peut pas implémenter directement une interface @ClTrait (à moins
 ### optional_class_must_implement_only_one_family_interface (OPTIONNELLE)
 Une classe Clprolf ne peut implémenter qu'une interface @ClFamily. Forçage possible avec @ClInterfaceBypass
 
-# X) Alignement avec les Principes SOLID et de Conception
+# X) Clprolf et les principes SOLID
 
-Clprolf n’a pas pour but de remplacer les bonnes pratiques de la programmation orientée objet, mais d'offrir un cadre structurel strict et vérifiable pour les appliquer naturellement.
+## **S** — Principe de responsabilité unique (SRP)
+Le Framework naturellement procure le principe de responsabilité unique(SRP). En effet, chaque classe possède son domaine conceptuel ou métier, qui est préservé lors de l'héritage. 
 
-## 1. Single Responsibility Principle (SRP) & Séparation des Préoccupations
+## **O** — Principe Ouvert/Fermé (OCP, Open-Closed Principle)
+Ce principe nous incite à prévoir les futures évolutions comme des extensions et pas comme des corrections du code. Le Framework Clprolf facile les extensions, de par la séparation stricte des domaines conceptuels, et les workers. Les interfaces ClFamily poussent à une bonne visibilité des interfaces utilisées dans les classes, et à bien penser les fonctionnalités. Les interfaces ClTrait nous permettent d'avoir des ClFamily encore plus simples et pures, et à mutualiser les traits.
 
-Le premier principe fondamental de Clprolf (Métier vs Technique) est une application directe du SRP au niveau architectural.
+## **L** — Principe de substitution de Liskov (LSP)
+Clprolf impose un héritage qui reste dans le même domaine conceptuel, en plus de la séparation ClAgent et ClWorker. Ainsi, le principe LSP de Liskov est naturellement pris en compte, car une classe Carre n'est pas du même domaine conceptuel que Rectangle.
 
-* Un `@ClAgent` se concentre uniquement sur le "quoi" (le comportement conceptuel et les règles métier).
-* Un `@ClWorker` se concentre sur le "comment" (l'infrastructure, la technique, les détails d'exécution).
-En forçant cette séparation, Clprolf empêche la création de classes "Dieu" (*God Classes*) qui gèrent à la fois la logique métier et les appels réseau ou les requêtes SQL.
 
-## 2. "Favor Composition over Inheritance" (Privilégier la composition à l'héritage)
+## **I** — Principe de ségrégation des interfaces (ISP)
+Ce principe conseille qu'un client ne doit pas devoir implémenter des méthodes qu'ils n'utilisent pas. Avec Clprolf, l'interface est taillée sur mesure pour le client, et les traits sont précis. De plus, les héritages entre interfaces sont contrôlés.
 
-C'est l'un des combats majeurs de Clprolf. L'héritage est trop souvent détourné à des fins de réutilisation de code technique (par exemple, faire hériter une classe métier d'un utilitaire technique).
-Le principe de Clprolf stipulant qu'**une classe ne peut hériter que d'une classe du même domaine** élimine ce couplage lâche. Si les domaines divergent, le framework bloque l'analyse et pousse structurellement le développeur à utiliser la **composition**.
+## **D** — Injection des dépendances (Dependency Injection, DI)
 
-## 3. Liskov Substitution Principle (LSP)
-
-Clprolf sécurise le principe de substitution de Liskov. En interdisant le mélange des rôles (`@ClAgent` et `@ClWorker`) au sein d'une même hiérarchie d'héritage, le framework garantit que les sous-classes partagent la même nature conceptuelle que leur classe parente. Un agent se substituera toujours à un agent, sans surprise comportementale ou technique majeure.
-
-## 4. Interface Segregation Principle (ISP) & Loose Coupling
-
-Grâce à la distinction claire entre `@ClFamily` et `@ClTrait`, Clprolf fournit une sémantique précise pour concevoir des interfaces :
-
-* Les `@ClTrait` forcent la création de petites interfaces spécialisées et transversales (comme `Scanner`, `Fax`, `Printer`), ce qui est l'essence même de l'ISP.
-* Le parallèle strict entre le monde abstrait (`ClFamily`) et le monde concret garantit un **couplage faible (*loose coupling*)** systématique, rendant le système nativement prêt pour l'**Injection de Dépendances (DI)**.
-
-## 5. Open/Closed Principle (OCP)
-
-L'architecture de Clprolf (où les classes concrètes implémentent une `ClFamily` qui agrège des `ClTrait`) permet d'étendre les capacités d'un système sans modifier le code existant. On peut ajouter de nouveaux comportements en créant de nouveaux traits ou de nouvelles implémentations de familles, tout en garantissant via le checker que l'architecture globale reste imperméable aux dérives.
+L'injection des dépendances suppose le loose coupling, le couplage faible avec les implémentations. Ce couplage faible est encouragé et facilité, avec les interfaces ClFamily qui sont intimement liéées aux classes.
 
 ---
 

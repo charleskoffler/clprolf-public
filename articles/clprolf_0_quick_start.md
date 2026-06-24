@@ -13,6 +13,8 @@ Its goal is not to replace classical OOP, but to make certain important distinct
 * coherent inheritance versus composition,
 * the primary responsibility of a class.
 
+It helps adhere to the well-known SOLID principles.
+
 ---
 
 ## 🎯 The Problem
