@@ -336,7 +336,7 @@ La hiérarchie des interfaces ClFamily reflète naturellement la hiérarchie des
 ```java
 @ClAgent
 @ClFamily
-public class Horse extends Animal {
+public interface Horse extends Animal {
 
     void sauter(int hauteur);
 
