@@ -681,7 +681,7 @@ Ce principe nous incite à prévoir les futures évolutions comme des extensions
 
 ## **L** — Principe de substitution de Liskov (LSP)
 Clprolf impose un héritage qui reste dans le même domaine conceptuel, en plus de la séparation ClAgent et ClWorker. Ainsi, le principe LSP de Liskov est naturellement pris en compte, car une classe Carre n'est pas du même domaine conceptuel que Rectangle.
-
+En effet, une classe Girafe appartient au même domaine qu'un Animal dont elle hérite les comportements naturels. À l'inverse, une classe Carre n'a pas la nature d'un Rectangle (elle ne peut pas avoir une longueur et une largeur indépendantes). Dans Clprolf, ils n'appartiennent donc pas au même domaine conceptuel, ce qui empêche un héritage abusif et prévient les violations du LSP.
 
 ## **I** — Principe de ségrégation des interfaces (ISP)
 Ce principe conseille qu'un client ne doit pas devoir implémenter des méthodes qu'ils n'utilisent pas. Avec Clprolf, l'interface est taillée sur mesure pour le client, et les traits sont précis. De plus, les héritages entre interfaces sont contrôlés.

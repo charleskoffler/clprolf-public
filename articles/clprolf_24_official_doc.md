@@ -687,7 +687,8 @@ This principle encourages us to anticipate future evolutions as extensions rathe
 
 ## **L** — Liskov Substitution Principle (LSP)
 
-Clprolf enforces that inheritance must remain within the same conceptual domain, in addition to separating `ClAgent` and `ClWorker`. Thus, Liskov's LSP is naturally accounted for, as a `Square` class does not belong to the same conceptual domain as a `Rectangle` class.
+Clprolf enforces inheritance that remains strictly within the same conceptual domain, alongside the separation between `@ClAgent` and `@ClWorker`. Thus, the Liskov Substitution Principle is naturally upheld. 
+Indeed, a `Giraffe` class belongs to the same domain as an `Animal`, from which it inherits its natural behaviors. Conversely, a `Square` class does not share the true nature of a `Rectangle` (it cannot have independent length and width). In Clprolf, they therefore do not belong to the same conceptual domain, which prevents abusive inheritance and avoids LSP violations.
 
 ## **I** — Interface Segregation Principle (ISP)
 
