@@ -698,7 +698,7 @@ Le framework Clprolf permet de n'utiliser l'héritage qu'avec parcimonie et pré
 # XI) Clprolf et les architectures existantes
 
 Clprolf est compatible avec les architectures DDD, MVC, Clean architecture, architecture hexagonale, etc. C'est une couche entre la POO et les architectures, qui vient compléter et sécuriser les architectures connues.
-
+Et Clprolf ne sert pas que pour l'informatique d'entreprise, mais pour tout type d'applications, y compris simulations, et applications scientifiques.
 
 # XII) Résumé
 

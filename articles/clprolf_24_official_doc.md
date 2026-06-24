@@ -705,11 +705,9 @@ The Clprolf framework ensures that inheritance is used sparingly and with precis
 # XI) Clprolf and Existing Architectures
 
 Clprolf is compatible with existing architectural approaches such as Domain-Driven Design (DDD), Model-View-Controller (MVC), Clean Architecture, Hexagonal Architecture, and others.
-
 Rather than replacing these architectures, Clprolf acts as an additional layer between Object-Oriented Programming (OOP) and software architecture. Its purpose is to complement, clarify, and reinforce existing architectural principles by making class roles and inheritance relationships more explicit.
-
 In this way, Clprolf helps improve architectural consistency while remaining fully compatible with established design practices.
-
+Furthermore, Clprolf is not just meant for enterprise software, but for all types of applications, including simulations and scientific applications.
 
 # XII) Summary
 
