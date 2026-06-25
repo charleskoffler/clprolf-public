@@ -1,8 +1,8 @@
-# Clprolf — Official Documentation
+# Clprolf Framework — Official Documentation
 
 ## Introduction
 
-**Clprolf**("Clear PROgramming Language and Framework") is Java (or C#) framework.
+**Clprolf** ("Clear PROgramming Language and Framework") is a framework for Java and C# .NET. Its motto is "Don't use it - You don't need it!".
 
 Its goal is to make certain object-oriented programming best practices explicit, without introducing heavy architecture or a steep learning curve.
 Thus, the framework helps adhere to the well-known SOLID principles.
@@ -233,6 +233,52 @@ However, in such cases, the Clprolf framework imposes the use of an agent. For e
 This is why Clprolf can be described as an "opinionated" framework. 
 As soon as a domain can be identified, it must be chosen over the worker perspective. This choice is argued by the fact that agents and abstractions are easier to manipulate and facilitate design.
 However, declaring the Connection class as a `ClAgent` does not preclude it from having a worker for its own technical needs.
+
+---
+
+### Java Example Confirming the Clprolf Vision: `java.io.File`
+
+The recent OpenJDK implementation of `java.io.File` reveals a fairly long class of about 2,000 lines. The class delegates all purely technical, non-domain-related work to an attribute that acts as the strict equivalent of a worker (`FileSystem`).
+
+```java
+private static final FileSystem FS = DefaultFileSystem.getFileSystem();
+
+```
+
+```java
+ public boolean delete() {
+        if (isInvalid()) {
+            return false;
+        }
+        return FS.delete(this);
+    }
+
+```
+
+```text
+       CLPROLF CONCEPT                        JAVA SOURCE CODE (OpenJDK)
+┌──────────────────────────┐            ┌──────────────────────────┐
+│         @ClAgent         │            │       java.io.File       │
+│      (System Agent)      │            │                          │
+│ Represents the concept   │            │ Manages the file         │
+│ of a file and its path.  │            │ abstraction and status.  │
+│ Conceptual methods       │            │ Conceptual methods       │
+└────────────┬─────────────┘            └────────────┬─────────────┘
+             │                                       │
+             │ delegates to                          │ calls
+             ▼                                       ▼
+┌──────────────────────────┐            ┌──────────────────────────┐
+│        @ClWorker         │            │    java.io.FileSystem    │
+│    (Low-Level Worker)    │            │       (FS variable)      │
+│ Performs OS-specific     │            │ OS-specific implement.   │
+│ validation and access.   │            │ (WinNT/UnixFileSystem).  │
+└──────────────────────────┘            └──────────────────────────┘
+
+```
+
+*Note: `java.io.UnixFileSystem` and `WinNTFileSystem` contain many `native` methods.*
+
+---
 
 # III) Inheritance
 
