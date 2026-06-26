@@ -247,6 +247,7 @@ private static final FileSystem FS = DefaultFileSystem.getFileSystem();
     }
 ```
 
+```text
 CONCEPT CLPROLF                   CODE SOURCE JAVA (OpenJDK)
 ┌──────────────────────────┐            ┌──────────────────────────┐
 │        @ClAgent          │            │      java.io.File        │
@@ -264,6 +265,8 @@ CONCEPT CLPROLF                   CODE SOURCE JAVA (OpenJDK)
 │ Réalise l'accès et la    │            │ Implémentation selon l'OS│
 │ validation spécifique OS │            │ , WinNT/UnixFileSystem.  │
 └──────────────────────────┘            └──────────────────────────┘
+
+```
 
 Remarque: java.io.UnixFileSystem, ainsi que WinNTFileSystem, contiennent beaucoup de méthodes `native`.
 
