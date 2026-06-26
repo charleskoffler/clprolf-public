@@ -280,6 +280,14 @@ private static final FileSystem FS = DefaultFileSystem.getFileSystem();
 
 ---
 
+### II.5.2) The optional `ClSystem` role
+
+The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) can be used for system-oriented agents. However, it is not mandatory, keeping the framework as simple as possible.
+If used, mixing inheritance between standard agents and system-oriented agents is strictly forbidden. The checker will then treat them as a completely independent role.
+Developers who prefer to explicitly declare and finely control system-oriented agents (such as `File`) can annotate them as `ClSystem` instead of `ClAgent`.
+
+---
+
 # III) Inheritance
 
 > A class only inherits from another class within the same domain.
@@ -668,6 +676,9 @@ Available on GitHub, the Java checker is open-source and centers around two main
 * **`ClprolfArchTest`**: Validates the standard and fundamental semantic rules of the framework.
 * **`ClprolfStrictArchTest`**: Gathers optional, more rigid constraints for demanding projects (such as forbidding a class from directly implementing a `ClTrait`).
 The checkers (both Java and .NET) also contain the definitions for Clprolf annotations (or attributes).
+
+> **In this section:**
+> To keep the documentation simple, the optional `ClSystem` annotation is not included in the rules' descriptions. It is seamlessly handled by the checker as an independent role.
 
 ---
 

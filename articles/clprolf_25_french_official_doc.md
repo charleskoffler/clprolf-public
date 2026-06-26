@@ -266,7 +266,14 @@ CONCEPT CLPROLF                   CODE SOURCE JAVA (OpenJDK)
 └──────────────────────────┘            └──────────────────────────┘
 
 Remarque: java.io.UnixFileSystem, ainsi que WinNTFileSystem, contiennent beaucoup de méthodes `native`.
+
 ---
+
+### II.5.2) Le rôle optionnel `ClSystem`
+
+Il est possible d'utiliser l'annotation `@ClSystem` (ou l'attribut `[ClSystem]` en C#), pour les agents orientés système. Mais ce n'est pas obligatoire, pour ne pas compliquer trop le framework.
+Si on s'en sert, on ne peut plus mixer l'héritage agent et agent orienté système. Ils sont alors considérés, par le checker, comme un rôle indépendant.
+Les personnes préférant annoncer et contrôler finement les agents orientés systèmes (comme `File`), pourront les annoter `ClSystem` au lieu de `ClAgent`.
 
 # III) Héritage
 
@@ -657,6 +664,7 @@ Disponible sur GitHub, le checker Java est open-source et s'articule autour de d
 * **`ClprolfArchTest`** : Valide les règles sémantiques standard et fondamentales du framework.
 * **`ClprolfStrictArchTest`** : Regroupe des contraintes optionnelles et plus rigides pour les projets exigeants (comme l'interdiction pour une classe d'implémenter directement un `ClTrait`).
 Les checkers (Java et .Net) contiennent aussi les définitions des annotations (ou attributs) Clprolf.
+Pour simplifier la documentation, l'annotation optionnelle `ClSystem` ne figure pas dans la description des règles. Elle est simplement gérée comme un rôle indépendant, par le checker.
 ---
 
 ## 2. Version C# .NET (ArchUnitNET)

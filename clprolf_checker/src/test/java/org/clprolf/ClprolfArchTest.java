@@ -9,13 +9,12 @@ import com.tngtech.archunit.lang.*;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
 import org.clprolf.framework.*;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @AnalyzeClasses(
-        packages = "org.clprolf.examples.learn_checker_app",
+        packages = "org.clprolf.examples",
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 public class ClprolfArchTest {
@@ -24,27 +23,30 @@ public class ClprolfArchTest {
     static final ArchRule clprolf_classes_must_not_mix_agent_and_worker =
             classes()
                     .that().areNotInterfaces()
-                    .should(new ArchCondition<JavaClass>("not mix @ClAgent and @ClWorker") {
+                    .should(new ArchCondition<JavaClass>("not mix @ClAgent, @ClSystem and @ClWorker") {
                         @Override
                         public void check(JavaClass clazz, ConditionEvents events) {
                             if (clazz.isAnnotatedWith(ClDraft.class)) {
                                 return;
                             }
-                            if (!clazz.isAnnotatedWith(ClAgent.class) // Java class
-                                    && !clazz.isAnnotatedWith(ClWorker.class)) {
-                                return;
-                            }
 
                             boolean hasAgent = clazz.isAnnotatedWith(ClAgent.class);
                             boolean hasWorker = clazz.isAnnotatedWith(ClWorker.class);
+                            boolean hasSystem = clazz.isAnnotatedWith(ClSystem.class);
 
-                            boolean ok = !(hasAgent && hasWorker);
+                            if (!hasAgent && !hasWorker && !hasSystem) {
+                                return;
+                            }
+
+                            // A class should have only one class role, and not more
+                            int rolesCount = (hasAgent ? 1 : 0) + (hasWorker ? 1 : 0) + (hasSystem ? 1 : 0);
+                            boolean ok = (rolesCount <= 1);
 
                             events.add(new SimpleConditionEvent(
                                     clazz,
                                     ok,
                                     clazz.getName()
-                                            + " cannot be both @ClAgent and @ClWorker"
+                                            + " cannot mix @ClAgent, @ClSystem, and @ClWorker roles"
                             ));
                         }
                     });
@@ -54,14 +56,21 @@ public class ClprolfArchTest {
             classes()
                     .that().areAnnotatedWith(ClAgent.class)
                     .or().areAnnotatedWith(ClWorker.class)
+                    .or().areAnnotatedWith(ClSystem.class) // 1. Intercept ClSystem at the entry point
                     .should(new ArchCondition<JavaClass>("inherit only from same Clprolf role unless @ClBypass") {
 
+                        @Override
                         public void check(JavaClass clazz, ConditionEvents events) {
                             if (clazz.isAnnotatedWith(ClDraft.class)) {
                                 return;
                             }
-                            if (!clazz.isAnnotatedWith(ClAgent.class) // Java class
-                                    && !clazz.isAnnotatedWith(ClWorker.class)) {
+
+                            boolean childAgent = clazz.isAnnotatedWith(ClAgent.class);
+                            boolean childWorker = clazz.isAnnotatedWith(ClWorker.class);
+                            boolean childSystem = clazz.isAnnotatedWith(ClSystem.class);
+
+                            // 2. Guard clause if the class does not have any of the three roles
+                            if (!childAgent && !childWorker && !childSystem) {
                                 return;
                             }
 
@@ -70,17 +79,17 @@ public class ClprolfArchTest {
                             clazz.getRawSuperclass().ifPresent(parent -> {
                                 if (parent.getName().equals("java.lang.Object")) return;
 
-                                boolean childAgent = clazz.isAnnotatedWith(ClAgent.class);
-                                boolean childWorker = clazz.isAnnotatedWith(ClWorker.class);
                                 boolean parentAgent = parent.isAnnotatedWith(ClAgent.class);
                                 boolean parentWorker = parent.isAnnotatedWith(ClWorker.class);
+                                boolean parentSystem = parent.isAnnotatedWith(ClSystem.class);
 
+                                // 3. Strict inheritance rule: roles must match perfectly
                                 boolean ok =
                                         (childAgent && parentAgent) ||
                                                 (childWorker && parentWorker) ||
+                                                (childSystem && parentSystem) || // A System can only extend a System
                                                 parent.isAnnotatedWith(ClDraft.class) ||
-                                                // Java class
-                                                (!parentAgent && !parentWorker);
+                                                (!parentAgent && !parentWorker && !parentSystem); // Untagged parent (e.g., external lib, JDK)
 
                                 events.add(new SimpleConditionEvent(
                                         clazz,
@@ -103,18 +112,24 @@ public class ClprolfArchTest {
                                 return;
                             }
 
-                            if (!clazz.isAnnotatedWith(ClAgent.class) // Java class
-                                    && !clazz.isAnnotatedWith(ClWorker.class)) {
+                            boolean childAgent = clazz.isAnnotatedWith(ClAgent.class);
+                            boolean childWorker = clazz.isAnnotatedWith(ClWorker.class);
+                            boolean childSystem = clazz.isAnnotatedWith(ClSystem.class);
+
+                            // 1. Guard clause if the class does not have any of the three roles
+                            if (!childAgent && !childWorker && !childSystem) {
                                 return;
                             }
 
                             for (JavaClass interf : clazz.getRawInterfaces()) {
                                 if (!interf.isAnnotatedWith(ClFamily.class)) continue;
 
+                                // 2. Strict matching rule: class role and interface role must be identical
                                 boolean ok =
                                         clazz.isAnnotatedWith(ClBypass.class) ||
-                                                (clazz.isAnnotatedWith(ClAgent.class) && interf.isAnnotatedWith(ClAgent.class)) ||
-                                                (clazz.isAnnotatedWith(ClWorker.class) && interf.isAnnotatedWith(ClWorker.class));
+                                                (childAgent && interf.isAnnotatedWith(ClAgent.class)) ||
+                                                (childWorker && interf.isAnnotatedWith(ClWorker.class)) ||
+                                                (childSystem && interf.isAnnotatedWith(ClSystem.class)); // System class with System family
 
                                 events.add(new SimpleConditionEvent(
                                         clazz,
@@ -163,7 +178,7 @@ public class ClprolfArchTest {
                     .and().areAnnotatedWith(ClFamily.class)
                     .or().areAnnotatedWith(ClTrait.class)
                     .should(new ArchCondition<JavaClass>(
-                            "have a valid target role @ClAgent and/or @ClWorker"
+                            "have a valid target role (@ClAgent, @ClWorker and/or @ClSystem)"
                     ) {
                         @Override
                         public void check(JavaClass interf, ConditionEvents events) {
@@ -171,19 +186,23 @@ public class ClprolfArchTest {
                             boolean isFamily = interf.isAnnotatedWith(ClFamily.class);
                             boolean isTrait = interf.isAnnotatedWith(ClTrait.class);
 
-                            if (!isFamily && !isTrait) { //Java interface or ClFree
+                            if (!isFamily && !isTrait) { // Java interface or ClFree
                                 return;
                             }
 
                             boolean hasAgent = interf.isAnnotatedWith(ClAgent.class);
                             boolean hasWorker = interf.isAnnotatedWith(ClWorker.class);
+                            boolean hasSystem = interf.isAnnotatedWith(ClSystem.class);
 
                             boolean ok;
 
                             if (isFamily) {
-                                ok = hasAgent ^ hasWorker;
+                                // 1. A family must target exactly one of the three roles
+                                int rolesCount = (hasAgent ? 1 : 0) + (hasWorker ? 1 : 0) + (hasSystem ? 1 : 0);
+                                ok = (rolesCount == 1);
                             } else {
-                                ok = hasAgent || hasWorker;
+                                // 2. A trait must target at least one of the three roles
+                                ok = hasAgent || hasWorker || hasSystem;
                             }
 
                             events.add(new SimpleConditionEvent(
@@ -191,8 +210,8 @@ public class ClprolfArchTest {
                                     ok,
                                     interf.getName()
                                             + " must have a valid target role: "
-                                            + "@ClFamily requires exactly one of @ClAgent or @ClWorker; "
-                                            + "@ClTrait requires at least one of @ClAgent or @ClWorker"
+                                            + "@ClFamily requires exactly one of @ClAgent, @ClWorker or @ClSystem; "
+                                            + "@ClTrait requires at least one of @ClAgent, @ClWorker or @ClSystem"
                             ));
                         }
                     });
@@ -211,6 +230,7 @@ public class ClprolfArchTest {
 
                             boolean inheritorIsAgent = interf.isAnnotatedWith(ClAgent.class);
                             boolean inheritorIsWorker = interf.isAnnotatedWith(ClWorker.class);
+                            boolean inheritorIsSystem = interf.isAnnotatedWith(ClSystem.class);
 
                             for (JavaClass parent : interf.getRawInterfaces()) {
 
@@ -220,11 +240,14 @@ public class ClprolfArchTest {
 
                                 boolean parentIsAgent = parent.isAnnotatedWith(ClAgent.class);
                                 boolean parentIsWorker = parent.isAnnotatedWith(ClWorker.class);
+                                boolean parentIsSystem = parent.isAnnotatedWith(ClSystem.class);
 
+                                // 1. Compatibility check: roles must align between the inheritor and the parent trait
                                 boolean compatible =
                                         interf.isAnnotatedWith(ClBypass.class)
                                                 || (inheritorIsAgent && parentIsAgent)
-                                                || (inheritorIsWorker && parentIsWorker);
+                                                || (inheritorIsWorker && parentIsWorker)
+                                                || (inheritorIsSystem && parentIsSystem); // System components can inherit System traits
 
                                 events.add(new SimpleConditionEvent(
                                         interf,
@@ -251,6 +274,7 @@ public class ClprolfArchTest {
 
                             boolean childIsAgent = interf.isAnnotatedWith(ClAgent.class);
                             boolean childIsWorker = interf.isAnnotatedWith(ClWorker.class);
+                            boolean childIsSystem = interf.isAnnotatedWith(ClSystem.class);
 
                             for (JavaClass parent : interf.getRawInterfaces()) {
 
@@ -260,11 +284,14 @@ public class ClprolfArchTest {
 
                                 boolean parentIsAgent = parent.isAnnotatedWith(ClAgent.class);
                                 boolean parentIsWorker = parent.isAnnotatedWith(ClWorker.class);
+                                boolean parentIsSystem = parent.isAnnotatedWith(ClSystem.class);
 
+                                // 1. Compatibility check: family inheritance must strictly preserve the target role
                                 boolean compatible =
                                         interf.isAnnotatedWith(ClBypass.class)
                                                 || (childIsAgent && parentIsAgent)
-                                                || (childIsWorker && parentIsWorker);
+                                                || (childIsWorker && parentIsWorker)
+                                                || (childIsSystem && parentIsSystem); // System families can only extend System families
 
                                 events.add(new SimpleConditionEvent(
                                         interf,
@@ -291,8 +318,13 @@ public class ClprolfArchTest {
                             if (clazz.isAnnotatedWith(ClDraft.class)) {
                                 return;
                             }
-                            if (!clazz.isAnnotatedWith(ClAgent.class) // Java class
-                                    && !clazz.isAnnotatedWith(ClWorker.class)) {
+
+                            boolean childAgent = clazz.isAnnotatedWith(ClAgent.class);
+                            boolean childWorker = clazz.isAnnotatedWith(ClWorker.class);
+                            boolean childSystem = clazz.isAnnotatedWith(ClSystem.class);
+
+                            // 1. Guard clause if the class does not have any of the three roles
+                            if (!childAgent && !childWorker && !childSystem) {
                                 return;
                             }
 
@@ -301,12 +333,12 @@ public class ClprolfArchTest {
                                     continue;
                                 }
 
+                                // 2. Compatibility check for direct trait implementation in non-strict mode
                                 boolean ok =
                                         clazz.isAnnotatedWith(ClBypass.class)
-                                                || (clazz.isAnnotatedWith(ClAgent.class)
-                                                && interf.isAnnotatedWith(ClAgent.class))
-                                                || (clazz.isAnnotatedWith(ClWorker.class)
-                                                && interf.isAnnotatedWith(ClWorker.class));
+                                                || (childAgent && interf.isAnnotatedWith(ClAgent.class))
+                                                || (childWorker && interf.isAnnotatedWith(ClWorker.class))
+                                                || (childSystem && interf.isAnnotatedWith(ClSystem.class)); // System class with System trait
 
                                 events.add(new SimpleConditionEvent(
                                         clazz,
