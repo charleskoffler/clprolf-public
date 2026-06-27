@@ -27,8 +27,8 @@ SnakeGameScene (ClAgent)
  ├── SnakeImpl (ClAgent)
  ├── FoodExpertImpl (ClAgent)
  ├── SnakeGameSceneRendererImpl (ClWorker)
- ├── SnakeWindowImpl (ClAgent)
- └── SnakeGamePanelImpl (ClAgent, Swing-based UI component)
+ ├── SnakeWindowImpl (ClSystem)(Could have been ClAgent)
+ └── SnakeGamePanelImpl (ClSystem, Swing-based UI component)(Could have been ClAgent)
 ```
 
 Each one knows **exactly what it should know**, and **nothing more**.
