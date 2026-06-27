@@ -122,3 +122,10 @@ A technical class is primarily intended to support agent classes rather than be 
 Workers provide technical support and infrastructure services. They may coordinate or use low-level agent classes such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
 
 Instead, it exists to support other components through technical mechanisms, infrastructure access, application startup, operating-system interaction, or similar responsibilities.
+
+## The optional `ClSystem` role
+
+The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) can be used for system-oriented agents. However, it is not mandatory, keeping the framework as simple as possible.
+Developers who prefer to explicitly declare and finely control system-oriented agents (such as `File`) can annotate them as `ClSystem` instead of `ClAgent`.
+
+---

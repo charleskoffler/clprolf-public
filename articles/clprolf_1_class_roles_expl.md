@@ -309,6 +309,59 @@ This is why Clprolf can be described as an "opinionated" framework.
 As soon as a domain can be identified, it must be chosen over the worker perspective. This choice is argued by the fact that agents and abstractions are easier to manipulate and facilitate design.
 However, declaring the Connection class as a `ClAgent` does not preclude it from having a worker for its own technical needs.
 
+---
+
+### Java Example Confirming the Clprolf Vision: `java.io.File`
+
+The recent OpenJDK implementation of `java.io.File` reveals a fairly long class of about 2,000 lines. The class delegates all purely technical, non-domain-related work to an attribute that acts as the strict equivalent of a worker (`FileSystem`).
+
+```java
+private static final FileSystem FS = DefaultFileSystem.getFileSystem();
+
+```
+
+```java
+ public boolean delete() {
+        if (isInvalid()) {
+            return false;
+        }
+        return FS.delete(this);
+    }
+
+```
+
+```text
+       CLPROLF CONCEPT                        JAVA SOURCE CODE (OpenJDK)
+┌──────────────────────────┐            ┌──────────────────────────┐
+│         @ClAgent         │            │       java.io.File       │
+│      (System Agent)      │            │                          │
+│ Represents the concept   │            │ Manages the file         │
+│ of a file and its path.  │            │ abstraction and status.  │
+│ Conceptual methods       │            │ Conceptual methods       │
+└────────────┬─────────────┘            └────────────┬─────────────┘
+             │                                       │
+             │ delegates to                          │ calls
+             ▼                                       ▼
+┌──────────────────────────┐            ┌──────────────────────────┐
+│        @ClWorker         │            │    java.io.FileSystem    │
+│    (Low-Level Worker)    │            │       (FS variable)      │
+│ Performs OS-specific     │            │ OS-specific implement.   │
+│ validation and access.   │            │ (WinNT/UnixFileSystem).  │
+└──────────────────────────┘            └──────────────────────────┘
+
+```
+
+*Note: `java.io.UnixFileSystem` and `WinNTFileSystem` contain many `native` methods.*
+
+---
+
+### The optional `ClSystem` role
+
+The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) can be used for system-oriented agents. However, it is not mandatory, keeping the framework as simple as possible.
+If used, mixing inheritance between standard agents and system-oriented agents is strictly forbidden. The checker will then treat them as a completely independent role.
+Developers who prefer to explicitly declare and finely control system-oriented agents (such as `File`) can annotate them as `ClSystem` instead of `ClAgent`.
+
+---
 
 ## Summary
 

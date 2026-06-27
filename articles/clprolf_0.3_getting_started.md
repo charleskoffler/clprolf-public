@@ -66,7 +66,7 @@ A `worker`:
 
 ---
 
-## 1️⃣ Declaring a Nature
+## 1️⃣ Declaring a class role
 
 In classical OOP, a class is typically declared as:
 
@@ -88,9 +88,9 @@ or
 public class OrderRepository { }
 ```
 
-Each class declares its nature from the beginning.
+Each class declares its role from the beginning.
 
-The core natures are:
+The core class roles are:
 
 * `agent` → domain-oriented responsibility
 * `worker` → support/technical responsibility
