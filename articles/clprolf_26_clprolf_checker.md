@@ -43,6 +43,11 @@ The framework maintains absolute functional parity between ecosystems. The synta
 
 The checker validates the framework's core rules through 8 mandatory semantic tests (`ClprolfArchTest` in Java, or its xUnit equivalent in .NET).
 
+> **In this section:**
+> To keep the documentation simple, the optional `ClSystem` annotation is not included in the rules' descriptions. It is seamlessly handled by the checker as an independent role.
+
+---
+
 ### 1. A class cannot mix roles (`clprolf_classes_must_not_mix_agent_and_worker`)
 
 A class cannot be annotated as both Agent and Worker.
