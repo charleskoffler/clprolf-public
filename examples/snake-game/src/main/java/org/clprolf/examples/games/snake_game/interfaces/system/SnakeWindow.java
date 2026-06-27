@@ -1,14 +1,14 @@
-package org.clprolf.examples.games.snake_game.interfaces;
+package org.clprolf.examples.games.snake_game.interfaces.system;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import org.clprolf.framework.ClAgent;
 import org.clprolf.framework.ClFamily;
 import org.clprolf.examples.games.snake_game.workers.interfaces.SnakeGameSceneRenderer;
+import org.clprolf.framework.ClSystem;
 
 //extends Java interfaces, and Runnable should be capacity interfaces with worker_agent_like advice!
-@ClAgent
+@ClSystem
 @ClFamily
 public interface SnakeWindow extends Runnable, KeyListener{
 	

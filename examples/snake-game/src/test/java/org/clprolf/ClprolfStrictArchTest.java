@@ -9,7 +9,6 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
 import org.clprolf.framework.*;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
@@ -33,16 +32,19 @@ public class ClprolfStrictArchTest {
                             ) {
                                 return;
                             }
+
+                            // 1. A class is valid if it declares any of the core roles, a draft, or the new system role
                             boolean hasRole =
                                     clazz.isAnnotatedWith(ClAgent.class)
                                             || clazz.isAnnotatedWith(ClWorker.class)
-                                            || clazz.isAnnotatedWith(ClDraft.class);
+                                            || clazz.isAnnotatedWith(ClDraft.class)
+                                            || clazz.isAnnotatedWith(ClSystem.class); // Added support for ClSystem
 
                             events.add(new SimpleConditionEvent(
                                     clazz,
                                     hasRole,
                                     clazz.getName()
-                                            + " should declare a Clprolf role: @ClAgent, @ClWorker, or @ClDraft"
+                                            + " should declare a Clprolf role: @ClAgent, @ClWorker, @ClSystem, or @ClDraft"
                             ));
                         }
                     });
@@ -55,6 +57,7 @@ public class ClprolfStrictArchTest {
                         @Override
                         public void check(JavaClass interf, ConditionEvents events) {
 
+                            // 1. Check if the interface belongs to any of the standard Clprolf interface types
                             boolean hasRole =
                                     interf.isAnnotatedWith(ClFamily.class)
                                             || interf.isAnnotatedWith(ClTrait.class)
@@ -79,10 +82,12 @@ public class ClprolfStrictArchTest {
                             if (clazz.isAnnotatedWith(ClDraft.class)) {
                                 return;
                             }
+
                             if (!clazz.isAnnotatedWith(ClAgent.class)
-                                    && !clazz.isAnnotatedWith(ClWorker.class)) {
+                                    && !clazz.isAnnotatedWith(ClWorker.class)
+                                    && !clazz.isAnnotatedWith(ClSystem.class)) {
                                 return;
-                            } // Java class
+                            }
 
                             for (JavaClass interf : clazz.getRawInterfaces()) {
                                 boolean ok = !interf.isAnnotatedWith(ClTrait.class)
@@ -109,10 +114,13 @@ public class ClprolfStrictArchTest {
                             if (clazz.isAnnotatedWith(ClDraft.class)) {
                                 return;
                             }
+
+                            // CRITICAL: Include ClSystem so system-oriented classes are restricted to a single family
                             if (!clazz.isAnnotatedWith(ClAgent.class)
-                                    && !clazz.isAnnotatedWith(ClWorker.class)) {
+                                    && !clazz.isAnnotatedWith(ClWorker.class)
+                                    && !clazz.isAnnotatedWith(ClSystem.class)) {
                                 return;
-                            } // Java class
+                            }
 
                             long count = clazz.getRawInterfaces()
                                     .stream()

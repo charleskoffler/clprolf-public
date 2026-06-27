@@ -4,11 +4,12 @@ package org.clprolf.examples.games.snake_game.impl;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.clprolf.examples.games.snake_game.impl.system.SnakeGameSceneImpl;
 import org.clprolf.framework.ClAgent;
 import org.clprolf.examples.games.snake_game.model.Food;
 import org.clprolf.examples.games.snake_game.model.Food.FoodType;
 import org.clprolf.examples.games.snake_game.interfaces.FoodExpert;
-import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
+import org.clprolf.examples.games.snake_game.interfaces.system.SnakeGameScene;
 
 @ClAgent
 public class FoodExpertImpl implements FoodExpert {

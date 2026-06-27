@@ -1,17 +1,20 @@
-package org.clprolf.examples.games.snake_game.impl;
+package org.clprolf.examples.games.snake_game.impl.system;
 
 import java.util.Random;
 
+import org.clprolf.examples.games.snake_game.impl.FoodExpertImpl;
+import org.clprolf.examples.games.snake_game.impl.SnakeImpl;
 import org.clprolf.framework.ClAgent;
 import org.clprolf.examples.games.snake_game.interfaces.FoodExpert;
 import org.clprolf.examples.games.snake_game.interfaces.Snake;
-import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
+import org.clprolf.examples.games.snake_game.interfaces.system.SnakeGameScene;
 import org.clprolf.examples.games.snake_game.workers.impl.SnakeGameSceneRendererImpl;
 import org.clprolf.examples.games.snake_game.workers.interfaces.SnakeGameSceneRenderer;
+import org.clprolf.framework.ClSystem;
 
 
 //Not a pure abstraction, because it has a worker.
-@ClAgent
+@ClSystem
 public class SnakeGameSceneImpl implements SnakeGameScene {
 	
 	private SnakeGameSceneRenderer renderer;

@@ -1,12 +1,14 @@
-package org.clprolf.examples.games.snake_game.interfaces;
+package org.clprolf.examples.games.snake_game.interfaces.system;
 
 import java.util.Random;
 
-import org.clprolf.framework.ClAgent;
+import org.clprolf.examples.games.snake_game.interfaces.FoodExpert;
+import org.clprolf.examples.games.snake_game.interfaces.Snake;
 import org.clprolf.framework.ClFamily;
 import org.clprolf.examples.games.snake_game.workers.interfaces.SnakeGameSceneRenderer;
+import org.clprolf.framework.ClSystem;
 
-@ClAgent
+@ClSystem
 @ClFamily
 public interface SnakeGameScene {
 	

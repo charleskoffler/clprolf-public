@@ -1,18 +1,18 @@
-package org.clprolf.examples.games.snake_game.impl;
+package org.clprolf.examples.games.snake_game.impl.system;
 
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 
-import org.clprolf.framework.ClAgent;
 import org.clprolf.examples.games.snake_game.impl.SnakeImpl.SlidingType;
 import org.clprolf.examples.games.snake_game.interfaces.Snake;
-import org.clprolf.examples.games.snake_game.interfaces.SnakeGamePanel;
-import org.clprolf.examples.games.snake_game.interfaces.SnakeWindow;
+import org.clprolf.examples.games.snake_game.interfaces.system.SnakeGamePanel;
+import org.clprolf.examples.games.snake_game.interfaces.system.SnakeWindow;
 import org.clprolf.examples.games.snake_game.workers.interfaces.SnakeGameSceneRenderer;
+import org.clprolf.framework.ClSystem;
 
 // extends a Java class
 // System abstraction
-@ClAgent
+@ClSystem
 public class SnakeWindowImpl extends JFrame implements SnakeWindow {
 	//The thread abstraction
 	private Thread cyclesThread;

@@ -3,10 +3,10 @@ package org.clprolf.examples.games.snake_game.workers.impl;
 import java.awt.EventQueue;
 
 import org.clprolf.framework.ClWorker;
-import org.clprolf.examples.games.snake_game.impl.SnakeWindowImpl;
+import org.clprolf.examples.games.snake_game.impl.system.SnakeWindowImpl;
 import org.clprolf.examples.games.snake_game.interfaces.Snake;
-import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
-import org.clprolf.examples.games.snake_game.interfaces.SnakeWindow;
+import org.clprolf.examples.games.snake_game.interfaces.system.SnakeGameScene;
+import org.clprolf.examples.games.snake_game.interfaces.system.SnakeWindow;
 import org.clprolf.examples.games.snake_game.workers.interfaces.SnakeGameSceneRenderer;
 
 @ClWorker

@@ -3,9 +3,10 @@ package org.clprolf.examples.games.snake_game.impl;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.clprolf.examples.games.snake_game.impl.system.SnakeGameSceneImpl;
 import org.clprolf.framework.ClAgent;
 import org.clprolf.examples.games.snake_game.interfaces.Snake;
-import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
+import org.clprolf.examples.games.snake_game.interfaces.system.SnakeGameScene;
 import org.clprolf.examples.games.snake_game.model.Food;
 
 @ClAgent
@@ -163,7 +164,7 @@ public class SnakeImpl implements Snake {
 		blnBitesOther = getLinkAt(newHeadLink.x, newHeadLink.y, otherSnake) != null;
 		blnBiteOurselv = (previousLinkAtNewHead != null);
 		
-		blnWall = newHeadLink.y<0 || newHeadLink.y>SnakeGameSceneImpl.SCENE_ROWS_COUNT-1
+		blnWall = newHeadLink.y<0 || newHeadLink.y> SnakeGameSceneImpl.SCENE_ROWS_COUNT-1
 		|| newHeadLink.x<0 || newHeadLink.x>SnakeGameSceneImpl.SCENE_COLUMNS_COUNT-1;
 		if (blnWall || blnBiteOurselv || blnBitesOther) {
 			this.scene.getRenderer().reactToGameOver(this);

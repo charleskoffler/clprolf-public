@@ -1,8 +1,8 @@
 package org.clprolf.examples.games.snake_game.workers.impl;
 
 import org.clprolf.framework.ClWorker;
-import org.clprolf.examples.games.snake_game.impl.SnakeGameSceneImpl;
-import org.clprolf.examples.games.snake_game.interfaces.SnakeGameScene;
+import org.clprolf.examples.games.snake_game.impl.system.SnakeGameSceneImpl;
+import org.clprolf.examples.games.snake_game.interfaces.system.SnakeGameScene;
 
 /**
  * A simple 2D Snake game with two players and two snakes.

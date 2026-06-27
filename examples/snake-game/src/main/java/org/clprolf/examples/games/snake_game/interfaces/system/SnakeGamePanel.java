@@ -1,13 +1,13 @@
-package org.clprolf.examples.games.snake_game.interfaces;
+package org.clprolf.examples.games.snake_game.interfaces.system;
 
-import org.clprolf.framework.ClAgent;
 import org.clprolf.framework.ClFamily;
+import org.clprolf.framework.ClSystem;
 
 import java.awt.Graphics;
 
 import javax.swing.JLabel;
 
-@ClAgent
+@ClSystem
 @ClFamily
 public interface SnakeGamePanel {
 	
