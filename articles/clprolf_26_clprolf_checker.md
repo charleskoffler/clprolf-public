@@ -61,7 +61,7 @@ public class InvalidClass { }
 
 ```csharp
 // C#
-[ClAgent], [ClWorker]
+[ClAgent, ClWorker]
 public class InvalidClass { }
 
 ```
@@ -131,7 +131,7 @@ A second test suite, `ClprolfStrictArchTest` (available in both GitHub repositor
 
 ```csharp
 // C# Strict Pattern
-[ClAgent], [ClFamily]
+[ClAgent, ClFamily]
 public interface IHorse : IAnimal, IMammal, IPayable { }
 
 [ClAgent]
