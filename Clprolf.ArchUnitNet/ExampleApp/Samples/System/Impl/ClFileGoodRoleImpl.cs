@@ -1,15 +1,15 @@
 ﻿using Clprolf.ArchUnitNet.Attributes;
+using Clprolf.Checker.ExampleApp.Samples.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clprolf.Checker.ExampleApp.Samples.Agents
+namespace Clprolf.Checker.ExampleApp.Samples.System.Impl
 {
-    [ClAgent]
-    [ClTrait]
-    public interface IGrowable
+    [ClSystem]
+    public class ClFileGoodRoleImpl: IClFile
     {
     }
 }

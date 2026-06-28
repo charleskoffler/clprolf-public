@@ -2,6 +2,8 @@
 using ArchUnitNET.Domain.Extensions;
 using ArchUnitNET.Fluent.Conditions;
 using Clprolf.ArchUnitNet.Attributes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Clprolf.ArchUnitNet.Rules;
 
@@ -14,7 +16,7 @@ internal sealed class FamilyInterfaceTargetRoleMustMatchInheritedFamilyInterface
     {
         foreach (var interf in objects)
         {
-            // 1. Si l'interface n'hérite de rien, elle est valide d'office
+            // 1. If the interface does not inherit from anything, it is automatically valid
             if (interf.ImplementedInterfaces.IsNullOrEmpty())
             {
                 yield return new ConditionResult(
@@ -24,10 +26,10 @@ internal sealed class FamilyInterfaceTargetRoleMustMatchInheritedFamilyInterface
                 continue;
             }
 
-            // On extrait uniquement les interfaces parentes de type "Family"
+            // Only parent interfaces of type “Family” are extracted.
             var parentFamilyInterfaces = interf.ImplementedInterfaces.Where(p => p.IsFamily()).ToList();
 
-            // 2. Si aucun parent n'est une interface Family, elle est valide d'office
+            // 2. If no parent is a Family interface, it is automatically valid
             if (!parentFamilyInterfaces.Any())
             {
                 yield return new ConditionResult(
@@ -37,18 +39,20 @@ internal sealed class FamilyInterfaceTargetRoleMustMatchInheritedFamilyInterface
                 continue;
             }
 
-            // 3. Validation globale : TOUTES les interfaces parentes Family doivent être compatibles
+            // 3. Overall validation: ALL parent Family interfaces must be compatible
             bool allParentsAreCompatible = parentFamilyInterfaces.All(parent =>
                 interf.HasBypass()
                 || (interf.IsAgent() && parent.IsAgent())
                 || (interf.IsWorker() && parent.IsWorker())
+                || (interf.IsSystem() && parent.IsSystem())
             );
 
-            // On récupère le premier parent fautif pour remonter un super message d'erreur ciblé
+            // We retrieve the first parent node at fault to generate a great, targeted error message
             var faultyParent = parentFamilyInterfaces.FirstOrDefault(parent => !(
                 interf.HasBypass()
                 || (interf.IsAgent() && parent.IsAgent())
                 || (interf.IsWorker() && parent.IsWorker())
+                || (interf.IsSystem() && parent.IsSystem())
             ));
 
             yield return new ConditionResult(

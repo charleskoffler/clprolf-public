@@ -11,7 +11,10 @@ using Clprolf.Checker.ExampleApp.Samples.Agents.Impl;
 
 namespace Clprolf.ArchUnitNet.Tests
 {
-   
+    /// <summary>
+    /// TODO Please change the typeof in the Architecture, with a type from your project you want to check. 
+    /// 
+    /// </summary>
     public static class TestArchitecture
     {
         public static readonly Architecture Architecture = new ArchLoader()
