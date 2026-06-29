@@ -1,6 +1,8 @@
 ﻿using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent.Conditions;
 using Clprolf.ArchUnitNet.Attributes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Clprolf.ArchUnitNet.Rules;
 
@@ -13,7 +15,7 @@ internal sealed class InheritingInterfaceRoleMustMatchTraitInterfaceTargetRoleCo
     {
         foreach (var interf in objects)
         {
-            // 1. Cas d'exclusion globaux pour l'interface courante (on renvoie true au lieu de continue)
+            // 1. Global exclusion cases for the current interface
             if (!interf.IsFamily() && !interf.IsTrait())
             {
                 yield return new ConditionResult(
@@ -23,10 +25,10 @@ internal sealed class InheritingInterfaceRoleMustMatchTraitInterfaceTargetRoleCo
                 continue;
             }
 
-            // On extrait uniquement les parents qui sont des [ClTrait]
+            // Only parents that are [ClTrait] are extracted.
             var parentTraitInterfaces = interf.ImplementedInterfaces.Where(p => p.IsTrait()).ToList();
 
-            // 2. Si elle n'hérite d'aucun Trait, elle est valide d'office
+            // 2. If she does not inherit any Traits, she is automatically valid
             if (!parentTraitInterfaces.Any())
             {
                 yield return new ConditionResult(
@@ -36,18 +38,20 @@ internal sealed class InheritingInterfaceRoleMustMatchTraitInterfaceTargetRoleCo
                 continue;
             }
 
-            // 3. Validation globale : TOUTES les interfaces parentes de type Trait doivent être compatibles
+            // 3. Global validation: ALL parent interfaces of type Trait must be compatible
             bool allTraitsAreCompatible = parentTraitInterfaces.All(parent =>
                 interf.HasBypass()
                 || (interf.IsAgent() && parent.IsAgent())
                 || (interf.IsWorker() && parent.IsWorker())
+                || (interf.IsSystem() && parent.IsSystem())
             );
 
-            // On cible le premier parent fautif pour le rapport d'erreur
+            // We target the first parent responsible for the error report
             var faultyTrait = parentTraitInterfaces.FirstOrDefault(parent => !(
                 interf.HasBypass()
                 || (interf.IsAgent() && parent.IsAgent())
                 || (interf.IsWorker() && parent.IsWorker())
+                || (interf.IsSystem() && parent.IsSystem())
             ));
 
             yield return new ConditionResult(

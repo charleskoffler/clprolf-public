@@ -3,6 +3,7 @@ using ArchUnitNET.Domain.Extensions;
 using ArchUnitNET.Fluent.Conditions;
 using Clprolf.ArchUnitNet.Attributes;
 
+
 namespace Clprolf.ArchUnitNet.Rules;
 
 [ClAgent]
@@ -14,7 +15,7 @@ internal sealed class TraitInterfaceRoleMustMatchDirectImplementationCondition :
     {
         foreach (var clazz in objects)
         {
-            // 1. Cas d'exclusion globaux pour la classe
+            // 1. Global exclusion cases for the class
             if (clazz.IsDraft())
             {
                 yield return new ConditionResult(
@@ -24,12 +25,12 @@ internal sealed class TraitInterfaceRoleMustMatchDirectImplementationCondition :
                 continue;
             }
 
-            if (!clazz.IsAgent() && !clazz.IsWorker())
+            if (!clazz.IsAgent() && !clazz.IsWorker() && !clazz.IsSystem())
             {
                 yield return new ConditionResult(
                     clazz,
                     true,
-                    $"{clazz.FullName} is not an agent, nor a worker");
+                    $"{clazz.FullName} is not an agent, worker, or system");
                 continue;
             }
 
@@ -42,10 +43,10 @@ internal sealed class TraitInterfaceRoleMustMatchDirectImplementationCondition :
                 continue;
             }
 
-            // On extrait uniquement les interfaces qui sont des [ClTrait]
+            // Only interfaces that are [ClTrait] are extracted.
             var traitInterfaces = clazz.ImplementedInterfaces.Where(i => i.IsTrait()).ToList();
 
-            // 2. Si la classe n'implémente aucun Trait, elle est valide d'office
+            // 2. If the class does not implement any traits, it is automatically valid.
             if (!traitInterfaces.Any())
             {
                 yield return new ConditionResult(
@@ -55,18 +56,20 @@ internal sealed class TraitInterfaceRoleMustMatchDirectImplementationCondition :
                 continue;
             }
 
-            // 3. Validation globale : TOUTES les interfaces de type Trait doivent être compatibles
+            // 3. Overall validation: ALL Trait-type interfaces must be compatible
             bool allTraitsAreCompatible = traitInterfaces.All(interf =>
                 clazz.HasBypass()
                 || (clazz.IsAgent() && interf.IsAgent())
                 || (clazz.IsWorker() && interf.IsWorker())
+                || (clazz.IsSystem() && interf.IsSystem())
             );
 
-            // On isole le premier Trait fautif pour le rapport d'erreur
+            // We isolate the first faulty line for the error report
             var faultyTrait = traitInterfaces.FirstOrDefault(interf => !(
                 clazz.HasBypass()
                 || (clazz.IsAgent() && interf.IsAgent())
                 || (clazz.IsWorker() && interf.IsWorker())
+                || (clazz.IsSystem() && interf.IsSystem())
             ));
 
             yield return new ConditionResult(

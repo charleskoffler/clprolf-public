@@ -20,15 +20,17 @@ namespace Clprolf.ArchUnitNet.Rules
         {
             foreach (var clazz in objects)
             {
+               
                 bool hasRole =
                     clazz.IsAgent()
                     || clazz.IsWorker()
+                    || clazz.IsSystem()
                     || clazz.IsDraft();
 
                 yield return new ConditionResult(
                     clazz,
                     hasRole,
-                    $"{clazz.FullName} should declare a Clprolf role: [ClAgent], [ClWorker], or [ClDraft]");
+                    $"{clazz.FullName} should declare a Clprolf role: [ClAgent], [ClWorker], [ClSystem], or [ClDraft]");
             }
         }
 

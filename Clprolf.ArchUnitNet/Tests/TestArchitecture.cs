@@ -13,7 +13,7 @@ namespace Clprolf.ArchUnitNet.Tests
 {
     /// <summary>
     /// TODO Please change the typeof in the Architecture, with a type from your project you want to check. 
-    /// 
+    /// And write the correct namespace in ClprolfArchRulesTests
     /// </summary>
     public static class TestArchitecture
     {

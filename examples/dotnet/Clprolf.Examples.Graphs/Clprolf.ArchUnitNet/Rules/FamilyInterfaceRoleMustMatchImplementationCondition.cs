@@ -2,6 +2,8 @@
 using ArchUnitNET.Fluent.Conditions;
 using Clprolf.ArchUnitNet.Attributes;
 using Clprolf.ArchUnitNet.Rules;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Clprolf.ArchUnitNet.Rules;
 
@@ -14,12 +16,13 @@ internal sealed class FamilyInterfaceRoleMustMatchImplementationCondition : ICon
     {
         foreach (var clazz in objects)
         {
-            if (clazz.IsDraft() || (!clazz.IsAgent() && !clazz.IsWorker()))
+           
+            if (clazz.IsDraft() || (!clazz.IsAgent() && !clazz.IsWorker() && !clazz.IsSystem()))
             {
                 yield return new ConditionResult(
                     clazz,
                     true,
-                    $"{clazz.FullName} is ignored (Draft or neither Agent nor Worker)");
+                    $"{clazz.FullName} is ignored (Draft or neither Agent, Worker, nor System)");
                 continue;
             }
 
@@ -34,20 +37,19 @@ internal sealed class FamilyInterfaceRoleMustMatchImplementationCondition : ICon
                 continue;
             }
 
-            //Overall validation of all Family interfaces found
-            // We check whether ALL interfaces conform to the role. 
-            // If even one fails, ‘allInterfacesAreValid’ will become ‘false’.
             bool allInterfacesAreValid = familyInterfaces.All(interf =>
                 clazz.HasBypass()
                 || (clazz.IsAgent() && interf.IsAgent())
                 || (clazz.IsWorker() && interf.IsWorker())
+                || (clazz.IsSystem() && interf.IsSystem())
             );
 
-            // We're looking for the interface that crashed just to create a great error message if needed
+            // 3. Identifying the faulty interface for the error message
             var faultyInterface = familyInterfaces.FirstOrDefault(interf => !(
                 clazz.HasBypass()
                 || (clazz.IsAgent() && interf.IsAgent())
                 || (clazz.IsWorker() && interf.IsWorker())
+                || (clazz.IsSystem() && interf.IsSystem())
             ));
 
             yield return new ConditionResult(

@@ -2,11 +2,6 @@
 using ArchUnitNET.Domain.Extensions;
 using ArchUnitNET.Fluent.Conditions;
 using Clprolf.ArchUnitNet.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clprolf.ArchUnitNet.Rules
 {
@@ -21,17 +16,17 @@ namespace Clprolf.ArchUnitNet.Rules
         {
             foreach (var clazz in objects)
             {
-                // 1. Cas d'exclusion globaux pour la classe
-                if (clazz.IsDraft() || (!clazz.IsAgent() && !clazz.IsWorker()))
+                // 1. Global exclusion cases for the class
+                if (clazz.IsDraft() || (!clazz.IsAgent() && !clazz.IsWorker() && !clazz.IsSystem()))
                 {
                     yield return new ConditionResult(
                         clazz,
                         true,
-                        $"{clazz.FullName} is ignored (Draft or neither Agent nor Worker)");
+                        $"{clazz.FullName} is ignored (Draft or neither Agent, Worker, nor System)");
                     continue;
                 }
 
-                // 2. Si la classe n'a aucune interface, elle est valide d'office
+                // 2. If the class has no interfaces, it is automatically valid.
                 if (clazz.ImplementedInterfaces.IsNullOrEmpty())
                 {
                     yield return new ConditionResult(
@@ -41,13 +36,13 @@ namespace Clprolf.ArchUnitNet.Rules
                     continue;
                 }
 
-                // 3. Validation globale de toutes les interfaces implémentées
-                // On s'assure qu'AUCUNE interface n'est un Trait (sauf si Bypass)
+                // 3. Comprehensive validation of all implemented interfaces
+                // We ensure that NO interface is a Trait (unless it's a Bypass)
                 bool allInterfacesAreValid = clazz.ImplementedInterfaces.All(interf =>
                     !interf.IsTrait() || clazz.HasInterfaceBypass()
                 );
 
-                // On récupère le premier Trait qui pose problème pour avoir un super message d'erreur
+                // We retrieve the first Trait that's causing the problem to get a great error message
                 var faultyTrait = clazz.ImplementedInterfaces.FirstOrDefault(interf =>
                     interf.IsTrait() && !clazz.HasInterfaceBypass()
                 );
