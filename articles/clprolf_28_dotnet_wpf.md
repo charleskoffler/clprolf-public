@@ -182,6 +182,8 @@ To ensure these semantic boundaries are never violated during development, we us
 Here is the condition that enforces this:
 
 ```csharp
+
+[ClAgent]
 internal sealed class TraitInterfacesMustExtendOnlyTraitInterfacesCondition : ICondition<Interface>
 {
     public string Description => "extend only trait interfaces";
@@ -190,19 +192,28 @@ internal sealed class TraitInterfacesMustExtendOnlyTraitInterfacesCondition : IC
     {
         foreach (var interf in objects)
         {
-            if (!interf.IsTrait()) continue; 
+            if (!interf.IsTrait()) { yield return new ConditionResult(interf, true, $"{interf.FullName} is ignored (Not a [ClTrait] interface)"); continue; }
+            if (interf.ImplementedInterfaces.IsNullOrEmpty()) { yield return new ConditionResult(interf, true, $"{interf.FullName} has no parent interface"); continue; }
 
-            // Validate that Clprolf parents are strictly other Traits
-            bool allParentsAreTraitsOrNonClprolf = interf.ImplementedInterfaces.All(parent => 
-                !parent.IsClprolf() || parent.IsTrait()
+            bool allParentsAreTraitsOrExternal = interf.ImplementedInterfaces.All(parent => 
+                interf.HasInterfaceBypass() || parent.IsTrait() || !parent.IsClprolf()
+            );
+
+            var faultyParent = interf.ImplementedInterfaces.FirstOrDefault(parent => 
+                !interf.HasInterfaceBypass() && !parent.IsTrait() && parent.IsClprolf()
             );
 
             yield return new ConditionResult(
                 interf, 
-                allParentsAreTraitsOrNonClprolf, 
-                "Verifying semantic inheritance rules.");
+                allParentsAreTraitsOrExternal,
+                allParentsAreTraitsOrExternal 
+                    ? $"All parent interfaces of {interf.FullName} are traits or external third-party interfaces."
+                    : $"{interf.FullName} is a trait interface but it inherits from {faultyParent?.FullName} which is NEITHER a trait interface NOR an external system interface"
+            );
         }
     }
+
+    public bool CheckEmpty() => true;
 }
 
 ```
