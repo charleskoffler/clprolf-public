@@ -29,6 +29,7 @@ internal static class ClprolfTypeExtensions
     {
         return type.IsAgent() ||
                type.IsWorker() ||
+               type.IsSystem() ||
                type.IsFamily() ||
                type.IsTrait() ||
                type.IsFree() ||
