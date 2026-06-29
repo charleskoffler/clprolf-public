@@ -125,10 +125,12 @@ Clprolf.Example.WPF/
 └── Agents/
     └── Impl/
         └── SystemOriented/
-            ├── UserWindow.xaml.cs  --> [ClAgent] (UI Component)
-            ├── RelayCommand.cs     --> [ClAgent] (Intention Driver)
-            └── IClNotifyPropertyChanged.cs --> [ClTrait] (Structural Behavior)
-
+            ├── UserWindow.xaml.cs  --> [ClSystem] (UI Component)
+            ├── RelayCommand.cs     --> [ClSystem] (Intention Driver)
+            
+	└── Traits/
+		└── IClNotifyPropertyChanged.cs --> [ClTrait][ClAgent]
+	
 ```
 
 As you can see, every single component—from the window to the command framework—has been assigned a strict semantic responsibility.
@@ -142,7 +144,7 @@ To understand how these Agents interact, look at how the application starts.
 First, we have our `UserWindow`, a **System-Oriented Agent** designed to serve the native WPF rendering engine by hosting the visual tree and binding the context:
 
 ```csharp
-[ClAgent]
+[ClSystem]
 public partial class UserWindow : Window
 {
     public UserWindow(UserViewModel vm)
