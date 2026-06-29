@@ -16,6 +16,7 @@ internal static class ClprolfTypeExtensions
 
     public static bool IsAgent(this IType type) => type.HasClAttribute(typeof(ClAgentAttribute));
     public static bool IsWorker(this IType type) => type.HasClAttribute(typeof(ClWorkerAttribute));
+    public static bool IsSystem(this IType type) => type.HasClAttribute(typeof(ClSystemAttribute));
     public static bool IsDraft(this IType type) => type.HasClAttribute(typeof(ClDraftAttribute));
     public static bool IsFamily(this IType type) => type.HasClAttribute(typeof(ClFamilyAttribute));
     public static bool IsTrait(this IType type) => type.HasClAttribute(typeof(ClTraitAttribute));

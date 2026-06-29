@@ -18,7 +18,7 @@ namespace Clprolf.Examples.WPF.Agents.Impl.SystemOriented
     /// </summary>
     ///
     
-    [ClAgent]
+    [ClSystem]
     public partial class UserWindow : Window
     {
         public UserWindow(UserViewModel vm)

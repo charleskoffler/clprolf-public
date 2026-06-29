@@ -1,11 +1,6 @@
 ﻿using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent.Conditions;
 using Clprolf.ArchUnitNet.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clprolf.ArchUnitNet.Rules
 {
@@ -20,8 +15,9 @@ namespace Clprolf.ArchUnitNet.Rules
         {
             foreach (var clazz in objects)
             {
+               
                 if (clazz.IsDraft()
-                    || (!clazz.IsAgent() && !clazz.IsWorker()))
+                    || (!clazz.IsAgent() && !clazz.IsWorker() && !clazz.IsSystem()))
                 {
                     yield return new ConditionResult(
                         clazz,
@@ -30,6 +26,7 @@ namespace Clprolf.ArchUnitNet.Rules
                     continue;
                 }
 
+                // Counts the number of [ClFamily] interfaces implemented
                 int count =
                     clazz.ImplementedInterfaces
                         .Count(i => i.IsFamily());

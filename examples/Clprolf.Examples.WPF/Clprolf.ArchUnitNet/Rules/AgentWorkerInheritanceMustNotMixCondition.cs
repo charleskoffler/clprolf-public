@@ -14,9 +14,9 @@ internal sealed class AgentWorkerInheritanceMustNotMixCondition : ICondition<Cla
     {
         foreach (var clazz in objects)
         {
-            //Trying to include all the cases in the IEnumerable<ConditionResult>, even the correct ones,
-            //to not have the "no matching element exception".
-            if (clazz.IsDraft() || (!clazz.IsAgent() && !clazz.IsWorker()) || clazz.HasBypass())
+            // Trying to include all the cases in the IEnumerable<ConditionResult>, even the correct ones,
+            // to not have the "no matching element exception".
+            if (clazz.IsDraft() || (!clazz.IsAgent() && !clazz.IsWorker() && !clazz.IsSystem()) || clazz.HasBypass())
             {
                 yield return new ConditionResult(clazz, true, "Ignored or bypassed");
                 continue;
@@ -30,11 +30,13 @@ internal sealed class AgentWorkerInheritanceMustNotMixCondition : ICondition<Cla
                 continue;
             }
 
-            // Évaluation de la vraie règle d'héritage
+            // Evaluation of the updated inheritance rule for ClSystem
+            // Inheritance must strictly preserve the role (Agent->Agent, Worker->Worker, System->System)
             bool ok = clazz.IsAgent() && parent.IsAgent()
                       || clazz.IsWorker() && parent.IsWorker()
+                      || clazz.IsSystem() && parent.IsSystem()
                       || parent.IsDraft()
-                      || (!parent.IsAgent() && !parent.IsWorker());
+                      || (!parent.IsAgent() && !parent.IsWorker() && !parent.IsSystem()); // External frameworks classes are allowed
 
             yield return new ConditionResult(
                 clazz,

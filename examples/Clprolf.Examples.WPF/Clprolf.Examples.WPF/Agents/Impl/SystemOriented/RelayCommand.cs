@@ -9,7 +9,7 @@ using System.Windows.Input;
 namespace Clprolf.Examples.WPF.Agents.Impl.SystemOriented
 {
    
-    [ClAgent] // C'est un outil d'exécution technique pur
+    [ClSystem]
     public class RelayCommand : ICommand
     {
         private readonly Action<object?> _execute;

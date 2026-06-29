@@ -13,7 +13,7 @@ namespace Clprolf.ArchUnitNet.Tests
     [ClAgent]
     public class ClprolfArchRulesTests
     {
-        public static string TargetNamespace = "Clprolf.Example.Graphs";
+        public static string TargetNamespace = "Clprolf.Examples.WPF";
 
         [Fact]
         public void ClprolfClassesMustNotMixAgentAndWorker()

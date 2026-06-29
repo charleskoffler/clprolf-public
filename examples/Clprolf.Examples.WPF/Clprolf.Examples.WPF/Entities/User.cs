@@ -1,5 +1,5 @@
 ﻿using Clprolf.ArchUnitNet.Attributes;
-using Clprolf.Examples.WPF.Agents.Traits.SystemOriented;
+using Clprolf.Examples.WPF.Agents.Traits;
 using System.ComponentModel;
 
 namespace Clprolf.Examples.WPF.Entities
