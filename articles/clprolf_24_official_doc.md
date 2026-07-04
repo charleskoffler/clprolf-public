@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**Clprolf** ("Clear PROgramming Language and Framework") is a framework for Java and C# .NET. Its motto is "Don't use it - You don't need it!".
+**Clprolf** ("Clear PROgramming Language and Framework") is a homegrown architectural framework, for Java and C# .NET. Its motto is "Don't use it - You don't need it!".
 
 Its goal is to make certain object-oriented programming best practices explicit, without introducing heavy architecture or a steep learning curve.
 Thus, the framework helps adhere to the well-known SOLID principles.
@@ -138,7 +138,7 @@ An `agent`:
 * orchestrates processes,
 * makes decisions,
 * avoids heavy technical code, which is often delegated to an associated worker,
-* can be system-oriented, such as `Connection` or `Socket`.
+* can be system-oriented, such as `Connection` or `Socket` (in which case `ClSystem` can also be used).
 
 Example:
 
@@ -218,21 +218,23 @@ Secondary responsibilities may exist as long as they remain consistent with that
 
 ---
 
-## II.5) An "opinionated" framework for the agent/worker choice
+### II.5) An "Opinionated" Framework for the Agent/Worker Choice
 
 Some responsibilities can be interpreted in different ways depending on the architectural vision adopted.
 
 For example, a connection can be represented:
-* as an `agent`, if viewed as a functional abstraction;
+
+* as an `agent` (or `ClSystem`), if viewed as a functional abstraction;
 * or as a `worker`, if considered a purely technical mechanism.
 
-However, in such cases, the Clprolf framework imposes the use of an agent. For example, for a Connection class:
-* an `agent` to represent the connection,
+However, in such cases, the Clprolf framework imposes the use of an agent. For example, for a `Connection` class:
+
+* an `agent` to represent the connection (though you can also choose `ClSystem`),
 * and delegate the technical code to one or more `worker` classes.
 
-This is why Clprolf can be described as an "opinionated" framework. 
+This is why Clprolf can be described as an "opinionated" framework.
 As soon as a domain can be identified, it must be chosen over the worker perspective. This choice is argued by the fact that agents and abstractions are easier to manipulate and facilitate design.
-However, declaring the Connection class as a `ClAgent` does not preclude it from having a worker for its own technical needs.
+However, declaring the `Connection` class as a `ClAgent` (or `ClSystem`) does not preclude it from having a worker for its own technical needs.
 
 ---
 
@@ -280,11 +282,13 @@ private static final FileSystem FS = DefaultFileSystem.getFileSystem();
 
 ---
 
-### II.5.2) The optional `ClSystem` role
+### II.5.2) The Optional `ClSystem` Role
 
 The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) can be used for system-oriented agents. However, it is not mandatory, keeping the framework as simple as possible.
 If used, mixing inheritance between standard agents and system-oriented agents is strictly forbidden. The checker will then treat them as a completely independent role.
 Developers who prefer to explicitly declare and finely control system-oriented agents (such as `File`) can annotate them as `ClSystem` instead of `ClAgent`.
+Note that classes imposed by third-party frameworks—such as **Controllers**, **Routing**, or **Middlewares** (*Filters/Interceptors* in Java)—can also be considered `ClSystem` classes.
+`ClSystem` provides a more technical perspective for those who prefer not to view system-oriented agents as pure agents, allowing them to be separated from more traditional agents.
 
 ---
 
@@ -736,28 +740,28 @@ A Clprolf class can only implement a single `@ClFamily` interface. Bypassing is 
 
 ## **S** — Single Responsibility Principle (SRP)
 
-The framework naturally enforces the Single Responsibility Principle (SRP). Indeed, each class possesses its own conceptual or business domain, which is strictly preserved during inheritance.
+The framework naturally **helps apply** the Single Responsibility Principle (SRP). Indeed, each class possesses its own conceptual or business domain, which is strictly preserved during inheritance. Adhering strictly to Clprolf makes achieving this even easier.
 
 ## **O** — Open-Closed Principle (OCP)
 
-This principle encourages us to anticipate future evolutions as extensions rather than code corrections. The Clprolf framework facilitates extensions through the strict separation of conceptual domains and workers. `ClFamily` interfaces promote clear visibility of the interfaces used within classes and push for well-thought-out features. `ClTrait` interfaces allow us to keep `ClFamily` interfaces even simpler and purer, while enabling traits to be shared and reused seamlessly.
+This principle encourages us to anticipate future evolutions as extensions rather than code corrections. The Clprolf framework **facilitates** extensions through the strict separation of conceptual domains and workers. `ClFamily` interfaces promote clear visibility of the interfaces used within classes and push for well-thought-out features. `ClTrait` interfaces allow us to keep `ClFamily` interfaces even simpler and purer, while enabling traits to be shared and reused seamlessly.
 
 ## **L** — Liskov Substitution Principle (LSP)
 
-Clprolf enforces inheritance that remains strictly within the same conceptual domain, alongside the separation between `@ClAgent` and `@ClWorker`. Thus, the Liskov Substitution Principle is naturally upheld. 
+Clprolf enforces inheritance that remains strictly within the same conceptual domain, alongside the separation between `ClAgent` and `ClWorker`. Thus, Liskov's LSP principle is more easily taken into account, as a `Square` class does not share the same conceptual domain as a `Rectangle`.
 Indeed, a `Giraffe` class belongs to the same domain as an `Animal`, from which it inherits its natural behaviors. Conversely, a `Square` class does not share the true nature of a `Rectangle` (it cannot have independent length and width). In Clprolf, they therefore do not belong to the same conceptual domain, which prevents abusive inheritance and avoids LSP violations.
 
 ## **I** — Interface Segregation Principle (ISP)
 
-This principle advises that a client should not be forced to implement methods it does not use. With Clprolf, interfaces are custom-tailored for the client, and traits are highly precise. Furthermore, inheritance between interfaces is strictly controlled.
+This principle states that a client should not be forced to implement methods it does not use. With Clprolf, interfaces are custom-tailored for the client, and traits are highly precise. Furthermore, inheritance between interfaces is strictly controlled, thereby promoting compliance with the ISP.
 
-## **D** — Dependency Inversion / Dependency Injection (DI)
+## **D** — Dependency Injection (DI)
 
-Dependency Injection implies loose coupling with implementations. This loose coupling is encouraged and facilitated by `ClFamily` interfaces, which are intimately bound to their respective classes.
+Dependency injection implies loose coupling with implementations. This loose coupling is encouraged and facilitated by `ClFamily` interfaces, which are intimately bound to their respective classes.
 
 ## "Favoring Composition over Inheritance"
 
-The Clprolf framework ensures that inheritance is used sparingly and with precision, while relying on composition for everything else.
+The Clprolf framework ensures that inheritance is used sparingly and with precision, while relying on composition for everything else. It offers a practical and intuitive way to choose between the two.
 
 # XI) Clprolf and Existing Architectures
 
