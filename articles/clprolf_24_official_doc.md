@@ -184,9 +184,19 @@ A `worker`:
 
 ---
 
-## II.3) `ClDraft`
+## II.3) The Optional `ClSystem` Role
 
-An object without a defined role.
+The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) can be used for system-oriented agents. However, it is not mandatory, keeping the framework as simple as possible.
+If used, mixing inheritance between standard agents and system-oriented agents is strictly forbidden. The checker will then treat them as a completely independent role.
+Developers who prefer to explicitly declare and finely control system-oriented agents (such as `File`) can annotate them as `ClSystem` instead of `ClAgent`.
+Note that classes imposed by third-party frameworks—such as **Controllers**, **Routing**, or **Middlewares** (*Filters/Interceptors* in Java)—can also be considered `ClSystem` classes.
+`ClSystem` provides a more technical perspective for those who prefer not to view system-oriented agents as pure agents, allowing them to be separated from more traditional agents.
+
+---
+
+## II.4) `ClDraft`
+
+An object without a defined role. Normally, it shouldn't be essential.
 
 Used:
 
@@ -206,7 +216,7 @@ public class TemporaryManager {
 
 ---
 
-## II.4) Primary Domain and Technical Code
+## II.5) Primary Domain and Technical Code
 
 Clprolf encourages moving as much technical code as possible from `agent` classes into `worker` classes.
 
@@ -218,7 +228,7 @@ Secondary responsibilities may exist as long as they remain consistent with that
 
 ---
 
-### II.5) An "Opinionated" Framework for the Agent/Worker Choice
+### II.6) An "Opinionated" Framework for the Agent/Worker Choice
 
 Some responsibilities can be interpreted in different ways depending on the architectural vision adopted.
 
@@ -260,7 +270,7 @@ private static final FileSystem FS = DefaultFileSystem.getFileSystem();
 ```text
        CLPROLF CONCEPT                        JAVA SOURCE CODE (OpenJDK)
 ┌──────────────────────────┐            ┌──────────────────────────┐
-│         @ClAgent         │            │       java.io.File       │
+│ @ClAgent (@ClSystem)     │             │       java.io.File       │
 │      (System Agent)      │            │                          │
 │ Represents the concept   │            │ Manages the file         │
 │ of a file and its path.  │            │ abstraction and status.  │
@@ -282,19 +292,10 @@ private static final FileSystem FS = DefaultFileSystem.getFileSystem();
 
 ---
 
-### II.5.2) The Optional `ClSystem` Role
-
-The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) can be used for system-oriented agents. However, it is not mandatory, keeping the framework as simple as possible.
-If used, mixing inheritance between standard agents and system-oriented agents is strictly forbidden. The checker will then treat them as a completely independent role.
-Developers who prefer to explicitly declare and finely control system-oriented agents (such as `File`) can annotate them as `ClSystem` instead of `ClAgent`.
-Note that classes imposed by third-party frameworks—such as **Controllers**, **Routing**, or **Middlewares** (*Filters/Interceptors* in Java)—can also be considered `ClSystem` classes.
-`ClSystem` provides a more technical perspective for those who prefer not to view system-oriented agents as pure agents, allowing them to be separated from more traditional agents.
-
----
 
 # III) Inheritance
 
-> A class only inherits from another class within the same domain.
+> Class inheritance can be forced using `@ClBypass` above the class, but this should be rare.
 
 ---
 
@@ -493,7 +494,7 @@ public interface Persistable {
 
 ## V.4) `ClFree`
 
-A generic interface without a specific role.
+A generic interface without a specific role. It shouldn't be necessary.
 
 Allows flexibility.
 
@@ -511,25 +512,21 @@ public interface ExternalApi {
 
 ## V.5) Using Interfaces
 
-In Clprolf, `Family` interfaces closely resemble pure abstract classes.
+* In Clprolf, `Family` interfaces closely resemble pure abstract classes.
 
-They are intended to be implemented by one or more future Clprolf classes.
-Therefore, they have a target role (`agent` or `worker`).
+They are intended to be implemented by one or more future Clprolf classes. Therefore, they have a target role (`agent` or `worker`).
 
-A class can only implement a single main `Family` at a time, and the class role must match the target role of the interface.
-Clprolf thus uses single implementation for interfaces, in the same way that Java uses single inheritance for classes. Indeed, a `Family` is always the structural reflection of its implementation. This notably allows for systematic loose coupling.
+A class can only implement a single main `Family` at a time, and the class role must match the target role of the interface. Clprolf thus uses single implementation for interfaces, in the same way that Java uses single inheritance for classes. Indeed, a `Family` is always the structural reflection of its implementation. This notably allows for systematic loose coupling.
 However, multiple implementation is not removed, but rather shifted to the `Family` implemented by the class.
-This family interface can itself inherit from multiple `Family` or `Trait` interfaces.
-Thus, the interfaces that would have been implemented directly by the class are grouped together at the level of its main `Family`.
-Clprolf therefore preserves the richness of multiple interface inheritance, while maintaining a simple and cohesive structure for concrete classes.
-
-## Note: In non-strict mode, it is possible for a class to implement multiple `ClFamily` interfaces, to stay closer to standard Java and C# practices.
+**This might seem restrictive and unconventional, but it only applies in strict mode, which is not the default. This prevents multiple implementations of the same family from repeating a multi-contract declaration, and helps developers quickly understand what the classes actually implement.**
 
 `Trait` interfaces express a common functionality across multiple `Family` interfaces.
 
-A `Trait` therefore represents a cross-cutting trait shared among several families.
+* A `Trait` therefore represents a cross-cutting trait shared among several families.
 
-Normally, a `Trait` can only be inherited by a `Family` interface, and not directly implemented by a class.
+Normally, a `Trait` can only be inherited by a `Family` interface, and not directly implemented by a class. This prevents a trait from being separated from its family interface, and clarifies class implementations (especially when a family has multiple implementations).
+
+**However, this only applies in strict mode, which is not the default.**
 
 ```text
 Concrete class
@@ -541,16 +538,44 @@ ClTrait
 ```
 
 Note: A `Family` interface can inherit from multiple `Family` or `Trait` interfaces.
-
 A `Trait` interface can only inherit from other `Traits`, because a trait remains a trait.
 
-Forcing interface inheritance remains possible using `@ClInterfaceBypass` above the interface (or `@ClBypass` to force inheritance between different target roles).
-
-Note: In non-strict mode, direct implementation of a `Trait` by a class is allowed.
+> Interface inheritance can still be forced using `@ClInterfaceBypass` above the interface (or `@ClBypass` to force inheritance between different target roles). However, these bypasses should be rare.
 
 ---
 
-## V.6) Note on Clprolf and the Interface Segregation Principle (ISP)
+
+## V.6) A Real-World Example of `ClFamily` and `ClTrait` Interfaces
+
+Let's look at this real-world example, which utilizes a design perfectly applicable to the Clprolf Framework:
+
+```java
+package com.tngtech.archunit.lang;
+
+@ClAgent @ClFamily
+public interface ArchRule extends CanBeEvaluated, CanOverrideDescription<ArchRule> {
+//(…)
+}
+
+```
+
+```java
+package com.tngtech.archunit.library;
+
+public final class Architectures {
+//(…)
+@ClAgent
+public static final class LayeredArchitecture implements ArchRule {
+// (…)
+}
+
+}
+
+```
+
+> *In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait` interfaces, while `ArchRule` formalizes the `@ClFamily`.*
+
+## V.7) Note on Clprolf and the Interface Segregation Principle (ISP)
 
 Clprolf inherently respects the ISP; it is simply a matter of adapting the design of your classes and interfaces using the appropriate families and traits:
 
@@ -642,7 +667,7 @@ A worker serves the agent.
                           │ may use
                           ▼
 ┌────────────────────────────────────────────────────┐
-│              (SYSTEM-ORIENTED) AGENT               │
+│              (SYSTEM-ORIENTED) AGENT (ClSystem)    │
 │   conceptual object connected to system behavior   │
 │   examples: stream, socket, thread, file, window   │
 └─────────────────────────┬──────────────────────────┘
@@ -777,17 +802,18 @@ Clprolf introduces very few concepts.
 ## Classes
 
 ```text
-Agent
-Worker
-Draft
+ClAgent
+ClWorker
+ClSystem
+ClDraft
 ```
 
 ## Interfaces
 
 ```text
-Family
-Trait
-Free
+ClFamily
+ClTrait
+ClFree
 ```
 
 ## Two Fundamental Rules
