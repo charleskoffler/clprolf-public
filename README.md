@@ -1,11 +1,12 @@
 # Clprolf (CLear Programming Language and Framework)
 
-Clprolf is a lightweight architectural-role framework for Java and C#.
+**Clprolf** ("Clear PROgramming Language and Framework") is a homegrown architectural framework, for Java and C# .NET. 
 
 It helps Java and .net teams make class responsibilities explicit by distinguishing:
 
 - `@ClAgent` (or `[ClAgent]` in C#): business or conceptual classes
 - `@ClWorker` (or `[ClWorker]`): technical or infrastructure classes
+- (optional) `@ClSystem` (or `[ClSystem]`): system-oriented agents
 - `@ClDraft` (or `[ClDraft]`): temporarily undefined classes
 
 The framework helps adhere to the well-known SOLID principles.
