@@ -122,13 +122,44 @@ This principle prevents incoherent hierarchies and mixed responsibilities.
 
 ---
 
-# II) Class Types
+# II) Progressive Adoption and Customization
+
+The framework offers total flexibility in both its deployment strategy and its terminology.
+
+---
+
+## II.1) Step-by-Step Adoption
+
+Integrating Clprolf into a project can be done incrementally. There is no need to enforce every rule from day one.
+
+* **Step 1: Classes First.** You can focus exclusively on the core separation between `@ClAgent` (or `ClSystem`) and `@ClWorker`. This allows the team to master the class splitting without initial friction.
+* **Step 2: Interfaces Later (Optional).** The interface model (`ClFamily`, `ClTrait`) can be introduced at a later stage.
+
+> If you find the Clprolf interface system too disruptive compared to your habits or traditional OOP practices, you can choose to ignore it entirely. The framework remains fully functional and highly effective just for your classes.
+
+---
+
+## II.2) Tailoring the Terminology
+
+If the default vocabulary of Clprolf does not fit your team's nomenclature, the framework is completely agnostic regarding name choices. Since the ArchUnit checker targets the actual declaration types, a simple **automated refactoring (Rename)** in your IDE is all it takes to adapt the framework to your company's culture.
+
+Here are a few examples of alternative naming conventions:
+
+| Default Role | Conceptual Alternative | Technical Alternative |
+| --- | --- | --- |
+| **`@ClAgent`** | `@ClConcept` | `@ClDomain` |
+| **`@ClWorker`** | `@ClMechanism` | `@ClInfrastructure` |
+| **`@ClSystem`** | `@ClBridge` | `@ClLowLevel` |
+
+---
+
+# III) Class Types
 
 Clprolf contains only three class types.
 
 ---
 
-## II.1) `ClAgent`
+## III.1) `ClAgent`
 
 Represents a business or conceptual class.
 
@@ -162,7 +193,7 @@ Note: Entities are considered agents because they possess a domain, even without
 
 ---
 
-## II.2) `ClWorker`
+## III.2) `ClWorker`
 
 Represents a system service.
 
@@ -184,7 +215,7 @@ A `worker`:
 
 ---
 
-## II.3) The Optional `ClSystem` Role
+## III.3) The Optional `ClSystem` Role
 
 The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) can be used for system-oriented agents. However, it is not mandatory, keeping the framework as simple as possible.
 If used, mixing inheritance between standard agents and system-oriented agents is strictly forbidden. The checker will then treat them as a completely independent role.
@@ -194,7 +225,7 @@ Note that classes imposed by third-party frameworks—such as **Controllers**, *
 
 ---
 
-## II.4) `ClDraft`
+## III.4) `ClDraft`
 
 An object without a defined role. Normally, it shouldn't be essential.
 
@@ -216,7 +247,7 @@ public class TemporaryManager {
 
 ---
 
-## II.5) Primary Domain and Technical Code
+## III.5) Primary Domain and Technical Code
 
 Clprolf encourages moving as much technical code as possible from `agent` classes into `worker` classes.
 
@@ -228,7 +259,7 @@ Secondary responsibilities may exist as long as they remain consistent with that
 
 ---
 
-### II.6) An "Opinionated" Framework for the Agent/Worker Choice
+### III.6) An "Opinionated" Framework for the Agent/Worker Choice
 
 Some responsibilities can be interpreted in different ways depending on the architectural vision adopted.
 
@@ -293,7 +324,7 @@ private static final FileSystem FS = DefaultFileSystem.getFileSystem();
 ---
 
 
-# III) Inheritance
+# IV) Inheritance
 
 > Class inheritance can be forced using `@ClBypass` above the class, but this should be rare.
 
@@ -333,7 +364,7 @@ Inheritance can be forced using `@ClBypass` above the class.
 
 ---
 
-# IV) Flexibility
+# V) Flexibility
 
 Clprolf is flexible.
 
@@ -350,7 +381,7 @@ The framework mainly acts as:
 
 ---
 
-# V) Interfaces
+# VI) Interfaces
 
 In Clprolf, interfaces are viewed as:
 
@@ -370,7 +401,7 @@ Both `extends` and `implements` relationships are considered genuine conceptual 
 
 ---
 
-## V.1) `ClFamily`
+## VI.1) `ClFamily`
 
 An interface representing an abstract family.
 
@@ -425,7 +456,7 @@ public class HorseImpl extends AnimalImpl implements Horse { (...) }
 
 ---
 
-## V.2) `ClTrait`
+## VI.2) `ClTrait`
 
 An interface representing a shared capability across multiple `ClFamily`.
 
@@ -464,7 +495,7 @@ public interface Persistable {
 
 ---
 
-## V.3) Illustration of the Interface Family / Implementation Parallel
+## VI.3) Illustration of the Interface Family / Implementation Parallel
 
 ```text
 [ABSTRACT WORLD / INTERFACES]          │    [CONCRETE WORLD / CLASSES]
@@ -492,7 +523,7 @@ public interface Persistable {
      Horse extends Jumpable            │
 ```
 
-## V.4) `ClFree`
+## VI.4) `ClFree`
 
 A generic interface without a specific role. It shouldn't be necessary.
 
@@ -510,7 +541,7 @@ public interface ExternalApi {
 
 ---
 
-## V.5) Using Interfaces
+## VI.5) Using Interfaces
 
 * In Clprolf, `Family` interfaces closely resemble pure abstract classes.
 
@@ -520,9 +551,9 @@ A class can only implement a single main `Family` at a time, and the class role 
 However, multiple implementation is not removed, but rather shifted to the `Family` implemented by the class.
 **This might seem restrictive and unconventional, but it only applies in strict mode, which is not the default. This prevents multiple implementations of the same family from repeating a multi-contract declaration, and helps developers quickly understand what the classes actually implement.**
 
-`Trait` interfaces express a common functionality across multiple `Family` interfaces.
+* `Trait` interfaces express a common functionality across multiple `Family` interfaces.
 
-* A `Trait` therefore represents a cross-cutting trait shared among several families.
+A `Trait` therefore represents a cross-cutting trait shared among several families.
 
 Normally, a `Trait` can only be inherited by a `Family` interface, and not directly implemented by a class. This prevents a trait from being separated from its family interface, and clarifies class implementations (especially when a family has multiple implementations).
 
@@ -545,7 +576,7 @@ A `Trait` interface can only inherit from other `Traits`, because a trait remain
 ---
 
 
-## V.6) A Real-World Example of `ClFamily` and `ClTrait` Interfaces
+## VI.6) A Real-World Example of `ClFamily` and `ClTrait` Interfaces
 
 Let's look at this real-world example, which utilizes a design perfectly applicable to the Clprolf Framework:
 
@@ -575,7 +606,7 @@ public static final class LayeredArchitecture implements ArchRule {
 
 > *In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait` interfaces, while `ArchRule` formalizes the `@ClFamily`.*
 
-## V.7) Note on Clprolf and the Interface Segregation Principle (ISP)
+## VI.7) Note on Clprolf and the Interface Segregation Principle (ISP)
 
 Clprolf inherently respects the ISP; it is simply a matter of adapting the design of your classes and interfaces using the appropriate families and traits:
 
@@ -622,7 +653,7 @@ public class ModernPrinterImpl implements ModernPrinter {
 
 ---
 
-# VI) General Architecture
+# VII) General Architecture
 
 Clprolf naturally encourages a simple architecture.
 

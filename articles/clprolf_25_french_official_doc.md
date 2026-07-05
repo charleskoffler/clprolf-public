@@ -120,13 +120,44 @@ Ce principe évite les hiérarchies incohérentes et les mélanges de responsabi
 
 ---
 
-# II) Les Types de Classes
+# II) Adoption Progressive et Personnalisation
+
+Le framework offre une flexibilité totale tant dans son déploiement que dans sa terminologie.
+
+---
+
+## II.1) Une adoption par étapes
+
+L'intégration de Clprolf au sein d'un projet peut se faire de manière incrémentale. Il n'est pas nécessaire de tout appliquer dès le premier jour.
+
+* **Étape 1 : Les Classes d'abord.** Vous pouvez vous concentrer uniquement sur le découpage fondamental entre `@ClAgent` (ou `ClSystem`) et `@ClWorker`. Cela permet à l'équipe de maîtriser la séparation des classes sans friction.
+* **Étape 2 : Les Interfaces ensuite (Optionnel).** Le modèle des interfaces (`ClFamily`, `ClTrait`) peut être introduit dans un second temps.
+
+> Si vous jugez la gestion des interfaces trop disruptive par rapport à vos habitudes ou à l'OOP classique, vous pouvez totalement l'ignorer. Le framework restera pleinement fonctionnel et utile pour vos classes.
+
+---
+
+## II.2) Personnalisation de la terminologie
+
+Le vocabulaire par défaut de Clprolf ne vous convient pas ? Le framework est agnostique vis-à-vis des noms choisis. Puisque le checker ArchUnit se base sur les types réels, un simple **refactoring automatique (Rename)** dans votre IDE suffit à adapter le framework à la culture de votre entreprise.
+
+Voici des exemples de correspondances alternatives :
+
+| Rôle par défaut | Alternative conceptuelle | Alternative technique |
+| --- | --- | --- |
+| **`@ClAgent`** | `@ClConcept` | `@ClDomain` |
+| **`@ClWorker`** | `@ClMechanism` | `@ClInfrastructure` |
+| **`@ClSystem`** | `@ClBridge` | `@ClLowLevel` |
+
+---
+
+# III) Les Types de Classes
 
 Clprolf possède seulement trois types de classes.
 
 ---
 
-## II.1) `ClAgent`
+## III.1) `ClAgent`
 
 Représente une classe métier ou conceptuelle.
 
@@ -159,7 +190,7 @@ Remarque: les entity sont considérées agent, car ayant un domaine, même sans 
 
 ---
 
-## II.2) `ClWorker`
+## III.2) `ClWorker`
 
 Représente un service système.
 
@@ -180,7 +211,7 @@ Un `worker` :
 * Permet de séparer le code domaine/fonctionnel, du code purement technique.
 
 
-## II.3) Le rôle optionnel `ClSystem`
+## III.3) Le rôle optionnel `ClSystem`
 
 Il est possible d'utiliser l'annotation `@ClSystem` (ou l'attribut `[ClSystem]` en C#), pour les agents orientés système. Mais ce n'est pas obligatoire, pour ne pas compliquer trop le framework.
 Si on s'en sert, on ne peut plus mixer l'héritage agent et agent orienté système. Ils sont alors considérés, par le checker, comme un rôle indépendant.
@@ -189,7 +220,7 @@ A noter que les classes imposées par les frameworks tiers, comme les Controller
 ClSystem permet d'apporter une vision plus technique aux personnes ne voulant pas considérer les agents orientés systèmes comme des purs agents, et de les séparer des agents plus classiques.
 
 
-## II.4) `ClDraft`
+## III.4) `ClDraft`
 
 Objet sans rôle défini. Normalement, il est jamais indispendable.
 
@@ -211,7 +242,7 @@ public class TemporaryManager {
 
 ---
 
-## II.5) Domaine principal et code technique
+## III.5) Domaine principal et code technique
 
 Clprolf encourage à déplacer autant que possible le code technique des classes agent vers des classes worker.
 
@@ -221,7 +252,7 @@ Un agent possède toujours un domaine principal représentant sa responsabilité
 
 Des responsabilités secondaires peuvent exister tant qu’elles restent cohérentes avec ce domaine principal.
 
-## II.6) Un framework "opinionated" (d'opinion) pour le choix agent/worker
+## III.6) Un framework "opinionated" (d'opinion) pour le choix agent/worker
 
 Certaines responsabilités peuvent être interprétées de différentes manières selon la vision architecturale adoptée.
 
@@ -282,7 +313,7 @@ Remarque: java.io.UnixFileSystem, ainsi que WinNTFileSystem, contiennent beaucou
 
 ---
 
-# III) Héritage
+# IV) Héritage
 
 > une classe hérite seulement d’une classe du même domaine.
 ---
@@ -318,7 +349,7 @@ Il faut utiliser la composition.
 Un forçage de l'héritage de classe est possible avec @ClBypass, au-dessus de la classe, mais ne devrait pas être fréquent.
 ---
 
-# IV) Flexibilité
+# V) Flexibilité
 
 Clprolf est flexible.
 
@@ -334,7 +365,7 @@ Le framework agit surtout comme :
 > un guide structurel.
 ---
 
-# V) Interfaces
+# VI) Interfaces
 
 Dans Clprolf, les interfaces sont vues comme :
 
@@ -354,7 +385,7 @@ de véritables relations d’héritage conceptuel, d'où "family".
 
 ---
 
-## V.1) `ClFamily`
+## VI.1) `ClFamily`
 
 Interface représentant une famille abstraite.
 
@@ -412,7 +443,7 @@ public class HorseImpl extends AnimalImpl implements Horse { (...) }
 
 ---
 
-## V.2) `ClTrait`
+## VI.2) `ClTrait`
 
 Interface représentant une fonctionnalité commune entre plusieurs ClFamily.
 Les traits utilisent un rôle cible, tout comme les ClFamily :
@@ -458,7 +489,7 @@ public interface Launcher {
 ```
 ---
 
-## V.3) Illustration du parallèle interfaces familles / implémentations
+## VI.3) Illustration du parallèle interfaces familles / implémentations
 
 ```text
 [MONDE ABSTRAIT / INTERFACES]          │    [MONDE CONCRET / CLASSES]
@@ -486,7 +517,7 @@ public interface Launcher {
      Horse extends Jumpable              │
 ```
 
-## V.4) `@ClFree`
+## VI.4) `@ClFree`
 
 Interface générique sans rôle particulier.
 Permet de rester flexible. Elle n'est pas indispensable.
@@ -502,7 +533,7 @@ public interface ExternalApi {
 ```
 ---
 
-## V.5) Utilisation des interfaces
+## VI.5) Utilisation des interfaces
 
 * En Clprolf, les interfaces `Family` se rapprochent des classes abstraites pures.
 
@@ -513,9 +544,9 @@ Une classe ne peut implémenter qu’une seule `Family` principale à la fois, e
 Toutefois, l’implémentation multiple n’est pas supprimée, mais déplacée vers la `Family` implémentée par la classe.
 **Ceci peut paraître restrictif et inhabituel, mais cela ne s'applique qu'en mode strict, qui n'est pas le mode par défaut. Cela permet d'éviter que plusieurs implémentations d'une même famille ne répètent un contrat multiple, et aide à comprendre rapidement ce qu'implémentent les classes.**
 
-Les interfaces `Trait` expriment une fonctionnalité commune entre plusieurs interfaces `Family`.
+* Les interfaces `Trait` expriment une fonctionnalité commune entre plusieurs interfaces `Family`.
 
-* Un `Trait` représente donc un trait transversal partagé entre plusieurs familles.
+Un `Trait` représente donc un trait transversal partagé entre plusieurs familles.
 
 Normalement, un `Trait` ne peut être hérité que par une interface `Family`, et non directement par une classe. C'est pour éviter de séparer le trait de son interface famille, et clarifier les implémentations des classes (notamment en cas de multiples implémentations d'une même famille).
 
@@ -537,7 +568,7 @@ Mais ces forçages ne devraient pas être fréquent.
 ---
 
 
-## V.6) Un exemple réel des interfaces `ClFamily` et `ClTrait`
+## VI.6) Un exemple réel des interfaces `ClFamily` et `ClTrait`
 
 Regardons cet exemple réel, qui utilise une conception applicable au Framework Clprolf:
 
@@ -566,7 +597,7 @@ public static final class LayeredArchitecture implements ArchRule {
 > *Dans cet exemple, `CanBeEvaluated` et `CanOverrideDescription` jouent le rôle de `@ClTrait`, tandis que `ArchRule` formalise la `@ClFamily*`.
 
 
-## V.7) Remarque sur Clprolf et l'Interface Segregation Principle (ISP)
+## VI.7) Remarque sur Clprolf et l'Interface Segregation Principle (ISP)
 
 Clprolf respecte l'ISP, il suffit d'adapter le design des classes et interfaces avec les bonnes familles et traits:
 
@@ -611,7 +642,7 @@ public class ModernPrinterImpl implements ModernPrinter {
 }
 ```
 
-# VI) Architecture Générale
+# VII) Architecture Générale
 
 Clprolf encourage naturellement une architecture simple.
 
