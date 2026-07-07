@@ -1,11 +1,11 @@
-# A Global Model of How Classes Relate to Each Other in Clprolf framework
+# Clprolf Framework — Global Model
 
 Clprolf framework introduces simple class roles to clarify the natural place of each class in a project.
 
 Many developers understand the basic distinction:
 
-* an `agent` carries meaning, intention, or domain behavior;
-* a `worker` is a system service and performs technical execution.
+* a `ClAgent` carries meaning, intention, or domain behavior;
+* a `ClWorker` is a system service and performs technical execution.
 
 But when a project grows, another question appears:
 
@@ -15,12 +15,12 @@ This document provides a conceptual overview of how the main Clprolf roles inter
 
 It explains:
 
-* how agents and workers depend on each other;
+* how agents, systems, and workers depend on each other;
 * how domain-level classes stay separated from technical classes;
-* how system-oriented objects such as streams, sockets, files, or threads can be understood;
+* how system-oriented objects such as streams, sockets, files, threads, or even framework components like HTTP Controllers and Middlewares can be understood;
 * how workers act as bridges between conceptual objects and low-level execution.
 
-This is not a formal compiler rule-set.
+This is not a formal package-isolation compiler rule-set.
 
 It is a **mental model**: a guide that helps developers classify new classes more naturally and understand Clprolf architecture as a whole.
 
@@ -31,35 +31,29 @@ It is a **mental model**: a guide that helps developers classify new classes mor
 The core model is simple:
 
 ```text
-Agent  = meaning
-Worker = execution
+ClAgent  = domain meaning
+ClWorker = technical execution
+ClSystem = system capability or boundary object
+
 ```
 
-An `agent` represents something conceptually meaningful in the program.
+A `ClAgent` represents something conceptually meaningful in the business or simulation program.
 
-A `worker` is a system service. It performs the technical work needed to support agents, the application, or the system.
+A `ClWorker` is a system service. It performs the technical work needed to support agents, the application, or the infrastructure.
 
-In many systems, we also encounter classes that are close to the operating system or runtime, but still have a conceptual identity.
+We also constantly encounter classes that are close to the operating system, the framework, or the runtime, but still possess a clear conceptual identity and orchestrate behaviors.
 
 Examples:
 
 * `Stream`
 * `Socket`
 * `Thread`
-* `Channel`
 * `File`
+* `HttpController`
+* `AuthMiddleware`
 * `Window`
-* `Button`
 
-These can be understood as **system-oriented agents**.
-
-They are still agents because they represent conceptual objects, but their internal behavior often depends on low-level workers.
-
-A system-oriented agent is not necessarily a new official class role.
-
-It is a conceptual category:
-
-> an agent whose domain is connected to a system capability.
+These are explicitly declared using the **`ClSystem`** role. They are still agents in spirit because they represent conceptual objects, but their domain is inherently connected to a system boundary or an infrastructure framework capability.
 
 ---
 
@@ -67,50 +61,48 @@ It is a conceptual category:
 
 ```text
 ┌────────────────────────────────────────────────────┐
-│                       AGENT                        │
-│       conceptual behavior, domain responsibility   │
+│                      @ClAgent                      │ ◄─── (Can be orchestrated by ClSystem)
+│     conceptual behavior, domain responsibility     │
 │                                                    │
 └─────────────────────────┬──────────────────────────┘
                           │
                           │ uses / delegates to
                           ▼
 ┌────────────────────────────────────────────────────┐
-│                       WORKER                       │
-│  		 system service for technical execution      │
-│               serving an agent                     │
+│                      @ClWorker                     │
+│       system service for technical execution       │
+│                  serving an agent                  │
 └─────────────────────────┬──────────────────────────┘
                           │
                           │ may use
                           ▼
 ┌────────────────────────────────────────────────────┐
-│              (SYSTEM-ORIENTED) AGENT               │
+│                      @ClSystem                     │
 │   conceptual object connected to system behavior   │
-│   examples: stream, socket, thread, file, window   │
+│ examples: stream, socket, controller, file, window │
 └─────────────────────────┬──────────────────────────┘
                           │
                           │ delegates low-level work to
                           ▼
 ┌────────────────────────────────────────────────────┐
-│                    (LOW-LEVEL) WORKER              │
-│     native call, rendering, I/O, OS/runtime work   │
+│                 LOW-LEVEL WORKER                   │
+│   native call, rendering, I/O, OS/runtime work     │
 └────────────────────────────────────────────────────┘
+
 ```
 
-This diagram should not be read as a strict one-way call graph.
-
-It shows the natural direction of responsibility:
+This diagram should not be read as a strict one-way package constraint. It shows the natural direction of responsibility:
 
 ```text
-meaning → execution → system capability → low-level operation
+domain meaning → execution → system capability → low-level operation
+
 ```
 
 ---
 
-## 3. Agent
+## 3. ClAgent
 
-An `agent` represents a meaningful object or behavior.
-
-It carries intention, responsibility, and conceptual identity.
+A `ClAgent` represents a meaningful object or behavior. It carries intention, responsibility, and conceptual identity.
 
 Examples:
 
@@ -118,10 +110,7 @@ Examples:
 * `CheckoutService`
 * `Snake`
 * `FoodExpert`
-* `WindowObserver`
-* `Button`
-* `DirectoryExplorer`
-* `Animal`
+* `UserEntity`
 
 An agent answers questions such as:
 
@@ -129,41 +118,33 @@ An agent answers questions such as:
 * What responsibility does it carry?
 * What behavior belongs to its domain?
 
-### Agent guidelines
+### ClAgent guidelines
 
-An agent may:
+A `ClAgent` may:
 
 * call other agents;
 * delegate technical work to workers;
 * hold domain state;
-* express business, application, simulation, or UI meaning.
+* express business, application, or simulation meaning.
 
-An agent should avoid:
+A `ClAgent` should avoid:
 
-* directly performing heavy technical work;
-* depending directly on low-level system mechanisms when a worker can handle them;
+* directly performing heavy technical or native work;
+* depending directly on low-level system files or sockets when a worker or a `ClSystem` wrapper can handle them;
 * becoming a mixed class where domain decisions and technical execution are indistinguishable.
-
-If an agent needs system-level behavior, it usually delegates it to a worker.
 
 ---
 
-## 4. Worker
+## 4. ClWorker
 
-A `worker` performs technical execution. It is a system service.
-
-It does not primarily represent a domain concept.
-It performs work for an agent, the application, or the system.
+A `ClWorker` performs technical execution. It is a system service. It does not primarily represent a business domain concept. It performs work for an agent, the application, or the infrastructure.
 
 Examples:
 
 * `OrderRepository`
 * `FileWriterWorker`
 * `DatabaseWorker`
-* `RendererWorker`
-* `Launcher`
 * `SocketWorker`
-* `SwingRenderer`
 * `DirectoryExplorerWorker`
 
 A worker answers questions such as:
@@ -172,96 +153,64 @@ A worker answers questions such as:
 * What system, framework, I/O, or rendering mechanism must be called?
 * What concrete execution is needed by an agent?
 
-### Worker guidelines
+### ClWorker guidelines
 
-A worker may:
+A `ClWorker` may:
 
 * call other workers;
-* use system-oriented agents;
-* perform I/O, rendering, persistence, networking, or launching;
-* call back an agent when acting as a technical bridge, such as in UI events, callbacks, adapters, or asynchronous notifications.
+* use `ClSystem` components (like standard files or streams);
+* perform I/O, rendering, persistence, networking, or application launching;
+* call back an agent when acting as a technical bridge (UI events, async callbacks, notifications).
 
-A worker should avoid:
+A `ClWorker` should avoid:
 
-* containing domain decisions;
+* containing domain or business decisions;
 * becoming the conceptual brain of the application;
 * hiding business rules inside technical code.
 
-A worker can bridge the domain world and the system world, but it should not absorb the domain.
-
 ---
 
-## 5. System-oriented agent
+## 5. ClSystem
 
-A **system-oriented agent** is an agent whose conceptual domain is connected to a system capability.
+A `ClSystem` component is a system-oriented agent or an architectural boundary object whose conceptual domain is connected to a system or framework capability.
 
-It is not simply a worker, because it represents an object with meaning.
+It is not a pure technical worker because it represents a stateful or behavioral subject with a clear role, and it often orchestrates or uses standard agents to react to external triggers.
 
 Examples:
 
-* a `Stream` represents a flow of data;
-* a `Socket` represents a communication endpoint;
-* a `Thread` represents an execution path;
-* a `File` represents a filesystem object;
-* a `Window` represents a visible interaction space;
-* a `Button` represents a clickable UI object.
+* A `Stream` or `Socket` represents a communication endpoint concept;
+* A `File` represents a filesystem object concept;
+* An `HttpController` or `AuthMiddleware` represents a conceptual entry point or router imposed by third-party frameworks.
 
-These objects are conceptually meaningful.
+These objects are conceptually meaningful. However, their implementation inherently interacts with external system mechanics. That low-level work is delegated to, or handled by, internal workers.
 
-However, their implementation often requires technical operations:
+### ClSystem guidelines
 
-* native calls,
-* OS interaction,
-* rendering,
-* I/O,
-* event dispatching,
-* memory or runtime management.
+A `ClSystem` component may:
 
-That low-level work should be handled internally by workers.
+* expose conceptual methods such as `open()`, `read()`, `handleRequest()`, or `close()`;
+* orchestrate or call standard `ClAgent` instances (obvious for a Controller calling business logic);
+* delegate its heavy technical realization to workers;
+* interact with other `ClSystem` components within the same system domain.
 
-### System-oriented agent guidelines
+A `ClSystem` component should avoid:
 
-A system-oriented agent may:
-
-* expose conceptual methods such as `open()`, `read()`, `write()`, `click()`, `show()`, or `close()`;
-* delegate its technical realization to workers;
-* interact with other system-oriented agents in the same coherent system domain.
-
-A system-oriented agent should avoid:
-
-* calling unrelated domain agents directly;
-* mixing high-level business decisions with low-level system mechanics;
-* exposing technical implementation details as its main identity.
-
-The key idea is:
-
-> A system-oriented agent represents a system capability as a meaningful object.
-> A worker performs the low-level execution behind it.
+* mixing high-level orchestration or system routing with raw low-level technical operations (it should delegate those to a worker);
+* bypassing standard roles to inherit from standard `ClAgent` or `ClWorker` classes (the checker treats `ClSystem` as an independent role to prevent inheritance mixing).
 
 ---
 
 ## 6. Summary table
 
-Here is a simplified model of direct usage.
+Here is a simplified model of direct usage guidelines.
 
-| From / To                 |                        Agent | Worker |      System-oriented agent |
-| ------------------------- | ---------------------------: | -----: | -------------------------: |
-| **Agent**                 |                          Yes |    Yes |                 Usually no |
-| **Worker**                | Controlled callback / bridge |    Yes |                        Yes |
-| **System-oriented agent** |                   Usually no |    Yes | Yes, if same system domain |
+| From / To | `ClAgent` | `ClWorker` | `ClSystem` |
+| --- | --- | --- | --- |
+| **`ClAgent`** | Yes | Yes | Usually no (delegates to a worker) |
+| **`ClWorker`** | Controlled callback / bridge | Yes | Yes |
+| **`ClSystem`** | Yes (e.g., Controllers calling domain) | Yes | Yes, if same system domain |
 
-This table is a guide, not a rigid rule-set.
-
-The important idea is not to forbid every possible dependency.
-
-The important idea is to preserve the direction of meaning:
-
-```text
-agents carry meaning
-workers execute
-system-oriented agents represent system capabilities
-low-level workers perform the technical realization
-```
+This table is a structural guide, not a rigid flicage on package imports. The important idea is to preserve the direction of meaning and prevent chaotic inheritance.
 
 ---
 
@@ -269,35 +218,9 @@ low-level workers perform the technical realization
 
 This model helps developers:
 
-* classify new classes correctly;
-* avoid accidental mixing of concerns;
-* navigate complex systems more safely;
-* recognize patterns inside existing codebases;
-* understand why some system classes still feel like agents;
-* decide when a UI object, listener, socket, stream, or file should be modeled as an agent or as a worker.
-
-It also explains why Clprolf is not just:
-
-```text
-business = agent
-technical = worker
-```
-
-The real model is slightly richer:
-
-```text
-agent  = conceptual meaning
-worker = technical execution
-```
-
-Some conceptual objects are close to the system.
-
-That does not automatically make them workers.
-
-A button can be an agent.
-A listener can be an observer agent.
-A stream can be a system-oriented agent.
-Their rendering, event dispatching, or native operations can be workers.
+* classify new classes correctly without a false binary choice between "pure business" and "raw technical";
+* understand why third-party boundary classes (like Controllers) or low-level wrappers (like Sockets) are treated as explicit conceptual roles (`ClSystem`) rather than being misclassified as workers;
+* decide when a class represents a **subject** to manipulate or orchestrate (`ClAgent`, `ClSystem`) or a **support** mechanism (`ClWorker`).
 
 ---
 
@@ -305,42 +228,19 @@ Their rendering, event dispatching, or native operations can be workers.
 
 Clprolf gives each class a natural place.
 
-At the highest level:
-
 ```text
-Agent  = meaning
-Worker = execution
+@ClAgent
+   → carries business, application, or simulation meaning.
+
+@ClWorker
+   → performs technical execution and serves agents.
+
+@ClSystem
+   → represents a conceptual system capability or an architectural framework boundary.
+
 ```
 
-Then the model expands:
-
-```text
-Domain agent
-    → carries business, application, simulation, or UI meaning
-
-Worker
-    → performs technical execution
-
-System-oriented agent
-    → represents a conceptual system capability
-
-Low-level worker
-    → performs native, rendering, I/O, or runtime operations
-```
-
-This model keeps Clprolf simple while explaining real-world cases more accurately.
-
-It avoids a false choice between “everything technical is worker” and “everything conceptual is pure business.”
-
-Instead, it asks one practical question:
-
-> What is the main responsibility of this class?
-
-If the class represents something meaningful, it is probably an agent.
-
-If it mainly executes technical work, it is probably a worker.
-
-That is the global logic of Clprolf.
+If the class represents something meaningful, it is an agent or a system component. If it mainly executes technical work, it is a worker. That is the global logic of Clprolf.
 
 ---
 
@@ -348,5 +248,5 @@ That is the global logic of Clprolf.
 
 > Agents carry meaning.
 > Workers perform execution.
-> System-oriented agents represent meaningful system capabilities.
+> ClSystem components represent meaningful system boundaries.
 > Together, they make architecture easier to read, reason about, and maintain.
