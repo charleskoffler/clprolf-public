@@ -46,7 +46,7 @@ It has its own identity, state, and behavior.
 For this reason, it naturally becomes an `@ClAgent`.
 
 ```java
-@ClAgent
+@ClSystem //or @ClAgent
 public class ClpSocket extends Socket {
 
 }
@@ -71,7 +71,7 @@ Its purpose is not to assist another component.
 It represents a system concept in its own right.
 
 ```java
-@ClAgent
+@ClSystem //or @ClAgent
 public class ClpServerSocket extends ServerSocket {
 
     public ClpServerSocket() throws IOException {
@@ -110,7 +110,7 @@ graphical user interaction
 Therefore, it can naturally be modeled as an `@ClAgent`.
 
 ```java
-@ClAgent
+@ClSystem //or @ClAgent
 public class ClpJButton extends JButton {
 
 }
@@ -129,7 +129,7 @@ input scanning
 It performs a coherent responsibility and remains meaningful when considered independently.
 
 ```java
-@ClAgent
+@ClSystem //or @ClAgent
 public final class ClpScanner {
 
     private final Scanner internal;
@@ -174,9 +174,9 @@ public final class ClpString {
         return internal;
     }
 
-    public static String valueOf(int i) {
-        return String.valueOf(i);
-    }
+    public static ClpString valueOf(int i) {
+		return new ClpString(String.valueOf(i));
+	}
 }
 ```
 
@@ -190,7 +190,7 @@ The wrapper therefore uses composition while preserving the role of the original
 
 Unlike the previous examples, it does not primarily represent a domain object.
 
-Instead, it exposes technical services such as:
+Instead, it exposes system services such as:
 
 * standard input,
 * standard output,
@@ -246,10 +246,10 @@ supports a subject
 Examples:
 
 ```text
-Socket         → Agent
-ServerSocket   → Agent
-Scanner        → Agent
-JButton        → Agent
+Socket         → ClSystem (or ClAgent)
+ServerSocket   → ClSystem (or ClAgent)
+Scanner        → ClSystem (or ClAgent)
+JButton        → ClSystem (or ClAgent)
 String         → Agent
 System         → Worker
 ```

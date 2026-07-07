@@ -13,173 +13,63 @@ To fully understand this article, readers should already be familiar with:
 
 ---
 
-## Foundational Principles of Clprolf
-
-Clprolf is based on two core principles:
-
-1. A class is either organized around a well-defined class domain or exists to provide technical support to other classes.
-2. Inheritance must preserve the class domain; otherwise, composition should be used.
-
-These principles define how Clprolf structures classes and relationships.
+Clprolf is built around two central principles.
 
 ---
 
-## What Is a Class Domain?
+## 1. A class is either business/conceptual or technical
 
-A class domain is the central subject around which a class is organized.
+Every class belongs to one of the following worlds:
 
-It defines what the class fundamentally represents and what it is responsible for.
+### Business / Domain World
 
-Examples include:
-
-* `Animal`
-* `File`
-* `Connection`
-* `Parser`
-* `JsonSerializer`
-* `Scheduler`
-* `Controller`
-* `PdfGenerator`
-* `RandomGenerator`
-* `PaymentService`
-* `InventoryService`
-
-Each of these classes represents a coherent subject.
-
-A class domain does not need to be business-related.
-
-It may represent:
-
-* a business concept,
-* a system concept,
-* a technical concept,
-* a scientific concept,
-* a simulation entity,
-* a service,
-* or any other coherent subject.
-
----
-
-## Domain-Oriented Classes
-
-A domain-oriented class represents something.
-
-Its identity comes from the domain it models rather than from the technical services it performs.
+The class represents a business or conceptual responsibility.
 
 Examples:
 
-```text
-Animal
-File
-Connection
-Parser
-JsonSerializer
-Scheduler
-Controller
-PdfGenerator
-RandomGenerator
-PaymentService
-InventoryService
+* order management,
+* business logic,
+* simulation,
+* functional orchestration,
+* but also system-oriented agents.
+
+These classes are declared using:
+
+```java
+@ClAgent
+
 ```
-
-These classes remain meaningful even when considered independently.
-
-In Clprolf, such classes are typically represented as `agent`.
 
 ---
 
-## Technical Support Classes
+### Technical World
 
-Some classes do not primarily represent a domain.
+The class performs a technical task executed by the system:
 
-Instead, they exist to support one or more agents by providing technical capabilities.
+* database access (via system agents),
+* networking (often by utilizing low-level agents),
+* file handling (most frequently with system-oriented agents),
+* display / rendering,
+* infrastructure,
+* no conceptual domain; it is just the system executing technical agents or starting an application,
+* generally a system technical service associated with an agent.
 
-Examples include:
+These classes are declared using:
 
-* launching agents,
-* executing technical procedures,
-* displaying information,
-* interacting with the operating system,
-* accessing platform-specific features,
-* providing infrastructure services.
+```java
+@ClWorker
 
-Examples:
-
-```text
-AnimalWorker
-ApplicationLauncher
-AgentLauncher
-ProcessLauncher
-SystemExecutor
-NativeProcessRunner
-OperatingSystemWorker
-ControllerWorker
 ```
 
-These classes are primarily defined by the support they provide.
+## 2. Inheritance must preserve the domain
 
-Their purpose is to help agents perform technical operations.
+A class should only inherit from another class belonging to the same conceptual domain.
 
-In Clprolf, such classes are typically represented as `worker`.
+Otherwise:
 
----
+> composition should be used.
 
-## Agents and Workers
-
-A useful way to understand the distinction is:
-
-```text
-agent  → represents a domain
-worker → supports a domain
-```
-
-Example:
-
-```clprolf
-public agent Animal {
-
-    private AnimalWorker worker;
-
-    public void display() {
-        worker.display(this);
-    }
-
-}
-```
-
-```clprolf
-public worker AnimalWorker {
-
-    public void display(Animal animal) {
-
-        // rendering logic
-        // platform-specific code
-        // UI interaction
-
-    }
-
-}
-```
-
-The `Animal` agent represents the domain.
-
-The `AnimalWorker` exists to provide technical support to that domain.
-
-Another example:
-
-```clprolf
-public agent PaymentService {
-}
-```
-
-```clprolf
-public worker PaymentServiceLauncher {
-}
-```
-
-The service itself represents a domain.
-
-The launcher exists only to support its execution.
+This principle prevents incoherent hierarchies and mixed responsibilities.
 
 ---
 
@@ -249,12 +139,12 @@ The goal is to make architectural decisions visible and easier to reason about.
 
 These two principles form the foundation of Clprolf.
 
-They define how classes are interpreted and how inheritance is understood within the language.
+They define how classes are interpreted and how inheritance is understood within the framework.
 
 From them emerge the structural distinctions that Clprolf makes explicit:
 
-* domain-oriented classes (`agent`),
-* technical support classes (`worker`),
+* domain-oriented classes (`ClAgent`),
+* technical support classes (`ClWorker`),
 * coherent inheritance,
 * explicit architectural responsibilities.
 

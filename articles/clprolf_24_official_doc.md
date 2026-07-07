@@ -392,7 +392,7 @@ They therefore participate in the structural continuity of the system.
 ```text
 ClFamily = primary family interface
 ClTrait  = trait, shared capability between families
-ClDraft = unrestricted interface
+ClFree = unrestricted interface
 ```
 
 In Clprolf, interfaces are not viewed as simple technical contracts.
