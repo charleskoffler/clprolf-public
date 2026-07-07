@@ -2,213 +2,126 @@
 
 Clprolf stands for CLear PROgramming Language and Framework.
 
-> **A structured approach to object-oriented programming.**
-> Roles and responsibilities become explicit.
+> **"Don't use it - You don't need it!"**
 
-Clprolf is both a Java and C# framework designed to make architectural intent visible within object-oriented systems.
+> *Clprolf is both a Java and C# architectural framework designed to make architectural intent visible within object-oriented systems.*
 
-Its goal is not to replace classical OOP, but to make certain important distinctions explicit:
-
-* business or domain responsibilities versus technical/support responsibilities,
-* coherent inheritance versus composition,
-* the primary responsibility of a class.
-
-It helps adhere to the well-known SOLID principles.
+It acts as a lightweight structural layer between pure OOP and your architecture (DDD, Clean, Hexagonal, etc.).
 
 ---
 
 ## 🎯 The Problem
 
-In traditional object-oriented systems, class responsibilities often become unclear over time.
-
-A class may start with a well-defined purpose, but gradually accumulate additional concerns:
-
-* business rules,
-* technical implementation details,
-* infrastructure logic,
-* unrelated responsibilities.
-
-As systems grow, architectural intent becomes harder to understand and maintain.
+In traditional object-oriented systems, class responsibilities often become unclear over time. A class may start with a well-defined purpose, but gradually accumulate business rules, technical implementation details, and unrelated infrastructure logic. As systems grow, architectural intent drifts.
 
 ---
 
 ## 💡 The Clprolf Approach
 
-Clprolf encourages developers to identify and express the primary responsibility of each class.
-
-The framework is based on a simple idea:
+Clprolf encourages developers to identify and express the primary responsibility of each class. The framework is based on a simple idea:
 
 > **A class should clearly express its primary role.**
-
-To support this idea, Clprolf introduces explicit class roles and structural guidelines.
 
 ---
 
 ## 🧱 Class Roles
 
-### `agent`
+### `ClAgent`
 
-Represents a business or conceptual class.
-
-An `agent`:
-
-* contains business logic,
-* orchestrates processes,
-* makes decisions,
-* avoids heavy technical code.
-
-Note: entities and DTOs are typically classified as agents, since they represent domain data.
-
-Example:
+Represents a business or conceptual class. It contains business logic, orchestrates processes, and makes decisions. Entities and DTOs are classified as agents since they represent domain data.
 
 ```java
 @ClAgent
 public class OrderProcessor {
-
     private OrderRepository repository;
 
     public void process(Order order) {
         if(order.total() <= 0) {
-            throw Error;
+            throw new Error();
         }
         repository.save(order);
     }
 }
+
 ```
 
----
+### `ClWorker`
 
-### `worker`
-
-Represents a technical class.
-
-A technical class is primarily intended to support agent classes rather than be organized around a class domain.
-Workers provide technical support and infrastructure services. They may coordinate or use low-level agent classes such as `File`, `Connection`, `Random`, `Logger`, or `Parser`, but unlike those classes, a worker is not organized around a class domain of its own.
-Instead, it exists to support other components through technical mechanisms, infrastructure access, application startup, operating-system interaction, or similar responsibilities.
-
-A `worker`:
-
-* provides technical support,
-* manages infrastructure and execution mechanisms,
-* contains technical code.
-
-Example:
+Represents a technical service or infrastructure class. It exists solely to support agents through technical mechanisms (database access, application startup, OS interactions, parsing). It is not organized around a business domain.
 
 ```java
 @ClWorker
 public class OrderRepository {
-
     public void save(Order order) {
-
-        // database access
-
+        // Direct database access code here
     }
 }
+
 ```
+
+### `ClSystem` (Optional)
+
+Represents a system-oriented agent or components at the boundaries of the application (e.g., Sockets, Files, HTTP Controllers, Middlewares). It bridges system behaviors and naturally orchestrates or uses standard agents.
+
+### `ClDraft`
+
+An object without a defined role yet. Used during prototyping or heavy refactoring when the destination of the class isn't clear.
 
 ---
 
-### `draft`
+## 🧩 Flexibility & Tailored Adoption
 
-An object without a defined role.
+Clprolf acts primarily as a structural guide rather than a rigid architectural framework. It is designed to adapt to your project, not the other way around.
 
-Used:
+### 1. Step-by-Step Integration
 
-* during prototyping,
-* during refactoring,
-* when the role is not yet clear.
+You don't have to adopt everything on day one:
 
-Example:
+* **Step 1: Classes First.** Focus exclusively on separating `@ClAgent` (or `ClSystem`) and `@ClWorker`. This allows your team to clean up the codebase without friction.
+* **Step 2: Interfaces Later (Optional).** The interface system (`ClFamily`, `ClTrait`) can be introduced in a second phase. If you find it too unconventional for your habits, you can completely ignore it. The framework remains 100% effective just with class annotations.
 
-```java
-@ClDraft
-public class TemporaryManager {
-}
-```
+### 2. Custom Terminology (Agnostic Naming)
 
-`ClDraft` enables a flexible approach similar to classical OOP.
+If the words `Agent` or `Worker` do not match your team's culture, you can change them! Because the automated ArchUnit checker relies on the underlying types, a simple **automated Rename** in your IDE allows you to adapt the vocabulary:
+
+| Default Role | Conceptual Alternative | Technical Alternative |
+| --- | --- | --- |
+| **`@ClAgent`** | `@ClConcept` | `@ClDomain` |
+| **`@ClWorker`** | `@ClMechanism` | `@ClInfrastructure` |
+| **`@ClSystem`** | `@ClBridge` | `@ClLowLevel` |
 
 ---
 
-## 🧠 Inheritance
+## 🧠 Inheritance & Domain Preservation
 
-Clprolf encourages inheritance only between classes belonging to the same conceptual domain.
-
-```java
-@Agent
-public class Animal {
-}
-
-@Agent
-public class Dog extends Animal {
-}
-```
-
-When domains do not match, composition is generally preferred.
+Clprolf enforces inheritance **only** between classes belonging to the same conceptual domain.
 
 ```java
-@ClWorker
-public class AppLauncher {
-}
+// ✅ VALID: Same domain continuity
+@ClAgent public class Animal {}
+@ClAgent public class Dog extends Animal {}
 
-@ClAgent
-public class Dog extends AppLauncher {
-}
+// ❌ DISCOURAGED: Mixing technical and conceptual worlds
+@ClWorker public class AppLauncher {}
+@ClAgent public class Dog extends AppLauncher {} // Use Composition instead!
+
 ```
-
-In this case, composition would usually provide a clearer design.
 
 ---
 
 ## 🔗 Interfaces
 
-Clprolf extends the same philosophy to interfaces.
+Clprolf extends this philosophy to abstractions by introducing three categories, which also declare a target role (`@ClAgent` or `@ClWorker`) to maintain structural continuity:
 
-Three interface categories are available:
-
-* `family` — an abstract family of related implementations,
-* `trait` — a shared capability across multiple families,
-* `free` — a flexible interface.
-
-Family and trait interfaces also declare a target role:
-
-* `agent`
-* `worker`
-
-This allows abstractions to remain consistent with the roles of their implementations.
+* **`ClFamily`**: Represents an abstract family of related implementations (mirrors pure abstract classes).
+* **`ClTrait`**: Represents a cross-cutting, shared capability across multiple families.
+* **`ClFree`**: A generic, unrestricted interface for external integrations.
 
 ---
 
-## ⚖️ What Clprolf Provides
+## 🛠 nighttime Automated Validation (ArchUnit & ArchUnitNET)
 
-By making roles explicit, Clprolf helps developers:
-
-* understand class responsibilities more quickly,
-* maintain clearer architectural boundaries,
-* build more coherent inheritance hierarchies,
-* reduce architectural drift over time.
-
-The framework acts primarily as a structural guide rather than a rigid architectural framework.
-
----
-
-## 🎯 When to Use Clprolf
-
-Clprolf is well suited for:
-
-* teams that want a lightweight structural guide for object-oriented design without adopting a heavy architectural framework,
-* educational contexts focused on architectural clarity,
-* complex systems,
-* simulation and MAS-like applications,
-* long-lived codebases where explicit responsibilities and coherent inheritance are important.
-
----
-
-## ⚖️ Philosophy
-
-Clprolf intentionally introduces light structural constraints.
-
-These constraints are not designed to restrict creativity, but to make architectural decisions explicit.
+Clprolf includes an open-source semantic checker for Java and .NET. **It does not enforce rigid package structures.** It only ensures your classes respect their declared identities and inheritance rules through 8 standard automated tests.
 
 ---
 

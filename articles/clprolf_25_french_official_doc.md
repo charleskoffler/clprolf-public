@@ -153,7 +153,7 @@ Voici des exemples de correspondances alternatives :
 
 # III) Les Types de Classes
 
-Clprolf possède seulement trois types de classes.
+Clprolf possède seulement quatre types de classes.
 
 ---
 

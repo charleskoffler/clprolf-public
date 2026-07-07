@@ -155,7 +155,7 @@ Here are a few examples of alternative naming conventions:
 
 # III) Class Types
 
-Clprolf contains only three class types.
+Clprolf contains only four class types.
 
 ---
 
