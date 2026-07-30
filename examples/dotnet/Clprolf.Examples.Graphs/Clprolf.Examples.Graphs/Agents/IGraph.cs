@@ -29,7 +29,7 @@ namespace Clprolf.Examples.Graphs.Agents
             /// <summary>
             /// Getting the paths found while applying the current filter
             /// </summary>
-            List<List<int>>? PartialPaths { get; }
+            List<List<int>>? TerminalPaths { get; }
 
             /// <summary>
             /// Add an edge (undirected graph)

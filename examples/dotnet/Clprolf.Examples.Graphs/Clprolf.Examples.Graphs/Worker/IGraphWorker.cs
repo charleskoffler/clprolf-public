@@ -12,6 +12,6 @@ namespace Clprolf.Examples.Graph.Workers
 
         void PrintAllResultingPaths();
 
-        void PrintPartialPaths();
+        void PrintTerminalPaths();
     }
 }

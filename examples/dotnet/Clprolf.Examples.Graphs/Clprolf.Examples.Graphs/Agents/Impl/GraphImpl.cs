@@ -18,7 +18,7 @@ namespace Clprolf.Examples.Graphs.Agents.Impl
         public int Start { get; }
         public Dictionary<int, List<int>> Adj => _adj;
         public List<List<int>>? ResultingPaths { get; private set; }
-        public List<List<int>>? PartialPaths { get; private set; }
+        public List<List<int>>? TerminalPaths { get; private set; }
 
         public GraphImpl(int defaultStartNode)
         {
@@ -70,7 +70,7 @@ namespace Clprolf.Examples.Graphs.Agents.Impl
         public void ComputeAllPathsFrom()
         {
             var allPaths = new List<List<int>>();
-            var visited = new HashSet<int>();
+          
             var stack = new Stack<State>();
 
             // État initial
@@ -82,22 +82,19 @@ namespace Clprolf.Examples.Graphs.Agents.Impl
                 int node = state.Node;
                 var path = state.Path;
 
-                if (visited.Contains(node)) continue;
-                visited.Add(node);
-
-                // Enregistrer le chemin
+                // Enregistrer le chemin (chaque état pop() est un chemin valide)
                 allPaths.Add(path);
 
-                // Récupérer les voisins (Sécurité null avec GetValueOrDefault)
+                // Récupérer les voisins
                 var neighbors = _adj.GetValueOrDefault(node, new List<int>());
-
-                // Inversion en place (comme Collections.reverse)
                 neighbors.Reverse();
 
                 // Explorer les voisins
                 foreach (int neighbor in neighbors)
                 {
-                    if (!visited.Contains(neighbor))
+                    // On vérifie si le voisin est déjà 
+                    // DANS LE CHEMIN ACTUEL (pour éviter les boucles infinies)
+                    if (!path.Contains(neighbor))
                     {
                         var newPath = new List<int>(path) { neighbor };
                         stack.Push(new State(neighbor, newPath));
@@ -126,36 +123,36 @@ namespace Clprolf.Examples.Graphs.Agents.Impl
             }
 
             // 2. Trouver la longueur max (LINQ gère le type primitif en direct)
-            int max = ResultingPaths.Count > 0
+            int max = ResultingPaths?.Count > 0
                 ? ResultingPaths.Max(p => p.Count)
                 : 0;
 
             // 3. Filtrer les chemins les plus longs avec LINQ
-            List<List<int>> longest = ResultingPaths
+            List<List<int>> longest = ResultingPaths?
                 .Where(p => p.Count == max)
-                .ToList();
+                .ToList() ?? new List<List<int>>();
 
             // 4. Stocker et notifier
-            PartialPaths = longest;
-            _worker.PrintPartialPaths();
+            TerminalPaths = longest;
+            _worker.PrintTerminalPaths();
         }
 
         public void ComputePathsPassingThrough(int node)
         {
             if (ResultingPaths == null) ComputeAllPathsFrom();
 
-            PartialPaths = ResultingPaths
+            TerminalPaths = ResultingPaths?
                 .Where(p => p.Contains(node))
                 .ToList();
 
-            _worker.PrintPartialPaths();
+            _worker.PrintTerminalPaths();
         }
 
         public void ComputeTerminalPaths()
         {
             if (ResultingPaths == null) ComputeAllPathsFrom();
 
-            PartialPaths = ResultingPaths
+            TerminalPaths = ResultingPaths?
                 .Where(path =>
                 {
                     int last = path[^1]; // Syntaxe C# moderne [^1] pour prendre le dernier élément
@@ -166,7 +163,7 @@ namespace Clprolf.Examples.Graphs.Agents.Impl
                 })
                 .ToList();
 
-            _worker.PrintPartialPaths();
+            _worker.PrintTerminalPaths();
         }
 
         public void RecursiveDFS()

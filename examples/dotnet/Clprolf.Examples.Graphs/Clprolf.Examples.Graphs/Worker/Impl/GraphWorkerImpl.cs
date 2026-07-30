@@ -39,16 +39,16 @@
                 PrintAllResultingPaths(null);
             }
 
-            public void PrintPartialPaths()
+            public void PrintTerminalPaths()
             {
-                PrintAllResultingPaths(_graph.PartialPaths);
+                PrintAllResultingPaths(_graph.TerminalPaths);
             }
 
-            private void PrintAllResultingPaths(List<List<int>> myChosenPaths)
+            private void PrintAllResultingPaths(List<List<int>>? myChosenPaths)
             {
                 // Utilisation de l'opérateur de coalescence nulle (??) de C# :
                 // Si myChosenPaths n'est pas null, on l'utilise, sinon on prend _graph.ResultingPaths
-                List<List<int>> paths = myChosenPaths ?? _graph.ResultingPaths;
+                List<List<int>>? paths = myChosenPaths ?? _graph.ResultingPaths;
 
                 if (paths != null)
                 {

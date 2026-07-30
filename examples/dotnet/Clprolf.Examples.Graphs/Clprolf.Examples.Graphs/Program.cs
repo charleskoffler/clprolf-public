@@ -9,7 +9,8 @@ g.AddEdge(1, 2);
 g.AddEdge(1, 3);
 g.AddEdge(2, 4);
 g.AddEdge(2, 5);
-g.AddEdge(3, 6, true);
+g.AddEdge(3, 6);
+g.AddEdge(4, 6, true);
 
 Console.WriteLine($"\nComputing all paths from default start node {defaultStartNode}");
 g.ComputeAllPathsFrom();

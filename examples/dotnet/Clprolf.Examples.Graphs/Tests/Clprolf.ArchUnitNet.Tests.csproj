@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <Version>1.1.0</Version>
@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Clprolf.ArchUnitNet\Clprolf.ArchUnitNet.csproj" />
-    <ProjectReference Include="..\Clprolf.Examples.WPF\Clprolf.Examples.WPF.csproj" />
+    <ProjectReference Include="..\Clprolf.Examples.Graphs\Clprolf.Examples.Graphs.csproj" />
   </ItemGroup>
 
   <ItemGroup>
