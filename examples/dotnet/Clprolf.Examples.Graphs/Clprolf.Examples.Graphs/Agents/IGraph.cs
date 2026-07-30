@@ -24,12 +24,12 @@ namespace Clprolf.Examples.Graphs.Agents
             /// <summary>
             /// Getting all the paths found
             /// </summary>
-            List<List<int>> ResultingPaths { get; }
+            List<List<int>>? ResultingPaths { get; }
 
             /// <summary>
             /// Getting the paths found while applying the current filter
             /// </summary>
-            List<List<int>> PartialPaths { get; }
+            List<List<int>>? PartialPaths { get; }
 
             /// <summary>
             /// Add an edge (undirected graph)

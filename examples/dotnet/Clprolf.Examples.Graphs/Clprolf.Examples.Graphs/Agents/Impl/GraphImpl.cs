@@ -17,8 +17,8 @@ namespace Clprolf.Examples.Graphs.Agents.Impl
         // Propriétés C# (Getters automatiques)
         public int Start { get; }
         public Dictionary<int, List<int>> Adj => _adj;
-        public List<List<int>> ResultingPaths { get; private set; }
-        public List<List<int>> PartialPaths { get; private set; }
+        public List<List<int>>? ResultingPaths { get; private set; }
+        public List<List<int>>? PartialPaths { get; private set; }
 
         public GraphImpl(int defaultStartNode)
         {
