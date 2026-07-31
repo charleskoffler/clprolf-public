@@ -10,11 +10,11 @@ import java.util.*;
 @ClAgent
 public class GraphImpl implements Graph {
 
-    private Map<Integer, List<Integer>> adj = new HashMap<>();
+    private final Map<Integer, List<Integer>> adj = new HashMap<>();
     private List<List<Integer>> resultingPaths;
-    private List<List<Integer>> partialPaths;
-    private int start;
-    private GraphWorker worker;
+    private List<List<Integer>> terminalPaths;
+    private final int start;
+    private final GraphWorker worker;
 
     public int getStart() {
         return start;
@@ -28,8 +28,8 @@ public class GraphImpl implements Graph {
         return resultingPaths;
     }
 
-    public List<List<Integer>> getPartialPaths() {
-        return partialPaths;
+    public List<List<Integer>> getTerminalPaths() {
+        return terminalPaths;
     }
 
     public void addEdge(int u, int v, boolean isLastEdge){
@@ -63,7 +63,7 @@ public class GraphImpl implements Graph {
 
     public void computeAllPathsFrom() {
         List<List<Integer>> allPaths = new ArrayList<>();
-        Set<Integer> visited = new HashSet<>();
+
         Stack<State> stack = new Stack<>();
 
         // Initial state
@@ -74,18 +74,18 @@ public class GraphImpl implements Graph {
             int node = state.node;
             List<Integer> path = state.path;
 
-            if (visited.contains(node)) continue;
-            visited.add(node);
-
             // Store the path
             allPaths.add(path);
 
-            List<Integer> neighbors = adj.getOrDefault(node, List.of());
-            Collections.reverse(neighbors); //optional. To have a natural order of children
+            // Attention : List.of() renvoie une liste immuable. Si on veut faire un reverse,
+            // il faut d'abord copier la liste pour pouvoir la modifier.
+            List<Integer> neighbors = new ArrayList<>(adj.getOrDefault(node, List.of()));
+            Collections.reverse(neighbors);
 
             // Explore neighbors
             for (int neighbor : neighbors) {
-                if (!visited.contains(neighbor)) {
+
+                if (!path.contains(neighbor)) {
                     List<Integer> newPath = new ArrayList<>(path);
                     newPath.add(neighbor);
                     stack.push(new State(neighbor, newPath));
@@ -112,7 +112,8 @@ public class GraphImpl implements Graph {
 
         // 2. Find max length
         int max = resultingPaths.stream()
-                .mapToInt(List::size)
+                .mapToInt(path -> path.size())
+                // equivalent .mapToInt(List::size)
                 .max()
                 .orElse(0);
 
@@ -121,35 +122,35 @@ public class GraphImpl implements Graph {
                 .filter(p -> p.size() == max)
                 .toList();
 
-        // 4. Store in partialPaths
-        this.partialPaths = longest;
+        // 4. Store in terminalPaths
+        this.terminalPaths = longest;
 
-        this.worker.printPartialPaths();
+        this.worker.printTerminalPaths();
     }
 
     public void computePathsPassingThrough(int node) {
         if (resultingPaths == null) computeAllPathsFrom();
 
-        partialPaths = resultingPaths.stream()
+        terminalPaths = resultingPaths.stream()
                 .filter(p -> p.contains(node))
                 .toList();
 
-        worker.printPartialPaths();
+        worker.printTerminalPaths();
     }
 
     public void computeTerminalPaths() {
         if (resultingPaths == null) computeAllPathsFrom();
 
-        partialPaths = resultingPaths.stream()
+        terminalPaths = resultingPaths.stream()
                 .filter(path -> {
-                    int last = path.get(path.size() - 1);
+                    int last = path.getLast();
                     List<Integer> neighbors = adj.getOrDefault(last, List.of());
                     // terminal if all neighbors are already in the path
                     return neighbors.stream().allMatch(path::contains);
                 })
                 .toList();
 
-        worker.printPartialPaths();
+        worker.printTerminalPaths();
     }
 
     public void recursiveDFS() {

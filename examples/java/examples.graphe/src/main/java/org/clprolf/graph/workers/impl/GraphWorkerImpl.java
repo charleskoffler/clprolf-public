@@ -2,7 +2,6 @@ package org.clprolf.graph.workers.impl;
 
 import org.clprolf.framework.ClWorker;
 import org.clprolf.graph.agents.Graph;
-import org.clprolf.graph.agents.impl.GraphImpl;
 import org.clprolf.graph.workers.GraphWorker;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.Map;
 
 @ClWorker
 public class GraphWorkerImpl implements GraphWorker {
-    private Graph graph;
+    private final Graph graph;
 
     public GraphWorkerImpl(Graph theGraph){
         this.graph = theGraph;
@@ -28,8 +27,8 @@ public class GraphWorkerImpl implements GraphWorker {
         printAllResultingPaths(null);
     }
 
-    public void printPartialPaths(){
-        printAllResultingPaths(this.graph.getPartialPaths());
+    public void printTerminalPaths(){
+        printAllResultingPaths(this.graph.getTerminalPaths());
     }
 
     private void printAllResultingPaths(List<List<Integer>> myChosenPaths) {

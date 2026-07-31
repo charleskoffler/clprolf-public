@@ -30,7 +30,7 @@ public interface Graph {
      * Getting the paths found while applying the current filter
      * @return
      */
-    List<List<Integer>> getPartialPaths();
+    List<List<Integer>> getTerminalPaths();
 
     /**
      *  Add an edge (undirected graph)

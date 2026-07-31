@@ -1,4 +1,4 @@
-package org.clprolf;
+package org.clprolf.graph.workers.impl;
 
 import org.clprolf.framework.ClWorker;
 import org.clprolf.graph.agents.Graph;
@@ -20,7 +20,8 @@ public class GraphAppLauncher
         g.addEdge(1, 3);
         g.addEdge(2, 4);
         g.addEdge(2, 5);
-        g.addEdge(3, 6, true);
+        g.addEdge(3, 6);
+        g.addEdge(4, 6, true);
 
         System.out.println("\nComputing all paths from default start node " + defaultStartNode);
         g.computeAllPathsFrom();
