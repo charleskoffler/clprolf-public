@@ -30,8 +30,8 @@ public class GraphAppLauncher
         System.out.println("\nThe longest paths are: ");
         g.computeLongestPathsFrom();
 
-        int node = 2;
-        System.out.println("\nCompute paths passing through " + 2);
+        int node = 3;
+        System.out.println("\nCompute paths passing through " + node);
         g.computePathsPassingThrough(node);
 
         System.out.println("\nComputing all terminal paths");
