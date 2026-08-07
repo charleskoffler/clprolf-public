@@ -6,6 +6,7 @@
 
 Son objectif est de rendre explicites certaines bonnes pratiques de la programmation orientée objet, sans introduire une architecture lourde ni une courbe d’apprentissage importante.
 Ainsi, le framework aide à respecter les principes SOLID bien connus.
+Le Framework ne vise pas uniquement l'informatique d'entreprise, mais aussi les applications scientifiques, de simulation, etc.
 
 Clprolf repose sur une idée simple :
 
@@ -567,8 +568,13 @@ Mais ces forçages ne devraient pas être fréquent.
 
 ---
 
+## VI.6) Avantages du "Loose Coupling" systématique par l'interface miroir
 
-## VI.6) Un exemple réel des interfaces `ClFamily` et `ClTrait`
+En mode strict, le fait de restreindre une classe à l'implémentation d'une unique ClFamily (et de déléguer les ClTrait à cette interface) n'est pas une simple contrainte esthétique. C'est le mécanisme même qui garantit un couplage faible (loose coupling) systématique.
+
+Plutôt qu'une classe implémentant de multiples contrats éparpillés, la ClFamily agit comme le "contrat miroir" officiel et complet du composant. Ainsi, lorsqu'un composant A a besoin d'un composant B, il est naturellement poussé à dépendre de la ClFamily de B, et non de son implémentation. L'inversion de dépendance n'est plus une simple recommandation, elle découle mécaniquement de la structure du code.
+
+## VI.7) Un exemple réel des interfaces `ClFamily` et `ClTrait`
 
 Regardons cet exemple réel, qui utilise une conception applicable au Framework Clprolf:
 
@@ -597,7 +603,7 @@ public static final class LayeredArchitecture implements ArchRule {
 > *Dans cet exemple, `CanBeEvaluated` et `CanOverrideDescription` jouent le rôle de `@ClTrait`, tandis que `ArchRule` formalise la `@ClFamily*`.
 
 
-## VI.7) Remarque sur Clprolf et l'Interface Segregation Principle (ISP)
+## VI.8) Remarque sur Clprolf et l'Interface Segregation Principle (ISP)
 
 Clprolf respecte l'ISP, il suffit d'adapter le design des classes et interfaces avec les bonnes familles et traits:
 
@@ -642,7 +648,182 @@ public class ModernPrinterImpl implements ModernPrinter {
 }
 ```
 
-# VII) Architecture Générale
+# VII) Immuabilité
+
+Il est recommandé si possible de rendre les classes Clprolf immuables, par exemple en encapsulant l'état dans un record. Chaque méthode modifiant l'état renverra un nouvel objet, sur lequel on pourra appeler d'autres méthodes, de manière fluide.
+À l'image de la classe String en Java/.NET, cette approche garantit une thread-safety native, élimine les effets de bord et offre une API fluide et expressive.
+
+```java
+
+@ClAgent
+@ClFamily
+public interface Car {
+
+    // Immutable state definition
+    // Automatically public static inside an interface
+	@ClAgent
+    record State(
+            String make,
+            int mileage,
+            List<String> options
+    ) {
+        // constructor enforcing domain invariants
+        public State {
+            Objects.requireNonNull(make, "Make cannot be null");
+            if (mileage < 0) {
+                throw new IllegalArgumentException("Mileage cannot be negative");
+            }
+            options = List.copyOf(options); // Deep immutability
+        }
+    }
+
+    State state();
+
+    // Business methods returning the contract abstraction
+    Car drive(int distance);
+    Car addOption(String newOption);
+}
+
+@ClAgent
+public class CarImpl implements Car {
+
+    // 🔒Strictly final state reference
+    private final State state;
+
+    public CarImpl(State state) {
+        this.state = Objects.requireNonNull(state, "State cannot be null");
+    }
+
+    @Override
+    public State state() {
+        return this.state;
+    }
+
+    // Covariant return types: methods return 'CarImpl' instead of 'Car'
+    @Override
+    public CarImpl drive(int distance) {
+        if (distance <= 0) {
+            return this; // no state change occurs
+        }
+
+        var newState = new State(
+                state.make(),
+                state.mileage() + distance,
+                state.options()
+        );
+        return new CarImpl(newState);
+    }
+
+    @Override
+    public CarImpl addOption(String newOption) {
+        // Temporary mutable list used only for transformation
+        var updatedOptions = new ArrayList<>(state.options());
+        updatedOptions.add(newOption);
+
+        return new CarImpl(new State(state.make(), state.mileage(), updatedOptions));
+    }
+
+    public static void main(String[] args){
+        // Using the specific type
+        CarImpl initialCar = new CarImpl(new Car.State("Tesla", 10000, List.of("Autopilot")));
+        CarImpl drivenCar = initialCar.drive(150);
+
+// Using the interface type
+        Car genericCar = initialCar;
+        Car updatedCar = genericCar.addOption("Premium Audio"); // Returns a Car
+    }
+}
+
+```
+
+##2. C# version
+
+```csharp
+
+ [ClAgent]
+ [ClFamily]
+ public interface ICar
+ {
+     [ClAgent]
+     public record State
+     {
+         public string Make { get; init; }
+         public int Mileage { get; init; }
+         public IReadOnlyList<string> Options { get; init; }
+
+         public State(string make, int mileage, IReadOnlyList<string> options)
+         {
+             ArgumentNullException.ThrowIfNull(make);
+             ArgumentNullException.ThrowIfNull(options);
+
+             if (mileage < 0)
+             {
+                 throw new ArgumentOutOfRangeException(nameof(mileage), "Mileage cannot be negative.");
+             }
+
+             Make = make;
+             Mileage = mileage;
+             Options = options.ToList().AsReadOnly();
+         }
+     }
+
+     State CarState { get; }
+
+     // Business methods returning the contract abstraction
+     ICar Drive(int distance);
+     ICar AddOption(string newOption);
+ }
+ 
+ [ClAgent]
+ public class CarImpl : ICar
+ {
+     // Strictly read-only state reference
+     public ICar.State CarState { get; }
+
+     public CarImpl(ICar.State state)
+     {
+         CarState = state;
+     }
+
+     public CarImpl Drive(int distance)
+     {
+         if (distance <= 0)
+         {
+             return this; // No state change occurs
+         }
+
+         // C# 'with' expression creates a copy of State updating only Mileage
+         var newState = CarState with { Mileage = CarState.Mileage + distance };
+         return new CarImpl(newState);
+     }
+
+     public CarImpl AddOption(string newOption)
+     {
+         var updatedOptions = new List<string>(CarState.Options) { newOption };
+
+         var newState = CarState with { Options = updatedOptions };
+         return new CarImpl(newState);
+     }
+
+     // 2. EXPLICIT IMPLEMENTATION: Required to satisfy the ICar contract in C#
+     ICar ICar.Drive(int distance) => Drive(distance);
+     ICar ICar.AddOption(string newOption) => AddOption(newOption);
+
+     public static void Main(string[] args)
+     {
+         // Using the specific type
+         CarImpl initialCar = new(new ICar.State("Tesla", 10000, new[] { "Autopilot" }));
+         CarImpl drivenCar = initialCar.Drive(150);
+
+         // Using the interface type
+         ICar genericCar = initialCar;
+         ICar updatedCar = genericCar.AddOption("Premium Audio");
+     }
+ }
+
+```
+
+# VIII) Architecture Générale
 
 Clprolf encourage naturellement une architecture simple.
 
@@ -703,7 +884,7 @@ Le worker est au service de l'agent.
 
 ---
 
-# VIII) Objectif du Framework
+# IX) Objectif du Framework
 
 Clprolf ne cherche pas à remplacer l’OOP classique.
 
@@ -714,7 +895,7 @@ Il cherche à rendre explicites certaines distinctions importantes :
 * responsabilité principale d’une classe.
 ---
 
-# IX) Checker ArchUnit
+# X) Checker ArchUnit
 
 Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé de deux classes ClprolfArchTest, et ClprolfStrictArchTest. Il valide les règles sémantiques.
 Les règles de ClprolfStrictArchTest sont optionnelles. De même, il est facile de changer le nom des annotations, si on préfère un autre vocabulaire.
@@ -777,7 +958,7 @@ Une classe ne peut pas implémenter directement une interface @ClTrait (à moins
 ### optional_class_must_implement_only_one_family_interface (OPTIONNELLE)
 Une classe Clprolf ne peut implémenter qu'une interface @ClFamily. Forçage possible avec @ClInterfaceBypass
 
-# X) Clprolf et les principes SOLID
+# XI) Clprolf et les principes SOLID
 
 ## **S** — Principe de responsabilité unique (SRP)
 
@@ -798,7 +979,7 @@ Ce principe conseille qu'un client ne doit pas devoir implémenter des méthodes
 
 ## **D** — Injection des dépendances (Dependency Injection, DI)
 
-L'injection des dépendances suppose le loose coupling, le couplage faible avec les implémentations. Ce couplage faible est encouragé et facilité, avec les interfaces `ClFamily` qui sont intimement **liées** aux classes.
+L'injection des dépendances suppose le loose coupling, le couplage faible avec les implémentations. Ce couplage faible est encouragé et facilité, avec les interfaces `ClFamily` qui sont intimement **liées** aux classes, et sont le miroir des implémentations. Il devient alors très facile de remplacer une implémentation par une interface, dans une déclaration de variable.
 
 ## "Composition plutôt qu'héritage" ("Favoring composition over inheritance")
 
@@ -806,12 +987,12 @@ Le framework Clprolf permet de n'utiliser l'héritage qu'avec parcimonie et pré
 
 ---
 
-# XI) Clprolf et les architectures existantes
+# XII) Clprolf et les architectures existantes
 
 Clprolf est compatible avec les architectures DDD, MVC, Clean architecture, architecture hexagonale, etc. C'est une couche entre la POO et les architectures, qui vient compléter et sécuriser les architectures connues.
 Et Clprolf ne sert pas que pour l'informatique d'entreprise, mais pour tout type d'applications, y compris simulations, et applications scientifiques.
 
-# XII) Résumé
+# XIII) Résumé
 
 Clprolf ajoute très peu de concepts.
 ---
