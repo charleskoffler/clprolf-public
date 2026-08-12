@@ -623,7 +623,7 @@ public static final class LayeredArchitecture implements ArchRule {
 
 ```
 
-> *In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait`s, while `ArchRule` formalizes the `@ClFamily*`. Notice that the `LayeredArchitecture` class only implements the family, which in turn inherits the traits. The class does not directly implement `CanBeEvaluated` and `CanOverrideDescription`.
+> In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait`s, while `ArchRule` formalizes the `@ClFamily`. Notice that the `LayeredArchitecture` class only implements the family, which in turn inherits the traits. The class does not directly implement `CanBeEvaluated` and `CanOverrideDescription`.
 
 ## VI.7) Note on Clprolf and the Interface Segregation Principle (ISP)
 
