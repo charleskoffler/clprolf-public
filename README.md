@@ -1,6 +1,6 @@
 # Clprolf (CLear Programming Language and Framework)
 
-**Clprolf** ("Clear PROgramming Language and Framework") is a homegrown architectural framework, for Java and C# .NET. 
+**Clprolf** ("Clear PROgramming Language and Framework") is a standalone architectural framework, for Java and C# .NET. 
 
 It helps Java and .net teams make class responsibilities explicit by distinguishing:
 
@@ -12,6 +12,20 @@ It helps Java and .net teams make class responsibilities explicit by distinguish
 The framework helps adhere to the well-known SOLID principles.
 
 With the ArchUnit checker(for Java or C#), Clprolf rules can be verified automatically during tests and CI.
+
+## Target Uses and Prerequisites
+
+It is a specialized framework designed for the following scenarios:
+
+* A pedagogical framework designed to teach Object-Oriented Programming (OOP), interfaces, and even immutability.
+* scientific applications
+* simulations
+* Enterprise applications looking to adopt Clprolf alongside standard architectures
+* highly complex applications with a large number of classes or interfaces
+* major refactoring required on a large existing application
+* or simply for those who enjoy this style of programming guided by an architectural checker for classes and interfaces.
+
+It requires a basic knowledge of OOP and object-oriented design principles. The framework does not claim to be indispensable, and naturally, alternative solutions exist. The resulting code can easily revert to pure Java or C# simply by removing or ignoring the annotations.
 
 ## Information
 

@@ -2,7 +2,7 @@
 
 ## Target Uses and Prerequisites
 
-**Clprolf** ("Clear PROgramming Language and Framework") is an in-house, lightweight architectural framework for Java or C# .NET.
+**Clprolf** ("Clear PROgramming Language and Framework") is an standalone, lightweight architectural framework for Java or C# .NET.
 
 It is a specialized framework designed for the following scenarios:
 
