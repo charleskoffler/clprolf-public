@@ -1,12 +1,25 @@
 # Clprolf Framework — Official Documentation
 
-## Introduction
+## Target Uses and Prerequisites
 
-**Clprolf** ("Clear PROgramming Language and Framework") is a homegrown architectural framework, for Java and C# .NET. Its motto is "Don't use it - You don't need it!".
+**Clprolf** ("Clear PROgramming Language and Framework") is an in-house, lightweight architectural framework for Java or C# .NET.
+
+It is a specialized framework designed for the following scenarios:
+
+* A pedagogical framework designed to teach Object-Oriented Programming (OOP), interfaces, and even immutability.
+* scientific applications
+* simulations
+* Enterprise applications looking to adopt Clprolf alongside standard architectures
+* highly complex applications with a large number of classes or interfaces
+* major refactoring required on a large existing application
+* or simply for those who enjoy this style of programming guided by an architectural checker for classes and interfaces.
+
+It requires a basic knowledge of OOP and object-oriented design principles. The framework does not claim to be indispensable, and naturally, alternative solutions exist. The resulting code can easily revert to pure Java or C# simply by removing or ignoring the annotations.
+
+## Introduction
 
 Its goal is to make certain object-oriented programming best practices explicit, without introducing heavy architecture or a steep learning curve.
 Thus, the framework helps adhere to the well-known SOLID principles.
-The framework is not solely aimed at enterprise software, but also at scientific applications, simulations, etc.
 
 Clprolf is based on a simple idea:
 
@@ -156,7 +169,7 @@ Here are a few examples of alternative naming conventions:
 
 # III) Class Types
 
-Clprolf contains only four class types.
+Clprolf contains only four class types. Classes without methods (entities, DTOs, etc.) are not annotated.
 
 ---
 
@@ -189,8 +202,6 @@ public class OrderProcessor {
 }
 
 ```
-
-Note: Entities are considered agents because they possess a domain, even without methods.
 
 ---
 
@@ -582,9 +593,11 @@ In strict mode, restricting a class to implementing a single ClFamily (and deleg
 
 Instead of a class implementing multiple scattered contracts, the ClFamily acts as the official and complete "mirror contract" of the component. Thus, when component A requires component B, it is naturally driven to depend on B's ClFamily, rather than on its concrete implementation. Dependency inversion is no longer just a recommendation; it mechanically arises from the structure of the code.
 
-## VI.7) A Real-World Example of `ClFamily` and `ClTrait` Interfaces
+The gain lies in maintaining a single hierarchy rather than duplicating class and interface hierarchies. Naturally, this strict mode is optional and should be applied according to your team's preferences and specific project needs.
 
-Let's look at this real-world example, which utilizes a design perfectly applicable to the Clprolf Framework:
+### Real-world example of `ClFamily` and `ClTrait` interfaces
+
+Let’s take a look at this real-world example, which demonstrates a design applicable to the strict mode of the Clprolf Framework:
 
 ```java
 package com.tngtech.archunit.lang;
@@ -610,9 +623,9 @@ public static final class LayeredArchitecture implements ArchRule {
 
 ```
 
-> *In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait` interfaces, while `ArchRule` formalizes the `@ClFamily`.*
+> *In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait`s, while `ArchRule` formalizes the `@ClFamily*`. Notice that the `LayeredArchitecture` class only implements the family, which in turn inherits the traits. The class does not directly implement `CanBeEvaluated` and `CanOverrideDescription`.
 
-## VI.8) Note on Clprolf and the Interface Segregation Principle (ISP)
+## VI.7) Note on Clprolf and the Interface Segregation Principle (ISP)
 
 Clprolf inherently respects the ISP; it is simply a matter of adapting the design of your classes and interfaces using the appropriate families and traits:
 
@@ -661,10 +674,17 @@ public class ModernPrinterImpl implements ModernPrinter {
 
 # VII) Immutability
 
-It is recommended, when possible, to make Clprolf classes immutable, for example by encapsulating state within a record. Each method modifying the state will return a new object, allowing further method calls to be chained fluently.
-Much like the String class in Java/.NET, this approach guarantees native thread safety, eliminates side effects, and provides a fluent, expressive API.
+It is also possible to make `Clprolf` classes immutable, for instance by encapsulating the state within a record. Every method that modifies the state will return a new object, allowing further methods to be called in a fluent manner.
+Much like the `String` class in Java/.NET, this approach guarantees native thread safety, eliminates side effects, and provides a fluent, expressive API. Naturally, the decision to use immutability should be evaluated on a case-by-case basis, considering trade-offs, performance costs, and preferences.
+Below is an example implementation in Java and C#, though other solutions exist depending on your language version and whether you need to interact with mutable APIs.
+These examples are not patterns, but merely illustrations of applying immutability within Clprolf.
 
 ```java
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @ClAgent
 @ClFamily
@@ -672,19 +692,23 @@ public interface Car {
 
     // Immutable state definition
     // Automatically public static inside an interface
-	@ClAgent
+
     record State(
             String make,
             int mileage,
             List<String> options
     ) {
-        // constructor enforcing domain invariants
+        // Compact constructor enforcing domain invariants
         public State {
             Objects.requireNonNull(make, "Make cannot be null");
             if (mileage < 0) {
                 throw new IllegalArgumentException("Mileage cannot be negative");
             }
-            options = List.copyOf(options); // Deep immutability
+            
+            // Guarantees deep immutability via defensive copy and prevents null elements.
+            // If 'options' is already an unmodifiable list (e.g., produced by Stream.toList() or List.of),
+            // Java optimizes this call by returning the same instance without re-allocating memory.
+            options = List.copyOf(options); 
         }
     }
 
@@ -698,7 +722,7 @@ public interface Car {
 @ClAgent
 public class CarImpl implements Car {
 
-    // 🔒Strictly final state reference
+    // 🔒 Strictly final state reference
     private final State state;
 
     public CarImpl(State state) {
@@ -714,7 +738,7 @@ public class CarImpl implements Car {
     @Override
     public CarImpl drive(int distance) {
         if (distance <= 0) {
-            return this; // no state change occurs
+            return this; // No state change occurs
         }
 
         var newState = new State(
@@ -727,19 +751,34 @@ public class CarImpl implements Car {
 
     @Override
     public CarImpl addOption(String newOption) {
-        // Temporary mutable list used only for transformation
+        Objects.requireNonNull(newOption, "New option cannot be null");
+
+        // OPTION 1: Optimized Stream concatenation (Single allocation)
+        // Stream.toList() (Java 16+) returns an unmodifiable list directly.
+        // When passed to State's constructor, List.copyOf(options) recognizes 
+        // it as already unmodifiable and avoids a second copy.
+        var updatedOptions = Stream.concat(state.options().stream(), Stream.of(newOption))
+                                   .toList();
+
+        /* 
+        // OPTION 2: Alternative using a temporary mutable ArrayList
+        // Simple and readable, but results in 2 list allocations in heap memory:
+        // 1) The temporary ArrayList created here.
+        // 2) The unmodifiable copy created inside State's constructor by List.copyOf().
+        
         var updatedOptions = new ArrayList<>(state.options());
         updatedOptions.add(newOption);
+        */
 
         return new CarImpl(new State(state.make(), state.mileage(), updatedOptions));
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         // Using the specific type
         CarImpl initialCar = new CarImpl(new Car.State("Tesla", 10000, List.of("Autopilot")));
         CarImpl drivenCar = initialCar.drive(150);
 
-// Using the interface type
+        // Using the interface type
         Car genericCar = initialCar;
         Car updatedCar = genericCar.addOption("Premium Audio"); // Returns a Car
     }
@@ -747,93 +786,105 @@ public class CarImpl implements Car {
 
 ```
 
-## 2) C# version
+## 2) Version C#
 
 ```csharp
 
- [ClAgent]
- [ClFamily]
- public interface ICar
- {
-     [ClAgent]
-     public record State
-     {
-         public string Make { get; init; }
-         public int Mileage { get; init; }
-         public IReadOnlyList<string> Options { get; init; }
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
-         public State(string make, int mileage, IReadOnlyList<string> options)
-         {
-             ArgumentNullException.ThrowIfNull(make);
-             ArgumentNullException.ThrowIfNull(options);
+[ClAgent]
+[ClFamily]
+public interface ICar
+{
 
-             if (mileage < 0)
-             {
-                 throw new ArgumentOutOfRangeException(nameof(mileage), "Mileage cannot be negative.");
-             }
+    public record State
+    {
+        public string Make { get; init; }
+        public int Mileage { get; init; }
 
-             Make = make;
-             Mileage = mileage;
-             Options = options.ToList().AsReadOnly();
-         }
-     }
+        // Strongly-typed property using the concrete immutable type
+        public ImmutableArray<string> Options { get; init; }
 
-     State CarState { get; }
+        public State(string make, int mileage, IEnumerable<string> options)
+        {
+            ArgumentNullException.ThrowIfNull(make);
+            ArgumentNullException.ThrowIfNull(options);
 
-     // Business methods returning the contract abstraction
-     ICar Drive(int distance);
-     ICar AddOption(string newOption);
- }
- 
- [ClAgent]
- public class CarImpl : ICar
- {
-     // Strictly read-only state reference
-     public ICar.State CarState { get; }
+            if (mileage < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(mileage), "Mileage cannot be negative.");
+            }
 
-     public CarImpl(ICar.State state)
-     {
-         CarState = state;
-     }
+            Make = make;
+            Mileage = mileage;
 
-     public CarImpl Drive(int distance)
-     {
-         if (distance <= 0)
-         {
-             return this; // No state change occurs
-         }
+            // ToImmutableArray() handles automatically if options is already an ImmutableArray
+            Options = options.ToImmutableArray();
 
-         // C# 'with' expression creates a copy of State updating only Mileage
-         var newState = CarState with { Mileage = CarState.Mileage + distance };
-         return new CarImpl(newState);
-     }
+            // PERFORMANCE NOTE:
+            // If the collection contains a very large number of items and undergoes VERY frequent additions/modifications,
+            // consider using ImmutableList<string> and ToImmutableList() to optimize memory reuse (AVL tree):
+            // Options = options.ToImmutableList();
+        }
+    }
 
-     public CarImpl AddOption(string newOption)
-     {
-         var updatedOptions = new List<string>(CarState.Options) { newOption };
+    State CarState { get; }
 
-         var newState = CarState with { Options = updatedOptions };
-         return new CarImpl(newState);
-     }
+    // Business methods returning the contract abstraction
+    ICar Drive(int distance);
+    ICar AddOption(string newOption);
+}
 
-     // 2. EXPLICIT IMPLEMENTATION: Required to satisfy the ICar contract in C#
-     ICar ICar.Drive(int distance) => Drive(distance);
-     ICar ICar.AddOption(string newOption) => AddOption(newOption);
+[ClAgent]
+public class CarImpl : ICar
+{
+    // Strictly read-only state reference
+    public ICar.State CarState { get; }
 
-     public static void Main(string[] args)
-     {
-         // Using the specific type
-         CarImpl initialCar = new(new ICar.State("Tesla", 10000, new[] { "Autopilot" }));
-         CarImpl drivenCar = initialCar.Drive(150);
+    public CarImpl(ICar.State state)
+    {
+        CarState = state;
+    }
 
-         // Using the interface type
-         ICar genericCar = initialCar;
-         ICar updatedCar = genericCar.AddOption("Premium Audio");
-     }
- }
+    public CarImpl Drive(int distance)
+    {
+        if (distance <= 0)
+        {
+            return this; // No state change occurs
+        }
+
+        // C# 'with' expression creates a copy of State updating only Mileage
+        var newState = CarState with { Mileage = CarState.Mileage + distance };
+        return new CarImpl(newState);
+    }
+
+    public CarImpl AddOption(string newOption)
+    {
+        // Clean and direct syntax without casts or conversions.
+        // Options.Add() returns a new ImmutableArray instance.
+        var newState = CarState with { Options = CarState.Options.Add(newOption) };
+        return new CarImpl(newState);
+    }
+
+    // Explicit interface implementation to satisfy the ICar contract in C#
+    ICar ICar.Drive(int distance) => Drive(distance);
+    ICar ICar.AddOption(string newOption) => AddOption(newOption);
+
+    public static void Main(string[] args)
+    {
+        // Using the specific type
+        CarImpl initialCar = new(new ICar.State("Tesla", 10000, new[] { "Autopilot" }));
+        CarImpl drivenCar = initialCar.Drive(150);
+
+        // Using the interface type
+        ICar genericCar = initialCar;
+        ICar updatedCar = genericCar.AddOption("Premium Audio");
+    }
+}
 
 ```
-
 
 # VIII) General Architecture
 
