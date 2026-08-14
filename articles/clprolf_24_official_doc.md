@@ -153,17 +153,20 @@ Integrating Clprolf into a project can be done incrementally. There is no need t
 
 ---
 
-## II.2) Tailoring the Terminology
+## II.2) Tailoring the Terminology (Built-in Aliases)
 
-If the default vocabulary of Clprolf does not fit your team's nomenclature, the framework is completely agnostic regarding name choices. Since the ArchUnit checker targets the actual declaration types, a simple **automated refactoring (Rename)** in your IDE is all it takes to adapt the framework to your company's culture.
+Does Clprolf's default vocabulary not quite match your team's nomenclature?
+The framework provides **built-in equivalent annotations/attributes** to naturally fit your team's culture.
+The ArchUnit/ArchUnitNET checker treats these aliases as completely equivalent to the reference keywords during automated validations:
 
-Here are a few examples of alternative naming conventions:
-
-| Default Role | Conceptual Alternative | Technical Alternative |
+| Default Role | Conceptual Alternative | DDD Alternative |
 | --- | --- | --- |
 | **`@ClAgent`** | `@ClConcept` | `@ClDomain` |
 | **`@ClWorker`** | `@ClMechanism` | `@ClInfrastructure` |
 | **`@ClSystem`** | `@ClBridge` | `@ClLowLevel` |
+
+> *Notes: You are free to use the aliases that resonate most with your architecture, or even extend the checker to register your team's custom annotations.*
+> *The checker treats all aliases as strictly equivalent. You can use whichever vocabulary you prefer on a project without risking incompatibility, as the checker guarantees the exact same underlying architectural consistency.*
 
 ---
 

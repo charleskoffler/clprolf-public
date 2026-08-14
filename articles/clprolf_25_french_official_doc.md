@@ -150,17 +150,20 @@ L'intégration de Clprolf au sein d'un projet peut se faire de manière incréme
 
 ---
 
-## II.2) Personnalisation de la terminologie
+II.2) Personnalisation de la terminologie (Alias natifs)
 
-Le vocabulaire par défaut de Clprolf ne vous convient pas ? Le framework est agnostique vis-à-vis des noms choisis. Puisque le checker ArchUnit se base sur les types réels, un simple **refactoring automatique (Rename)** dans votre IDE suffit à adapter le framework à la culture de votre entreprise.
+Le vocabulaire par défaut de Clprolf ne correspond pas tout à fait à votre nomenclature ?
+Le framework propose des **annotations/attributs équivalents natifs** pour s'adapter à la culture de votre équipe.
+Le checker ArchUnit/ArchUnitNET traite ces alias de manière totalement équivalente aux mots-clés de référence lors des validations automatisées :
 
-Voici des exemples de correspondances alternatives :
-
-| Rôle par défaut | Alternative conceptuelle | Alternative technique |
+| Rôle par défaut | Alternative conceptuelle | Alternative DDD |
 | --- | --- | --- |
 | **`@ClAgent`** | `@ClConcept` | `@ClDomain` |
 | **`@ClWorker`** | `@ClMechanism` | `@ClInfrastructure` |
 | **`@ClSystem`** | `@ClBridge` | `@ClLowLevel` |
+
+> *Notes : Vous pouvez librement utiliser les alias qui résonnent le plus avec votre architecture, ou même étendre le checker pour enregistrer vos propres annotations d'équipe.*
+> *Le checker traite les alias comme strictement équivalents. Vous pouvez utiliser le vocabulaire de votre choix sur un projet sans risquer d'incompatibilité, le checker garantissant la même cohérence architecturale sous-jacente.*
 
 ---
 
