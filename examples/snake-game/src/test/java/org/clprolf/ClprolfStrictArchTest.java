@@ -1,6 +1,5 @@
 package org.clprolf;
 
-
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -18,6 +17,30 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 public class ClprolfStrictArchTest {
+
+    // Helper methods to evaluate roles including native aliases
+    private static boolean isAgent(JavaClass clazz) {
+        return clazz.isAnnotatedWith(ClAgent.class)
+                || clazz.isAnnotatedWith(ClConcept.class)
+                || clazz.isAnnotatedWith(ClDomain.class);
+    }
+
+    private static boolean isWorker(JavaClass clazz) {
+        return clazz.isAnnotatedWith(ClWorker.class)
+                || clazz.isAnnotatedWith(ClMechanism.class)
+                || clazz.isAnnotatedWith(ClInfrastructure.class);
+    }
+
+    private static boolean isSystem(JavaClass clazz) {
+        return clazz.isAnnotatedWith(ClSystem.class)
+                || clazz.isAnnotatedWith(ClBridge.class)
+                || clazz.isAnnotatedWith(ClLowLevel.class);
+    }
+
+    private static boolean hasAnyRole(JavaClass clazz) {
+        return isAgent(clazz) || isWorker(clazz) || isSystem(clazz);
+    }
+
     @ArchTest
     static final ArchRule optional_all_classes_should_have_clprolf_role =
             classes()
@@ -33,12 +56,8 @@ public class ClprolfStrictArchTest {
                                 return;
                             }
 
-                            // 1. A class is valid if it declares any of the core roles, a draft, or the new system role
-                            boolean hasRole =
-                                    clazz.isAnnotatedWith(ClAgent.class)
-                                            || clazz.isAnnotatedWith(ClWorker.class)
-                                            || clazz.isAnnotatedWith(ClDraft.class)
-                                            || clazz.isAnnotatedWith(ClSystem.class); // Added support for ClSystem
+                            // A class is valid if it declares any of the core roles, aliases, or a draft
+                            boolean hasRole = hasAnyRole(clazz) || clazz.isAnnotatedWith(ClDraft.class);
 
                             events.add(new SimpleConditionEvent(
                                     clazz,
@@ -57,7 +76,7 @@ public class ClprolfStrictArchTest {
                         @Override
                         public void check(JavaClass interf, ConditionEvents events) {
 
-                            // 1. Check if the interface belongs to any of the standard Clprolf interface types
+                            // Check if the interface belongs to any of the standard Clprolf interface types
                             boolean hasRole =
                                     interf.isAnnotatedWith(ClFamily.class)
                                             || interf.isAnnotatedWith(ClTrait.class)
@@ -83,9 +102,7 @@ public class ClprolfStrictArchTest {
                                 return;
                             }
 
-                            if (!clazz.isAnnotatedWith(ClAgent.class)
-                                    && !clazz.isAnnotatedWith(ClWorker.class)
-                                    && !clazz.isAnnotatedWith(ClSystem.class)) {
+                            if (!hasAnyRole(clazz)) {
                                 return;
                             }
 
@@ -115,10 +132,7 @@ public class ClprolfStrictArchTest {
                                 return;
                             }
 
-                            // CRITICAL: Include ClSystem so system-oriented classes are restricted to a single family
-                            if (!clazz.isAnnotatedWith(ClAgent.class)
-                                    && !clazz.isAnnotatedWith(ClWorker.class)
-                                    && !clazz.isAnnotatedWith(ClSystem.class)) {
+                            if (!hasAnyRole(clazz)) {
                                 return;
                             }
 
