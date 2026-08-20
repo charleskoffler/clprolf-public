@@ -133,34 +133,13 @@ Ce principe évite les hiérarchies incohérentes et les mélanges de responsabi
 
 ---
 
-# II) Acceptation des contraintes, adoption progressive et personnalisation
+# II) Adoption progressive, Personnalisation, et Acceptation des contraintes
 
 Le framework offre une flexibilité totale tant dans son déploiement que dans sa terminologie.
 
 ---
 
-## II.1) Restrictions d'héritage uniquement sur les classes choisies
-
-Les restrictions d'héritage imposées par le framework peuvent être appliquées uniquement sur certaines classes. Seul le mode strict du checker oblige à déclarer un rôle par classe. On peut remarquer que des restrictions d'héritage existent en C#, avec le mot-clé "closed" (C# 15), et en Java, avec les classes "sealed" et "permits" (Java 17). En Clprolf aussi, ces restrictions peuvent être appliquées uniquement là où on le souhaite.
-Donner un rôle à une classe, par exemple `[ClAgent]` (C#) ou `@ClDomain` (Java), serait l'équivalent d'une classe sealed Java, avec un "permits ClAgent". Cela signifie que seules des classes `ClAgent` pourront en hériter. On n'est pas obligé d'indiquer un rôle pour chaque classe, et on peut choisir uniquement les classes qui nous intéressent pour cette démarche.
-
----
-
-## II.2) Catégorisation des interfaces uniquement pour certaines interfaces
-
-C'est pareil pour les interfaces. La qualification de `ClTrait` ou `ClFamily` n'est pas obligatoire sur toutes les interfaces, hormis en mode strict. On peut l'utiliser à bon escient, quand on en a envie. C'est un peu comme les `@FunctionalInterface` en Java, pour déclarer une interface fonctionnelle. On ne l'utilise que quand c'est nécessaire, et pas sur toutes les interfaces.
-Pour les héritages, là aussi, on ne restreint l'héritage que si on le souhaite, en mettant un rôle d'interface. C'est comme les `sealed` interfaces Java, avec `permits` qui serait sur les interfaces du même rôle. On aurait une `sealed interface MyTrait permits ClVersion, ClTrait`, pour les interfaces `ClTrait`. Ou on aurait une `sealed interface MyFamily permits ClVersion`, pour les interfaces `ClVersion`.
-
----
-
-## II.3) Contraintes de Clprolf
-
-On peut comprendre que le framework Clprolf, avec ses contraintes, puisse ne pas convenir à certaines équipes, personnes, ou usages, même en mode non strict. Il s'agira alors pour l'équipe de choisir des outils, langages, ou frameworks qui sont plus libres et moins directifs.
-Par contre, le Framework Clprolf conviendra à certaines personnes et équipes qui acceptent ses contraintes, lesquelles sont précisément là pour apporter des avantages, de la clarté et des garanties architecturales sur le long terme.
-
----
-
-## II.4) Une adoption par étapes
+## II.1) Une adoption par étapes
 
 L'intégration de Clprolf au sein d'un projet peut se faire de manière incrémentale. Il n'est pas nécessaire de tout appliquer dès le premier jour.
 
@@ -171,7 +150,7 @@ L'intégration de Clprolf au sein d'un projet peut se faire de manière incréme
 
 ---
 
-## II.5) Personnalisation de la terminologie (Alias natifs)
+## II.2) Personnalisation de la terminologie (Alias natifs)
 
 Le vocabulaire par défaut de Clprolf ne correspond pas tout à fait à votre nomenclature ?
 Le framework propose des **annotations/attributs équivalents natifs** pour s'adapter à la culture de votre équipe.
@@ -185,6 +164,27 @@ Le checker ArchUnit/ArchUnitNET traite ces alias de manière totalement équival
 
 > *Notes : Vous pouvez librement utiliser les alias qui résonnent le plus avec votre architecture, ou même étendre le checker pour enregistrer vos propres annotations d'équipe.*
 > *Le checker traite les alias comme strictement équivalents. Vous pouvez utiliser le vocabulaire de votre choix sur un projet sans risquer d'incompatibilité, le checker garantissant la même cohérence architecturale sous-jacente.*
+
+---
+
+## II.3) Restrictions d'héritage uniquement sur les classes choisies
+
+Les restrictions d'héritage imposées par le framework peuvent être appliquées uniquement sur certaines classes. Seul le mode strict du checker oblige à déclarer un rôle par classe. On peut remarquer que des restrictions d'héritage existent en C#, avec le mot-clé "closed" (C# 15), et en Java, avec les classes "sealed" et "permits" (Java 17). En Clprolf aussi, ces restrictions peuvent être appliquées uniquement là où on le souhaite.
+Donner un rôle à une classe, par exemple `[ClAgent]` (C#) ou `@ClDomain` (Java), serait l'équivalent d'une classe sealed Java, avec un "permits ClAgent". Cela signifie que seules des classes `ClAgent` pourront en hériter. On n'est pas obligé d'indiquer un rôle pour chaque classe, et on peut choisir uniquement les classes qui nous intéressent pour cette démarche.
+
+---
+
+## II.4) Catégorisation des interfaces uniquement pour certaines interfaces
+
+C'est pareil pour les interfaces. La qualification de `ClTrait` ou `ClFamily` n'est pas obligatoire sur toutes les interfaces, hormis en mode strict. On peut l'utiliser à bon escient, quand on en a envie. C'est un peu comme les `@FunctionalInterface` en Java, pour déclarer une interface fonctionnelle. On ne l'utilise que quand c'est nécessaire, et pas sur toutes les interfaces.
+Pour les héritages, là aussi, on ne restreint l'héritage que si on le souhaite, en mettant un rôle d'interface. C'est comme les `sealed` interfaces Java, avec `permits` qui serait sur les interfaces du même rôle. On aurait une `sealed interface MyTrait permits ClVersion, ClTrait`, pour les interfaces `ClTrait`. Ou on aurait une `sealed interface MyFamily permits ClVersion`, pour les interfaces `ClVersion`.
+
+---
+
+## II.5) Contraintes de Clprolf
+
+On peut comprendre que le framework Clprolf, avec ses contraintes, puisse ne pas convenir à certaines équipes, personnes, ou usages, même en mode non strict. Il s'agira alors pour l'équipe de choisir des outils, langages, ou frameworks qui sont plus libres et moins directifs.
+Par contre, le Framework Clprolf conviendra à certaines personnes et équipes qui acceptent ses contraintes, lesquelles sont précisément là pour apporter des avantages, de la clarté et des garanties architecturales sur le long terme.
 
 ---
 
