@@ -136,13 +136,34 @@ This principle prevents incoherent hierarchies and mixed responsibilities.
 
 ---
 
-# II) Progressive Adoption and Customization
+# II) Accepting Constraints, Progressive Adoption, and Customization
 
 The framework offers total flexibility in both its deployment strategy and its terminology.
 
 ---
 
-## II.1) Step-by-Step Adoption
+## II.1) Inheritance Restrictions Applied Only to Selected Classes
+
+The inheritance restrictions enforced by the framework can be applied exclusively to chosen classes. Only the checker's strict mode requires declaring a role for every single class. Similar inheritance restrictions can be observed in C#, with the "closed" keyword (C# 15), and in Java, with "sealed" classes and "permits" (Java 17). Similarly in Clprolf, these restrictions can be applied solely where desired.
+Assigning a role to a class—for instance `[ClAgent]` (C#) or `@ClDomain` (Java)—is conceptually equivalent to a Java sealed class with `permits ClAgent`. This means that only `ClAgent` classes will be allowed to inherit from it. You are not required to specify a role for every class, and you can selectively apply this approach to whichever classes interest you.
+
+---
+
+## II.2) Categorizing Interfaces Only for Selected Interfaces
+
+The same principle applies to interfaces. Categorizing an interface as `ClTrait` or `ClFamily` is not mandatory for every interface, except in strict mode. You can use these annotations judiciously whenever appropriate. It is similar to Java's `@FunctionalInterface`, used to declare a functional interface only when needed rather than on every interface.
+Regarding inheritance, restrictions are applied only when desired by assigning an interface role. This mirrors Java `sealed` interfaces, where `permits` would restrict inheritance to interfaces with the same role. For example, you would have a `sealed interface MyTrait permits ClVersion, ClTrait` for `ClTrait` interfaces, or a `sealed interface MyFamily permits ClVersion` for `ClVersion` interfaces.
+
+---
+
+## II.3) Clprolf Constraints
+
+It is understandable that the Clprolf framework, along with its constraints, may not suit every team, individual, or use case, even in non-strict mode. In such cases, teams are free to choose tools, languages, or frameworks that are more flexible and less directive.
+On the other hand, the Clprolf framework will be a great fit for individuals and teams who embrace its constraints, which exist specifically to provide long-term architectural benefits, clarity, and guarantees.
+
+---
+
+## II.4) Step-by-Step Adoption
 
 Integrating Clprolf into a project can be done incrementally. There is no need to enforce every rule from day one.
 
@@ -153,7 +174,7 @@ Integrating Clprolf into a project can be done incrementally. There is no need t
 
 ---
 
-## II.2) Tailoring the Terminology (Built-in Aliases)
+## II.5) Tailoring the Terminology (Built-in Aliases)
 
 Does Clprolf's default vocabulary not quite match your team's nomenclature?
 The framework provides **built-in equivalent annotations/attributes** to naturally fit your team's culture.
