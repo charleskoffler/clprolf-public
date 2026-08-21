@@ -133,7 +133,7 @@ Ce principe évite les hiérarchies incohérentes et les mélanges de responsabi
 
 ---
 
-# II) Adoption progressive, Personnalisation, et Acceptation des contraintes
+# II) Adoption progressive, Personnalisation, et Détection automatique
 
 Le framework offre une flexibilité totale tant dans son déploiement que dans sa terminologie.
 
@@ -167,24 +167,11 @@ Le checker ArchUnit/ArchUnitNET traite ces alias de manière totalement équival
 
 ---
 
-## II.3) Restrictions d'héritage uniquement sur les classes choisies
+## II.3) Détection automatique et intégration sans friction
 
-Les restrictions d'héritage imposées par le framework peuvent être appliquées uniquement sur certaines classes. Seul le mode strict du checker oblige à déclarer un rôle par classe. On peut remarquer que des restrictions d'héritage existent en C#, avec le mot-clé "closed" (C# 15), et en Java, avec les classes "sealed" et "permits" (Java 17). En Clprolf aussi, ces restrictions peuvent être appliquées uniquement là où on le souhaite.
-Donner un rôle à une classe, par exemple `[ClAgent]` (C#) ou `@ClDomain` (Java), serait l'équivalent d'une classe sealed Java, avec un "permits ClAgent". Cela signifie que seules des classes `ClAgent` pourront en hériter. On n'est pas obligé d'indiquer un rôle pour chaque classe, et on peut choisir uniquement les classes qui nous intéressent pour cette démarche.
-
----
-
-## II.4) Catégorisation des interfaces uniquement pour certaines interfaces
-
-C'est pareil pour les interfaces. La qualification de `ClTrait` ou `ClFamily` n'est pas obligatoire sur toutes les interfaces, hormis en mode strict. On peut l'utiliser à bon escient, quand on en a envie. C'est un peu comme les `@FunctionalInterface` en Java, pour déclarer une interface fonctionnelle. On ne l'utilise que quand c'est nécessaire, et pas sur toutes les interfaces.
-Pour les héritages, là aussi, on ne restreint l'héritage que si on le souhaite, en mettant un rôle d'interface. C'est comme les `sealed` interfaces Java, avec `permits` qui serait sur les interfaces du même rôle. On aurait une `sealed interface MyTrait permits ClVersion, ClTrait`, pour les interfaces `ClTrait`. Ou on aurait une `sealed interface MyFamily permits ClVersion`, pour les interfaces `ClVersion`.
-
----
-
-## II.5) Contraintes de Clprolf
-
-On peut comprendre que le framework Clprolf, avec ses contraintes, puisse ne pas convenir à certaines équipes, personnes, ou usages, même en mode non strict. Il s'agira alors pour l'équipe de choisir des outils, langages, ou frameworks qui sont plus libres et moins directifs.
-Par contre, le Framework Clprolf conviendra à certaines personnes et équipes qui acceptent ses contraintes, lesquelles sont précisément là pour apporter des avantages, de la clarté et des garanties architecturales sur le long terme.
+Pour faciliter l'adoption et éviter le bruit visuel dans le code, le checker ArchUnit de Clprolf centralise la qualification des rôles via ses méthodes prédicatives (`isAgent()`, `isWorker()`, `isSystem()`).
+Le framework peut ainsi mapper automatiquement les annotations et attributs natifs de vos écosystèmes habituels (comme Spring ou ASP.NET Core) vers les rôles Clprolf. Un `@RestController` ou un `[ApiController]` sera par exemple immédiatement reconnu comme un `@ClSystem`, sans que vous n'ayez besoin d'ajouter la moindre annotation Clprolf sur vos classes.
+Cette approche permet de bénéficier de toute la puissance de contrôle du framework de manière totalement invisible et progressive, sans impacter la lisibilité de vos développements du quotidien. Ainsi, vos applications existantes peuvent déjà bénéficier des contrôles du checker Clprolf, sans ajouter une seule annotation dans le code déjà écrit.
 
 ---
 
@@ -639,9 +626,31 @@ public static final class LayeredArchitecture implements ArchRule {
 > Dans cet exemple, `CanBeEvaluated` et `CanOverrideDescription` jouent le rôle de `@ClTrait`, tandis que `ArchRule` formalise la `@ClFamily`. On constate que la class LayeredArchitecture ne fait qu'implémenter la famille, qui, elle implémente les traits.
 La classe n'implémente pas directement CanBeEvaluated et CanOverrideDescription.
 
-## VI.7) Remarque sur Clprolf et l'Interface Segregation Principle (ISP)
+## VI.7) Remarque sur les interfaces Clprolf et l'Interface Segregation Principle (ISP)
 
-Clprolf respecte l'ISP, il suffit d'adapter le design des classes et interfaces avec les bonnes familles et traits:
+Clprolf respecte naturellement l'ISP et permet d'éviter les *« fat interfaces »* (interfaces fourre-tout).
+
+### Le problème classique de la *Fat Interface*
+
+Sans découpage strict, on a souvent tendance à créer une interface unique regroupant toutes les fonctionnalités possibles pour un domaine :
+
+```java
+// Anti-pattern : Fat Interface qui viole l'ISP
+public interface Machine {
+    void print(Document doc);
+    void scan(Document doc);
+    void fax(Document doc);
+}
+
+```
+
+Dans ce schéma, une ancienne imprimante (`OldPrinterImpl`) qui ne sait qu'imprimer serait forcée d'implémenter `scan()` et `fax()`, souvent en levant une exception (`UnsupportedOperationException`), ce qui viole l'ISP.
+
+### La réponse de Clprolf
+
+Clprolf respecte naturellement l'ISP, et permet d'éviter les interfaces trop grosses. Une interface `ClFamily`est le miroir de son implémentation, elle ne peut donc pas imposer des méthodes qui ne correspondent pas à l'implémentation.
+Ainsi, on réalisera naturellement une factorisation en plusieurs `ClFamily`, et avec des `ClTrait`. Et on gardera la relation architecturale (ici entre ModernPrinter et OldPrinter), en évitant la duplication des traits communs.
+Le code améliore ainsi son évolutivité, et lisibilité.
 
 ```java
 @ClAgent
@@ -1049,7 +1058,7 @@ En effet, une classe `Girafe` appartient au même domaine qu'un `Animal` dont el
 
 ## **I** — Principe de ségrégation des interfaces (ISP)
 
-Ce principe conseille qu'un client ne doit pas devoir implémenter des méthodes **qu'il n'utilise** pas. Avec Clprolf, l'interface est taillée sur mesure pour le client, et les traits sont précis. De plus, les héritages entre interfaces sont contrôlés. On favorise ainsi le respect de l'ISP.
+Ce principe conseille qu'un client ne doit pas devoir implémenter des méthodes **qu'il n'utilise** pas. Avec Clprolf, l'interface est taillée sur mesure pour le client, et les traits sont précis. On favorise ainsi naturellement le respect de l'ISP.
 
 ## **D** — Injection des dépendances (Dependency Injection, DI)
 
