@@ -592,6 +592,10 @@ A `Trait` interface can only inherit from other `Traits`, because a trait remain
 
 > Interface inheritance can still be forced using `@ClInterfaceBypass` above the interface (or `@ClBypass` to force inheritance between different target roles). However, these bypasses should be rare.
 
+### VI.5.2 Strict mode for interfaces with flexibility
+
+It is possible to use `ClFree` to enforce strict rules only on selected interfaces, while applying `ClFamily` when greater rigor is required in specific cases. In this way, even in strict mode, the framework remains open and flexible.
+
 ---
 
 ## VI.6) Advantages of Systematic Loose Coupling via the Mirror Interface
@@ -1064,8 +1068,8 @@ This principle encourages us to anticipate future evolutions as extensions rathe
 
 ## **L** — Liskov Substitution Principle (LSP)
 
-Clprolf enforces inheritance that remains strictly within the same conceptual domain, alongside the separation between `ClAgent` and `ClWorker`. Thus, Liskov's LSP principle is more easily taken into account, as a `Square` class does not share the same conceptual domain as a `Rectangle`.
-Indeed, a `Giraffe` class belongs to the same domain as an `Animal`, from which it inherits its natural behaviors. Conversely, a `Square` class does not share the true nature of a `Rectangle` (it cannot have independent length and width). In Clprolf, they therefore do not belong to the same conceptual domain, which prevents abusive inheritance and avoids LSP violations.
+Clprolf enforces inheritance that remains strictly within the same conceptual domain, alongside the separation between `ClAgent` and `ClWorker`. Thus, Liskov's LSP principle is more easily taken into account, as a `Square` class does not share the same conceptual domain as `Rectangle`.
+Indeed, a `Giraffe` class belongs to the same domain as an `Animal`, from which it inherits its natural behaviors. Conversely, a `Square` class does not share the true nature of a `Rectangle` (it cannot have independent length and width). In Clprolf, they therefore do not belong to the same conceptual domain, which prevents improper inheritance and helps prevent certain violations of the LSP.
 
 ## **I** — Interface Segregation Principle (ISP)
 
@@ -1073,7 +1077,7 @@ This principle suggests that a client should not be forced to implement methods 
 
 ## **D** — Dependency Injection (DI)
 
-Dependency injection implies loose coupling with implementations. This loose coupling is encouraged and facilitated by `ClFamily` interfaces, which are intimately **linked** to the classes and act as a mirror of the implementations. It then becomes very easy to replace an implementation with an interface in a variable declaration.
+Dependency injection is particularly effective when dependencies are loosely coupled to implementations. This loose coupling is encouraged and facilitated by `ClFamily` interfaces, which are closely **linked** to classes and act as a mirror of implementations. It then becomes very easy to replace an implementation with an interface in a variable declaration.
 
 ## "Favoring Composition over Inheritance"
 

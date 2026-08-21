@@ -586,6 +586,10 @@ Une interface `Trait` ne peut hériter que d’autres `Trait`, car un trait rest
 Un forçage de l’héritage d’interfaces reste possible avec `@ClInterfaceBypass` au-dessus de l’interface (ou `@ClBypass` pour forcer l’héritage entre rôles cibles différents).
 Mais ces forçages ne devraient pas être fréquent.
 
+### VI.5.2 Mode strict des interfaces avec flexibilité
+
+Il est possible d'utiliser `ClFree` pour rester strict uniquement sur les interfaces qu'on souhaite, et faire des ClFamily quand on souhaite plus de rigueur, sur des cas précis. Dans ce cas, même en mode strict, on reste ouvert et flexible.
+
 ---
 
 ## VI.6) Avantages du "Loose Coupling" systématique par l'interface miroir
@@ -1053,7 +1057,7 @@ Ce principe nous incite à prévoir les futures évolutions comme des extensions
 ## **L** — Principe de substitution de Liskov (LSP)
 
 Clprolf impose un héritage qui reste dans le même domaine conceptuel, en plus de la séparation `ClAgent` et `ClWorker`. Ainsi, le principe LSP de Liskov est plus facilement pris en compte, car une classe `Carre` n'est pas du même domaine conceptuel que `Rectangle`.
-En effet, une classe `Girafe` appartient au même domaine qu'un `Animal` dont elle hérite les comportements naturels. À l'inverse, une classe `Carre` n'a pas la nature d'un `Rectangle` (elle ne peut pas avoir une longueur et une largeur indépendantes). Dans Clprolf, ils n'appartiennent donc pas au même domaine conceptuel, ce qui empêche un héritage abusif et prévient les violations du LSP.
+En effet, une classe `Girafe` appartient au même domaine qu'un `Animal` dont elle hérite les comportements naturels. À l'inverse, une classe `Carre` n'a pas la nature d'un `Rectangle` (elle ne peut pas avoir une longueur et une largeur indépendantes). Dans Clprolf, ils n'appartiennent donc pas au même domaine conceptuel, ce qui empêche certains héritages abusifs et contribue à prévenir certaines violations du LSP.
 
 ## **I** — Principe de ségrégation des interfaces (ISP)
 
@@ -1061,7 +1065,7 @@ Ce principe conseille qu'un client ne doit pas devoir implémenter des méthodes
 
 ## **D** — Injection des dépendances (Dependency Injection, DI)
 
-L'injection des dépendances suppose le loose coupling, le couplage faible avec les implémentations. Ce couplage faible est encouragé et facilité, avec les interfaces `ClFamily` qui sont intimement **liées** aux classes, et sont le miroir des implémentations. Il devient alors très facile de remplacer une implémentation par une interface, dans une déclaration de variable.
+L'injection des dépendances est particulièrement efficace lorsque les dépendances sont faiblement couplées aux implémentations. Ce couplage faible est encouragé et facilité, avec les interfaces `ClFamily` qui sont intimement **liées** aux classes, et sont le miroir des implémentations. Il devient alors très facile de remplacer une implémentation par une interface, dans une déclaration de variable.
 
 ## "Composition plutôt qu'héritage" ("Favoring composition over inheritance")
 
