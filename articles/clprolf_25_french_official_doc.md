@@ -100,6 +100,11 @@ Ces classes sont déclarées avec :
 ```java
 @ClAgent
 ```
+
+ou
+```java
+@ClSystem
+```
 ---
 
 ### Monde technique
@@ -108,7 +113,7 @@ La classe effectue un travail technique, effectué par le système :
 
 * accès base de données (par l'intermédiaire d'agents systèmes),
 * réseau (par utilisation d'agents bas niveaux souvent),
-* fichiers (le plus souvent avec des agents orientés systèmes),
+* utilisation d'abstractions systèmes comme les fichiers
 * affichage,
 * infrastructure.
 * pas de domaine conceptuel, juste le système qui exécute des agents techniques, ou qui démarre une appli
@@ -191,7 +196,7 @@ Un `agent` :
 * orchestre les traitements,
 * prend des décisions,
 * évite le code technique lourd, qui est souvent délégué à un worker associé
-* peut être orienté système comme Connection ou Socket (dans ce cas on peut utiliser aussi ClSystem)
+* peut être orienté système comme Connection ou Socket (dans ce cas on utilise ClSystem)
 
 Exemple :
 
@@ -233,14 +238,69 @@ Un `worker` :
 * Permet de séparer le code domaine/fonctionnel, du code purement technique.
 
 
-## III.3) Le rôle optionnel `ClSystem`
+## III.3) Le rôle `ClSystem`
 
-Il est possible d'utiliser l'annotation `@ClSystem` (ou l'attribut `[ClSystem]` en C#), pour les agents orientés système. Mais ce n'est pas obligatoire, pour ne pas compliquer trop le framework.
-Si on s'en sert, on ne peut plus mixer l'héritage agent et agent orienté système. Ils sont alors considérés, par le checker, comme un rôle indépendant.
-Les personnes préférant annoncer et contrôler finement les agents orientés systèmes (comme `File`), pourront les annoter `ClSystem` au lieu de `ClAgent`.
-A noter que les classes imposées par les frameworks tiers, comme les Controllers, le Routing, ou les Middlewares (les Filters/Interceptors en Java), peuvent aussi être considérées comme des classes ClSystem.
-ClSystem permet d'apporter une vision plus technique aux personnes ne voulant pas considérer les agents orientés systèmes comme des purs agents, et de les séparer des agents plus classiques.
+On doit utiliser l'annotation `@ClSystem` (ou l'attribut `[ClSystem]` en C#), pour les agents orientés système.
+On ne peut pas mixer l'héritage agent et agent orienté système. Ils sont alors considérés, par le checker, comme un rôle indépendant.
+Les abstractions systèmes (comme `File`), sont donc annotés `ClSystem` au lieu de `ClAgent`.
+A noter que les classes imposées par les frameworks tiers, comme les Controllers, le Routing, ou les Middlewares (les Filters/Interceptors en Java), sont considérées comme des classes ClSystem.
+ClSystem permet d'apporter une vision plus technique, tout en gardant la notion de domaine.
 
+### Précisions
+
+Par exemple, une connexion est représentée, en Clprolf :
+
+* comme une abstraction système `ClSystem`
+* son domaine est le domaine de connexion
+
+On aura alors:
+
+* un `ClSystem` pour représenter la connexion
+* le code purement technique peut être délégué à un ou plusieurs `worker`.
+* on pourra changer d'implémentation technique si nécessaire, sans modifier le code conceptuel (voir exemple Java de File).
+
+### Exemple de Java pour illustrer `ClSystem`: java.io.File
+
+L'implémentation OpenJDK récente de java.io.File, montre une classe assez longue, de 2000 lignes. La classe exécute tout le travail purement technique, et non lié au domaine, par un attribut qui est l'équivalent d'un worker( FileSystem ).
+
+```java
+private static final FileSystem FS = DefaultFileSystem.getFileSystem();
+
+```
+
+```java
+ public boolean delete() {
+        if (isInvalid()) {
+            return false;
+        }
+        return FS.delete(this);
+    }
+```
+
+```text
+CONCEPT CLPROLF                   CODE SOURCE JAVA (OpenJDK)
+┌──────────────────────────┐            ┌──────────────────────────┐
+│         @ClSystem        │            │      java.io.File        │
+│  (Abstraction Système)   │            │                          │
+│ Représente le concept de │            │ Gère l'abstraction du    │
+│ fichier et son chemin.   │            │ fichier et son statut.   │
+│ Méthodes conceptuelles   │            │ Méthodes conceptuelles   │
+└────────────┬─────────────┘            └────────────┬─────────────┘
+             │                                       │
+             │ délègue à                             │ appelle
+             ▼                                       ▼
+┌──────────────────────────┐            ┌──────────────────────────┐
+│        @ClWorker         │            │    java.io.FileSystem    │
+│   (Worker Bas Niveau)    │            │        (variable FS)     │
+│ Réalise l'accès et la    │            │ Implémentation selon l'OS│
+│ validation spécifique OS │            │ , WinNT/UnixFileSystem.  │
+└──────────────────────────┘            └──────────────────────────┘
+
+```
+
+Remarque: java.io.UnixFileSystem, ainsi que WinNTFileSystem, contiennent beaucoup de méthodes `native`.
+
+---
 
 ## III.4) `ClDraft`
 
@@ -273,67 +333,6 @@ Cependant, un agent peut contenir une quantité raisonnable de code technique lo
 Un agent possède toujours un domaine principal représentant sa responsabilité centrale.
 
 Des responsabilités secondaires peuvent exister tant qu’elles restent cohérentes avec ce domaine principal.
-
-## III.6) Un framework "opinionated" (d'opinion) pour le choix agent/worker
-
-Certaines responsabilités peuvent être interprétées de différentes manières selon la vision architecturale adoptée.
-
-Par exemple, une connexion peut être représentée :
-
-* comme un `agent` (ou `ClSystem`), si elle est vue comme une abstraction fonctionnelle ;
-* ou comme un `worker`, si elle est considérée comme un mécanisme purement technique.
-
-Cependant, dans ces cas, le framework Clprolf impose d'utiliser un agent. Par exemple, pour une classe Connection:
-
-* un `agent` pour représenter la connexion (mais on peut aussi choisir ClSystem)
-* et déléguer le code technique à un ou plusieurs `worker`.
-
-C'est pour cela que Clprolf peut être qualifié de framework "opinionated" (framework d'opinion).
-Dès qu'il est possible de voir un domaine, il doit être choisi à la place de la vision worker. Ce choix est argumenté par le fait que les agents et abstractions sont plus faciles à manipuler et facilitent la conception.
-Mais dire que la classe Connection est `ClAgent` (ou `ClSystem`) n'exclut pas qu'elle puisse posséder un worker pour ses propres besoins.
-
-### Exemple de Java qui confirme la vision Clprolf: java.io.File
-
-L'implémentation OpenJDK récente de java.io.File, montre une classe assez longue, de 2000 lignes. La classe exécute tout le travail purement technique, et non lié au domaine, par un attribut qui est l'équivalent d'un worker( FileSystem ).
-
-```java
-private static final FileSystem FS = DefaultFileSystem.getFileSystem();
-
-```
-
-```java
- public boolean delete() {
-        if (isInvalid()) {
-            return false;
-        }
-        return FS.delete(this);
-    }
-```
-
-```text
-CONCEPT CLPROLF                   CODE SOURCE JAVA (OpenJDK)
-┌──────────────────────────┐            ┌──────────────────────────┐
-│ @ClAgent (@ClSystem)     │            │      java.io.File        │
-│    (Agent Système)       │            │                          │
-│ Représente le concept de │            │ Gère l'abstraction du    │
-│ fichier et son chemin.   │            │ fichier et son statut.   │
-│ Méthodes conceptuelles   │            │ Méthodes conceptuelles   │
-└────────────┬─────────────┘            └────────────┬─────────────┘
-             │                                       │
-             │ délègue à                             │ appelle
-             ▼                                       ▼
-┌──────────────────────────┐            ┌──────────────────────────┐
-│        @ClWorker         │            │    java.io.FileSystem    │
-│   (Worker Bas Niveau)    │            │        (variable FS)     │
-│ Réalise l'accès et la    │            │ Implémentation selon l'OS│
-│ validation spécifique OS │            │ , WinNT/UnixFileSystem.  │
-└──────────────────────────┘            └──────────────────────────┘
-
-```
-
-Remarque: java.io.UnixFileSystem, ainsi que WinNTFileSystem, contiennent beaucoup de méthodes `native`.
-
----
 
 # IV) Héritage
 
@@ -928,7 +927,7 @@ Les `worker` réalisent :
 * les accès systèmes,
 * les opérations machine.
 
-Un agent délègue à un ou plusieurs worker, le code technique. Il peut en exécuter, mais en appelant une méthode d'un worker.
+Un agent(y compris système `ClSystem`) délègue à un ou plusieurs worker, le code technique. Il peut en exécuter, mais en appelant une méthode d'un worker.
 Le worker est au service de l'agent.
 
 ```text
@@ -951,7 +950,7 @@ Le worker est au service de l'agent.
                           │
                           ▼
 ┌────────────────────────────────────────────────────┐
-│                  AGENT (SYSTÈME) (ClSystem)        │
+│                  DOMAINE SYSTÈME (ClSystem)        │
 │    objet conceptuel lié au comportement système    │
 │ exemples : stream, socket, thread, fichier, window │
 └─────────────────────────┬──────────────────────────┘
@@ -989,7 +988,7 @@ Disponible sur GitHub, le checker Java est open-source et s'articule autour de d
 * **`ClprolfArchTest`** : Valide les règles sémantiques standard et fondamentales du framework.
 * **`ClprolfStrictArchTest`** : Regroupe des contraintes optionnelles et plus rigides pour les projets exigeants (comme l'interdiction pour une classe d'implémenter directement un `ClTrait`).
 Les checkers (Java et .Net) contiennent aussi les définitions des annotations (ou attributs) Clprolf.
-Pour simplifier la documentation, l'annotation optionnelle `ClSystem` ne figure pas dans la description des règles. Elle est simplement gérée comme un rôle indépendant, par le checker.
+Pour simplifier la documentation, l'annotation `ClSystem` ne figure pas dans la description des règles. Elle est simplement gérée comme un rôle indépendant, par le checker.
 ---
 
 ## 2. Version C# .NET (ArchUnitNET)

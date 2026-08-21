@@ -76,13 +76,13 @@ namespace MyApp.Agents {
 
 # I) The Two Fundamental Principles
 
-Clprolf is built around two central principles.
+Clprolf is based on two core principles.
 
 ---
 
 ## 1. A class is either business/conceptual or technical
 
-Every class belongs to one of the following worlds:
+Every class belongs to one of the following two worlds:
 
 ### Business / Domain World
 
@@ -96,10 +96,17 @@ Examples:
 * functional orchestration,
 * but also system-oriented agents.
 
-These classes are declared using:
+These classes are declared with:
 
 ```java
 @ClAgent
+
+```
+
+or
+
+```java
+@ClSystem
 
 ```
 
@@ -107,30 +114,32 @@ These classes are declared using:
 
 ### Technical World
 
-The class performs a technical task executed by the system:
+The class performs technical work executed by the system:
 
 * database access (via system agents),
-* networking (often by utilizing low-level agents),
-* file handling (most frequently with system-oriented agents),
-* display / rendering,
+* network (often using low-level agents),
+* usage of system abstractions such as files,
+* UI / rendering,
 * infrastructure,
-* no conceptual domain; it is just the system executing technical agents or starting an application,
-* generally a system technical service associated with an agent.
+* no conceptual domain, just the system executing technical agents or bootstrapping an application,
+* typically a system technical service associated with an agent.
 
-These classes are declared using:
+These classes are declared with:
 
 ```java
 @ClWorker
 
 ```
 
+---
+
 ## 2. Inheritance must preserve the domain
 
-A class should only inherit from another class belonging to the same conceptual domain.
+A class must only inherit from a class belonging to the same conceptual domain.
 
 Otherwise:
 
-> composition should be used.
+> composition should be used instead.
 
 This principle prevents incoherent hierarchies and mixed responsibilities.
 
@@ -191,7 +200,7 @@ An `agent`:
 * orchestrates processes,
 * makes decisions,
 * avoids heavy technical code, which is often delegated to an associated worker,
-* can be system-oriented, such as `Connection` or `Socket` (in which case `ClSystem` can also be used).
+* can be system-oriented like Connection or Socket (in which case `ClSystem` is used).
 
 Example:
 
@@ -235,13 +244,68 @@ A `worker`:
 
 ---
 
-## III.3) The Optional `ClSystem` Role
+## III.3) The `ClSystem` Role
 
-The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) can be used for system-oriented agents. However, it is not mandatory, keeping the framework as simple as possible.
-If used, mixing inheritance between standard agents and system-oriented agents is strictly forbidden. The checker will then treat them as a completely independent role.
-Developers who prefer to explicitly declare and finely control system-oriented agents (such as `File`) can annotate them as `ClSystem` instead of `ClAgent`.
-Note that classes imposed by third-party frameworks—such as **Controllers**, **Routing**, or **Middlewares** (*Filters/Interceptors* in Java)—can also be considered `ClSystem` classes.
-`ClSystem` provides a more technical perspective for those who prefer not to view system-oriented agents as pure agents, allowing them to be separated from more traditional agents.
+The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) must be used for system-oriented agents.
+Inheritance cannot be mixed between standard agents and system-oriented agents. They are thus treated by the checker as an independent role.
+System abstractions (such as `File`) are therefore annotated with `@ClSystem` instead of `@ClAgent`.
+Note that classes imposed by third-party frameworks, such as Controllers, Routing, or Middlewares (Filters/Interceptors in Java), are treated as `ClSystem` classes.
+`ClSystem` provides a more technical perspective while preserving the concept of domain.
+
+### Clarifications
+
+For example, a connection is represented in Clprolf as:
+
+* a `ClSystem` system abstraction,
+* its domain being the connection domain.
+
+This results in:
+
+* a `ClSystem` to represent the connection,
+* purely technical code delegated to one or more `worker` classes,
+* the ability to change the technical implementation if needed without modifying the conceptual code (see the Java `File` example).
+
+### Java Example Illustrating `ClSystem`: `java.io.File`
+
+The recent OpenJDK implementation of `java.io.File` reveals a class of roughly 2,000 lines. The class delegates all purely technical, non-domain work to a field serving as a worker equivalent (`FileSystem`).
+
+```java
+private static final FileSystem FS = DefaultFileSystem.getFileSystem();
+
+```
+
+```java
+public boolean delete() {
+    if (isInvalid()) {
+        return false;
+    }
+    return FS.delete(this);
+}
+
+```
+
+```text
+CLPROLF CONCEPT                    JAVA SOURCE CODE (OpenJDK)
+┌──────────────────────────┐            ┌──────────────────────────┐
+│         @ClSystem        │            │       java.io.File       │
+│    (System Abstraction)  │            │                          │
+│ Represents the concept   │            │ Manages the file         │
+│ of a file and its path.  │            │ abstraction and status.  │
+│ Conceptual methods       │            │ Conceptual methods       │
+└────────────┬─────────────┘            └────────────┬─────────────┘
+             │                                       │
+             │ delegates to                          │ calls
+             ▼                                       ▼
+┌──────────────────────────┐            ┌──────────────────────────┐
+│         @ClWorker        │            │    java.io.FileSystem    │
+│    (Low-Level Worker)    │            │       (FS variable)      │
+│ Performs OS-specific     │            │ OS-dependent impl.,      │
+│ access and validation    │            │ WinNT/UnixFileSystem.    │
+└──────────────────────────┘            └──────────────────────────┘
+
+```
+
+Note: `java.io.UnixFileSystem` and `WinNTFileSystem` contain many `native` methods.
 
 ---
 
@@ -278,71 +342,6 @@ An `agent` always has a primary domain representing its central responsibility.
 Secondary responsibilities may exist as long as they remain consistent with that primary domain.
 
 ---
-
-### III.6) An "Opinionated" Framework for the Agent/Worker Choice
-
-Some responsibilities can be interpreted in different ways depending on the architectural vision adopted.
-
-For example, a connection can be represented:
-
-* as an `agent` (or `ClSystem`), if viewed as a functional abstraction;
-* or as a `worker`, if considered a purely technical mechanism.
-
-However, in such cases, the Clprolf framework imposes the use of an agent. For example, for a `Connection` class:
-
-* an `agent` to represent the connection (though you can also choose `ClSystem`),
-* and delegate the technical code to one or more `worker` classes.
-
-This is why Clprolf can be described as an "opinionated" framework.
-As soon as a domain can be identified, it must be chosen over the worker perspective. This choice is argued by the fact that agents and abstractions are easier to manipulate and facilitate design.
-However, declaring the `Connection` class as a `ClAgent` (or `ClSystem`) does not preclude it from having a worker for its own technical needs.
-
----
-
-### Java Example Confirming the Clprolf Vision: `java.io.File`
-
-The recent OpenJDK implementation of `java.io.File` reveals a fairly long class of about 2,000 lines. The class delegates all purely technical, non-domain-related work to an attribute that acts as the strict equivalent of a worker (`FileSystem`).
-
-```java
-private static final FileSystem FS = DefaultFileSystem.getFileSystem();
-
-```
-
-```java
- public boolean delete() {
-        if (isInvalid()) {
-            return false;
-        }
-        return FS.delete(this);
-    }
-
-```
-
-```text
-       CLPROLF CONCEPT                        JAVA SOURCE CODE (OpenJDK)
-┌──────────────────────────┐            ┌──────────────────────────┐
-│ @ClAgent (@ClSystem)     │             │       java.io.File       │
-│      (System Agent)      │            │                          │
-│ Represents the concept   │            │ Manages the file         │
-│ of a file and its path.  │            │ abstraction and status.  │
-│ Conceptual methods       │            │ Conceptual methods       │
-└────────────┬─────────────┘            └────────────┬─────────────┘
-             │                                       │
-             │ delegates to                          │ calls
-             ▼                                       ▼
-┌──────────────────────────┐            ┌──────────────────────────┐
-│        @ClWorker         │            │    java.io.FileSystem    │
-│    (Low-Level Worker)    │            │       (FS variable)      │
-│ Performs OS-specific     │            │ OS-specific implement.   │
-│ validation and access.   │            │ (WinNT/UnixFileSystem).  │
-└──────────────────────────┘            └──────────────────────────┘
-
-```
-
-*Note: `java.io.UnixFileSystem` and `WinNTFileSystem` contain many `native` methods.*
-
----
-
 
 # IV) Inheritance
 
@@ -912,7 +911,7 @@ public class CarImpl : ICar
 
 ```
 
-# VIII) General Architecture
+# VIII) Overall Architecture
 
 Clprolf naturally encourages a simple architecture.
 
@@ -920,54 +919,57 @@ Clprolf naturally encourages a simple architecture.
 agent
     ↓ delegates to
 worker
+
 ```
 
-`agent` classes contain:
+`Agents` contain:
 
 * business rules,
 * decisions,
 * orchestration.
 
-`worker` classes perform:
+`Workers` handle:
 
-* technical work,
+* technical execution,
 * system access,
-* machine operations.
+* machine-level operations.
 
-An `agent` delegates technical code to one or more `worker` classes.
-
-A worker serves the agent.
-
+An agent (including system-oriented `ClSystem`) delegates technical code to one or more workers. It may execute technical tasks, but only by invoking a worker method.
+The worker serves the agent.
 
 ```text
 ┌────────────────────────────────────────────────────┐
 │                       AGENT                        │
-│       conceptual behavior, domain responsibility   │
-│                                                    │
+│               conceptual behavior,                 │
+│          domain / business responsibility          │
 └─────────────────────────┬──────────────────────────┘
                           │
                           │ uses / delegates to
+                          │
                           ▼
 ┌────────────────────────────────────────────────────┐
 │                       WORKER                       │
-│  		 system service for technical execution      │
-│               serving an agent                     │
+│       system service for technical execution,      │
+│                 serving an agent                   │
 └─────────────────────────┬──────────────────────────┘
                           │
                           │ may use
+                          │
                           ▼
 ┌────────────────────────────────────────────────────┐
-│              (SYSTEM-ORIENTED) AGENT (ClSystem)    │
-│   conceptual object connected to system behavior   │
-│   examples: stream, socket, thread, file, window   │
+│               SYSTEM DOMAIN (ClSystem)             │
+│    conceptual object tied to system behavior       │
+│ examples: stream, socket, thread, file, window     │
 └─────────────────────────┬──────────────────────────┘
                           │
                           │ delegates low-level work to
+                          │
                           ▼
 ┌────────────────────────────────────────────────────┐
-│                    (LOW-LEVEL) WORKER              │
-│     native call, rendering, I/O, OS/runtime work   │
+│                LOW-LEVEL WORKER                    │
+│   native calls, rendering, I/O, OS / runtime tasks │
 └────────────────────────────────────────────────────┘
+
 ```
 
 ---
@@ -991,13 +993,12 @@ The rules in `ClprolfStrictArchTest` are optional. Likewise, it is easy to chang
 
 ## 1. Java Version (ArchUnit)
 
-Available on GitHub, the Java checker is open-source and centers around two main test classes:
-* **`ClprolfArchTest`**: Validates the standard and fundamental semantic rules of the framework.
-* **`ClprolfStrictArchTest`**: Gathers optional, more rigid constraints for demanding projects (such as forbidding a class from directly implementing a `ClTrait`).
-The checkers (both Java and .NET) also contain the definitions for Clprolf annotations (or attributes).
+Available on GitHub, the Java checker is open-source and structured around two main test classes:
 
-> **In this section:**
-> To keep the documentation simple, the optional `ClSystem` annotation is not included in the rules' descriptions. It is seamlessly handled by the checker as an independent role.
+* **`ClprolfArchTest`**: Validates the framework's standard and fundamental semantic rules.
+* **`ClprolfStrictArchTest`**: Enforces optional, more rigid constraints for demanding projects (such as forbidding a class from directly implementing a `ClTrait`).
+Both checkers (Java and .NET) also contain the definitions of Clprolf annotations (or attributes).
+To simplify the documentation, the `ClSystem` annotation is not included in the description of the rules. It is simply handled as an independent role by the checker.
 
 ---
 
