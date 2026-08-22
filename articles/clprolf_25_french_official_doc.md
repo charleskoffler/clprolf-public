@@ -180,13 +180,76 @@ Cette approche permet de bénéficier de toute la puissance de contrôle du fram
 
 ---
 
-# III) Les Types de Classes
+# III) Alignement Hexagonale, DDD & Clprolf
+
+Clprolf formalise les principes majeurs de l'**Architecture Hexagonale** et du **Domain-Driven Design (DDD)** sous forme de contraintes et d'annotations POO explicites.
+
+## 1. La matrice d'équivalence
+
+| Concept Hexa / DDD / Clean | Rôle & Responsabilité | Rôle Clprolf | Typage & Annotations |
+| --- | --- | --- | --- |
+| **Agrégat / Entité** *(DDD)* | Cœur métier, état, invariants et règles de gestion pures. | **`Agent`** | `@ClAgent` |
+| **Domain Service** *(DDD)* | Orchestration de règles fonctionnelles combinant plusieurs agrégats. | **`Agent`** | `@ClAgent` |
+| **Use Case** *(Clean)* / **Application Service** *(DDD)* | Scénario fonctionnel d'intention métier *(ex: `RegisterCustomer`)*. | **`Agent`** | `@ClAgent` |
+| **Ports Primaires** *(Driving)* | Interfaces exposées par le domaine pour être piloté de l'extérieur. | **`Family`** | `@ClAgent @ClFamily` |
+| **Ports Secondaires** *(Driven)* | Interfaces requises par le domaine pour communiquer avec l'extérieur. | **`Family`** | `@ClWorker @ClFamily` |
+| **Adaptateurs Entrants** *(Hexa)* | Points d'entrée du système *(Contrôleurs REST, Handlers CLI, Consumers)*. | **`System`** | `@ClSystem` |
+| **Adaptateurs Sortants** *(Hexa)* / **Infrastructure Service** *(DDD)* | Exécuteurs techniques *(Implémentations de repositories, Clients API, Senders)*. | **`Worker`** | `@ClWorker` |
+| **Value Objects / DTOs** | Objets de données anémiques immuables (sans comportement). | *Donnée pure* | **Non annoté** |
+
+---
+
+## 2. Le flux d'exécution canonique
+
+*Note : Un flux est dit **canonique** car il représente le modèle de référence officiel et standard d'exécution.*
+
+```text
+ ┌──────────────────────────────────────────────────────────────────┐
+ │ ADAPTATEURS ENTRANTS (Driving)                                   │
+ │                                                                  │
+ │   ┌─────────────┐                                                │
+ │   │  @ClSystem  │  (Contrôleur REST, CLI, Consumer Kafka)        │
+ │   └──────┬──────┘                                                │
+ └──────────┼───────────────────────────────────────────────────────┘
+            │
+            │ Appelle via le Port Primaire (@ClAgent @ClFamily)
+            ▼
+ ┌──────────────────────────────────────────────────────────────────┐
+ │ CŒUR DOMAINE / USE CASES & AGRÉGATS                              │
+ │                                                                  │
+ │   ┌─────────────┐   Orchestre &   ┌─────────────┐                │
+ │   │  @ClAgent   │ ──────────────> │  @ClAgent   │                │
+ │   │ (Use Case)  │   manipule      │  (Agrégat)  │                │
+ │   └──────┬──────┘                 └─────────────┘                │
+ └──────────┼───────────────────────────────────────────────────────┘
+            │
+            │ Appelle via le Port Secondaire (@ClWorker @ClFamily)
+            ▼
+ ┌──────────────────────────────────────────────────────────────────┐
+ │ ADAPTATEURS SORTANTS (Driven)                                    │
+ │                                                                  │
+ │   ┌─────────────┐                                                │
+ │   │  @ClWorker  │  (JpaRepository, StripeClient, EmailSender)    │
+ │   └─────────────┘                                                │
+ └──────────────────────────────────────────────────────────────────┘
+
+```
+
+## 3. Les 3 règles d'or de Clprolf
+
+1. **Les dépendances vont vers l'intérieur :** `@ClSystem` dépend de `@ClAgent`. `@ClAgent` ne dépend JAMAIS de `@ClWorker` directement, mais uniquement de son contrat `@ClWorker @ClFamily`.
+2. **Tout le Domaine est `@ClAgent` :** Que ce soit le Use Case (l'orchestrateur du scénario) ou l'Agrégat (le cœur de l'état et des règles métier), tous deux sont des **`@ClAgent`**.
+3. **Isolation totale du domaine :** Les Agents manipulent de la logique métier pure, complètement affranchie des frameworks d'infrastructure (JPA, HTTP, Messaging).
+
+---
+
+# IV) Les Types de Classes
 
 Clprolf possède seulement quatre types de classes. Les classes sans méthodes(entités, DTO, etc) ne sont pas annotées.
 
 ---
 
-## III.1) `ClAgent`
+## IV.1) `ClAgent`
 
 Représente une classe métier ou conceptuelle.
 
@@ -217,7 +280,7 @@ public class OrderProcessor {
 
 ---
 
-## III.2) `ClWorker`
+## IV.2) `ClWorker`
 
 Représente un service système.
 
@@ -238,7 +301,7 @@ Un `worker` :
 * Permet de séparer le code domaine/fonctionnel, du code purement technique.
 
 
-## III.3) Le rôle `ClSystem`
+## IV.3) Le rôle `ClSystem`
 
 On doit utiliser l'annotation `@ClSystem` (ou l'attribut `[ClSystem]` en C#), pour les agents orientés système.
 On ne peut pas mixer l'héritage agent et agent orienté système. Ils sont alors considérés, par le checker, comme un rôle indépendant.
@@ -302,7 +365,7 @@ Remarque: java.io.UnixFileSystem, ainsi que WinNTFileSystem, contiennent beaucou
 
 ---
 
-## III.4) `ClDraft`
+## IV.4) `ClDraft`
 
 Objet sans rôle défini. Normalement, il est jamais indispendable.
 
@@ -324,7 +387,7 @@ public class TemporaryManager {
 
 ---
 
-## III.5) Domaine principal et code technique
+## IV.5) Domaine principal et code technique
 
 Clprolf encourage à déplacer autant que possible le code technique des classes agent vers des classes worker.
 
@@ -334,7 +397,7 @@ Un agent possède toujours un domaine principal représentant sa responsabilité
 
 Des responsabilités secondaires peuvent exister tant qu’elles restent cohérentes avec ce domaine principal.
 
-# IV) Héritage
+# V) Héritage
 
 > une classe hérite seulement d’une classe du même domaine.
 ---
@@ -370,7 +433,7 @@ Il faut utiliser la composition.
 Un forçage de l'héritage de classe est possible avec @ClBypass, au-dessus de la classe, mais ne devrait pas être fréquent.
 ---
 
-# V) Flexibilité
+# VI) Flexibilité
 
 Clprolf est flexible.
 
@@ -386,7 +449,7 @@ Le framework agit surtout comme :
 > un guide structurel.
 ---
 
-# VI) Interfaces
+# VII) Interfaces
 
 Dans Clprolf, les interfaces sont vues comme :
 
@@ -406,7 +469,7 @@ de véritables relations d’héritage conceptuel, d'où "family".
 
 ---
 
-## VI.1) `ClFamily`
+## VII.1) `ClFamily`
 
 Interface représentant une famille abstraite.
 
@@ -464,7 +527,7 @@ public class HorseImpl extends AnimalImpl implements Horse { (...) }
 
 ---
 
-## VI.2) `ClTrait`
+## VII.2) `ClTrait`
 
 Interface représentant une fonctionnalité commune entre plusieurs ClFamily.
 Les traits utilisent un rôle cible, tout comme les ClFamily :
@@ -510,7 +573,7 @@ public interface Launcher {
 ```
 ---
 
-## VI.3) Illustration du parallèle interfaces familles / implémentations
+## VII.3) Illustration du parallèle interfaces familles / implémentations
 
 ```text
 [MONDE ABSTRAIT / INTERFACES]          │    [MONDE CONCRET / CLASSES]
@@ -538,7 +601,7 @@ public interface Launcher {
      Horse extends Jumpable              │
 ```
 
-## VI.4) `@ClFree`
+## VII.4) `@ClFree`
 
 Interface générique sans rôle particulier.
 Permet de rester flexible. Elle n'est pas indispensable.
@@ -554,7 +617,7 @@ public interface ExternalApi {
 ```
 ---
 
-## VI.5) Utilisation des interfaces
+## VII.5) Utilisation des interfaces
 
 * En Clprolf, les interfaces `Family` se rapprochent des classes abstraites pures.
 
@@ -586,13 +649,13 @@ Une interface `Trait` ne peut hériter que d’autres `Trait`, car un trait rest
 Un forçage de l’héritage d’interfaces reste possible avec `@ClInterfaceBypass` au-dessus de l’interface (ou `@ClBypass` pour forcer l’héritage entre rôles cibles différents).
 Mais ces forçages ne devraient pas être fréquent.
 
-### VI.5.2 Mode strict des interfaces avec flexibilité
+### VII.5.2 Mode strict des interfaces avec flexibilité
 
 Il est possible d'utiliser `ClFree` pour rester strict uniquement sur les interfaces qu'on souhaite, et faire des ClFamily quand on souhaite plus de rigueur, sur des cas précis. Dans ce cas, même en mode strict, on reste ouvert et flexible.
 
 ---
 
-## VI.6) Avantages du "Loose Coupling" systématique par l'interface miroir
+## VII.6) Avantages du "Loose Coupling" systématique par l'interface miroir
 
 En mode strict, le fait de restreindre une classe à l'implémentation d'une unique ClFamily (et de déléguer les ClTrait à cette interface) n'est pas une simple contrainte esthétique. C'est le mécanisme même qui garantit un couplage faible (loose coupling) systématique.
 
@@ -629,7 +692,7 @@ public static final class LayeredArchitecture implements ArchRule {
 > Dans cet exemple, `CanBeEvaluated` et `CanOverrideDescription` jouent le rôle de `@ClTrait`, tandis que `ArchRule` formalise la `@ClFamily`. On constate que la class LayeredArchitecture ne fait qu'implémenter la famille, qui, elle implémente les traits.
 La classe n'implémente pas directement CanBeEvaluated et CanOverrideDescription.
 
-## VI.7) Remarque sur les interfaces Clprolf et l'Interface Segregation Principle (ISP)
+## VII.7) Remarque sur les interfaces Clprolf et l'Interface Segregation Principle (ISP)
 
 Clprolf respecte naturellement l'ISP et permet d'éviter les *« fat interfaces »* (interfaces fourre-tout).
 
@@ -696,7 +759,7 @@ public class ModernPrinterImpl implements ModernPrinter {
 }
 ```
 
-# VII) Immuabilité
+# VIII) Immuabilité
 
 Il est aussi possible de rendre les classes Clprolf immuables, par exemple en encapsulant l'état dans un record. Chaque méthode modifiant l'état renverra un nouvel objet, sur lequel on pourra appeler d'autres méthodes, de manière fluide.
 À l'image de la classe String en Java/.NET, cette approche garantit une thread-safety native, élimine les effets de bord et offre une API fluide et expressive. Il faudra juger, bien sûr, selon les situations, coûts, performances, et préférences, l'utilisation ou non de l'immuabilité.
@@ -909,7 +972,7 @@ public class CarImpl : ICar
 
 ```
 
-# VIII) Architecture Générale
+# IX) Architecture Générale
 
 Clprolf encourage naturellement une architecture simple.
 
@@ -970,7 +1033,7 @@ Le worker est au service de l'agent.
 
 ---
 
-# IX) Objectif du Framework
+# X) Objectif du Framework
 
 Clprolf ne cherche pas à remplacer l’OOP classique.
 
@@ -981,7 +1044,7 @@ Il cherche à rendre explicites certaines distinctions importantes :
 * responsabilité principale d’une classe.
 ---
 
-# X) Checker ArchUnit
+# XI) Checker ArchUnit
 
 Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé de deux classes ClprolfArchTest, et ClprolfStrictArchTest. Il valide les règles sémantiques.
 Les règles de ClprolfStrictArchTest sont optionnelles. De même, il est facile de changer le nom des annotations, si on préfère un autre vocabulaire.
@@ -1044,7 +1107,7 @@ Une classe ne peut pas implémenter directement une interface @ClTrait (à moins
 ### optional_class_must_implement_only_one_family_interface (OPTIONNELLE)
 Une classe Clprolf ne peut implémenter qu'une interface @ClFamily. Forçage possible avec @ClInterfaceBypass
 
-# XI) Clprolf et les principes SOLID
+# XII) Clprolf et les principes SOLID
 
 ## **S** — Principe de responsabilité unique (SRP)
 
@@ -1073,12 +1136,12 @@ Le framework Clprolf permet de n'utiliser l'héritage qu'avec parcimonie et pré
 
 ---
 
-# XII) Clprolf et les architectures existantes
+# XIII) Clprolf et les architectures existantes
 
 Clprolf est compatible avec les architectures DDD, MVC, Clean architecture, architecture hexagonale, etc. C'est une couche entre la POO et les architectures, qui vient compléter et sécuriser les architectures connues.
 Et Clprolf ne sert pas que pour l'informatique d'entreprise, mais pour tout type d'applications, y compris simulations, et applications scientifiques.
 
-# XIII) Résumé
+# XIV) Résumé
 
 Clprolf ajoute très peu de concepts.
 ---

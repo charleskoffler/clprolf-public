@@ -184,13 +184,75 @@ To ease adoption and prevent visual clutter in the code, the Clprolf ArchUnit ch
 This allows the framework to automatically map native annotations and attributes from your standard ecosystems (such as Spring or ASP.NET Core) to Clprolf roles. For example, a `@RestController` or an `[ApiController]` will be instantly recognized as a `@ClSystem`, without requiring any additional Clprolf annotations on your classes.
 This approach delivers the full enforcement power of the framework in a completely invisible and progressive manner, without affecting the readability of your day-to-day code. As a result, your existing applications can benefit from the Clprolf checker's controls straight away, without adding a single annotation to your existing codebase.
 
-# III) Class Types
+
+# III) Hexagonal, DDD & Clprolf Alignment
+
+Clprolf formalizes the main principles of **Hexagonal Architecture** and **Domain-Driven Design (DDD)** through explicit OOP constraints and annotations.
+
+## 1. The Equivalence Matrix
+
+| Hexa / DDD / Clean Concept | Role & Responsibility | Clprolf Role | Typing & Annotations |
+| --- | --- | --- | --- |
+| **Aggregate / Entity** *(DDD)* | Business core, state, invariants, and pure domain rules. | **`Agent`** | `@ClAgent` |
+| **Domain Service** *(DDD)* | Orchestration of business rules combining multiple aggregates. | **`Agent`** | `@ClAgent` |
+| **Use Case** *(Clean)* / **Application Service** *(DDD)* | Functional scenario expressing business intent *(e.g., `RegisterCustomer`)*. | **`Agent`** | `@ClAgent` |
+| **Primary Ports** *(Driving)* | Interfaces exposed by the domain to be driven from the outside. | **`Family`** | `@ClAgent @ClFamily` |
+| **Secondary Ports** *(Driven)* | Interfaces required by the domain to communicate with the outside. | **`Family`** | `@ClWorker @ClFamily` |
+| **Inbound Adapters** *(Hexa)* | System entry points *(REST Controllers, CLI Handlers, Consumers)*. | **`System`** | `@ClSystem` |
+| **Outbound Adapters** *(Hexa)* / **Infrastructure Service** *(DDD)* | Technical executors *(Repository implementations, API clients, Senders)*. | **`Worker`** | `@ClWorker` |
+| **Value Objects / DTOs** | Immutable, behaviorless data objects. | *Pure Data* | **Unannotated** |
+
+---
+
+## 2. Canonical Execution Flow
+
+*Note: A flow is called **canonical** because it represents the official, standard reference execution model.*
+
+```text
+ ┌──────────────────────────────────────────────────────────────────┐
+ │ INBOUND ADAPTERS (Driving)                                       │
+ │                                                                  │
+ │   ┌─────────────┐                                                │
+ │   │  @ClSystem  │  (REST Controller, CLI, Kafka Consumer)          │
+ │   └──────┬──────┘                                                │
+ └──────────┼───────────────────────────────────────────────────────┘
+            │
+            │ Calls via Primary Port (@ClAgent @ClFamily)
+            ▼
+ ┌──────────────────────────────────────────────────────────────────┐
+ │ DOMAIN CORE / USE CASES & AGGREGATES                             │
+ │                                                                  │
+ │   ┌─────────────┐  Orchestrates &  ┌─────────────┐               │
+ │   │  @ClAgent   │ ───────────────> │  @ClAgent   │               │
+ │   │ (Use Case)  │    manipulates   │ (Aggregate) │               │
+ │   └──────┬──────┘                  └─────────────┘               │
+ └──────────┼───────────────────────────────────────────────────────┘
+            │
+            │ Calls via Secondary Port (@ClWorker @ClFamily)
+            ▼
+ ┌──────────────────────────────────────────────────────────────────┐
+ │ OUTBOUND ADAPTERS (Driven)                                       │
+ │                                                                  │
+ │   ┌─────────────┐                                                │
+ │   │  @ClWorker  │  (JpaRepository, StripeClient, EmailSender)    │
+ │   └─────────────┘                                                │
+ └──────────────────────────────────────────────────────────────────┘
+
+```
+
+## 3. The 3 Golden Rules of Clprolf
+
+1. **Dependencies point inward:** `@ClSystem` depends on `@ClAgent`. `@ClAgent` NEVER depends directly on `@ClWorker`, but solely on its contract `@ClWorker @ClFamily`.
+2. **The entire Domain is `@ClAgent`:** Whether it is the Use Case (the scenario orchestrator) or the Aggregate (the core state and business rules), both are **`@ClAgent`**.
+3. **Total domain isolation:** Agents handle pure business logic, completely decoupled from infrastructure frameworks (JPA, HTTP, Messaging).
+
+# IV) Class Types
 
 Clprolf contains only four class types. Classes without methods (entities, DTOs, etc.) are not annotated.
 
 ---
 
-## III.1) `ClAgent`
+## IV.1) `ClAgent`
 
 Represents a business or conceptual class.
 
@@ -222,7 +284,7 @@ public class OrderProcessor {
 
 ---
 
-## III.2) `ClWorker`
+## IV.2) `ClWorker`
 
 Represents a system service.
 
@@ -244,7 +306,7 @@ A `worker`:
 
 ---
 
-## III.3) The `ClSystem` Role
+## IV.3) The `ClSystem` Role
 
 The `@ClSystem` annotation (or `[ClSystem]` attribute in C#) must be used for system-oriented agents.
 Inheritance cannot be mixed between standard agents and system-oriented agents. They are thus treated by the checker as an independent role.
@@ -309,7 +371,7 @@ Note: `java.io.UnixFileSystem` and `WinNTFileSystem` contain many `native` metho
 
 ---
 
-## III.4) `ClDraft`
+## IV.4) `ClDraft`
 
 An object without a defined role. Normally, it shouldn't be essential.
 
@@ -331,7 +393,7 @@ public class TemporaryManager {
 
 ---
 
-## III.5) Primary Domain and Technical Code
+## IV.5) Primary Domain and Technical Code
 
 Clprolf encourages moving as much technical code as possible from `agent` classes into `worker` classes.
 
@@ -343,7 +405,7 @@ Secondary responsibilities may exist as long as they remain consistent with that
 
 ---
 
-# IV) Inheritance
+# V) Inheritance
 
 > Class inheritance can be forced using `@ClBypass` above the class, but this should be rare.
 
@@ -383,7 +445,7 @@ Inheritance can be forced using `@ClBypass` above the class.
 
 ---
 
-# V) Flexibility
+# VI) Flexibility
 
 Clprolf is flexible.
 
@@ -400,7 +462,7 @@ The framework mainly acts as:
 
 ---
 
-# VI) Interfaces
+# VII) Interfaces
 
 In Clprolf, interfaces are viewed as:
 
@@ -420,7 +482,7 @@ Both `extends` and `implements` relationships are considered genuine conceptual 
 
 ---
 
-## VI.1) `ClFamily`
+## VII.1) `ClFamily`
 
 An interface representing an abstract family.
 
@@ -475,7 +537,7 @@ public class HorseImpl extends AnimalImpl implements Horse { (...) }
 
 ---
 
-## VI.2) `ClTrait`
+## VII.2) `ClTrait`
 
 An interface representing a shared capability across multiple `ClFamily`.
 
@@ -514,7 +576,7 @@ public interface Persistable {
 
 ---
 
-## VI.3) Illustration of the Interface Family / Implementation Parallel
+## VII.3) Illustration of the Interface Family / Implementation Parallel
 
 ```text
 [ABSTRACT WORLD / INTERFACES]          │    [CONCRETE WORLD / CLASSES]
@@ -542,7 +604,7 @@ public interface Persistable {
      Horse extends Jumpable            │
 ```
 
-## VI.4) `ClFree`
+## VII.4) `ClFree`
 
 A generic interface without a specific role. It shouldn't be necessary.
 
@@ -560,7 +622,7 @@ public interface ExternalApi {
 
 ---
 
-## VI.5) Using Interfaces
+## VII.5) Using Interfaces
 
 * In Clprolf, `Family` interfaces closely resemble pure abstract classes.
 
@@ -598,7 +660,7 @@ It is possible to use `ClFree` to enforce strict rules only on selected interfac
 
 ---
 
-## VI.6) Advantages of Systematic Loose Coupling via the Mirror Interface
+## VII.6) Advantages of Systematic Loose Coupling via the Mirror Interface
 
 In strict mode, restricting a class to implementing a single ClFamily (and delegating ClTrait interfaces to it) is not merely an aesthetic constraint. It is the very mechanism that guarantees systematic loose coupling.
 
@@ -636,7 +698,7 @@ public static final class LayeredArchitecture implements ArchRule {
 
 > In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait`s, while `ArchRule` formalizes the `@ClFamily`. Notice that the `LayeredArchitecture` class only implements the family, which in turn inherits the traits. The class does not directly implement `CanBeEvaluated` and `CanOverrideDescription`.
 
-## VI.7) Note on Clprolf Interfaces and the Interface Segregation Principle (ISP)
+## VII.7) Note on Clprolf Interfaces and the Interface Segregation Principle (ISP)
 
 ### The Classic *Fat Interface* Problem
 
@@ -701,7 +763,7 @@ public class ModernPrinterImpl implements ModernPrinter {
     // (...)
 }
 
-# VII) Immutability
+# VIII) Immutability
 
 It is also possible to make `Clprolf` classes immutable, for instance by encapsulating the state within a record. Every method that modifies the state will return a new object, allowing further methods to be called in a fluent manner.
 Much like the `String` class in Java/.NET, this approach guarantees native thread safety, eliminates side effects, and provides a fluent, expressive API. Naturally, the decision to use immutability should be evaluated on a case-by-case basis, considering trade-offs, performance costs, and preferences.
@@ -915,7 +977,7 @@ public class CarImpl : ICar
 
 ```
 
-# VIII) Overall Architecture
+# IX) Overall Architecture
 
 Clprolf naturally encourages a simple architecture.
 
@@ -978,7 +1040,7 @@ The worker serves the agent.
 
 ---
 
-# IX) Purpose of the framework
+# X) Purpose of the framework
 
 Clprolf does not aim to replace classical OOP.
 
@@ -990,7 +1052,7 @@ It aims to make certain important distinctions explicit:
 
 ---
 
-# X) ArchUnit Checker
+# XI) ArchUnit Checker
 
 An ArchUnit-based checker is available for the Clprolf Framework on GitHub. It is open-source and consists of two classes: `ClprolfArchTest` and `ClprolfStrictArchTest`. It validates semantic rules.
 The rules in `ClprolfStrictArchTest` are optional. Likewise, it is easy to change the annotation names if you prefer a different vocabulary.
@@ -1056,7 +1118,7 @@ A Clprolf class can only implement a single `@ClFamily` interface. Bypassing is 
 
 ---
 
-# XI) Clprolf and the SOLID Principles
+# XII) Clprolf and the SOLID Principles
 
 ## **S** — Single Responsibility Principle (SRP)
 
@@ -1083,14 +1145,14 @@ Dependency injection is particularly effective when dependencies are loosely cou
 
 The Clprolf framework ensures that inheritance is used sparingly and with precision, while relying on composition for everything else. It offers a practical and intuitive way to choose between the two.
 
-# XII) Clprolf and Existing Architectures
+# XIII) Clprolf and Existing Architectures
 
 Clprolf is compatible with existing architectural approaches such as Domain-Driven Design (DDD), Model-View-Controller (MVC), Clean Architecture, Hexagonal Architecture, and others.
 Rather than replacing these architectures, Clprolf acts as an additional layer between Object-Oriented Programming (OOP) and software architecture. Its purpose is to complement, clarify, and reinforce existing architectural principles by making class roles and inheritance relationships more explicit.
 In this way, Clprolf helps improve architectural consistency while remaining fully compatible with established design practices.
 Furthermore, Clprolf is not just meant for enterprise software, but for all types of applications, including simulations and scientific applications.
 
-# XIII) Summary
+# XIV) Summary
 
 Clprolf introduces very few concepts.
 
