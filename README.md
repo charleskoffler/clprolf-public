@@ -37,9 +37,9 @@ Feel free to reach out by email if you want more information
 
 * [French][**Clprolf — Documentation Officielle**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_25_french_official_doc.md)
 
-* [**Gemini Pro Extended 3.1 review on Clprolf framework](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_29_ai_feedback.md)
+* [**Gemini Pro Extended 3.1 review on Clprolf framework**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_29_ai_feedback.md)
 
-* [French][**Feedback de Gemini Pro Extended 3.1 sur le framework Clprolf](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_30_french_ai_review.md)
+* [French][**Feedback de Gemini Pro Extended 3.1 sur le framework Clprolf**](https://github.com/charleskoffler/clprolf-public/blob/main/articles/clprolf_30_french_ai_review.md)
 
 ## Checker for Clprolf
 
