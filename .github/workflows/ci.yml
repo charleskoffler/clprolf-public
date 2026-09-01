@@ -26,10 +26,12 @@ jobs:
 
       # 3. Exécution de Maven (compilation + tests + vérifications ArchUnit / Clprolf)
       - name: Build and Test with Maven
+        working-directory: ./examples/java/examples.graphe
         run: mvn clean package
 
       # 4. Connexion et construction de l'image Docker
       - name: Build Docker Image
+        working-directory: ./examples/java/examples.graphe
         run: docker build -t clprolf-graphe .
 
 		
