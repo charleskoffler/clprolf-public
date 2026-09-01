@@ -1,6 +1,5 @@
 name: CI/CD Pipeline
 
-# Le pipeline se déclenche à chaque push sur la branche main (ou master)
 on:
   push:
     branches: [ "main", "master" ]
@@ -33,5 +32,3 @@ jobs:
       - name: Build Docker Image
         working-directory: ./examples/java/examples.graphe
         run: docker build -t clprolf-graphe .
-
-		
