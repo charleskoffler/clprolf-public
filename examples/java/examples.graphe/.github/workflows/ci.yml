@@ -1,0 +1,35 @@
+name: CI/CD Pipeline
+
+# Le pipeline se déclenche à chaque push sur la branche main (ou master)
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupération du code source du dépôt
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configuration de l'environnement Java (JDK 21)
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      # 3. Exécution de Maven (compilation + tests + vérifications ArchUnit / Clprolf)
+      - name: Build and Test with Maven
+        run: mvn clean package
+
+      # 4. Connexion et construction de l'image Docker
+      - name: Build Docker Image
+        run: docker build -t clprolf-graphe .
+
+		
