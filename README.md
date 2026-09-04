@@ -2,7 +2,7 @@
 
 **Clprolf** ("Clear PROgramming Language and Framework") is a standalone architectural framework, for Java and C# .NET. 
 
-It helps Java and .net teams make class responsibilities explicit by distinguishing:
+It helps Java and .NET teams make class responsibilities explicit by distinguishing:
 
 - `@ClAgent` (or `[ClAgent]` in C#): business or conceptual classes
 - `@ClWorker` (or `[ClWorker]`): technical or infrastructure classes
@@ -44,16 +44,18 @@ Feel free to reach out by email if you want more information
 ## Checker for Clprolf
 
 * [**ArchUnit Checker and framework annotations**](https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker)
-* [**ArchUnitNet Checker for .Net and framework C# attributes**](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
+* [**ArchUnitNet Checker for .NET and framework C# attributes**](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
 
 ## Examples
 
 * [**Spring boot integration example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/clprolf_weather)
 
-* [**.Net C# WPF Example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/Clprolf.Examples.WPF)
+* [**(.NET C#) WPF Example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/Clprolf.Examples.WPF)
 
-* [**(.Net C#)Graphs example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/dotnet/Clprolf.Examples.Graphs)
+* [**(.NET C#) Graphs example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/dotnet/Clprolf.Examples.Graphs)
 
 * [**(Java)Graphs example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/java/examples.graphe)
 
-* [**Snake (Java example)**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/snake-game)
+* [**(Java) Snake**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/snake-game)
+
+* [**(Java) Spring Kafka example**](https://github.com/charleskoffler/clprolf-public/tree/main/examples/java/kafka-messaging)

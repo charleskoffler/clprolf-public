@@ -1,0 +1,16 @@
+spring:
+  kafka:
+    # Kafka broker address (local Docker container instance)
+    bootstrap-servers: localhost:9092
+
+    # Consumer configuration (Inbound / @ClSystem)
+    consumer:
+      group-id: clprolf-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    # Producer configuration
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
