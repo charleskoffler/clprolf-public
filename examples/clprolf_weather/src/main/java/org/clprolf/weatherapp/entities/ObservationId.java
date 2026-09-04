@@ -1,15 +1,13 @@
 package org.clprolf.weatherapp.entities;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import org.clprolf.framework.ClAgent;
+import org.clprolf.framework.ClDraft;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-@ClAgent
+@ClDraft
 @Embeddable
 public class ObservationId {
 

@@ -5,12 +5,12 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 
 import jakarta.validation.constraints.DecimalMin;
-import org.clprolf.framework.ClAgent;
+import org.clprolf.framework.ClDraft;
 
 import java.math.BigDecimal;
 
 
-@ClAgent
+@ClDraft
 @Entity
 public class Observation {
     @EmbeddedId

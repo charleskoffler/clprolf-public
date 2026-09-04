@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.2</version> <!-- Derniere version -->
+    <version>4.1.1</version> <!-- Derniere version -->
   </parent>
 
   <groupId>org.clprolf</groupId>
   <artifactId>meteoapp</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
   <packaging>jar</packaging>
 
   <name>clprolf_meteo</name>
@@ -18,7 +18,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.release>26</maven.compiler.release>
   </properties>
 
   <repositories>

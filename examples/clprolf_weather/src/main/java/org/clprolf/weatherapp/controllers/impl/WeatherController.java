@@ -1,45 +1,45 @@
 package org.clprolf.weatherapp.controllers.impl;
 
 import jakarta.validation.Valid;
-import org.clprolf.framework.ClAgent;
-import org.clprolf.weatherapp.controllers.ClprolfWeatherController;
+import org.clprolf.framework.ClSystem;
+import org.clprolf.weatherapp.agents.services.WeatherAgent;
+import org.clprolf.weatherapp.agents.services.impl.WeatherAgentImpl;
 import org.clprolf.weatherapp.entities.Observation;
-import org.clprolf.weatherapp.repos.ObservationDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@ClAgent
+@ClSystem
 @RestController
 @RequestMapping("/weatherapi/observations")
-public class ClprolfWeatherControllerImpl implements ClprolfWeatherController {
+public class WeatherController {
 
-    @Autowired
-    private ObservationDao obsDao;
+    private final WeatherAgent agent;
+
+    public WeatherController(WeatherAgent agent) {
+        this.agent = agent;
+    }
 
     @GetMapping("get/station/{station}")
     public ResponseEntity<List<Observation>> getObsByStation(@PathVariable String station){
 
-        List<Observation> observations = obsDao.findByIdStation(station);
+        List<Observation> observations = agent.getObsByStation(station);
         return observations.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(observations);
     }
 
     @PostMapping("create")
-    @Override
-    public ResponseEntity<Observation> createObservation(@Valid @RequestBody Observation observation) {
+    public ResponseEntity<Observation> newObservation(@Valid @RequestBody Observation observation) {
 
-        Observation savedObservation = obsDao.save(observation);
+        Observation savedObservation = agent.newObservation(observation);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedObservation);
     }
 
     @GetMapping("all")
-    @Override
     public ResponseEntity<List<Observation>> getAllObs() {
-        List<Observation> allObservations = obsDao.findAll();
+        List<Observation> allObservations = agent.getAllObs();
 
         return allObservations.isEmpty() ?
                 ResponseEntity.noContent().build() :
