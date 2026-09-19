@@ -763,6 +763,8 @@ public class ModernPrinterImpl implements ModernPrinter {
     // (...)
 }
 
+```
+
 # VIII) Immutability
 
 It is also possible to make `Clprolf` classes immutable, for instance by encapsulating the state within a record. Every method that modifies the state will return a new object, allowing further methods to be called in a fluent manner.
@@ -877,7 +879,7 @@ public class CarImpl implements Car {
 
 ```
 
-## 2) Version C#
+## 2) C-Sharp version
 
 ```csharp
 

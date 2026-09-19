@@ -873,7 +873,7 @@ public class CarImpl implements Car {
 
 ```
 
-## 2) Version C#
+## 2) Version C Sharp
 
 ```csharp
 
