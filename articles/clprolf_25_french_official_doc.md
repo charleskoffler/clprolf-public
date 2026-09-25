@@ -3,6 +3,8 @@
 ## Utilisations cibles et prérequis
 
 **Clprolf**("Clear PROgramming Language and Framework") est un framework architectural indépendant, léger, pour Java ou C# .net.
+Le code source (annotations + checker) peut être copié sous licence M.I.T., et visible sur Github dans des applications écrites par l'auteur.
+Cependant, le framework est principalement obtenu, ainsi que sa documentation et exemples, par des formations payantes de son auteur.
 
 Il s'agit d'un framework spécialisé, pour les situations suivantes:
 * framework pédagogique pour apprendre la POO, et les interfaces, voire l'immuabilité.
@@ -1046,12 +1048,12 @@ Il cherche à rendre explicites certaines distinctions importantes :
 
 # XI) Checker ArchUnit
 
-Un checker basé sur ArchUnit est disponible pour le Framework Clprolf, sur Github. Il est open-source et composé de deux classes ClprolfArchTest, et ClprolfStrictArchTest. Il valide les règles sémantiques.
+Un checker basé sur ArchUnit est disponible pour le Framework Clprolf. Il est composé de deux classes ClprolfArchTest, et ClprolfStrictArchTest. Il valide les règles sémantiques.
 Les règles de ClprolfStrictArchTest sont optionnelles. De même, il est facile de changer le nom des annotations, si on préfère un autre vocabulaire.
 
 ## 1. Version Java (ArchUnit)
 
-Disponible sur GitHub, le checker Java est open-source et s'articule autour de deux classes de tests principales :
+Le checker Java s'articule autour de deux classes de tests principales :
 * **`ClprolfArchTest`** : Valide les règles sémantiques standard et fondamentales du framework.
 * **`ClprolfStrictArchTest`** : Regroupe des contraintes optionnelles et plus rigides pour les projets exigeants (comme l'interdiction pour une classe d'implémenter directement un `ClTrait`).
 Les checkers (Java et .Net) contiennent aussi les définitions des annotations (ou attributs) Clprolf.
@@ -1059,8 +1061,6 @@ Pour simplifier la documentation, l'annotation `ClSystem` ne figure pas dans la 
 ---
 
 ## 2. Version C# .NET (ArchUnitNET)
-
-Le portage de l'extension .NET est disponible et publié sur GitHub.
 
 La solution Visual Studio (2022 à ce jour), contient un projet contenant le framework et les règles ArchUnit, et un projet xUnit pour les tests.
 Un troisième projet d'exemple est ajouté. Il y 8 tests obligatoires, et 4 tests stricts, actuellement.

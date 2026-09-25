@@ -3,6 +3,8 @@
 ## Target Uses and Prerequisites
 
 **Clprolf** ("Clear PROgramming Language and Framework") is an standalone, lightweight architectural framework for Java or C# .NET.
+The source code (annotations + checker) can be copied under the M.I.T. license and is visible on GitHub within applications written by the author.
+However, the framework itself, along with its documentation and examples, is primarily obtained through paid training courses provided by its author.
 
 It is a specialized framework designed for the following scenarios:
 
@@ -762,7 +764,6 @@ public class OldPrinterImpl implements OldPrinter {
 public class ModernPrinterImpl implements ModernPrinter {
     // (...)
 }
-
 ```
 
 # VIII) Immutability
@@ -1056,12 +1057,12 @@ It aims to make certain important distinctions explicit:
 
 # XI) ArchUnit Checker
 
-An ArchUnit-based checker is available for the Clprolf Framework on GitHub. It is open-source and consists of two classes: `ClprolfArchTest` and `ClprolfStrictArchTest`. It validates semantic rules.
+An ArchUnit-based checker is available for the Clprolf Framework. It consists of two classes, `ClprolfArchTest` and `ClprolfStrictArchTest`. It validates semantic rules.
 The rules in `ClprolfStrictArchTest` are optional. Likewise, it is easy to change the annotation names if you prefer a different vocabulary.
 
 ## 1. Java Version (ArchUnit)
 
-Available on GitHub, the Java checker is open-source and structured around two main test classes:
+The Java checker is structured around two main test classes:
 
 * **`ClprolfArchTest`**: Validates the framework's standard and fundamental semantic rules.
 * **`ClprolfStrictArchTest`**: Enforces optional, more rigid constraints for demanding projects (such as forbidding a class from directly implementing a `ClTrait`).
@@ -1071,8 +1072,6 @@ To simplify the documentation, the `ClSystem` annotation is not included in the 
 ---
 
 ## 2. C# .NET Version (ArchUnitNET)
-
-The port of the .NET extension is available and published on GitHub.
 
 The Visual Studio solution (2022 to date) contains a project with the framework and ArchUnit rules, along with an xUnit project for the tests.
 A third example project is also included. There are currently 8 mandatory tests and 4 strict tests.
