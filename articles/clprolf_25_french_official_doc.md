@@ -1214,6 +1214,9 @@ De manière fractale, si un composant technique (Worker) fait face à une comple
 $$\forall p \; \Big( Partie(p, A) \Rightarrow \forall d \; \big( Contient(p, d) \Rightarrow Atome(d) \land \exists c \, \exists t \; (ComposantMetier(c) \land ComposantTech(t) \land Combine(d, c, t)) \big) \Big)$$
 
 Règle de délégation fractale :
+
+$$\forall t \; \big( ComposantTech(t) \Rightarrow \forall s \; (Utilise(t, s) \Rightarrow Atome(s) \land AgentSysteme(s)) \big)$$ 
+
 ------------------------------
 ## 3. Dictionnaire de Correspondance Canonique
 
