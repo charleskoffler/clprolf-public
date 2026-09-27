@@ -1245,8 +1245,8 @@ The logical formalism is not a virtual abstraction; it maps precisely onto the c
 
 | Formal Concept | Semantic Description | Clprolf Implementation |
 | --- | --- | --- |
-| M ($c$) | Component carrying semantics and rules | Agent / Abstraction / Model |
-| T ($t$) | Component carrying physical infrastructure | Worker (DAO, Network, I/O...) |
+| M ($c$) | Component carrying semantics and rules | @ClAgent |
+| T ($t$) | Component carrying physical infrastructure | @ClWorker |
 | D ($d$) | Indissociable alliance of meaning and support | The native pair (Agent + Worker) |
 | S ($s$) | Technical atom managing complex infrastructure | System Agent (@ClSystem) |
 | P ($p$) | Modular assembly of atoms | Subsystem (Set of Agents & Workers) |

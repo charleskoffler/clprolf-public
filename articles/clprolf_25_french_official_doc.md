@@ -1206,10 +1206,14 @@ $$\forall A \; \big( App(A) \Rightarrow \exists G \; (ButHumain(G) \land Sert(A,
 Toute application est une union de parties finies (sous-systèmes). Faire partie d'une application implique d'être une structure organisée simulant un domaine et disposant d'une infrastructure.
 $$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( Partie(p, A) \Rightarrow \exists m \, \exists t \; (DomaineMetier(m) \land SupportTech(t) \land Simule(p, m) \land Associe(t, p)) \big) \Big)$$ 
 ## Axiome 3 — Composition Atomique et Propriété Fractale
+
 Chaque sous-système est composé d'atomes de domaine. Un atome de domaine est l'union exclusive d'un composant métier (Agent) et d'un composant technique (Worker).
+
 De manière fractale, si un composant technique (Worker) fait face à une complexité d'infrastructure lourde, il a la garantie de pouvoir déléguer cette tâche à des Agents Systèmes. Tout Agent Système est explicitement défini comme étant lui-même un atome de domaine complet.
-$$\forall p \; \Big( Partie(p, A) \Rightarrow \forall d \; \big( Contient(p, d) \Rightarrow Atome(d) \land \exists c \, \exists t \; (ComposantMetier(c) \land ComposantTech(t) \land Combine(d, c, t)) \big) \Big)$$ Règle de délégation fractale :
-$$\forall t \; \big( ComposantTech(t) \Rightarrow \forall s \; (Utilise(t, s) \Rightarrow Atome(s) \land AgentSysteme(s)) \big)$$ 
+
+$$\forall p \; \Big( Partie(p, A) \Rightarrow \forall d \; \big( Contient(p, d) \Rightarrow Atome(d) \land \exists c \, \exists t \; (ComposantMetier(c) \land ComposantTech(t) \land Combine(d, c, t)) \big) \Big)$$
+
+Règle de délégation fractale :
 ------------------------------
 ## 3. Dictionnaire de Correspondance Canonique
 
@@ -1217,8 +1221,8 @@ Le formalisme logique n'est pas une abstraction virtuelle, il calque au millimè
 
 | Concept Formel | Description Sémantique | Implémentation Clprolf |
 |---|---|---|
-| M ($c$) | Composant portant la sémantique et les règles | Agent / Abstraction / Modèle |
-| T ($t$) | Composant portant l'infrastructure physique | Worker (DAO, Réseau, I/O...) |
+| M ($c$) | Composant portant la sémantique et les règles | @ClAgent |
+| T ($t$) | Composant portant l'infrastructure physique | @ClWorker |
 | D ($d$) | L'alliance indissociable du sens et du support | Le binôme natif (Agent + Worker) |
 | S ($s$) | Atome technique gérant l'infrastructure complexe | Agent Système (@ClSystem) |
 | P ($p$) | Assemblage modulaire d'atomes | Subsystem (Ensemble d'Agents & Workers) |
