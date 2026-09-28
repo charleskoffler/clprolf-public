@@ -1191,6 +1191,8 @@ To ensure surgical rigor, the system relies on predicates and relations unambigu
 
 * $App(x)$: $x$ is a global software application.
 * $HumanGoal(y)$: $y$ is a human intention or objective.
+* $BusinessDomain(m)$: $m$ is a business domain (the domain model to be simulated).
+* $TechSupport(t)$: $t$ is the technical support infrastructure associated with the part.
 * $Atom(d)$: $d$ is a domain atom, an elementary and indivisible building block of the system.
 * $SystemAgent(s)$: $s$ is a specialized agent endowed with an infrastructure role or low-level technical management.
 * $BusinessComponent(c)$: $c$ is the software component embodying business logic and rules.
@@ -1200,6 +1202,8 @@ To ensure surgical rigor, the system relies on predicates and relations unambigu
 
 * $Serves(x, y)$: The application $x$ serves directly or indirectly to achieve the human goal $y$.
 * $Part(p, x)$: $p$ is a modular subsystem (a part) constituting the application $x$.
+* $Simulates(p, m)$: Subsystem $p$ **simulates** business domain $m$.
+* $Associates(t, p)$: Technical support $t$ is associated with subsystem $p$.
 * $Contains(p, d)$: The subsystem $p$ contains the domain atom $d$.
 * $Combines(d, c, t)$: The atom $d$ results from the strict and exclusive union of the business component $c$ and the technical component $t$.
 * $Uses(t, s)$: The technical component $t$ delegates part of its low-level complexity to the agent $s$.
@@ -1233,7 +1237,6 @@ In a fractal manner, if a technical component (Worker) faces heavy infrastructur
 $$\forall p \; \Big( Part(p, A) \Rightarrow \forall d \; \big( Contains(p, d) \Rightarrow Atom(d) \land \exists c \, \exists t \; (BusinessComponent(c) \land TechComponent(t) \land Combines(d, c, t)) \big) \Big)$$
 
 Fractal delegation rule:
-
 
 $$\forall t \; \big( TechComponent(t) \Rightarrow \forall s \; (Uses(t, s) \Rightarrow Atom(s) \land SystemAgent(s)) \big)$$
 
@@ -1291,3 +1294,66 @@ Q.E.D.
 
 This proof demonstrates that Clprolf is not only expressive in the raw computational sense (Turing), but in the architectural sense:
 Any system composed of business and technical components — which includes all real-world software applications — possesses a canonical and fractal representation in Clprolf.
+
+Here is the exact translation of section XV, including the math notation, code block, and formatting for your English documentation.
+
+---
+
+## 6. Axioms in the Coq Proof Assistant
+
+```coq
+Section ClprolfSection.
+
+  Variable Object : Type.
+
+  (* Object Predicates *)
+  Variable App               : Object -> Prop.
+  Variable HumanGoal         : Object -> Prop.
+  Variable Atom              : Object -> Prop.
+  Variable SystemAgent       : Object -> Prop.
+  Variable BusinessComponent : Object -> Prop.
+  Variable TechComponent     : Object -> Prop.
+  Variable BusinessDomain    : Object -> Prop.
+  Variable TechSupport       : Object -> Prop.
+
+  (* Relations *)
+  Variable Serves    : Object -> Object -> Prop.
+  Variable Part      : Object -> Object -> Prop.
+  Variable Contains  : Object -> Object -> Prop.
+  Variable Combines  : Object -> Object -> Object -> Prop.
+  Variable Uses      : Object -> Object -> Prop.
+  Variable Simulates : Object -> Object -> Prop.
+  Variable Associates: Object -> Object -> Prop.
+
+  (* Fundamental Axioms *)
+  Axiom Axiom1_Scope :
+    forall A : Object,
+      App A ->
+      exists G : Object, HumanGoal G /\ Serves A G.
+
+  Axiom Axiom2_StructuralDecomposition :
+    forall A : Object,
+      App A ->
+      forall p : Object,
+        Part p A ->
+        exists m t : Object,
+          BusinessDomain m /\ TechSupport t /\ Simulates p m /\ Associates t p.
+
+  Axiom Axiom3_AtomicComposition :
+    forall A p : Object,
+      Part p A ->
+      forall d : Object,
+        Contains p d ->
+        Atom d /\
+        exists c t : Object,
+          BusinessComponent c /\ TechComponent t /\ Combines d c t.
+
+  Axiom Fractal_Delegation_Rule :
+    forall t : Object,
+      TechComponent t ->
+      forall s : Object,
+        Uses t s ->
+        Atom s /\ SystemAgent s.
+
+End ClprolfSection.
+```

@@ -1182,6 +1182,8 @@ Pour garantir une rigueur chirurgicale, le système s'appuie sur des prédicats 
 
 * $App(x)$ : $x$ est une application logicielle globale.
 * $ButHumain(y)$ : $y$ est une intention ou un objectif humain.
+* $DomaineMetier(m)$ : $m$ est un domaine métier (le modèle fonctionnel à simuler).
+* $SupportTech(t)$ : $t$ est l'infrastructure de support technique associée à la partie.
 * $Atome(d)$ : $d$ est un atome de domaine, brique élémentaire et indivisible du système.
 * $AgentSysteme(s)$ : $s$ est un agent spécialisé doté d'un rôle d'infrastructure ou de gestion technique basse.
 * $ComposantMetier(c)$ : $c$ est le composant logiciel incarnant la logique et les règles métier.
@@ -1191,6 +1193,8 @@ Pour garantir une rigueur chirurgicale, le système s'appuie sur des prédicats 
 
 * $Sert(x, y)$ : L'application $x$ sert directement ou indirectement à réaliser le but humain $y$.
 * $Partie(p, x)$ : $p$ est un sous-système modulaire (une partie) constituant l'application $x$.
+* $Simule(p, m)$ : Le sous-système $p$ **simule** le domaine métier $m$.
+* $Associe(t, p)$ : Le support technique $t$ est associé au sous-système $p$.
 * $Contient(p, d)$ : Le sous-système $p$ contient l'atome de domaine $d$.
 * $Combine(d, c, t)$ : L'atome $d$ résulte de l'union stricte et exclusive du composant métier $c$ et du composant technique $t$.
 * $Utilise(t, s)$ : Le composant technique $t$ délègue une partie de sa complexité de bas niveau à l'agent $s$.
@@ -1232,7 +1236,9 @@ Le formalisme logique n'est pas une abstraction virtuelle, il calque au millimè
 | A ($A$) | L'entité applicative unifiée | L'Application Clprolf finale |
 
 ------------------------------
-## 4. Théorème d'Expressivité Architecturale## Énoncé du Théorème
+## 4. Théorème d'Expressivité Architecturale
+
+## Énoncé du Théorème
 
 Pour toute application globale $A$ pouvant être décrite de manière cohérente dans ce système formel, il existe une implémentation complète, exacte et sans angle mort dans le framework Clprolf qui la réalise.
 
@@ -1264,4 +1270,65 @@ Q.E.D.
 ## 5. Conclusion Finale — La Force de la Structure Fractale
 Cette démonstration prouve que Clprolf n'est pas seulement expressif au sens computationnel brut (Turing), mais au sens architectural :
 Tout système composé de composants métiers et techniques — ce qui inclut l'intégralité des applications logicielles du monde réel — possède une représentation canonique et fractale dans Clprolf.
+
+## 6. Axiomes dans l'assistant de preuve Coq
+
+```coq
+
+Section ClprolfSection.
+
+  Variable Object : Type.
+
+  (* Prédicats d'objets *)
+  Variable App             : Object -> Prop.
+  Variable ButHumain       : Object -> Prop.
+  Variable Atome           : Object -> Prop.
+  Variable AgentSysteme    : Object -> Prop.
+  Variable ComposantMetier : Object -> Prop.
+  Variable ComposantTech   : Object -> Prop.
+  Variable DomaineMetier   : Object -> Prop.
+  Variable SupportTech     : Object -> Prop.
+
+  (* Relations *)
+  Variable Sert      : Object -> Object -> Prop.
+  Variable Partie    : Object -> Object -> Prop.
+  Variable Contient  : Object -> Object -> Prop.
+  Variable Combine   : Object -> Object -> Object -> Prop.
+  Variable Utilise   : Object -> Object -> Prop.
+  Variable Simule    : Object -> Object -> Prop.
+  Variable Associe   : Object -> Object -> Prop.
+
+  (* Axiomes fondamentaux *)
+  Axiom Axiome1_Perimetre :
+    forall A : Object,
+      App A ->
+      exists G : Object, ButHumain G /\ Sert A G.
+
+  Axiom Axiome2_DecompositionStructurelle :
+    forall A : Object,
+      App A ->
+      forall p : Object,
+        Partie p A ->
+        exists m t : Object,
+          DomaineMetier m /\ SupportTech t /\ Simule p m /\ Associe t p.
+
+  Axiom Axiome3_CompositionAtomique :
+    forall A p : Object,
+      Partie p A ->
+      forall d : Object,
+        Contient p d ->
+        Atome d /\
+        exists c t : Object,
+          ComposantMetier c /\ ComposantTech t /\ Combine d c t.
+
+  Axiom Regle_Delegation_Fractale :
+    forall t : Object,
+      ComposantTech t ->
+      forall s : Object,
+        Utilise t s ->
+        Atome s /\ AgentSysteme s.
+
+End ClprolfSection.
+
+```
 
