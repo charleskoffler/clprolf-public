@@ -1309,6 +1309,8 @@ Cette démarche de vérification mécanique (*machine-checked*) permet de passer
 
 ---
 
+```coq
+
 Section ClprolfFormalization.
 
   (* ================================================================= *)
@@ -1461,3 +1463,5 @@ Section ClprolfFormalization.
   Qed.
 
 End ClprolfFormalization.
+
+```
