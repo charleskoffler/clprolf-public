@@ -1,0 +1,6 @@
+# Ignorer tous les fichiers dérivés de Clprolf_Theory
+Clprolf_Theory.*
+.*Clprolf_Theory.*
+
+# Ne pas ignorer le fichier source Coq
+!Clprolf_Theory.v
