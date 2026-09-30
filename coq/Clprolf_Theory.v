@@ -1,3 +1,4 @@
+
 Section ClprolfFormalization.
 
   (* ================================================================= *)
@@ -148,5 +149,67 @@ Section ClprolfFormalization.
         * exact HTech.
         * exact HComb.
   Qed.
-Print Assumptions Deep_Architectural_Expressiveness.
+
+  (* ================================================================= *)
+  (* 7. EXTENSION : CONTRACT NEUTRALITY THEORY                         *)
+  (* ================================================================= *)
+
+  Variable Interface : Type.
+
+  (* Interface predicates and contract relations *)
+  Variable Family          : Interface -> Prop.
+  Variable Trait           : Interface -> Prop.
+  Variable TargetBusiness  : Interface -> Prop.
+  Variable TargetTech      : Interface -> Prop.
+  Variable Implements      : Object -> Interface -> Prop.
+  Variable Inherits        : Interface -> Interface -> Prop.
+
+  (* Axiom 1: Single and Universal Polarity *)
+  Axiom Contract_Axiom1_Polarity :
+    forall i : Interface,
+      TargetBusiness i \/ TargetTech i.
+
+  (* Axiom 2: Strict Mirror Law *)
+  Axiom Contract_Axiom2_MirrorLaw :
+    forall (c : Object) (i : Interface),
+      Implements c i ->
+      (DomainComponent c <-> TargetBusiness i) /\
+      (TechComponent c <-> TargetTech i).
+
+  (* Axiom 3: Trait Continuity via Inheritance *)
+  Axiom Contract_Axiom3_InheritanceContinuity :
+    forall (i j : Interface),
+      Inherits i j ->
+      (TargetBusiness i <-> TargetBusiness j) /\
+      (TargetTech i <-> TargetTech j).
+
+  (* Interface Neutrality Theorem (Machine-Checked by Coq) *)
+  Theorem Interface_Neutrality_Theorem :
+    forall (c : Object) (f t : Interface),
+      Family f ->
+      Trait t ->
+      Inherits f t ->
+      Implements c f ->
+      (DomainComponent c -> TargetBusiness t) /\
+      (TechComponent c -> TargetTech t).
+  Proof.
+    intros c f t HFam HTrait HInherit HImpl.
+    split.
+    - intros HBusinessC.
+      (* 1. Application of the Mirror Law on f and c *)
+      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [HMirrorBusiness _].
+      assert (HTargetF : TargetBusiness f) by (apply HMirrorBusiness; exact HBusinessC).
+      (* 2. Application of Inheritance Continuity between f and t *)
+      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [HContBusiness _].
+      apply HContBusiness.
+      exact HTargetF.
+    - intros HTechC.
+      (* Same for technical polarity *)
+      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [_ HMirrorTech].
+      assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
+      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [_ HContTech].
+      apply HContTech.
+      exact HTargetF.
+  Qed.
+
 End ClprolfFormalization.

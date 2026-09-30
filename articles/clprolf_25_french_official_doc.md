@@ -1301,7 +1301,92 @@ Q.E.D.
 Cette démonstration prouve que Clprolf n'est pas seulement expressif au sens computationnel brut (Turing), mais au sens architectural :
 Tout système composé de composants métiers et techniques — ce qui inclut l'intégralité des applications logicielles du monde réel — possède une représentation canonique et fractale dans Clprolf.
 
-# XVII) Certification formelle et Assistant de preuve Coq
+
+# XVII) Formalisation mathématique de la neutralité des contrats
+
+Afin de démontrer que l'introduction du polymorphisme par interfaces (`ClFamily` et `ClTrait`) ne modifie pas la nature intrinsèque des atomes du système, nous formalisons la théorie des contrats sous forme de système logique et topologique.
+
+## 1. Prédicats de Contrat et d'Interface
+
+Soient les ensembles de base :
+
+* $C$ l'ensemble des composants logiciels.
+* $I$ l'ensemble des interfaces du système (sub divisé en familles et traits).
+
+**Prédicats de nature des composants :**
+
+* $ComposantMetier(c)$ : Le composant $c \in C$ porte une responsabilité métier.
+* $ComposantTech(c)$ : Le composant $c \in C$ porte une responsabilité technique.
+
+**Prédicats de typologie d'interface :**
+
+* $Famille(i)$ : L'interface $i \in I$ est une famille de premier niveau.
+* $Trait(i)$ : L'interface $i \in I$ est une capacité transversale (trait).
+
+**Prédicats de polarité (Rôle Cible) :**
+
+* $TargetMetier(i)$ : L'interface $i$ cible exclusivement le monde métier.
+* $TargetTech(i)$ : L'interface $i$ cible exclusivement le monde technique.
+
+**Relations topologiques :**
+
+* $Implements(c, i)$ : Le composant $c$ implémente l'interface $i$.
+* $Inherits(i, j)$ : L'interface $i$ hérite de l'interface $j$ (relation d'extension ou de composition de traits).
+
+---
+
+## 2. Axiomes de la Théorie des Contrats
+
+### Axiome 1 — Polarité unique et universelle
+
+Toute interface possède nécessairement une et une seule polarité cible, qu'elle soit métier ou technique.
+
+$$\forall i \in I \; \Big( TargetMetier(i) \lor TargetTech(i) \Big)$$
+
+### Axiome 2 — Loi du Miroir Strict
+
+Un composant ne peut implémenter qu'une interface dont la polarité est strictement isomorphe à sa propre nature.
+
+$$\forall c \in C, \forall i \in I \; \Big( Implements(c, i) \implies \big( ComposantMetier(c) \iff TargetMetier(i) \big) \land \big( ComposantTech(c) \iff TargetTech(i) \big) \Big)$$
+
+### Axiome 3 — Continuité des Traits par Héritage
+
+Lorsqu'une interface de famille $f$ hérite d'un trait $t$, la polarité cible est invariablement conservée à travers la hiérarchie.
+
+$$\forall i, j \in I \; \Big( Inherits(i, j) \implies \big( TargetMetier(i) \iff TargetMetier(j) \big) \land \big( TargetTech(i) \iff TargetTech(j) \big) \Big)$$
+
+---
+
+## 3. Théorème de Neutralité des Interfaces
+
+### Énoncé du Théorème
+
+Pour tout composant $c$, toute famille $f$ et tout trait $t$, si $f$ hérite de $t$ et que $c$ implémente $f$, alors l'arborescence des contrats préserve de manière transparente la nature de $c$ jusqu'au trait $t$, garantissant la neutralité ontologique des interfaces.
+
+$$\forall c \in C, \forall f, t \in I \; \Big( Famille(f) \land Trait(t) \land Inherits(f, t) \land Implements(c, f) \implies \big( ComposantMetier(c) \implies TargetMetier(t) \big) \land \big( ComposantTech(c) \implies TargetTech(t) \big) \Big)$$
+
+### Démonstration analytique
+
+1. **Supposition initiale :** Soit un composant $c$ tel que $ComposantMetier(c)$, une famille $f$ et un trait $t$ tels que $Famille(f)$, $Trait(t)$, $Inherits(f, t)$ et $Implements(c, f)$.
+2. **Application de l'Axiome 2 (Loi du Miroir) :** Puisque $Implements(c, f)$, on déduit immédiatement que :
+
+$$ComposantMetier(c) \iff TargetMetier(f)$$
+
+
+
+Comme $ComposantMetier(c)$ est vrai par hypothèse, on en conclut que $TargetMetier(f)$ est vrai.
+3. **Application de l'Axiome 3 (Continuité) :** Puisque $Inherits(f, t)$ relie la famille $f$ au trait $t$, la règle de transitivité des polarités nous donne :
+
+$$TargetMetier(f) \iff TargetMetier(t)$$
+
+
+
+Puisque $TargetMetier(f)$ est établi, il s'ensuit que $TargetMetier(t)$ est nécessairement vrai.
+4. **Conclusion par symétrie :** Le même raisonnement s'applique rigoureusement en substituant les polarités métier par les polarités techniques pour un composant $ComposantTech(c)$.
+
+$$\text{Q.E.D.}$$
+
+# XVIII) Certification formelle et Assistant de preuve Coq
 
 > **Afin de garantir une rigueur absolue et d'éliminer toute ambiguïté ou faille logique, l'ensemble du système axiomatique et le théorème d'expressivité de Clprolf ont été formellement codifiés et intégralement vérifiés par machine à l'aide de l'assistant de preuve Coq.**
 
@@ -1460,6 +1545,68 @@ Section ClprolfFormalization.
         * exact HMetier.
         * exact HTech.
         * exact HComb.
+  Qed.
+  
+  (* ================================================================= *)
+  (* 7. EXTENSION : THÉORÈIE DE LA NEUTRALITÉ DES CONTRATS             *)
+  (* ================================================================= *)
+
+  Variable Interface : Type.
+
+  (* Prédicats d'interfaces et de relations de contrats *)
+  Variable Famille        : Interface -> Prop.
+  Variable Trait          : Interface -> Prop.
+  Variable TargetMetier   : Interface -> Prop.
+  Variable TargetTech     : Interface -> Prop.
+  Variable Implements     : Object -> Interface -> Prop.
+  Variable Inherits       : Interface -> Interface -> Prop.
+
+  (* Axiome 1 : Polarité unique et universelle *)
+  Axiom Contract_Axiom1_Polarity :
+    forall i : Interface,
+      TargetMetier i \/ TargetTech i.
+
+  (* Axiome 2 : Loi du Miroir Strict *)
+  Axiom Contract_Axiom2_MirrorLaw :
+    forall (c : Object) (i : Interface),
+      Implements c i ->
+      (ComposantMetier c <-> TargetMetier i) /\
+      (ComposantTech c <-> TargetTech i).
+
+  (* Axiome 3 : Continuité des Traits par Héritage *)
+  Axiom Contract_Axiom3_InheritanceContinuity :
+    forall (i j : Interface),
+      Inherits i j ->
+      (TargetMetier i <-> TargetMetier j) /\
+      (TargetTech i <-> TargetTech j).
+
+  (* Théorème de Neutralité des Interfaces (Vérifié par Coq) *)
+  Theorem Interface_Neutrality_Theorem :
+    forall (c : Object) (f t : Interface),
+      Famille f ->
+      Trait t ->
+      Inherits f t ->
+      Implements c f ->
+      (ComposantMetier c -> TargetMetier t) /\
+      (ComposantTech c -> TargetTech t).
+  Proof.
+    intros c f t HFam HTrait HInherit HImpl.
+    split.
+    - intros HMetierC.
+      (* 1. Application de la Loi du Miroir sur f et c *)
+      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [HMirrorMetier _].
+      assert (HTargetF : TargetMetier f) by (apply HMirrorMetier; exact HMetierC).
+      (* 2. Application de la Continuité d'héritage entre f et t *)
+      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [HContMetier _].
+      apply HContMetier.
+      exact HTargetF.
+    - intros HTechC.
+      (* Idem pour la polarité technique *)
+      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [_ HMirrorTech].
+      assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
+      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [_ HContTech].
+      apply HContTech.
+      exact HTargetF.
   Qed.
 
 End ClprolfFormalization.

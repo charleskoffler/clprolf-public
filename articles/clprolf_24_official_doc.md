@@ -1316,9 +1316,91 @@ Here is the exact translation of section XV, including the math notation, code b
 
 ---
 
-XVII) Formal Certification and Coq Proof Assistant
 
-> **In order to guarantee absolute rigor and eliminate any ambiguity or logical flaw, the complete axiomatic system and expressiveness theorem of Clprolf have been formally codified and fully machine-checked using the Coq proof assistant.**
+# XVII) Mathematical Formalization of Contract Neutrality
+
+In order to demonstrate that the introduction of interface polymorphism (`ClFamily` and `ClTrait`) does not alter the intrinsic nature of the system's atoms, we formalize the theory of contracts as a logical and topological system.
+
+## 1. Contract and Interface Predicates
+
+Let the base sets be:
+
+* $C$: The set of software components.
+* $I$: The set of system interfaces (subdivided into families and traits).
+
+**Component Nature Predicates:**
+
+* $BusinessComponent(c)$: Component $c \in C$ carries a business responsibility.
+* $TechComponent(c)$: Component $c \in C$ carries a technical responsibility.
+
+**Interface Typology Predicates:**
+
+* $Family(i)$: Interface $i \in I$ is a first-level family.
+* $Trait(i)$: Interface $i \in I$ is a cross-cutting capability (trait).
+
+**Polarity Predicates (Target Role):**
+
+* $TargetBusiness(i)$: Interface $i$ exclusively targets the business world.
+* $TargetTech(i)$: Interface $i$ exclusively targets the technical world.
+
+**Topological Relations:**
+
+* $Implements(c, i)$: Component $c$ implements interface $i$.
+* $Inherits(i, j)$: Interface $i$ inherits from interface $j$ (extension or trait composition relation).
+
+---
+
+## 2. Axioms of the Theory of Contracts
+
+### Axiom 1 — Single and Universal Polarity
+
+Every interface necessarily possesses one and only one target polarity, whether business or technical.
+
+$$\forall i \in I \; \Big( TargetBusiness(i) \lor TargetTech(i) \Big)$$
+
+### Axiom 2 — Strict Mirror Law
+
+A component can only implement an interface whose polarity is strictly isomorphic to its own nature.
+
+$$\forall c \in C, \forall i \in I \; \Big( Implements(c, i) \implies \big( BusinessComponent(c) \iff TargetBusiness(i) \big) \land \big( TechComponent(c) \iff TargetTech(i) \big) \Big)$$
+
+### Axiom 3 — Trait Continuity via Inheritance
+
+When a family interface $f$ inherits from a trait $t$, the target polarity is invariably preserved across the hierarchy.
+
+$$\forall i, j \in I \; \Big( Inherits(i, j) \implies \big( TargetBusiness(i) \iff TargetBusiness(j) \big) \land \big( TargetTech(i) \iff TargetTech(j) \big) \Big)$$
+
+---
+
+## 3. Interface Neutrality Theorem
+
+### Theorem Statement
+
+For any component $c$, any family $f$, and any trait $t$, if $f$ inherits from $t$ and $c$ implements $f$, then the contract tree transparently preserves the nature of $c$ down to trait $t$, guaranteeing the ontological neutrality of interfaces.
+
+$$\forall c \in C, \forall f, t \in I \; \Big( Family(f) \land Trait(t) \land Inherits(f, t) \land Implements(c, f) \implies \big( BusinessComponent(c) \implies TargetBusiness(t) \big) \land \big( TechComponent(c) \implies TargetTech(t) \big) \Big)$$
+
+### Analytical Proof
+
+1. **Initial assumption:** Let $c$ be a component such that $BusinessComponent(c)$, $f$ a family, and $t$ a trait such that $Family(f)$, $Trait(t)$, $Inherits(f, t)$, and $Implements(c, f)$.
+2. **Application of Axiom 2 (Mirror Law):** Since $Implements(c, f)$, we immediately deduce that:
+
+$$BusinessComponent(c) \iff TargetBusiness(f)$$
+
+Since $BusinessComponent(c)$ is true by hypothesis, we conclude that $TargetBusiness(f)$ is true.
+3. **Application of Axiom 3 (Continuity):** Since $Inherits(f, t)$ links family $f$ to trait $t$, the polarity transitivity rule gives us:
+
+$$TargetBusiness(f) \iff TargetBusiness(t)$$
+
+Since $TargetBusiness(f)$ is established, it follows that $TargetBusiness(t)$ is necessarily true.
+4. **Conclusion by symmetry:** The exact same reasoning applies rigorously by substituting business polarities with technical polarities for a $TechComponent(c)$ component.
+
+$$\text{Q.E.D.}$$
+
+
+# XVIII) Formal Certification and Coq Proof Assistant
+
+> **In order to guarantee absolute rigor and eliminate any ambiguity or logical flaw, the complete axiomatic system, the expressiveness theorem, and the contract neutrality theorem of Clprolf have been formally codified and fully machine-checked using the Coq proof assistant.**
 
 This mechanical verification (*machine-checked*) approach allows us to transition from a literal paper-based proof to an irrefutable software certification. By submitting the definitions, axioms, and inductive structure of the framework to Coq's logical kernel, we obtain the formal guarantee — down to the final `Qed` — that the Clprolf architecture is completely free of contradictions and capable of faithfully expressing any application that adheres to its fundamental laws.
 
@@ -1477,6 +1559,69 @@ Section ClprolfFormalization.
         * exact HComb.
   Qed.
 
+  (* ================================================================= *)
+  (* 7. EXTENSION : CONTRACT NEUTRALITY THEORY                         *)
+  (* ================================================================= *)
+
+  Variable Interface : Type.
+
+  (* Interface predicates and contract relations *)
+  Variable Family          : Interface -> Prop.
+  Variable Trait           : Interface -> Prop.
+  Variable TargetBusiness  : Interface -> Prop.
+  Variable TargetTech      : Interface -> Prop.
+  Variable Implements      : Object -> Interface -> Prop.
+  Variable Inherits        : Interface -> Interface -> Prop.
+
+  (* Axiom 1: Single and Universal Polarity *)
+  Axiom Contract_Axiom1_Polarity :
+    forall i : Interface,
+      TargetBusiness i \/ TargetTech i.
+
+  (* Axiom 2: Strict Mirror Law *)
+  Axiom Contract_Axiom2_MirrorLaw :
+    forall (c : Object) (i : Interface),
+      Implements c i ->
+      (DomainComponent c <-> TargetBusiness i) /\
+      (TechComponent c <-> TargetTech i).
+
+  (* Axiom 3: Trait Continuity via Inheritance *)
+  Axiom Contract_Axiom3_InheritanceContinuity :
+    forall (i j : Interface),
+      Inherits i j ->
+      (TargetBusiness i <-> TargetBusiness j) /\
+      (TargetTech i <-> TargetTech j).
+
+  (* Interface Neutrality Theorem (Machine-Checked by Coq) *)
+  Theorem Interface_Neutrality_Theorem :
+    forall (c : Object) (f t : Interface),
+      Family f ->
+      Trait t ->
+      Inherits f t ->
+      Implements c f ->
+      (DomainComponent c -> TargetBusiness t) /\
+      (TechComponent c -> TargetTech t).
+  Proof.
+    intros c f t HFam HTrait HInherit HImpl.
+    split.
+    - intros HBusinessC.
+      (* 1. Application of the Mirror Law on f and c *)
+      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [HMirrorBusiness _].
+      assert (HTargetF : TargetBusiness f) by (apply HMirrorBusiness; exact HBusinessC).
+      (* 2. Application of Inheritance Continuity between f and t *)
+      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [HContBusiness _].
+      apply HContBusiness.
+      exact HTargetF.
+    - intros HTechC.
+      (* Same for technical polarity *)
+      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [_ HMirrorTech].
+      assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
+      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [_ HContTech].
+      apply HContTech.
+      exact HTargetF.
+  Qed.
+
 End ClprolfFormalization.
+
 
 ```
