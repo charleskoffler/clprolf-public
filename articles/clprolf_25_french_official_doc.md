@@ -1195,18 +1195,19 @@ Clprolf ajoute très peu de concepts.
 ## 1. Contrat Linguistique et Définitions (Les Prédicats)
 
 Pour garantir une rigueur chirurgicale, le système s'appuie sur des prédicats et des relations ancrés de manière univoque dans la réalité concrète du logiciel, éliminant tout double sens.
-## Prédicats d'objets
+
+### Prédicats d'objets
 
 * $App(x)$ : $x$ est une application logicielle globale.
 * $ButHumain(y)$ : $y$ est une intention ou un objectif humain.
 * $DomaineMetier(m)$ : $m$ est un domaine métier (le modèle fonctionnel à simuler).
 * $SupportTech(t)$ : $t$ est l'infrastructure de support technique associée à la partie.
 * $Atome(d)$ : $d$ est un atome de domaine, brique élémentaire et indivisible du système.
-* $AgentSysteme(s)$ : $s$ est un agent spécialisé doté d'un rôle d'infrastructure ou de gestion technique basse.
-* $ComposantMetier(c)$ : $c$ est le composant logiciel incarnant la logique et les règles métier.
-* $ComposantTech(t)$ : $t$ est le composant logiciel (le Worker) incarnant le support technique.
+* $AgentSysteme(s)$ : $s$ est un agent spécialisé doté d'un rôle d'infrastructure ou de gestion technique basse (`@ClSystem`).
+* $ComposantMetier(c)$ : $c$ est le composant logiciel incarnant la logique et les règles métier (`@ClAgent`).
+* $ComposantTech(t)$ : $t$ est le composant logiciel (le Worker) incarnant le support technique (`@ClWorker`).
 
-## Relations sémantiques et structurelles
+### Relations sémantiques et structurelles
 
 * $Sert(x, y)$ : L'application $x$ sert directement ou indirectement à réaliser le but humain $y$.
 * $Partie(p, x)$ : $p$ est un sous-système modulaire (une partie) constituant l'application $x$.
@@ -1216,12 +1217,11 @@ Pour garantir une rigueur chirurgicale, le système s'appuie sur des prédicats 
 * $Combine(d, c, t)$ : L'atome $d$ résulte de l'union stricte et exclusive du composant métier $c$ et du composant technique $t$.
 * $Utilise(t, s)$ : Le composant technique $t$ délègue une partie de sa complexité de bas niveau à l'agent $s$.
 
-------------------------------
+---
+
 ## 2. Les Axiomes Fondamentaux
 
 Ces axiomes décrivent la géométrie et les lois de composition de l'architecture Clprolf.
-
----
 
 ### Axiome 1 — Périmètre (Scope)
 
@@ -1229,15 +1229,11 @@ Le système étudie les applications logicielles conçues pour l'humain. L'exist
 
 $$\forall A \; \Big( App(A) \Rightarrow \exists G \; (ButHumain(G) \land Sert(A, G)) \Big)$$
 
----
-
 ### Axiome 2 — Décomposition Structurelle
 
 Toute application est une union de parties finies (sous-systèmes). Faire partie d'une application implique d'être une structure organisée simulant un domaine et disposant d'une infrastructure.
 
 $$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( Partie(p, A) \Rightarrow \exists m \, \exists t \; (DomaineMetier(m) \land SupportTech(t) \land Simule(p, m) \land Associe(t, p)) \big) \Big)$$
-
----
 
 ### Axiome 3 — Composition Atomique et Propriété Fractale
 
@@ -1251,109 +1247,121 @@ Si un composant technique (Worker) fait face à une complexité d'infrastructure
 
 $$\forall t \; \Big( ComposantTech(t) \Rightarrow \forall s \; \big( Utilise(t, s) \Rightarrow Atome(s) \land AgentSysteme(s) \big) \Big)$$
 
-------------------------------
+---
+
 ## 3. Dictionnaire de Correspondance Canonique
 
 Le formalisme logique n'est pas une abstraction virtuelle, il calque au millimètre près les concepts concrets du framework :
 
 | Concept Formel | Description Sémantique | Implémentation Clprolf |
-|---|---|---|
-| M ($c$) | Composant portant la sémantique et les règles | @ClAgent |
-| T ($t$) | Composant portant l'infrastructure physique | @ClWorker |
+| --- | --- | --- |
+| M ($c$) | Composant portant la sémantique et les règles | `@ClAgent` |
+| T ($t$) | Composant portant l'infrastructure physique | `@ClWorker` |
 | D ($d$) | L'alliance indissociable du sens et du support | Le binôme natif (Agent + Worker) |
-| S ($s$) | Atome technique gérant l'infrastructure complexe | Agent Système (@ClSystem) |
+| S ($s$) | Atome technique gérant l'infrastructure complexe | Agent Système (`@ClSystem`) |
 | P ($p$) | Assemblage modulaire d'atomes | Subsystem (Ensemble d'Agents & Workers) |
 | A ($A$) | L'entité applicative unifiée | L'Application Clprolf finale |
+| F ($f$) | Contrat principal d'un composant | `@ClFamily` |
+| T ($t$) | Capacité transverse ou contrat secondaire | `@ClTrait` |
 
-------------------------------
+---
+
 ## 4. Théorème d'Expressivité Architecturale
 
-## Énoncé du Théorème
+### Énoncé du Théorème
 
 Pour toute application globale $A$ pouvant être décrite de manière cohérente dans ce système formel, il existe une implémentation complète, exacte et sans angle mort dans le framework Clprolf qui la réalise.
 
-## Démonstration (par induction structurelle
+### Démonstration (par induction structurelle)
 
-## Étape 1 : Le Cas de Base (L'Atome de Domaine)
+#### Étape 1 : Le Cas de Base (L'Atome de Domaine)
 
-* Donnée formelle : Selon l'Axiome 3, l'unité minimale est l'atome $d$, défini par $Combine(d, c, t)$.
-* Correspondance Clprolf : Le framework possède l'abstraction native du binôme Agent + Worker. Le composant métier $c$ devient un Agent, le composant technique $t$ devient un Worker.
-* Extension Fractale : Si le Worker $t$ est complexe, la règle de délégation garantit qu'il peut appeler des Agents Systèmes ($s$). Puisque l'Agent Système est lui-même un atome, la propriété se vérifie par auto-similarité à l'échelle microscopique du code.
-* Conclusion de l'étape : Clprolf sait encoder de manière exacte 100 % des briques atomiques de base.
+* **Donnée formelle :** Selon l'Axiome 3, l'unité minimale est l'atome $d$, défini par $Combine(d, c, t)$.
+* **Correspondance Clprolf :** Le framework possède l'abstraction native du binôme Agent + Worker. Le composant métier $c$ devient un Agent, le composant technique $t$ devient un Worker.
+* **Extension Fractale :** Si le Worker $t$ est complexe, la règle de délégation garantit qu'il peut appeler des Agents Systèmes ($s$). Puisque l'Agent Système est lui-même un atome, la propriété se vérifie par auto-similarité à l'échelle microscopique du code.
+* **Conclusion de l'étape :** Clprolf sait encoder de manière exacte 100 % des briques atomiques de base.
 
-## Étape 2 : L'Étape Inductive 1 (La Partie / Le Sous-système)
+#### Étape 2 : L'Étape Inductive 1 (La Partie / Le Sous-système)
 
-* Hypothèse d'induction : Supposons que Clprolf sait encoder les atomes de domaine.
-* Donnée formelle : Selon l'Axiome 2, une partie $p$ de l'application est un ensemble fini d'atomes de domaine.
-* Correspondance Clprolf : Clprolf fournit le concept de Subsystem. Un sous-système est un conteneur regroupant un ensemble fini d'Agents et de Workers interconnectés.
-* Conclusion de l'étape : L'ensemble fini qui forme la Partie $p$ est intégralement réalisable sous forme de sous-système Clprolf.
+* **Hypothèse d'induction :** Supposons que Clprolf sait encoder les atomes de domaine.
+* **Donnée formelle :** Selon l'Axiome 2, une partie $p$ de l'application est un ensemble fini d'atomes de domaine.
+* **Correspondance Clprolf :** Clprolf fournit le concept de Subsystem. Un sous-système est un conteneur regroupant un ensemble fini d'Agents et de Workers interconnectés.
+* **Conclusion de l'étape :** L'ensemble fini qui forme la Partie $p$ est intégralement réalisable sous forme de sous-système Clprolf.
 
-## Étape 3 : L'Étape Inductive 2 (L'Application Globale)
+#### Étape 3 : L'Étape Inductive 2 (L'Application Globale)
 
-* Hypothèse d'induction : Supposons que Clprolf sait encoder les sous-systèmes.
-* Donnée formelle : Selon l'Axiome 1, l'application complète $A$ est l'union finie de toutes ses parties ($A = \bigcup P_i$).
-* Correspondance Clprolf : L'application globale Clprolf finale assemble, déploie et orchestre nativement l'ensemble de ces sous-systèmes.
-* Conclusion de l'étape : L'application complète $A$ est intégralement réalisée par l'architecture globale Clprolf.
+* **Hypothèse d'induction :** Supposons que Clprolf sait encoder les sous-systèmes.
+* **Donnée formelle :** Selon l'Axiome 1, l'application complète $A$ est l'union finie de toutes ses parties ($A = \bigcup P_i$).
+* **Correspondance Clprolf :** L'application globale Clprolf finale assemble, déploie et orchestre nativement l'ensemble de ces sous-systèmes.
+* **Conclusion de l'étape :** L'application complète $A$ est intégralement réalisée par l'architecture globale Clprolf.
 
 Q.E.D.
-------------------------------
-## 5. Conclusion Finale — La Force de la Structure Fractale
-Cette démonstration prouve que Clprolf n'est pas seulement expressif au sens computationnel brut (Turing), mais au sens architectural :
-Tout système composé de composants métiers et techniques — ce qui inclut l'intégralité des applications logicielles du monde réel — possède une représentation canonique et fractale dans Clprolf.
 
+---
+
+## 5. Conclusion Finale — La Force de la Structure Fractale
+
+Cette démonstration prouve que Clprolf n'est pas seulement expressif au sens computationnel brut (Turing), mais au sens architectural : tout système composé de composants métiers et techniques — ce qui inclut l'intégralité des applications logicielles du monde réel — possède une représentation canonique et fractale dans Clprolf.
+
+---
+
+---
 
 # XVII) Formalisation mathématique de la neutralité des contrats
 
 Afin de démontrer que l'introduction du polymorphisme par interfaces (`ClFamily` et `ClTrait`) ne modifie pas la nature intrinsèque des atomes du système, nous formalisons la théorie des contrats sous forme de système logique et topologique.
 
-## 1. Prédicats de Contrat et d'Interface
+## 1. Prédicats de Contrat et Surcharge Contextuelle
 
 Soient les ensembles de base :
 
 * $C$ l'ensemble des composants logiciels.
-* $I$ l'ensemble des interfaces du système (sub divisé en familles et traits).
+* $I = F \cup T$ l'ensemble des interfaces du système, où $F$ est l'ensemble des familles et $T$ l'ensemble des traits.
 
-**Prédicats de nature des composants :**
+### Prédicats de nature des composants
 
-* $ComposantMetier(c)$ : Le composant $c \in C$ porte une responsabilité métier.
-* $ComposantTech(c)$ : Le composant $c \in C$ porte une responsabilité technique.
+* $ComposantMetier(c)$ : Le composant $c \in C$ porte une responsabilité métier (`@ClAgent`).
+* $ComposantTech(c)$ : Le composant $c \in C$ porte une responsabilité technique (`@ClWorker`).
 
-**Prédicats de typologie d'interface :**
+### Prédicats de typologie d'interface
 
-* $Famille(i)$ : L'interface $i \in I$ est une famille de premier niveau.
-* $Trait(i)$ : L'interface $i \in I$ est une capacité transversale (trait).
+* $Famille(i)$ : $i \in F$, l'interface $i$ est une famille de premier niveau.
+* $Trait(i)$ : $i \in T$, l'interface $i$ est une capacité transversale.
 
-**Prédicats de polarité (Rôle Cible) :**
-
-* $TargetMetier(i)$ : L'interface $i$ cible exclusivement le monde métier.
-* $TargetTech(i)$ : L'interface $i$ cible exclusivement le monde technique.
-
-**Relations topologiques :**
+### Relations topologiques
 
 * $Implements(c, i)$ : Le composant $c$ implémente l'interface $i$.
-* $Inherits(i, j)$ : L'interface $i$ hérite de l'interface $j$ (relation d'extension ou de composition de traits).
+* $Inherits(i, j)$ : L'interface $i$ hérite de l'interface $j$.
+
+### Définition par Surcharge Contextuelle ($\triangleq$)
+
+Pour préserver une syntaxe unifiée dans toutes les équations, les prédicats de cible sont définis par disjonction de cas selon la nature de l'interface $i \in I$ :
+
+$$\text{TargetMetier}(i) \triangleq \begin{cases}  \text{PolaritéMetier}(i) & \text{si } i \in F \quad (\text{Famille : polarité stricte et exclusive}) \\  \text{EstCompatibleMetier}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité réflexive selon le contexte})  \end{cases}$$
+
+$$\text{TargetTech}(i) \triangleq \begin{cases}  \text{PolaritéTech}(i) & \text{si } i \in F \quad (\text{Famille : polarité stricte et exclusive}) \\  \text{EstCompatibleTech}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité réflexive selon le contexte})  \end{cases}$$
 
 ---
 
 ## 2. Axiomes de la Théorie des Contrats
 
-### Axiome 1 — Polarité unique et universelle
+### Axiome 1 — Exclusivité des Familles
 
-Toute interface possède nécessairement une et une seule polarité cible, qu'elle soit métier ou technique.
+Toute famille $f \in F$ possède une polarité stricte et exclusive. Les deux cibles sont mutuellement incompatibles sur une famille, comme l'exprime le connectif d'incompatibilité ($\uparrow$) :
 
-$$\forall i \in I \; \Big( TargetMetier(i) \lor TargetTech(i) \Big)$$
+$$\forall f \in F \; \Big( \text{TargetMetier}(f) \uparrow \text{TargetTech}(f) \Big)$$
 
 ### Axiome 2 — Loi du Miroir Strict
 
-Un composant ne peut implémenter qu'une interface dont la polarité est strictement isomorphe à sa propre nature.
+Un composant ne peut implémenter qu'une famille dont la polarité est strictement isomorphe à sa propre nature :
 
-$$\forall c \in C, \forall i \in I \; \Big( Implements(c, i) \implies \big( ComposantMetier(c) \iff TargetMetier(i) \big) \land \big( ComposantTech(c) \iff TargetTech(i) \big) \Big)$$
+$$\forall c \in C, \forall f \in F \; \Big( Implements(c, f) \implies \big( ComposantMetier(c) \iff TargetMetier(f) \big) \land \big( ComposantTech(c) \iff TargetTech(f) \big) \Big)$$
 
-### Axiome 3 — Continuité des Traits par Héritage
+### Axiome 3 — Continuité Contextuelle des Traits
 
-Lorsqu'une interface de famille $f$ hérite d'un trait $t$, la polarité cible est invariablement conservée à travers la hiérarchie.
+Lorsqu'une famille $f$ hérite d'un trait $t$, la compatibilité du trait $t$ est évaluée dynamiquement dans le contexte de la polarité de la famille $f$ :
 
-$$\forall i, j \in I \; \Big( Inherits(i, j) \implies \big( TargetMetier(i) \iff TargetMetier(j) \big) \land \big( TargetTech(i) \iff TargetTech(j) \big) \Big)$$
+$$\forall f \in F, \forall t \in T \; \Big( Inherits(f, t) \implies \big( TargetMetier(f) \implies TargetMetier(t) \big) \land \big( TargetTech(f) \implies TargetTech(t) \big) \Big)$$
 
 ---
 
@@ -1361,28 +1369,29 @@ $$\forall i, j \in I \; \Big( Inherits(i, j) \implies \big( TargetMetier(i) \iff
 
 ### Énoncé du Théorème
 
-Pour tout composant $c$, toute famille $f$ et tout trait $t$, si $f$ hérite de $t$ et que $c$ implémente $f$, alors l'arborescence des contrats préserve de manière transparente la nature de $c$ jusqu'au trait $t$, garantissant la neutralité ontologique des interfaces.
+Pour tout composant $c$, toute famille $f$ et tout trait $t$, si $f$ hérite de $t$ et que $c$ implémente $f$, alors l'arborescence des contrats préserve la nature de $c$ jusqu'au trait $t$, garantissant la neutralité ontologique des interfaces :
 
 $$\forall c \in C, \forall f, t \in I \; \Big( Famille(f) \land Trait(t) \land Inherits(f, t) \land Implements(c, f) \implies \big( ComposantMetier(c) \implies TargetMetier(t) \big) \land \big( ComposantTech(c) \implies TargetTech(t) \big) \Big)$$
 
 ### Démonstration analytique
 
-1. **Supposition initiale :** Soit un composant $c$ tel que $ComposantMetier(c)$, une famille $f$ et un trait $t$ tels que $Famille(f)$, $Trait(t)$, $Inherits(f, t)$ et $Implements(c, f)$.
-2. **Application de l'Axiome 2 (Loi du Miroir) :** Puisque $Implements(c, f)$, on déduit immédiatement que :
+1. **Supposition initiale :** Soit un composant $c$ tel que $ComposantMetier(c)$, une famille $f \in F$ et un trait $t \in T$ tels que $Inherits(f, t)$ et $Implements(c, f)$.
+2. **Application de l'Axiome 2 (Loi du Miroir) :** Puisque $Implements(c, f)$, on déduit immédiatement :
 
 $$ComposantMetier(c) \iff TargetMetier(f)$$
 
 
 
-Comme $ComposantMetier(c)$ est vrai par hypothèse, on en conclut que $TargetMetier(f)$ est vrai.
-3. **Application de l'Axiome 3 (Continuité) :** Puisque $Inherits(f, t)$ relie la famille $f$ au trait $t$, la règle de transitivité des polarités nous donne :
+Comme $ComposantMetier(c)$ est vrai par hypothèse, $TargetMetier(f)$ est établi.
+3. **Application de l'Axiome 3 (Continuité Contextuelle) :** Puisque $Inherits(f, t)$, l'Axiome 3 donne :
 
-$$TargetMetier(f) \iff TargetMetier(t)$$
+$$TargetMetier(f) \implies TargetMetier(t)$$
 
 
 
-Puisque $TargetMetier(f)$ est établi, il s'ensuit que $TargetMetier(t)$ est nécessairement vrai.
-4. **Conclusion par symétrie :** Le même raisonnement s'applique rigoureusement en substituant les polarités métier par les polarités techniques pour un composant $ComposantTech(c)$.
+Puisque $TargetMetier(f)$ est vrai, l'évaluation du prédicat surchargé pour le trait $t$ donne $\text{TargetMetier}(t) = \text{Vrai}$.
+4. **Cas des Traits Poly-polaires (ex. `Runnable`) :** Si $t$ est un trait d'infrastructure universel, sa fonction $\text{EstCompatibleMetier}(t)$ renvoie $\text{Vrai}$ dans le contexte de la famille métier $f$, validant l'implication $\text{Vrai} \implies \text{Vrai}$ sans altérer l'identité du composant $c$.
+5. **Conclusion par symétrie :** Le raisonnement s'applique à l'identique pour un composant technique $ComposantTech(c)$.
 
 $$\text{Q.E.D.}$$
 
@@ -1528,10 +1537,8 @@ Section ClprolfFormalization.
         Realizes d implAtom.
   Proof.
     intros A p d HApp HPart HCont.
-    (* Expropriation des propriétés de l'atome d via l'Axiome 3 *)
     destruct (Axiom3_CompositionAtomique A p HPart d HCont) as [HAtom [c [t [HMetier [HTech HComb]]]]].
 
-    (* Fourniture des 3 témoins AST *)
     exists (ClApp A).
     exists (ClSubsystem p).
     exists (ClAtom c t).
@@ -1548,39 +1555,57 @@ Section ClprolfFormalization.
   Qed.
   
   (* ================================================================= *)
-  (* 7. EXTENSION : THÉORÈIE DE LA NEUTRALITÉ DES CONTRATS             *)
+  (* 7. EXTENSION : THÉORÈME DE LA NEUTRALITÉ DES CONTRATS             *)
   (* ================================================================= *)
 
   Variable Interface : Type.
 
-  (* Prédicats d'interfaces et de relations de contrats *)
-  Variable Famille        : Interface -> Prop.
-  Variable Trait          : Interface -> Prop.
-  Variable TargetMetier   : Interface -> Prop.
-  Variable TargetTech     : Interface -> Prop.
-  Variable Implements     : Object -> Interface -> Prop.
-  Variable Inherits       : Interface -> Interface -> Prop.
+  (* Classification des interfaces : Famille vs Trait *)
+  Variable Famille : Interface -> Prop.
+  Variable Trait   : Interface -> Prop.
 
-  (* Axiome 1 : Polarité unique et universelle *)
-  Axiom Contract_Axiom1_Polarity :
-    forall i : Interface,
-      TargetMetier i \/ TargetTech i.
+  (* Prédicats d'évaluation internes *)
+  Variable PolariteMetier      : Interface -> Prop.
+  Variable PolariteTech        : Interface -> Prop.
+  Variable EstCompatibleMetier : Interface -> Prop.
+  Variable EstCompatibleTech   : Interface -> Prop.
 
-  (* Axiome 2 : Loi du Miroir Strict *)
+  (* Décidabilité locale de Famille (Simule le checker statique ArchUnit / compilateur) *)
+  Variable fam_dec : forall i : Interface, {Famille i} + {~ Famille i}.
+
+  (* Définition par Surcharge Contextuelle (Symbolique ::= \triangleq) *)
+  Definition TargetMetier (i : Interface) : Prop :=
+    if (fam_dec i) then PolariteMetier i else EstCompatibleMetier i.
+
+  Definition TargetTech (i : Interface) : Prop :=
+    if (fam_dec i) then PolariteTech i else EstCompatibleTech i.
+
+  Variable Implements : Object -> Interface -> Prop.
+  Variable Inherits   : Interface -> Interface -> Prop.
+
+  (* Axiome 1 : Exclusivité des Familles via Connectif d'Incompatibilité (Sheffer / NAND) *)
+  Axiom Contract_Axiom1_FamilyExclusivity :
+    forall f : Interface,
+      Famille f -> ~ (TargetMetier f /\ TargetTech f).
+
+  (* Axiome 2 : Loi du Miroir Strict (Composant <-> Famille) *)
   Axiom Contract_Axiom2_MirrorLaw :
-    forall (c : Object) (i : Interface),
-      Implements c i ->
-      (ComposantMetier c <-> TargetMetier i) /\
-      (ComposantTech c <-> TargetTech i).
+    forall (c : Object) (f : Interface),
+      Famille f ->
+      Implements c f ->
+      (ComposantMetier c <-> TargetMetier f) /\
+      (ComposantTech c <-> TargetTech f).
 
-  (* Axiome 3 : Continuité des Traits par Héritage *)
-  Axiom Contract_Axiom3_InheritanceContinuity :
-    forall (i j : Interface),
-      Inherits i j ->
-      (TargetMetier i <-> TargetMetier j) /\
-      (TargetTech i <-> TargetTech j).
+  (* Axiome 3 : Continuité Contextuelle des Traits par Héritage *)
+  Axiom Contract_Axiom3_TraitContextualContinuity :
+    forall (f t : Interface),
+      Famille f ->
+      Trait t ->
+      Inherits f t ->
+      (TargetMetier f -> TargetMetier t) /\
+      (TargetTech f -> TargetTech t).
 
-  (* Théorème de Neutralité des Interfaces (Vérifié par Coq) *)
+  (* Théorème de Neutralité des Interfaces (Machine-Checked avec Surcharge) *)
   Theorem Interface_Neutrality_Theorem :
     forall (c : Object) (f t : Interface),
       Famille f ->
@@ -1593,18 +1618,18 @@ Section ClprolfFormalization.
     intros c f t HFam HTrait HInherit HImpl.
     split.
     - intros HMetierC.
-      (* 1. Application de la Loi du Miroir sur f et c *)
-      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [HMirrorMetier _].
+      (* 1. Application de la Loi du Miroir sur f *)
+      destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [HMirrorMetier _].
       assert (HTargetF : TargetMetier f) by (apply HMirrorMetier; exact HMetierC).
-      (* 2. Application de la Continuité d'héritage entre f et t *)
-      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [HContMetier _].
+      (* 2. Application de la Continuité Contextuelle *)
+      destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [HContMetier _].
       apply HContMetier.
       exact HTargetF.
     - intros HTechC.
-      (* Idem pour la polarité technique *)
-      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [_ HMirrorTech].
+      (* 3. Dualité pour la polarité technique *)
+      destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ HMirrorTech].
       assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
-      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [_ HContTech].
+      destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ HContTech].
       apply HContTech.
       exact HTargetF.
   Qed.

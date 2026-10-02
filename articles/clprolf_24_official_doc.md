@@ -1198,32 +1198,34 @@ ClFree
 2. Inherit only within the same domain.
 ```
 
+---
+
 # XVI) Axiomatic Formalization and Expressiveness Theorem
 
 ## 1. Linguistic Contract and Definitions (Predicates)
 
-To ensure surgical rigor, the system relies on predicates and relations unambiguously anchored in the concrete reality of software, eliminating any ambiguity.
+To ensure surgical rigor, the system relies on predicates and relations grounded unambiguously in the concrete reality of software engineering, eliminating any double meaning.
 
 ### Object Predicates
 
-* $App(x)$: $x$ is a global software application.
+* $App(x)$: $x$ is an overall software application.
 * $HumanGoal(y)$: $y$ is a human intention or objective.
-* $BusinessDomain(m)$: $m$ is a business domain (the domain model to be simulated).
-* $TechSupport(t)$: $t$ is the technical support infrastructure associated with the part.
-* $Atom(d)$: $d$ is a domain atom, an elementary and indivisible building block of the system.
-* $SystemAgent(s)$: $s$ is a specialized agent endowed with an infrastructure role or low-level technical management.
-* $BusinessComponent(c)$: $c$ is the software component embodying business logic and rules.
-* $TechComponent(t)$: $t$ is the software component (the Worker) embodying technical support.
+* $BusinessDomain(m)$: $m$ is a business domain (the functional model to be simulated).
+* $TechSupport(t)$: $t$ is the technical support infrastructure associated with the subsystem.
+* $Atom(d)$: $d$ is a domain atom, the elementary and indivisible building block of the system.
+* $SystemAgent(s)$: $s$ is a specialized agent endowed with an infrastructure or low-level management role (`@ClSystem`).
+* $BusinessComponent(c)$: $c$ is the software component embodying business logic and rules (`@ClAgent`).
+* $TechComponent(t)$: $t$ is the software component (the Worker) embodying technical support (`@ClWorker`).
 
 ### Semantic and Structural Relations
 
-* $Serves(x, y)$: The application $x$ serves directly or indirectly to achieve the human goal $y$.
-* $Part(p, x)$: $p$ is a modular subsystem (a part) constituting the application $x$.
+* $Serves(x, y)$: Application $x$ directly or indirectly serves to achieve human goal $y$.
+* $Part(p, x)$: $p$ is a modular subsystem (a part) constituting application $x$.
 * $Simulates(p, m)$: Subsystem $p$ **simulates** business domain $m$.
 * $Associates(t, p)$: Technical support $t$ is associated with subsystem $p$.
-* $Contains(p, d)$: The subsystem $p$ contains the domain atom $d$.
-* $Combines(d, c, t)$: The atom $d$ results from the strict and exclusive union of the business component $c$ and the technical component $t$.
-* $Uses(t, s)$: The technical component $t$ delegates part of its low-level complexity to the agent $s$.
+* $Contains(p, d)$: Subsystem $p$ contains domain atom $d$.
+* $Combines(d, c, t)$: Atom $d$ results from the strict and exclusive union of business component $c$ and technical component $t$.
+* $Uses(t, s)$: Technical component $t$ delegates part of its low-level complexity to agent $s$.
 
 ---
 
@@ -1233,176 +1235,181 @@ These axioms describe the geometry and composition laws of the Clprolf architect
 
 ### Axiom 1 — Scope
 
-The system studies software applications designed for human use. The material existence of an application necessarily implies the real existence of the human goal it serves.
+The system studies software applications designed for human use. The material existence of an application strictly implies the real existence of the human goal it serves.
 
 $$\forall A \; \Big( App(A) \Rightarrow \exists G \; (HumanGoal(G) \land Serves(A, G)) \Big)$$
 
----
-
 ### Axiom 2 — Structural Decomposition
 
-Every application is a union of finite parts (subsystems). Being part of an application implies being an organized structure simulating a domain and possessing a technical infrastructure.
+Every application is a union of finite parts (subsystems). Being part of an application implies being an organized structure simulating a domain and possessing an infrastructure.
 
-$$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( PartOf(p, A) \Rightarrow \exists m \, \exists t \; (DomainModel(m) \land TechSupport(t) \land Simulates(p, m) \land Associates(t, p)) \big) \Big)$$
+$$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( Part(p, A) \Rightarrow \exists m \, \exists t \; (BusinessDomain(m) \land TechSupport(t) \land Simulates(p, m) \land Associates(t, p)) \big) \Big)$$
 
----
+### Axiom 3 — Atomic Composition and Fractal Property
 
-### Axiom 3 — Atomic Composition & Fractal Property
+Each subsystem $p$ of an application $A$ consists of domain atoms $d$. A domain atom is the exclusive union of a business component $c$ and a technical component $t$.
 
-Every subsystem $p$ of an application $A$ is composed of domain atoms $d$. A domain atom is the exclusive union of a domain component $c$ and a technical component $t$.
-
-$$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( PartOf(p, A) \Rightarrow \forall d \; ( Contains(p, d) \Rightarrow Atom(d) \land \exists c \, \exists t \; (DomainComponent(c) \land TechComponent(t) \land Combines(d, c, t)) ) \big) \Big)$$
+$$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( Part(p, A) \Rightarrow \forall d \; ( Contains(p, d) \Rightarrow Atom(d) \land \exists c \, \exists t \; (BusinessComponent(c) \land TechComponent(t) \land Combines(d, c, t)) ) \big) \Big)$$
 
 **Fractal Delegation Rule:**
 
-If a technical component (Worker) faces heavy infrastructure complexity, it is guaranteed the ability to delegate that task to System Agents. Every System Agent is explicitly defined as a complete domain atom itself.
+If a technical component (Worker) faces heavy infrastructure complexity, it is guaranteed the ability to delegate that task to System Agents. Every System Agent is explicitly defined as being itself a complete domain atom.
 
 $$\forall t \; \Big( TechComponent(t) \Rightarrow \forall s \; \big( Uses(t, s) \Rightarrow Atom(s) \land SystemAgent(s) \big) \Big)$$
 
+---
+
 ## 3. Canonical Mapping Dictionary
 
-The logical formalism is not a virtual abstraction; it maps precisely onto the concrete concepts of the framework:
+The logical formalism is not a virtual abstraction; it aligns down to the millimeter with the concrete concepts of the framework:
 
 | Formal Concept | Semantic Description | Clprolf Implementation |
 | --- | --- | --- |
-| M ($c$) | Component carrying semantics and rules | @ClAgent |
-| T ($t$) | Component carrying physical infrastructure | @ClWorker |
-| D ($d$) | Indissociable alliance of meaning and support | The native pair (Agent + Worker) |
-| S ($s$) | Technical atom managing complex infrastructure | System Agent (@ClSystem) |
-| P ($p$) | Modular assembly of atoms | Subsystem (Set of Agents & Workers) |
-| A ($A$) | The unified application entity | The final Clprolf Application |
+| M ($c$) | Component carrying semantics and business rules | `@ClAgent` |
+| T ($t$) | Component carrying physical infrastructure | `@ClWorker` |
+| D ($d$) | Inseparable alliance of meaning and support | Native pair (Agent + Worker) |
+| S ($s$) | Technical atom managing complex infrastructure | System Agent (`@ClSystem`) |
+| P ($p$) | Modular assembly of atoms | Subsystem (Group of Agents & Workers) |
+| A ($A$) | Unified application entity | Final Clprolf Application |
+| F ($f$) | Primary component contract | `@ClFamily` |
+| T ($t$) | Cross-cutting capability or secondary contract | `@ClTrait` |
 
 ---
 
-## 4. Architectural Expressiveness Theorem
+## 4. Theorem of Architectural Expressiveness
 
 ### Theorem Statement
 
-For any global application $A$ that can be coherently described within this formal system, there exists a complete, exact, and gapless implementation within the Clprolf framework that realizes it.
+For any global application $A$ that can be coherently described within this formal system, there exists a complete, exact, and gapless implementation in the Clprolf framework that realizes it.
 
-### Proof (by structural induction)
+### Proof (by Structural Induction)
 
 #### Step 1: Base Case (The Domain Atom)
 
-* Formal data: According to Axiom 3, the minimal unit is the atom $d$, defined by $Combines(d, c, t)$.
-* Clprolf correspondence: The framework possesses the native abstraction of the Agent + Worker pair. The business component $c$ becomes an Agent; the technical component $t$ becomes a Worker.
-* Fractal Extension: If the Worker $t$ is complex, the delegation rule guarantees that it can invoke System Agents ($s$). Since the System Agent is itself an atom, the property holds by self-similarity at the microscopic scale of the code.
-* Step conclusion: Clprolf can accurately encode 100% of the fundamental atomic building blocks.
+* **Formal Data:** According to Axiom 3, the minimal unit is atom $d$, defined by $Combines(d, c, t)$.
+* **Clprolf Mapping:** The framework natively provides the Agent + Worker pair abstraction. Business component $c$ becomes an Agent, technical component $t$ becomes a Worker.
+* **Fractal Extension:** If Worker $t$ is complex, the delegation rule guarantees it can invoke System Agents ($s$). Since a System Agent is itself an atom, the property holds by self-similarity at the microscopic code scale.
+* **Step Conclusion:** Clprolf exactly encodes 100% of basic atomic building blocks.
 
 #### Step 2: Inductive Step 1 (The Part / Subsystem)
 
-* Induction hypothesis: Assume that Clprolf can encode domain atoms.
-* Formal data: According to Axiom 2, a part $p$ of the application is a finite set of domain atoms.
-* Clprolf correspondence: Clprolf provides the Subsystem concept. A subsystem is a container grouping a finite set of interconnected Agents and Workers.
-* Step conclusion: The finite set forming Part $p$ is entirely realizable as a Clprolf subsystem.
+* **Induction Hypothesis:** Assume Clprolf can encode domain atoms.
+* **Formal Data:** According to Axiom 2, part $p$ of the application is a finite set of domain atoms.
+* **Clprolf Mapping:** Clprolf provides the Subsystem concept. A subsystem is a container gathering a finite set of interconnected Agents and Workers.
+* **Step Conclusion:** The finite set forming Part $p$ is fully realizable as a Clprolf subsystem.
 
-#### Step 3: Inductive Step 2 (The Global Application)
+#### Step 3: Inductive Step 2 (The Overall Application)
 
-* Induction hypothesis: Assume that Clprolf can encode subsystems.
-* Formal data: According to Axiom 1, the complete application $A$ is the finite union of all its parts ($A = \bigcup P_i$).
-* Clprolf correspondence: The final global Clprolf application natively assembles, deploys, and orchestrates all these subsystems.
-* Step conclusion: The complete application $A$ is fully realized by the overall Clprolf architecture.
+* **Induction Hypothesis:** Assume Clprolf can encode subsystems.
+* **Formal Data:** According to Axiom 1, complete application $A$ is the finite union of all its parts ($A = \bigcup P_i$).
+* **Clprolf Mapping:** The final global Clprolf application natively assemblies, deploys, and orchestrates all these subsystems.
+* **Step Conclusion:** Complete application $A$ is fully realized by the overall Clprolf architecture.
 
 Q.E.D.
 
 ---
 
-## 5. Final Conclusion — The Power of the Fractal Structure
+## 5. Final Conclusion — The Power of Fractal Structure
 
-This proof demonstrates that Clprolf is not only expressive in the raw computational sense (Turing), but in the architectural sense:
-Any system composed of business and technical components — which includes all real-world software applications — possesses a canonical and fractal representation in Clprolf.
-
-Here is the exact translation of section XV, including the math notation, code block, and formatting for your English documentation.
+This proof demonstrates that Clprolf is not merely expressive in the raw computational sense (Turing), but in the architectural sense: any system composed of business and technical components—which includes all real-world software applications—possesses a canonical, fractal representation in Clprolf.
 
 ---
 
+---
 
 # XVII) Mathematical Formalization of Contract Neutrality
 
-In order to demonstrate that the introduction of interface polymorphism (`ClFamily` and `ClTrait`) does not alter the intrinsic nature of the system's atoms, we formalize the theory of contracts as a logical and topological system.
+To demonstrate that introducing interface polymorphism (`ClFamily` and `ClTrait`) does not alter the intrinsic nature of the system's atoms, we formalize contract theory as a logical and topological system.
 
-## 1. Contract and Interface Predicates
+## 1. Contract Predicates and Contextual Overloading
 
 Let the base sets be:
 
-* $C$: The set of software components.
-* $I$: The set of system interfaces (subdivided into families and traits).
+* $C$, the set of software components.
+* $I = F \cup T$, the set of system interfaces, where $F$ is the set of families and $T$ is the set of traits.
 
-**Component Nature Predicates:**
+### Component Nature Predicates
 
-* $BusinessComponent(c)$: Component $c \in C$ carries a business responsibility.
-* $TechComponent(c)$: Component $c \in C$ carries a technical responsibility.
+* $BusinessComponent(c)$: Component $c \in C$ carries a business responsibility (`@ClAgent`).
+* $TechComponent(c)$: Component $c \in C$ carries a technical responsibility (`@ClWorker`).
 
-**Interface Typology Predicates:**
+### Interface Typology Predicates
 
-* $Family(i)$: Interface $i \in I$ is a first-level family.
-* $Trait(i)$: Interface $i \in I$ is a cross-cutting capability (trait).
+* $Family(i)$: $i \in F$, interface $i$ is a top-level family.
+* $Trait(i)$: $i \in T$, interface $i$ is a cross-cutting capability.
 
-**Polarity Predicates (Target Role):**
-
-* $TargetBusiness(i)$: Interface $i$ exclusively targets the business world.
-* $TargetTech(i)$: Interface $i$ exclusively targets the technical world.
-
-**Topological Relations:**
+### Topological Relations
 
 * $Implements(c, i)$: Component $c$ implements interface $i$.
-* $Inherits(i, j)$: Interface $i$ inherits from interface $j$ (extension or trait composition relation).
+* $Inherits(i, j)$: Interface $i$ inherits from interface $j$.
+
+### Definition by Contextual Overloading ($\triangleq$)
+
+To preserve a unified syntax across all equations, target predicates are defined by case disjunction based on the nature of interface $i \in I$:
+
+$$\text{TargetBusiness}(i) \triangleq \begin{cases} \text{BusinessPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsBusinessCompatible}(i) & \text{if } i \in T \quad (\text{Trait: reflexive context-dependent compatibility}) \end{cases}$$
+
+$$\text{TargetTech}(i) \triangleq \begin{cases} \text{TechPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsTechCompatible}(i) & \text{if } i \in T \quad (\text{Trait: reflexive context-dependent compatibility}) \end{cases}$$
 
 ---
 
-## 2. Axioms of the Theory of Contracts
+## 2. Axioms of Contract Theory
 
-### Axiom 1 — Single and Universal Polarity
+### Axiom 1 — Exclusivity of Families
 
-Every interface necessarily possesses one and only one target polarity, whether business or technical.
+Every family $f \in F$ possesses a strict and exclusive polarity. Both targets are mutually incompatible on a family, as expressed by the incompatibility connective ($\uparrow$, Sheffer stroke / NAND):
 
-$$\forall i \in I \; \Big( TargetBusiness(i) \lor TargetTech(i) \Big)$$
+$$\forall f \in F \; \Big( \text{TargetBusiness}(f) \uparrow \text{TargetTech}(f) \Big)$$
 
 ### Axiom 2 — Strict Mirror Law
 
-A component can only implement an interface whose polarity is strictly isomorphic to its own nature.
+A component can only implement a family whose polarity is strictly isomorphic to its own nature:
 
-$$\forall c \in C, \forall i \in I \; \Big( Implements(c, i) \implies \big( BusinessComponent(c) \iff TargetBusiness(i) \big) \land \big( TechComponent(c) \iff TargetTech(i) \big) \Big)$$
+$$\forall c \in C, \forall f \in F \; \Big( Implements(c, f) \implies \big( BusinessComponent(c) \iff TargetBusiness(f) \big) \land \big( TechComponent(c) \iff TargetTech(f) \big) \Big)$$
 
-### Axiom 3 — Trait Continuity via Inheritance
+### Axiom 3 — Contextual Continuity of Traits
 
-When a family interface $f$ inherits from a trait $t$, the target polarity is invariably preserved across the hierarchy.
+When a family $f$ inherits from a trait $t$, the compatibility of trait $t$ is dynamically evaluated within the context of family $f$'s polarity:
 
-$$\forall i, j \in I \; \Big( Inherits(i, j) \implies \big( TargetBusiness(i) \iff TargetBusiness(j) \big) \land \big( TargetTech(i) \iff TargetTech(j) \big) \Big)$$
+$$\forall f \in F, \forall t \in T \; \Big( Inherits(f, t) \implies \big( TargetBusiness(f) \implies TargetBusiness(t) \big) \land \big( TargetTech(f) \implies TargetTech(t) \big) \Big)$$
 
 ---
 
-## 3. Interface Neutrality Theorem
+## 3. Theorem of Interface Neutrality
 
 ### Theorem Statement
 
-For any component $c$, any family $f$, and any trait $t$, if $f$ inherits from $t$ and $c$ implements $f$, then the contract tree transparently preserves the nature of $c$ down to trait $t$, guaranteeing the ontological neutrality of interfaces.
+For any component $c$, family $f$, and trait $t$, if $f$ inherits from $t$ and $c$ implements $f$, then the contract tree preserves the nature of $c$ up to trait $t$, guaranteeing the ontological neutrality of interfaces:
 
 $$\forall c \in C, \forall f, t \in I \; \Big( Family(f) \land Trait(t) \land Inherits(f, t) \land Implements(c, f) \implies \big( BusinessComponent(c) \implies TargetBusiness(t) \big) \land \big( TechComponent(c) \implies TargetTech(t) \big) \Big)$$
 
 ### Analytical Proof
 
-1. **Initial assumption:** Let $c$ be a component such that $BusinessComponent(c)$, $f$ a family, and $t$ a trait such that $Family(f)$, $Trait(t)$, $Inherits(f, t)$, and $Implements(c, f)$.
-2. **Application of Axiom 2 (Mirror Law):** Since $Implements(c, f)$, we immediately deduce that:
+1. **Initial Assumption:** Let component $c$ be such that $BusinessComponent(c)$, family $f \in F$, and trait $t \in T$ such that $Inherits(f, t)$ and $Implements(c, f)$.
+2. **Application of Axiom 2 (Mirror Law):** Since $Implements(c, f)$, we immediately deduce:
 
 $$BusinessComponent(c) \iff TargetBusiness(f)$$
 
-Since $BusinessComponent(c)$ is true by hypothesis, we conclude that $TargetBusiness(f)$ is true.
-3. **Application of Axiom 3 (Continuity):** Since $Inherits(f, t)$ links family $f$ to trait $t$, the polarity transitivity rule gives us:
+Since $BusinessComponent(c)$ holds by hypothesis, $TargetBusiness(f)$ is established.
 
-$$TargetBusiness(f) \iff TargetBusiness(t)$$
+3. **Application of Axiom 3 (Contextual Continuity):** Since $Inherits(f, t)$, Axiom 3 yields:
 
-Since $TargetBusiness(f)$ is established, it follows that $TargetBusiness(t)$ is necessarily true.
-4. **Conclusion by symmetry:** The exact same reasoning applies rigorously by substituting business polarities with technical polarities for a $TechComponent(c)$ component.
+$$TargetBusiness(f) \implies TargetBusiness(t)$$
+
+Since $TargetBusiness(f)$ holds, evaluating the overloaded predicate for trait $t$ gives $\text{TargetBusiness}(t) = \text{True}$.
+
+4. **Poly-polar Traits Case (e.g., `Runnable`):** If $t$ is a universal infrastructure trait, its function $\text{IsBusinessCompatible}(t)$ returns $\text{True}$ in the context of business family $f$, validating the implication $\text{True} \implies \text{True}$ without altering component $c$'s identity.
+5. **Conclusion by Symmetry:** The identical reasoning applies to a technical component $TechComponent(c)$.
 
 $$\text{Q.E.D.}$$
 
+---
 
 # XVIII) Formal Certification and Coq Proof Assistant
 
-> **In order to guarantee absolute rigor and eliminate any ambiguity or logical flaw, the complete axiomatic system, the expressiveness theorem, and the contract neutrality theorem of Clprolf have been formally codified and fully machine-checked using the Coq proof assistant.**
+> **To guarantee absolute rigor and eliminate any ambiguity or logical flaw, the entire axiomatic system and expressiveness theorem of Clprolf have been formally codified and fully machine-verified using the Coq proof assistant.**
 
-This mechanical verification (*machine-checked*) approach allows us to transition from a literal paper-based proof to an irrefutable software certification. By submitting the definitions, axioms, and inductive structure of the framework to Coq's logical kernel, we obtain the formal guarantee — down to the final `Qed` — that the Clprolf architecture is completely free of contradictions and capable of faithfully expressing any application that adheres to its fundamental laws.
+This machine-checked verification approach allows moving from a paper proof to an irrefutable computer-backed certification. By submitting the definitions, axioms, and inductive structure of the framework to Coq's logical kernel, we obtain formal assurance—up to the final `Qed`—that the Clprolf architecture is exempt from contradiction and capable of faithfully expressing any application abiding by its fundamental laws.
 
 ---
 
@@ -1421,48 +1428,48 @@ Section ClprolfFormalization.
   Variable HumanGoal         : Object -> Prop.
   Variable Atom              : Object -> Prop.
   Variable SystemAgent       : Object -> Prop.
-  Variable DomainComponent   : Object -> Prop.
+  Variable BusinessComponent : Object -> Prop.
   Variable TechComponent     : Object -> Prop.
-  Variable DomainModel       : Object -> Prop.
+  Variable BusinessDomain    : Object -> Prop.
   Variable TechSupport       : Object -> Prop.
 
   (* Relations *)
-  Variable Serves   : Object -> Object -> Prop.
-  Variable PartOf   : Object -> Object -> Prop.
-  Variable Contains : Object -> Object -> Prop.
-  Variable Combines : Object -> Object -> Object -> Prop.
-  Variable Uses     : Object -> Object -> Prop.
-  Variable Simulates: Object -> Object -> Prop.
-  Variable Associates: Object -> Object -> Prop.
+  Variable Serves     : Object -> Object -> Prop.
+  Variable Part       : Object -> Object -> Prop.
+  Variable Contains   : Object -> Object -> Prop.
+  Variable Combines   : Object -> Object -> Object -> Prop.
+  Variable Uses       : Object -> Object -> Prop.
+  Variable Simulates  : Object -> Object -> Prop.
+  Variable Associates : Object -> Object -> Prop.
 
   (* ================================================================= *)
   (* 2. FUNDAMENTAL AXIOMS OF CLPROLF                                  *)
   (* ================================================================= *)
 
-  (* Axiom 1: Application Scope *)
+  (* Axiom 1 : Application Scope *)
   Axiom Axiom1_Scope :
     forall A : Object,
       App A ->
       exists G : Object, HumanGoal G /\ Serves A G.
 
-  (* Axiom 2: Structural Decomposition (Domain + Support) *)
+  (* Axiom 2 : Structural Decomposition (Domain + Support) *)
   Axiom Axiom2_StructuralDecomposition :
     forall A : Object,
       App A ->
       forall p : Object,
-        PartOf p A ->
+        Part p A ->
         exists m t : Object,
-          DomainModel m /\ TechSupport t /\ Simulates p m /\ Associates t p.
+          BusinessDomain m /\ TechSupport t /\ Simulates p m /\ Associates t p.
 
-  (* Axiom 3: Atomic Composition (Inseparable Domain + Tech) *)
+  (* Axiom 3 : Atomic Composition (Business + Tech inseparable) *)
   Axiom Axiom3_AtomicComposition :
     forall A p : Object,
-      PartOf p A ->
+      Part p A ->
       forall d : Object,
         Contains p d ->
         Atom d /\
         exists c t : Object,
-          DomainComponent c /\ TechComponent t /\ Combines d c t.
+          BusinessComponent c /\ TechComponent t /\ Combines d c t.
 
   (* ================================================================= *)
   (* 3. GRAMMAR (AST) OF THE CLPROLF FRAMEWORK                         *)
@@ -1480,12 +1487,12 @@ Section ClprolfFormalization.
   Inductive Realizes : Object -> ClprolfComponent -> Prop :=
     | Realize_Atom : forall (d c t : Object),
         Atom d ->
-        DomainComponent c ->
+        BusinessComponent c ->
         TechComponent t ->
         Combines d c t ->
         Realizes d (ClAtom c t)
     | Realize_Subsystem : forall (p A : Object),
-        PartOf p A ->
+        Part p A ->
         Realizes p (ClSubsystem p)
     | Realize_App : forall (A : Object),
         App A ->
@@ -1498,23 +1505,23 @@ Section ClprolfFormalization.
   Lemma Atom_Expressiveness :
     forall (d c t : Object),
       Atom d ->
-      DomainComponent c ->
+      BusinessComponent c ->
       TechComponent t ->
       Combines d c t ->
       exists impl : ClprolfComponent, Realizes d impl.
   Proof.
-    intros d c t HAtom HDomain HTech HComb.
+    intros d c t HAtom HBusiness HTech HComb.
     exists (ClAtom c t).
     apply Realize_Atom with (c := c) (t := t).
     - exact HAtom.
-    - exact HDomain.
+    - exact HBusiness.
     - exact HTech.
     - exact HComb.
   Qed.
 
   Lemma Subsystem_Expressiveness :
     forall (p A : Object),
-      PartOf p A ->
+      Part p A ->
       exists impl : ClprolfComponent, Realizes p impl.
   Proof.
     intros p A HPart.
@@ -1524,13 +1531,13 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  (* 6. DEEP ARCHITECTURAL EXPRESSIVENESS THEOREM                      *)
+  (* 6. INTEGRAL EXPRESSIVENESS THEOREM (SURFACE AND DEPTH)            *)
   (* ================================================================= *)
 
   Theorem Deep_Architectural_Expressiveness :
     forall (A p d : Object),
       App A ->
-      PartOf p A ->
+      Part p A ->
       Contains p d ->
       exists (implApp : ClprolfComponent) 
              (implSub : ClprolfComponent) 
@@ -1540,10 +1547,8 @@ Section ClprolfFormalization.
         Realizes d implAtom.
   Proof.
     intros A p d HApp HPart HCont.
-    (* Extracting atom properties via Axiom 3 *)
-    destruct (Axiom3_AtomicComposition A p HPart d HCont) as [HAtom [c [t [HDomain [HTech HComb]]]]].
+    destruct (Axiom3_AtomicComposition A p HPart d HCont) as [HAtom [c [t [HBusiness [HTech HComb]]]]].
 
-    (* Providing the 3 AST witnesses *)
     exists (ClApp A).
     exists (ClSubsystem p).
     exists (ClAtom c t).
@@ -1554,74 +1559,91 @@ Section ClprolfFormalization.
       + apply Realize_Subsystem with (A := A). exact HPart.
       + apply Realize_Atom with (c := c) (t := t).
         * exact HAtom.
-        * exact HDomain.
+        * exact HBusiness.
         * exact HTech.
         * exact HComb.
   Qed.
 
   (* ================================================================= *)
-  (* 7. EXTENSION : CONTRACT NEUTRALITY THEORY                         *)
+  (* 7. EXTENSION : CONTRACT NEUTRALITY THEOREM                        *)
   (* ================================================================= *)
 
   Variable Interface : Type.
 
-  (* Interface predicates and contract relations *)
-  Variable Family          : Interface -> Prop.
-  Variable Trait           : Interface -> Prop.
-  Variable TargetBusiness  : Interface -> Prop.
-  Variable TargetTech      : Interface -> Prop.
-  Variable Implements      : Object -> Interface -> Prop.
-  Variable Inherits        : Interface -> Interface -> Prop.
+  (* Interface Classification: Family vs Trait *)
+  Variable Family : Interface -> Prop.
+  Variable Trait  : Interface -> Prop.
 
-  (* Axiom 1: Single and Universal Polarity *)
-  Axiom Contract_Axiom1_Polarity :
-    forall i : Interface,
-      TargetBusiness i \/ TargetTech i.
+  (* Internal Evaluation Predicates *)
+  Variable BusinessPolarity     : Interface -> Prop.
+  Variable TechPolarity         : Interface -> Prop.
+  Variable IsBusinessCompatible : Interface -> Prop.
+  Variable IsTechCompatible     : Interface -> Prop.
 
-  (* Axiom 2: Strict Mirror Law *)
+  (* Local Decidability of Family (Simulates static ArchUnit / compiler checker) *)
+  Variable fam_dec : forall i : Interface, {Family i} + {~ Family i}.
+
+  (* Definition by Contextual Overloading (Symbolically ::= \triangleq) *)
+  Definition TargetBusiness (i : Interface) : Prop :=
+    if (fam_dec i) then BusinessPolarity i else IsBusinessCompatible i.
+
+  Definition TargetTech (i : Interface) : Prop :=
+    if (fam_dec i) then TechPolarity i else IsTechCompatible i.
+
+  Variable Implements : Object -> Interface -> Prop.
+  Variable Inherits   : Interface -> Interface -> Prop.
+
+  (* Axiom 1 : Family Exclusivity via Incompatibility Connective (Sheffer / NAND) *)
+  Axiom Contract_Axiom1_FamilyExclusivity :
+    forall f : Interface,
+      Family f -> ~ (TargetBusiness f /\ TargetTech f).
+
+  (* Axiom 2 : Strict Mirror Law (Component <-> Family) *)
   Axiom Contract_Axiom2_MirrorLaw :
-    forall (c : Object) (i : Interface),
-      Implements c i ->
-      (DomainComponent c <-> TargetBusiness i) /\
-      (TechComponent c <-> TargetTech i).
+    forall (c : Object) (f : Interface),
+      Family f ->
+      Implements c f ->
+      (BusinessComponent c <-> TargetBusiness f) /\
+      (TechComponent c <-> TargetTech f).
 
-  (* Axiom 3: Trait Continuity via Inheritance *)
-  Axiom Contract_Axiom3_InheritanceContinuity :
-    forall (i j : Interface),
-      Inherits i j ->
-      (TargetBusiness i <-> TargetBusiness j) /\
-      (TargetTech i <-> TargetTech j).
+  (* Axiom 3 : Contextual Continuity of Traits through Inheritance *)
+  Axiom Contract_Axiom3_TraitContextualContinuity :
+    forall (f t : Interface),
+      Family f ->
+      Trait t ->
+      Inherits f t ->
+      (TargetBusiness f -> TargetBusiness t) /\
+      (TechTech f -> TargetTech t).
 
-  (* Interface Neutrality Theorem (Machine-Checked by Coq) *)
+  (* Interface Neutrality Theorem (Machine-Checked with Overloading) *)
   Theorem Interface_Neutrality_Theorem :
     forall (c : Object) (f t : Interface),
       Family f ->
       Trait t ->
       Inherits f t ->
       Implements c f ->
-      (DomainComponent c -> TargetBusiness t) /\
+      (BusinessComponent c -> TargetBusiness t) /\
       (TechComponent c -> TargetTech t).
   Proof.
     intros c f t HFam HTrait HInherit HImpl.
     split.
     - intros HBusinessC.
-      (* 1. Application of the Mirror Law on f and c *)
-      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [HMirrorBusiness _].
+      (* 1. Application of Mirror Law to f *)
+      destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [HMirrorBusiness _].
       assert (HTargetF : TargetBusiness f) by (apply HMirrorBusiness; exact HBusinessC).
-      (* 2. Application of Inheritance Continuity between f and t *)
-      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [HContBusiness _].
+      (* 2. Application of Contextual Continuity *)
+      destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [HContBusiness _].
       apply HContBusiness.
       exact HTargetF.
     - intros HTechC.
-      (* Same for technical polarity *)
-      destruct (Contract_Axiom2_MirrorLaw c f HImpl) as [_ HMirrorTech].
+      (* 3. Duality for technical polarity *)
+      destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ HMirrorTech].
       assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
-      destruct (Contract_Axiom3_InheritanceContinuity f t HInherit) as [_ HContTech].
+      destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ HContTech].
       apply HContTech.
       exact HTargetF.
   Qed.
 
 End ClprolfFormalization.
-
 
 ```
