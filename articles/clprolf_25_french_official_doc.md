@@ -1256,7 +1256,7 @@ Le formalisme logique n'est pas une abstraction virtuelle, il calque au millimè
 | Concept Formel | Description Sémantique | Implémentation Clprolf |
 | --- | --- | --- |
 | M ($c$) | Composant portant la sémantique et les règles | `@ClAgent` |
-| T ($t$) | Composant portant l'infrastructure physique | `@ClWorker` |
+| W ($w$) | Composant portant l'infrastructure physique | `@ClWorker` |
 | D ($d$) | L'alliance indissociable du sens et du support | Le binôme natif (Agent + Worker) |
 | S ($s$) | Atome technique gérant l'infrastructure complexe | Agent Système (`@ClSystem`) |
 | P ($p$) | Assemblage modulaire d'atomes | Subsystem (Ensemble d'Agents & Workers) |

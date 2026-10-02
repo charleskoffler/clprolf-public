@@ -1266,7 +1266,7 @@ The logical formalism is not a virtual abstraction; it aligns down to the millim
 | Formal Concept | Semantic Description | Clprolf Implementation |
 | --- | --- | --- |
 | M ($c$) | Component carrying semantics and business rules | `@ClAgent` |
-| T ($t$) | Component carrying physical infrastructure | `@ClWorker` |
+| W ($w$) | Component carrying physical infrastructure | `@ClWorker` |
 | D ($d$) | Inseparable alliance of meaning and support | Native pair (Agent + Worker) |
 | S ($s$) | Technical atom managing complex infrastructure | System Agent (`@ClSystem`) |
 | P ($p$) | Modular assembly of atoms | Subsystem (Group of Agents & Workers) |
