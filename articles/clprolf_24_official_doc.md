@@ -1209,7 +1209,7 @@ ClFree
 | **Objects & Entities** | $\text{App}(A)$ | $A$ is a valid software application. | $A \in \mathcal{A}$ | Global Application |
 | | $\text{HumanWork}(h)$ | $h$ is the human activity/work to mechanize. | $h \in \mathcal{H}$ | Real-world Activity |
 | | $\text{HumanGoal}(G)$ | $G$ is the final objective targeted for/by the human. | $G \in \mathcal{G}$ | Teleological Goal |
-| | $\text{DomainModel}(\mathcal{M})$ | $\mathcal{M}$ is the set of all intentions/business rules. | $\mathcal{M} \subseteq \mathcal{D}$ | Business Domain Model |
+| | $\text{BusinessDomain}(\mathcal{M})$ | $\mathcal{M}$ is the set of all intentions/business rules. | $\mathcal{M} \subseteq \mathcal{D}$ | Business Domain Model |
 | | $\text{ExecutionSupport}(t_h)$ | $t_h$ is the human execution support/effort. | $t_h \in \mathcal{T}_h$ | Human Support |
 | | $\text{DomainComponent}(c)$ | $c$ is the component embodying business logic. | $c \in \mathcal{C}$ | `@ClAgent` |
 | | $\text{TechComponent}(t)$ | $t$ is the technical support component. | $t \in \mathcal{T}$ | `@ClWorker` |
