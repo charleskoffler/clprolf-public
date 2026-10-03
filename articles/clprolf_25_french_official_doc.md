@@ -1194,24 +1194,25 @@ Clprolf ajoute très peu de concepts.
 
 ## 1. Contrat Linguistique et Définitions (Les Prédicats)
 
-Type de Prédicat,Prédicat,Signification & Rôle,Domaine / Type,Correspondance Clprolf
-Objets & Entités,App(A),A est une application logicielle valide.,A∈A,Application globale
-,TravailHumain(h),h est l'activité/travail humain à mécaniser.,h∈H,Activité réelle
-,ButHumain(G),G est l'objectif final visé par/pour l'humain.,G∈G,But téléologique
-,DomaineMetier(M),M est l'ensemble de toutes les intentions/règles.,M⊆D,Modèle Métier
-,SupportExecution(t_h),th​ est le support/effort d'exécution chez l'humain.,th​∈Th​,Support humain
-,ComposantMetier(c),c est le composant incarnant la logique métier.,c∈C,@ClAgent
-,ComposantTech(t),t est le composant de support technique.,t∈T,@ClWorker
-,AgentSysteme(s),s est un agent d'infrastructure/technique basse.,s∈S,@ClSystem
-,Atome(a),a est l'unité minimale et indivisible du système.,a∈Atome​,Brique atomique
-Relations & Liens,"Automatise(A, h)",A mécanise/automatise le travail humain h.,A×H,Axiome 1
-,"Viser(M, G)",L'ensemble métier M tend vers le but G.,D×G,Axiome 1 (Décomp.)
-,"Partie(p, A)",p est une sous-partie ou composant de A.,P×A,Axiome 2 & 3
-,"Contient(p, a)",Le sous-système p contient l'atome de domaine a.,P×Atome​,Axiome 3
-,"Simule(p, m)",La partie p incruste la portion du domaine m⊆M.,P×D,Composant Métier (m⊆M)
-,"Associe(t, p)",Le support technique t est adjoint à la partie p.,T×P,Composant Tech adossé
-,"Combine(a, c, t)",L'atome a réunit strictement le composant métier c et le composant technique t.,Atome​×C×T,Atom (Union exclusive)
-,"Utilise(t, s)",Le composant tech t délègue sa complexité à l'agent système s.,T×S,Règle fractale (Axiome 3)
+| Type de Prédicat | Prédicat | Signification & Rôle | Domaine / Type | Correspondance Clprolf |
+| :--- | :--- | :--- | :--- | :--- |
+| **Objets & Entités** | $\text{App}(A)$ | $A$ est une application logicielle valide. | $A \in \mathcal{A}$ | Application globale |
+| | $\text{TravailHumain}(h)$ | $h$ est l'activité/travail humain à mécaniser. | $h \in \mathcal{H}$ | Activité réelle |
+| | $\text{ButHumain}(G)$ | $G$ est l'objectif final visé par/pour l'humain. | $G \in \mathcal{G}$ | But téléologique |
+| | $\text{DomaineMetier}(\mathcal{M})$ | $\mathcal{M}$ est l'ensemble de toutes les intentions/règles. | $\mathcal{M} \subseteq \mathcal{D}$ | Modèle Métier |
+| | $\text{SupportExecution}(t_h)$ | $t_h$ est le support/effort d'exécution chez l'humain. | $t_h \in \mathcal{T}_h$ | Support humain |
+| | $\text{ComposantMetier}(c)$ | $c$ est le composant incarnant la logique métier. | $c \in \mathcal{C}$ | `@ClAgent` |
+| | $\text{ComposantTech}(t)$ | $t$ est le composant de support technique. | $t \in \mathcal{T}$ | `@ClWorker` |
+| | $\text{AgentSysteme}(s)$ | $s$ est un agent d'infrastructure/technique basse. | $s \in \mathcal{S}$ | `@ClSystem` |
+| | $\text{Atome}(a)$ | $a$ est l'unité minimale et indivisible du système. | $a \in \text{Atome}$ | Brique atomique |
+| **Relations & Liens** | $\text{Automatise}(A, h)$ | $A$ mécanise/automatise le travail humain $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiome 1 |
+| | $\text{Viser}(\mathcal{M}, G)$ | L'ensemble métier $\mathcal{M}$ tend vers le but $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiome 1 (Décomp.) |
+| | $\text{Partie}(p, A)$ | $p$ est une sous-partie ou composant de $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiome 2 & 3 |
+| | $\text{Contient}(p, a)$ | Le sous-système $p$ contient l'atome de domaine $a$. | $\mathcal{P} \times \text{Atome}$ | Axiome 3 |
+| | $\text{Simule}(p, m)$ | La partie $p$ incruste la portion du domaine $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Composant Métier ($m \subseteq \mathcal{M}$) |
+| | $\text{Associe}(t, p)$ | Le support technique $t$ est adjoint à la partie $p$. | $\mathcal{T} \times \mathcal{P}$ | Composant Tech adossé |
+| | $\text{Combine}(a, c, t)$ | L'atome $a$ réunit strictly le composant métier $c$ et le composant technique $t$. | $\text{Atome} \times \mathcal{C} \times \mathcal{T}$ | Atom (Union exclusive) |
+| | $\text{Utilise}(t, s)$ | Le composant tech $t$ délègue sa complexité à l'agent système $s$. | $\mathcal{T} \times \mathcal{S}$ | Règle fractale (Axiome 3) |
 
 ## 2. Les Axiomes Fondamentaux
 
