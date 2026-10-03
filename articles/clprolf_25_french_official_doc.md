@@ -1194,46 +1194,42 @@ Clprolf ajoute très peu de concepts.
 
 ## 1. Contrat Linguistique et Définitions (Les Prédicats)
 
-Pour garantir une rigueur chirurgicale, le système s'appuie sur des prédicats et des relations ancrés de manière univoque dans la réalité concrète du logiciel, éliminant tout double sens.
-
-### Prédicats d'objets
-
-* $App(x)$ : $x$ est une application logicielle globale.
-* $ButHumain(y)$ : $y$ est une intention ou un objectif humain.
-* $DomaineMetier(m)$ : $m$ est un domaine métier (le modèle fonctionnel à simuler).
-* $SupportTech(t)$ : $t$ est l'infrastructure de support technique associée à la partie.
-* $Atome(d)$ : $d$ est un atome de domaine, brique élémentaire et indivisible du système.
-* $AgentSysteme(s)$ : $s$ est un agent spécialisé doté d'un rôle d'infrastructure ou de gestion technique basse (`@ClSystem`).
-* $ComposantMetier(c)$ : $c$ est le composant logiciel incarnant la logique et les règles métier (`@ClAgent`).
-* $ComposantTech(t)$ : $t$ est le composant logiciel (le Worker) incarnant le support technique (`@ClWorker`).
-
-### Relations sémantiques et structurelles
-
-* $Sert(x, y)$ : L'application $x$ sert directement ou indirectement à réaliser le but humain $y$.
-* $Partie(p, x)$ : $p$ est un sous-système modulaire (une partie) constituant l'application $x$.
-* $Simule(p, m)$ : Le sous-système $p$ **simule** le domaine métier $m$.
-* $Associe(t, p)$ : Le support technique $t$ est associé au sous-système $p$.
-* $Contient(p, d)$ : Le sous-système $p$ contient l'atome de domaine $d$.
-* $Combine(d, c, t)$ : L'atome $d$ résulte de l'union stricte et exclusive du composant métier $c$ et du composant technique $t$.
-* $Utilise(t, s)$ : Le composant technique $t$ délègue une partie de sa complexité de bas niveau à l'agent $s$.
-
----
+Type de Prédicat,Prédicat,Signification & Rôle,Domaine / Type,Correspondance Clprolf
+Objets & Entités,App(A),A est une application logicielle valide.,A∈A,Application globale
+,TravailHumain(h),h est l'activité/travail humain à mécaniser.,h∈H,Activité réelle
+,ButHumain(G),G est l'objectif final visé par/pour l'humain.,G∈G,But téléologique
+,DomaineMetier(M),M est l'ensemble de toutes les intentions/règles.,M⊆D,Modèle Métier
+,SupportExecution(t_h),th​ est le support/effort d'exécution chez l'humain.,th​∈Th​,Support humain
+,ComposantMetier(c),c est le composant incarnant la logique métier.,c∈C,@ClAgent
+,ComposantTech(t),t est le composant de support technique.,t∈T,@ClWorker
+,AgentSysteme(s),s est un agent d'infrastructure/technique basse.,s∈S,@ClSystem
+,Atome(a),a est l'unité minimale et indivisible du système.,a∈Atome​,Brique atomique
+Relations & Liens,"Automatise(A, h)",A mécanise/automatise le travail humain h.,A×H,Axiome 1
+,"Viser(M, G)",L'ensemble métier M tend vers le but G.,D×G,Axiome 1 (Décomp.)
+,"Partie(p, A)",p est une sous-partie ou composant de A.,P×A,Axiome 2 & 3
+,"Contient(p, a)",Le sous-système p contient l'atome de domaine a.,P×Atome​,Axiome 3
+,"Simule(p, m)",La partie p incruste la portion du domaine m⊆M.,P×D,Composant Métier (m⊆M)
+,"Associe(t, p)",Le support technique t est adjoint à la partie p.,T×P,Composant Tech adossé
+,"Combine(a, c, t)",L'atome a réunit strictement le composant métier c et le composant technique t.,Atome​×C×T,Atom (Union exclusive)
+,"Utilise(t, s)",Le composant tech t délègue sa complexité à l'agent système s.,T×S,Règle fractale (Axiome 3)
 
 ## 2. Les Axiomes Fondamentaux
 
-Ces axiomes décrivent la géométrie et les lois de composition de l'architecture Clprolf.
+### Axiome 1 — Automatisation du Travail Humain
 
-### Axiome 1 — Périmètre (Scope)
+$$\forall A \; \Big( App(A) \implies \exists h \; \big( TravailHumain(h) \land Automatise(A, h) \big) \Big)$$
 
-Le système étudie les applications logicielles conçues pour l'humain. L'existence matérielle d'une application implique obligatoirement l'existence réelle du but humain qu'elle sert.
+#### Décomposition du Travail Humain ($h$)
 
-$$\forall A \; \Big( App(A) \Rightarrow \exists G \; (ButHumain(G) \land Sert(A, G)) \Big)$$
+$$\forall h \; \Big( TravailHumain(h) \iff \exists G \, \exists \mathcal{M} \, \exists t_h \; \big( ButHumain(G) \land DomaineMetier(\mathcal{M}) \land SupportExecution(t_h) \land Viser(\mathcal{M}, G) \big) \Big)$$
+
+---
 
 ### Axiome 2 — Décomposition Structurelle
 
-Toute application est une union de parties finies (sous-systèmes). Faire partie d'une application implique d'être une structure organisée simulant un domaine et disposant d'une infrastructure.
+$$\forall A \; \Big( App(A) \implies \forall p \; \big( Partie(p, A) \implies \exists m \, \exists t \; ( m \subseteq \mathcal{M} \land SupportTech(t) \land Simule(p, m) \land Associe(t, p) ) \big) \Big)$$
 
-$$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( Partie(p, A) \Rightarrow \exists m \, \exists t \; (DomaineMetier(m) \land SupportTech(t) \land Simule(p, m) \land Associe(t, p)) \big) \Big)$$
+---
 
 ### Axiome 3 — Composition Atomique et Propriété Fractale
 
@@ -1247,7 +1243,6 @@ Si un composant technique (Worker) fait face à une complexité d'infrastructure
 
 $$\forall t \; \Big( ComposantTech(t) \Rightarrow \forall s \; \big( Utilise(t, s) \Rightarrow Atome(s) \land AgentSysteme(s) \big) \Big)$$
 
----
 
 ## 3. Dictionnaire de Correspondance Canonique
 
@@ -1408,58 +1403,82 @@ Cette démarche de vérification mécanique (*machine-checked*) permet de passer
 Section ClprolfFormalization.
 
   (* ================================================================= *)
-  (* 1. TYPAGE DE BASE ET PRÉDICATS                                    *)
+  (* 1. TYPAGE DE BASE ET PRÉDICATS CANONIQUES                         *)
   (* ================================================================= *)
 
   Variable Object : Type.
 
   (* Prédicats d'objets *)
   Variable App             : Object -> Prop.
+  Variable TravailHumain   : Object -> Prop.
   Variable ButHumain       : Object -> Prop.
+  Variable DomaineMetier   : Object -> Prop.
+  Variable SupportExecution: Object -> Prop.
   Variable Atome           : Object -> Prop.
   Variable AgentSysteme    : Object -> Prop.
   Variable ComposantMetier : Object -> Prop.
   Variable ComposantTech   : Object -> Prop.
-  Variable DomaineMetier   : Object -> Prop.
   Variable SupportTech     : Object -> Prop.
 
-  (* Relations *)
-  Variable Sert     : Object -> Object -> Prop.
-  Variable Partie   : Object -> Object -> Prop.
-  Variable Contient : Object -> Object -> Prop.
-  Variable Combine  : Object -> Object -> Object -> Prop.
-  Variable Utilise  : Object -> Object -> Prop.
-  Variable Simule   : Object -> Object -> Prop.
-  Variable Associe  : Object -> Object -> Prop.
+  (* Relations formelles *)
+  Variable Automatise : Object -> Object -> Prop. (* Application -> TravailHumain *)
+  Variable Viser      : Object -> Object -> Prop. (* DomaineMetier -> ButHumain *)
+  Variable Partie     : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contient   : Object -> Object -> Prop. (* Subsystem -> Atome *)
+  Variable Combine    : Object -> Object -> Object -> Prop. (* Atome -> ComposantMetier -> ComposantTech *)
+  Variable Utilise    : Object -> Object -> Prop. (* ComposantTech -> AgentSysteme *)
+  Variable Simule     : Object -> Object -> Prop. (* Subsystem/Agent -> Portion Domaine *)
+  Variable Associe    : Object -> Object -> Prop. (* SupportTech/Worker -> Subsystem/Agent *)
+  Variable SubSet     : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
 
   (* ================================================================= *)
   (* 2. AXIOMES FONDAMENTAUX DE CLPROLF                                *)
   (* ================================================================= *)
 
-  (* Axiome 1 : Périmètre applicatif *)
-  Axiom Axiom1_Perimetre :
+  (* Axiome 1 : Téléologie - Automatisation du Travail Humain *)
+  Axiom Axiom1_Teleologie :
     forall A : Object,
       App A ->
-      exists G : Object, ButHumain G /\ Sert A G.
+      exists h : Object, TravailHumain h /\ Automatise A h.
 
-  (* Axiome 2 : Décomposition structurelle (Domaine + Support) *)
+  (* Décomposition formelle du Travail Humain *)
+  Axiom Axiom1_DecompositionTravailHumain :
+    forall h : Object,
+      TravailHumain h <->
+      exists (G M th : Object),
+        ButHumain G /\
+        DomaineMetier M /\
+        SupportExecution th /\
+        Viser M G.
+
+  (* Axiome 2 : Décomposition Structurelle (m ⊆ M) *)
   Axiom Axiom2_DecompositionStructurelle :
     forall A : Object,
       App A ->
       forall p : Object,
         Partie p A ->
-        exists m t : Object,
-          DomaineMetier m /\ SupportTech t /\ Simule p m /\ Associe t p.
+        exists (M m t : Object),
+          DomaineMetier M /\
+          SubSet m M /\
+          SupportTech t /\
+          Simule p m /\
+          Associe t p.
 
-  (* Axiome 3 : Composition atomique (Métier + Tech indissociables) *)
-  Axiom Axiom3_CompositionAtomique :
+  (* Axiome 3 : Composition Atomique & Propriété Fractale *)
+  Axiom Axiom3_CompositionAtomique_Et_Fractale :
     forall A p : Object,
       Partie p A ->
-      forall d : Object,
+      (* Part 1 : Composition Atomique *)
+      (forall d : Object,
         Contient p d ->
         Atome d /\
         exists c t : Object,
-          ComposantMetier c /\ ComposantTech t /\ Combine d c t.
+          ComposantMetier c /\ ComposantTech t /\ Combine d c t) /\
+      (* Part 2 : Règle de Délégation Fractale des Workers *)
+      (forall t : Object,
+        ComposantTech t ->
+        forall s : Object,
+          Utilise t s -> Atome s /\ AgentSysteme s).
 
   (* ================================================================= *)
   (* 3. GRAMMAIRE (AST) DU FRAMEWORK CLPROLF                           *)
@@ -1502,11 +1521,7 @@ Section ClprolfFormalization.
   Proof.
     intros d c t HAtome HMetier HTech HComb.
     exists (ClAtom c t).
-    apply Realize_Atom with (c := c) (t := t).
-    - exact HAtome.
-    - exact HMetier.
-    - exact HTech.
-    - exact HComb.
+    apply Realize_Atom with (c := c) (t := t); assumption.
   Qed.
 
   Lemma Subsystem_Expressiveness :
@@ -1516,8 +1531,7 @@ Section ClprolfFormalization.
   Proof.
     intros p A HPart.
     exists (ClSubsystem p).
-    apply Realize_Subsystem with (A := A).
-    exact HPart.
+    apply Realize_Subsystem with (A := A); assumption.
   Qed.
 
   (* ================================================================= *)
@@ -1537,7 +1551,8 @@ Section ClprolfFormalization.
         Realizes d implAtom.
   Proof.
     intros A p d HApp HPart HCont.
-    destruct (Axiom3_CompositionAtomique A p HPart d HCont) as [HAtom [c [t [HMetier [HTech HComb]]]]].
+    destruct (Axiom3_CompositionAtomique_Et_Fractale A p HPart) as [HAtomRule _].
+    destruct (HAtomRule d HCont) as [HAtom [c [t [HMetier [HTech HComb]]]]].
 
     exists (ClApp A).
     exists (ClSubsystem p).
@@ -1547,20 +1562,16 @@ Section ClprolfFormalization.
     - apply Realize_App. exact HApp.
     - split.
       + apply Realize_Subsystem with (A := A). exact HPart.
-      + apply Realize_Atom with (c := c) (t := t).
-        * exact HAtom.
-        * exact HMetier.
-        * exact HTech.
-        * exact HComb.
+      + apply Realize_Atom with (c := c) (t := t); assumption.
   Qed.
-  
+
   (* ================================================================= *)
-  (* 7. EXTENSION : THÉORÈME DE LA NEUTRALITÉ DES CONTRATS             *)
+  (* 7. EXTENSION : THÉORÈME DE LA NEUTRALITÉ DES FAMILLES & TRAITS    *)
   (* ================================================================= *)
 
   Variable Interface : Type.
 
-  (* Classification des interfaces : Famille vs Trait *)
+  (* Classification des interfaces : Famille (Miroir) vs Trait (Capacité) *)
   Variable Famille : Interface -> Prop.
   Variable Trait   : Interface -> Prop.
 
@@ -1570,10 +1581,10 @@ Section ClprolfFormalization.
   Variable EstCompatibleMetier : Interface -> Prop.
   Variable EstCompatibleTech   : Interface -> Prop.
 
-  (* Décidabilité locale de Famille (Simule le checker statique ArchUnit / compilateur) *)
+  (* Décidabilité locale de Famille *)
   Variable fam_dec : forall i : Interface, {Famille i} + {~ Famille i}.
 
-  (* Définition par Surcharge Contextuelle (Symbolique ::= \triangleq) *)
+  (* Définition par Surcharge Contextuelle *)
   Definition TargetMetier (i : Interface) : Prop :=
     if (fam_dec i) then PolariteMetier i else EstCompatibleMetier i.
 
@@ -1605,7 +1616,7 @@ Section ClprolfFormalization.
       (TargetMetier f -> TargetMetier t) /\
       (TargetTech f -> TargetTech t).
 
-  (* Théorème de Neutralité des Interfaces (Machine-Checked avec Surcharge) *)
+  (* Théorème de Neutralité des Interfaces *)
   Theorem Interface_Neutrality_Theorem :
     forall (c : Object) (f t : Interface),
       Famille f ->
@@ -1618,22 +1629,73 @@ Section ClprolfFormalization.
     intros c f t HFam HTrait HInherit HImpl.
     split.
     - intros HMetierC.
-      (* 1. Application de la Loi du Miroir sur f *)
       destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [HMirrorMetier _].
       assert (HTargetF : TargetMetier f) by (apply HMirrorMetier; exact HMetierC).
-      (* 2. Application de la Continuité Contextuelle *)
       destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [HContMetier _].
-      apply HContMetier.
-      exact HTargetF.
+      apply HContMetier. exact HTargetF.
     - intros HTechC.
-      (* 3. Dualité pour la polarité technique *)
       destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ HMirrorTech].
       assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
       destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ HContTech].
-      apply HContTech.
-      exact HTargetF.
+      apply HContTech. exact HTargetF.
   Qed.
 
 End ClprolfFormalization.
 
 ```
+
+# XIX) Illustrations applicatives et cas d'usage canoniques
+
+Pour démontrer que le formalisme mathématique s'applique directement à la réalité du développement, nous instancions la décomposition de l'Axiome 1 ($\text{TravailHumain}(h) \iff \exists G, \mathcal{M}, t_h$) sur trois domaines applicatifs majeurs.
+
+---
+
+## 1. Modélisation des domaines métiers
+
+### Cas d'usage A : Système de Paie d'Entreprise
+
+* **But Applicatif ($G$) :** Produire des bulletins de paie conformes et verser les salaires à date fixe.
+* **Modèle Métier ($\mathcal{M}$) :** Code du travail, règles des cotisations URSSAF, grilles salariales, conventions collectives ($m \subseteq \mathcal{M}$).
+* **Support d'Exécution ($t_h$) :** Saisie manuelle des heures, calculs sur tableur, vérification visuelle des fiches.
+* **Implémentation Clprolf ($A$) :**
+* `@ClAgent` (`CalculateurCotisationsAgent`) : Porte la règle de calcul pure.
+* `@ClWorker` (`GenerateurPdfWorker`, `SqliExportWorker`) : Exécute la génération physique du fichier et l'I/O.
+
+
+
+### Cas d'usage B : Gestion de Santé et Prise de Rendez-vous
+
+* **But Applicatif ($G$) :** Assurer la prise de rendez-vous médical sans chevauchement ni double réservation.
+* **Modèle Métier ($\mathcal{M}$) :** Règles de gestion des créneaux, urgences, durées selon la spécialité, délais d'annulation.
+* **Support d'Exécution ($t_h$) :** Prise de note sur agenda papier, appels téléphoniques de confirmation.
+* **Implémentation Clprolf ($A$) :**
+* `@ClAgent` (`PlanningMedicalAgent`) : Valide la possibilité d'ajouter un rendez-vous selon les règles du cabinet.
+* `@ClWorker` (`AgendaDatabaseWorker`, `SmsNotificationWorker`) : Écrit en base de données et envoie le SMS de confirmation.
+
+
+
+### Cas d'usage C : Logistique et Réapprovisionnement de Stock
+
+* **But Applicatif ($G$) :** Garantir la disponibilité des articles en magasin en réapprovisionnant avant la rupture.
+* **Modèle Métier ($\mathcal{M}$) :** Calcul du seuil de réapprovisionnement, délais de livraison des fournisseurs, priorisation des flux.
+* **Support d'Exécution ($t_h$) :** Inventaire physique au registre, comptage manuel des cartons.
+* **Implémentation Clprolf ($A$) :**
+* `@ClAgent` (`SeuilReapproAgent`) : Calcule la quantité exacte à commander selon le stock théorique.
+* `@ClWorker` (`EdiSupplierWorker`, `ERPConnectorWorker`) : Transfère le bon de commande au système du fournisseur.
+
+
+
+---
+
+## 2. Table de correspondance synthétique
+
+| Variable Formelle | Rôle Sémantique | Exemple Concret (Système de Paie) |
+| --- | --- | --- |
+| **$G$** | Intent de résultat visé par le système | Bulletin de paie juste et versé à temps |
+| **$m \subseteq \mathcal{M}$** | Portion des règles du domaine | Formule du calcul du prélèvement à la source |
+| **$c$ (`@ClAgent`)** | Composant portant la règle $m$ | `CalculateurTauxTaxeAgent` |
+| **$t$ (`@ClWorker`)** | Support technique adossé à $c$ | `TaxApiWorker` (Appel REST / I/O) |
+| **$d$ (Atome)** | Binôme indissociable $Combine(d, c, t)$ | Binôme natif `TaxeCalculatedPair` |
+| **$f$ (`@ClFamily`)** | Contrat-miroir hiérarchique | `TaxCalculatorFamily` |
+
+---

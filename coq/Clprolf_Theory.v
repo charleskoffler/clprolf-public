@@ -1,62 +1,85 @@
-
 Section ClprolfFormalization.
 
   (* ================================================================= *)
-  (* 1. BASE TYPING AND PREDICATES                                     *)
+  (* 1. BASE TYPING AND CANONICAL PREDICATES                           *)
   (* ================================================================= *)
 
   Variable Object : Type.
 
-  (* Object Predicates *)
-  Variable App               : Object -> Prop.
-  Variable HumanGoal         : Object -> Prop.
-  Variable Atom              : Object -> Prop.
-  Variable SystemAgent       : Object -> Prop.
+  (* Object predicates *)
+  Variable App             : Object -> Prop.
+  Variable HumanWork       : Object -> Prop.
+  Variable HumanGoal       : Object -> Prop.
+  Variable BusinessDomain  : Object -> Prop.
+  Variable ExecutionSupport: Object -> Prop.
+  Variable Atom            : Object -> Prop.
+  Variable SystemAgent     : Object -> Prop.
   Variable BusinessComponent : Object -> Prop.
-  Variable TechComponent     : Object -> Prop.
-  Variable BusinessDomain    : Object -> Prop.
-  Variable TechSupport       : Object -> Prop.
+  Variable TechComponent   : Object -> Prop.
+  Variable TechSupport     : Object -> Prop.
 
-  (* Relations *)
-  Variable Serves     : Object -> Object -> Prop.
-  Variable Part       : Object -> Object -> Prop.
-  Variable Contains   : Object -> Object -> Prop.
-  Variable Combines   : Object -> Object -> Object -> Prop.
-  Variable Uses       : Object -> Object -> Prop.
-  Variable Simulates  : Object -> Object -> Prop.
-  Variable Associates : Object -> Object -> Prop.
+  (* Formal relations *)
+  Variable Automates : Object -> Object -> Prop. (* Application -> HumanWork *)
+  Variable Target    : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
+  Variable Part      : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contains  : Object -> Object -> Prop. (* Subsystem -> Atom *)
+  Variable Combines  : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
+  Variable Uses      : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
+  Variable Simulates : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
+  Variable Associates: Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
+  Variable SubSet    : Object -> Object -> Prop. (* Inclusion m ⊆ M *)
 
   (* ================================================================= *)
-  (* 2. FUNDAMENTAL AXIOMS OF CLPROLF                                  *)
+  (* 2. CLPROLF FUNDAMENTAL AXIOMS                                     *)
   (* ================================================================= *)
 
-  (* Axiom 1 : Application Scope *)
-  Axiom Axiom1_Scope :
+  (* Axiom 1: Teleology - Automation of Human Work *)
+  Axiom Axiom1_Teleology :
     forall A : Object,
       App A ->
-      exists G : Object, HumanGoal G /\ Serves A G.
+      exists h : Object, HumanWork h /\ Automates A h.
 
-  (* Axiom 2 : Structural Decomposition (Domain + Support) *)
+  (* Formal Decomposition of Human Work *)
+  Axiom Axiom1_HumanWorkDecomposition :
+    forall h : Object,
+      HumanWork h <->
+      exists (G M th : Object),
+        HumanGoal G /\
+        BusinessDomain M /\
+        ExecutionSupport th /\
+        Target M G.
+
+  (* Axiom 2: Structural Decomposition (m ⊆ M) *)
   Axiom Axiom2_StructuralDecomposition :
     forall A : Object,
       App A ->
       forall p : Object,
         Part p A ->
-        exists m t : Object,
-          BusinessDomain m /\ TechSupport t /\ Simulates p m /\ Associates t p.
+        exists (M m t : Object),
+          BusinessDomain M /\
+          SubSet m M /\
+          TechSupport t /\
+          Simulates p m /\
+          Associates t p.
 
-  (* Axiom 3 : Atomic Composition (Business + Tech inseparable) *)
-  Axiom Axiom3_AtomicComposition :
+  (* Axiom 3: Atomic Composition & Fractal Property *)
+  Axiom Axiom3_AtomicComposition_And_Fractal :
     forall A p : Object,
       Part p A ->
-      forall d : Object,
+      (* Part 1: Atomic Composition *)
+      (forall d : Object,
         Contains p d ->
         Atom d /\
         exists c t : Object,
-          BusinessComponent c /\ TechComponent t /\ Combines d c t.
+          BusinessComponent c /\ TechComponent t /\ Combines d c t) /\
+      (* Part 2: Worker Fractal Delegation Rule *)
+      (forall t : Object,
+        TechComponent t ->
+        forall s : Object,
+          Uses t s -> Atom s /\ SystemAgent s).
 
   (* ================================================================= *)
-  (* 3. GRAMMAR (AST) OF THE CLPROLF FRAMEWORK                         *)
+  (* 3. CLPROLF FRAMEWORK GRAMMAR (AST)                                *)
   (* ================================================================= *)
 
   Inductive ClprolfComponent : Type :=
@@ -96,11 +119,7 @@ Section ClprolfFormalization.
   Proof.
     intros d c t HAtom HBusiness HTech HComb.
     exists (ClAtom c t).
-    apply Realize_Atom with (c := c) (t := t).
-    - exact HAtom.
-    - exact HBusiness.
-    - exact HTech.
-    - exact HComb.
+    apply Realize_Atom with (c := c) (t := t); assumption.
   Qed.
 
   Lemma Subsystem_Expressiveness :
@@ -110,12 +129,11 @@ Section ClprolfFormalization.
   Proof.
     intros p A HPart.
     exists (ClSubsystem p).
-    apply Realize_Subsystem with (A := A).
-    exact HPart.
+    apply Realize_Subsystem with (A := A); assumption.
   Qed.
 
   (* ================================================================= *)
-  (* 6. INTEGRAL EXPRESSIVENESS THEOREM (SURFACE AND DEPTH)            *)
+  (* 6. INTEGRAL EXPRESSIVENESS THEOREM (SURFACE AND DEPTH)             *)
   (* ================================================================= *)
 
   Theorem Deep_Architectural_Expressiveness :
@@ -130,8 +148,9 @@ Section ClprolfFormalization.
         Realizes p implSub /\
         Realizes d implAtom.
   Proof.
-    intros A p d HApp HPart HCont.
-    destruct (Axiom3_AtomicComposition A p HPart d HCont) as [HAtom [c [t [HBusiness [HTech HComb]]]]].
+    intros A p d HApp HPart HContains.
+    destruct (Axiom3_AtomicComposition_And_Fractal A p HPart) as [HAtomRule _].
+    destruct (HAtomRule d HContains) as [HAtom [c [t [HBusiness [HTech HComb]]]]].
 
     exists (ClApp A).
     exists (ClSubsystem p).
@@ -141,33 +160,29 @@ Section ClprolfFormalization.
     - apply Realize_App. exact HApp.
     - split.
       + apply Realize_Subsystem with (A := A). exact HPart.
-      + apply Realize_Atom with (c := c) (t := t).
-        * exact HAtom.
-        * exact HBusiness.
-        * exact HTech.
-        * exact HComb.
+      + apply Realize_Atom with (c := c) (t := t); assumption.
   Qed.
 
   (* ================================================================= *)
-  (* 7. EXTENSION : CONTRACT NEUTRALITY THEOREM                        *)
+  (* 7. EXTENSION: NEUTRALITY THEOREM OF FAMILIES & TRAITS              *)
   (* ================================================================= *)
 
   Variable Interface : Type.
 
-  (* Interface Classification: Family vs Trait *)
+  (* Interface classification: Family (Mirror) vs Trait (Capability) *)
   Variable Family : Interface -> Prop.
   Variable Trait  : Interface -> Prop.
 
-  (* Internal Evaluation Predicates *)
-  Variable BusinessPolarity     : Interface -> Prop.
-  Variable TechPolarity         : Interface -> Prop.
-  Variable IsBusinessCompatible : Interface -> Prop.
-  Variable IsTechCompatible     : Interface -> Prop.
+  (* Internal evaluation predicates *)
+  Variable BusinessPolarity    : Interface -> Prop.
+  Variable TechPolarity        : Interface -> Prop.
+  Variable IsBusinessCompatible: Interface -> Prop.
+  Variable IsTechCompatible    : Interface -> Prop.
 
-  (* Local Decidability of Family (Simulates static ArchUnit / compiler checker) *)
+  (* Local decidability of Family *)
   Variable fam_dec : forall i : Interface, {Family i} + {~ Family i}.
 
-  (* Definition by Contextual Overloading (Symbolically ::= \triangleq) *)
+  (* Definition by Contextual Overloading *)
   Definition TargetBusiness (i : Interface) : Prop :=
     if (fam_dec i) then BusinessPolarity i else IsBusinessCompatible i.
 
@@ -177,12 +192,12 @@ Section ClprolfFormalization.
   Variable Implements : Object -> Interface -> Prop.
   Variable Inherits   : Interface -> Interface -> Prop.
 
-  (* Axiom 1 : Family Exclusivity via Incompatibility Connective (Sheffer / NAND) *)
+  (* Axiom 1: Family Exclusivity via Incompatibility Connective (Sheffer / NAND) *)
   Axiom Contract_Axiom1_FamilyExclusivity :
     forall f : Interface,
       Family f -> ~ (TargetBusiness f /\ TargetTech f).
 
-  (* Axiom 2 : Strict Mirror Law (Component <-> Family) *)
+  (* Axiom 2: Strict Mirror Law (Component <-> Family) *)
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Family f ->
@@ -190,7 +205,7 @@ Section ClprolfFormalization.
       (BusinessComponent c <-> TargetBusiness f) /\
       (TechComponent c <-> TargetTech f).
 
-  (* Axiom 3 : Contextual Continuity of Traits through Inheritance *)
+  (* Axiom 3: Contextual Continuity of Traits through Inheritance *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
     forall (f t : Interface),
       Family f ->
@@ -199,7 +214,7 @@ Section ClprolfFormalization.
       (TargetBusiness f -> TargetBusiness t) /\
       (TargetTech f -> TargetTech t).
 
-  (* Interface Neutrality Theorem (Machine-Checked with Overloading) *)
+  (* Interface Neutrality Theorem *)
   Theorem Interface_Neutrality_Theorem :
     forall (c : Object) (f t : Interface),
       Family f ->
@@ -209,23 +224,18 @@ Section ClprolfFormalization.
       (BusinessComponent c -> TargetBusiness t) /\
       (TechComponent c -> TargetTech t).
   Proof.
-    intros c f t HFam HTrait HInherit HImpl.
+    intros c f t HFamily HTrait HInherit HImpl.
     split.
     - intros HBusinessC.
-      (* 1. Application of Mirror Law to f *)
-      destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [HMirrorBusiness _].
+      destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [HMirrorBusiness _].
       assert (HTargetF : TargetBusiness f) by (apply HMirrorBusiness; exact HBusinessC).
-      (* 2. Application of Contextual Continuity *)
-      destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [HContBusiness _].
-      apply HContBusiness.
-      exact HTargetF.
+      destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [HContBusiness _].
+      apply HContBusiness. exact HTargetF.
     - intros HTechC.
-      (* 3. Duality for technical polarity *)
-      destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ HMirrorTech].
+      destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ HMirrorTech].
       assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
-      destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ HContTech].
-      apply HContTech.
-      exact HTargetF.
+      destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ HContTech].
+      apply HContTech. exact HTargetF.
   Qed.
 
 End ClprolfFormalization.
