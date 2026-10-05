@@ -15,10 +15,11 @@ Il s'agit d'un framework spécialisé, pour les situations suivantes:
 * gros refactoring nécessaire sur une grosse appli existante
 * ou tout simplement pour ceux qui aiment ce style de programmation encadrée par checker architectural pour classes et interfaces.
 
-Il a pour prérequis la connaissance des bases de la POO, et des principes de conception OO.
+Il a pour prérequis la connaissance des bases de la POO. Une connaissance des principes de conception OO peut être utile.
 
-Son objectif est de rendre explicites certaines bonnes pratiques de la programmation orientée objet, sans introduire une architecture lourde ni une courbe d’apprentissage importante.
-Ainsi, le framework aide à respecter les principes SOLID bien connus. Le framework ne se prétend pas indispensable, et bien entendu, des autres solutions existent toujours. La solution obtenue pourra devenir du Java ou C# pur, en retirant les annotations, ou en ne les interprétant pas.
+Le framework a pour objectif d'aider à la conception objet. Il permet une interprétation des principes de conception objet comme SOLID, ou d'aider à appliquer l'architecture hexagonale/DDD.
+Bien entendu, Clprolf ne fournit que sa propre façon d'obtenir les principes objets connus, et autres architectures notoires.
+L'application obtenue pourra redevenir du pur Java ou C#, en retirant les annotations, ou en ne les interprétant pas.
 
 ## Introduction
 
@@ -185,6 +186,7 @@ Cette approche permet de bénéficier de toute la puissance de contrôle du fram
 # III) Alignement Hexagonale, DDD & Clprolf
 
 Clprolf formalise les principes majeurs de l'**Architecture Hexagonale** et du **Domain-Driven Design (DDD)** sous forme de contraintes et d'annotations POO explicites.
+Il fournit une vision de ces architectures, mais ce n'est pas la seule possible. Clprolf ne cherche pas à être complet mais d'apporter une aide à sa façon.
 
 ## 1. La matrice d'équivalence
 
@@ -713,7 +715,7 @@ La classe n'implémente pas directement CanBeEvaluated et CanOverrideDescription
 
 ## VIII.7) Remarque sur les interfaces Clprolf et l'Interface Segregation Principle (ISP)
 
-Clprolf respecte naturellement l'ISP et permet d'éviter les *« fat interfaces »* (interfaces fourre-tout).
+Clprolf aide naturellement à respecter l'ISP et permet d'éviter les *« fat interfaces »* (interfaces fourre-tout). Il ne prétend pas d'être la seule façon de tendre vers l'ISP.
 
 ### Le problème classique de la *Fat Interface*
 
@@ -1125,6 +1127,8 @@ Une classe ne peut pas implémenter directement une interface @ClTrait (à moins
 Une classe Clprolf ne peut implémenter qu'une interface @ClFamily. Forçage possible avec @ClInterfaceBypass
 
 # XIII) Clprolf et les principes SOLID
+
+Clprolf a pour conséquence d'apporter un soutien des principes SOLID. Il ne prétend pas être la seule vision possible de ces principes, ni la seule interprétation de SOLID.
 
 ## **S** — Principe de responsabilité unique (SRP)
 

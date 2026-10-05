@@ -2,21 +2,25 @@
 
 ## Target Uses and Prerequisites
 
-**Clprolf** ("Clear PROgramming Language and Framework") is an standalone, lightweight architectural framework for Java or C# .NET.
+**Clprolf** ("Clear PROgramming Language and Framework") is an independent, lightweight architectural framework for Java or C# .NET.
 The source code (annotations + checker) can be copied under the M.I.T. license and is visible on GitHub within applications written by the author.
 However, the framework itself, along with its documentation and examples, is primarily obtained through paid training courses provided by its author.
 
 It is a specialized framework designed for the following scenarios:
 
-* A pedagogical framework designed to teach Object-Oriented Programming (OOP), interfaces, and even immutability.
+* pedagogical framework to learn OOP, interfaces, or even immutability.
 * scientific applications
 * simulations
-* Enterprise applications looking to adopt Clprolf alongside standard architectures
+* enterprise applications interested in adding Clprolf as a complement to traditional architectures
 * highly complex applications with a large number of classes or interfaces
 * major refactoring required on a large existing application
 * or simply for those who enjoy this style of programming guided by an architectural checker for classes and interfaces.
 
-It requires a basic knowledge of OOP and object-oriented design principles. The framework does not claim to be indispensable, and naturally, alternative solutions exist. The resulting code can easily revert to pure Java or C# simply by removing or ignoring the annotations.
+Prerequisites include a basic knowledge of OOP. Familiarity with OO design principles can be helpful.
+
+The framework aims to assist with object-oriented design. It provides an interpretation of object-oriented design principles such as SOLID, and helps apply Hexagonal Architecture or DDD.
+Of course, Clprolf only offers its own way of achieving well-known object principles and other notable architectures.
+The resulting application can easily revert to pure Java or C# simply by removing or ignoring the annotations.
 
 ## Introduction
 
@@ -189,7 +193,8 @@ This approach delivers the full enforcement power of the framework in a complete
 
 # III) Hexagonal, DDD & Clprolf Alignment
 
-Clprolf formalizes the main principles of **Hexagonal Architecture** and **Domain-Driven Design (DDD)** through explicit OOP constraints and annotations.
+Clprolf formalizes the major principles of **Hexagonal Architecture** and **Domain-Driven Design (DDD)** in the form of explicit OOP constraints and annotations.
+It provides one vision of these architectures, but it is not the only one possible. Clprolf does not seek to be exhaustive, but rather to offer assistance in its own way.
 
 ## 1. The Equivalence Matrix
 
@@ -719,6 +724,8 @@ public static final class LayeredArchitecture implements ArchRule {
 
 ## VIII.7) Note on Clprolf Interfaces and the Interface Segregation Principle (ISP)
 
+Clprolf naturally helps adhere to the ISP and prevents *"fat interfaces"* (monolithic interfaces). It does not claim to be the only way to achieve compliance with the ISP.
+
 ### The Classic *Fat Interface* Problem
 
 Without strict separation, software design often falls into the trap of creating a single monolithic interface containing all possible behaviors:
@@ -1137,6 +1144,8 @@ A Clprolf class can only implement a single `@ClFamily` interface. Bypassing is 
 ---
 
 # XIII) Clprolf and the SOLID Principles
+
+Clprolf consequently provides support for the SOLID principles. It does not claim to be the only possible vision of these principles, nor the only interpretation of SOLID.
 
 ## **S** — Single Responsibility Principle (SRP)
 
