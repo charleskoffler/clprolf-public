@@ -17,6 +17,7 @@ Section ClprolfFormalization.
   Variable BusinessComponent : Object -> Prop.
   Variable TechComponent   : Object -> Prop.
   Variable TechSupport     : Object -> Prop.
+  Variable Component       : Object -> Prop.
 
   (* Formal relations *)
   Variable Automates : Object -> Object -> Prop. (* Application -> HumanWork *)
@@ -28,6 +29,8 @@ Section ClprolfFormalization.
   Variable Simulates : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
   Variable Associates: Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
   Variable SubSet    : Object -> Object -> Prop. (* Inclusion m ⊆ M *)
+  Variable Inherits   : Object -> Object -> Prop. (* Child Component -> Parent *)
+  Variable SameDomain : Object -> Object -> Prop. (* Domain preservation *)
 
   (* ================================================================= *)
   (* 2. CLPROLF FUNDAMENTAL AXIOMS                                     *)
@@ -77,6 +80,21 @@ Section ClprolfFormalization.
         TechComponent t ->
         forall s : Object,
           Uses t s -> Atom s /\ SystemAgent s).
+
+  (* Axiom 4: Uniqueness of component qualification *)
+  Axiom Axiom4_ComponentUniqueness :
+    forall c : Object,
+      Component c ->
+      (BusinessComponent c /\ ~TechComponent c /\ ~SystemAgent c) \/
+      (~BusinessComponent c /\ TechComponent c /\ ~SystemAgent c) \/
+      (~BusinessComponent c /\ ~TechComponent c /\ SystemAgent c).
+
+  (* Axiom 5: Domain invariance through inheritance *)
+  Axiom Axiom5_InheritanceDomainInvariance :
+    forall c p : Object,
+      Component c -> Component p ->
+      Inherits c p ->
+      SameDomain c p.
 
   (* ================================================================= *)
   (* 3. CLPROLF FRAMEWORK GRAMMAR (AST)                                *)
@@ -190,7 +208,7 @@ Section ClprolfFormalization.
     if (fam_dec i) then TechPolarity i else IsTechCompatible i.
 
   Variable Implements : Object -> Interface -> Prop.
-  Variable Inherits   : Interface -> Interface -> Prop.
+  Variable InterfaceInherits   : Interface -> Interface -> Prop.
 
   (* Axiom 1: Family Exclusivity via Incompatibility Connective (Sheffer / NAND) *)
   Axiom Contract_Axiom1_FamilyExclusivity :
@@ -210,7 +228,7 @@ Section ClprolfFormalization.
     forall (f t : Interface),
       Family f ->
       Trait t ->
-      Inherits f t ->
+      InterfaceInherits f t ->
       (TargetBusiness f -> TargetBusiness t) /\
       (TargetTech f -> TargetTech t).
 
@@ -219,7 +237,7 @@ Section ClprolfFormalization.
     forall (c : Object) (f t : Interface),
       Family f ->
       Trait t ->
-      Inherits f t ->
+      InterfaceInherits f t ->
       Implements c f ->
       (BusinessComponent c -> TargetBusiness t) /\
       (TechComponent c -> TargetTech t).
