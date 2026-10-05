@@ -1215,60 +1215,26 @@ ClFree
 
 | Predicate Type | Predicate | Meaning & Role | Domain / Type | Clprolf Mapping |
 | --- | --- | --- | --- | --- |
-| **Objects & Entities** | $\text{App}(A)$ | $A$ is a valid software application. | $A \in \mathcal{A}$ | Global Application
-
- |
-|  | $\text{HumanWork}(h)$ | $h$ is the human activity/work to mechanize. | $h \in \mathcal{H}$ | Real-world Activity
-
- |
-|  | $\text{HumanGoal}(G)$ | $G$ is the final objective targeted for/by the human. | $G \in \mathcal{G}$ | Teleological Goal
-
- |
-|  | $\text{BusinessDomain}(\mathcal{M})$ | $\mathcal{M}$ is the set of all intentions/business rules. | $\mathcal{M} \subseteq \mathcal{D}$ | Business Domain Model
-
- |
-|  | $\text{ExecutionSupport}(t_h)$ | $t_h$ is the human execution support/effort. | $t_h \in \mathcal{T}_h$ | Human Support
-
- |
-|  | $\text{Component}(c)$ | $c$ is a qualified software component. | $c \in \mathcal{C}$ | Software Unit (Class)
-
- |
-|  | $\text{DomainComponent}(c)$ | $c$ is the component embodying business logic. | $c \in \mathcal{C}$ | `@ClAgent`<br> |
-|  | $\text{TechComponent}(t)$ | $t$ is the technical support component. | $t \in \mathcal{T}$ | `@ClWorker`<br> |
-|  | $\text{SystemAgent}(s)$ | $s$ is a low-level infrastructure/system agent. | $s \in \mathcal{S}$ | `@ClSystem`<br> |
-|  | $\text{Atom}(a)$ | $a$ is the minimal indivisible unit of the system. | $a \in \text{Atom}$ | Atomic Building Block
-
- |
-| **Relations & Links** | $\text{Automates}(A, h)$ | $A$ mechanizes/automates human work $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiom 1
-
- |
-|  | $\text{Targets}(\mathcal{M}, G)$ | Business set $\mathcal{M}$ targets goal $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiom 1 (Decomp.)
-
- |
-|  | $\text{Part}(p, A)$ | $p$ is a sub-part or component of $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiom 2 & 3
-
- |
-|  | $\text{Contains}(p, a)$ | Sub-system $p$ contains domain atom $a$. | $\mathcal{P} \times \text{Atom}$ | Axiom 3
-
- |
-|  | $\text{Simulates}(p, m)$ | Part $p$ embeds domain subset $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Business Component ($m \subseteq \mathcal{M}$)
-
- |
-|  | $\text{Associates}(t, p)$ | Technical support $t$ is attached to part $p$. | $\mathcal{T} \times \mathcal{P}$ | Attached Tech Component
-
- |
-|  | $\text{Combines}(a, c, t)$ | Atom $a$ strictly unites business component $c$ and tech component $t$. | $\text{Atom} \times \mathcal{C} \times \mathcal{T}$ | Atom (Exclusive Union)
-
- |
-|  | $\text{Uses}(t, s)$ | Tech component $t$ delegates complexity to system agent $s$. | $\mathcal{T} \times \mathcal{S}$ | Fractal Rule (Axiom 3)
-
- |
-|  | $\text{Inherits}(c, p)$ | Component $c$ inherits from parent component $p$. | $\mathcal{C} \times \mathcal{C}$ | `extends` Relation / Axiom 5
-
- |
-|  | $\text{SameDomain}(c, p)$ | Components $c$ and $p$ share the same conceptual domain. | $\mathcal{C} \times \mathcal{C}$ | Domain Isomorphism / Axiom 5
-
- |
+| **Objects & Entities** | $\text{App}(A)$ | $A$ is a valid software application. | $A \in \mathcal{A}$ | Global Application |
+|  | $\text{HumanWork}(h)$ | $h$ is the human activity/work to mechanize. | $h \in \mathcal{H}$ | Real-world Activity |
+|  | $\text{HumanGoal}(G)$ | $G$ is the final objective targeted for/by the human. | $G \in \mathcal{G}$ | Teleological Goal |
+|  | $\text{BusinessDomain}(\mathcal{M})$ | $\mathcal{M}$ is the set of all intentions/business rules. | $\mathcal{M} \subseteq \mathcal{D}$ | Business Domain Model |
+|  | $\text{ExecutionSupport}(t_h)$ | $t_h$ is the human execution support/effort. | $t_h \in \mathcal{T}_h$ | Human Support |
+|  | $\text{Component}(c)$ | $c$ is a qualified software component. | $c \in \mathcal{C}$ | Software Unit (Class) |
+|  | $\text{DomainComponent}(c)$ | $c$ is the component embodying business logic. | $c \in \mathcal{C}$ | `@ClAgent` |
+|  | $\text{TechComponent}(t)$ | $t$ is the technical support component. | $t \in \mathcal{T}$ | `@ClWorker` |
+|  | $\text{SystemAgent}(s)$ | $s$ is a low-level infrastructure/system agent. | $s \in \mathcal{S}$ | `@ClSystem` |
+|  | $\text{Atom}(a)$ | $a$ is the minimal indivisible unit of the system. | $a \in \text{Atom}$ | Atomic Building Block |
+| **Relations & Links** | $\text{Automates}(A, h)$ | $A$ mechanizes/automates human work $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiom 1 |
+|  | $\text{Targets}(\mathcal{M}, G)$ | Business set $\mathcal{M}$ targets goal $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiom 1 (Decomp.) |
+|  | $\text{Part}(p, A)$ | $p$ is a sub-part or component of $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiom 2 & 3 |
+|  | $\text{Contains}(p, a)$ | Sub-system $p$ contains domain atom $a$. | $\mathcal{P} \times \text{Atom}$ | Axiom 3 |
+|  | $\text{Simulates}(p, m)$ | Part $p$ embeds domain subset $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Business Component ($m \subseteq \mathcal{M}$) |
+|  | $\text{Associates}(t, p)$ | Technical support $t$ is attached to part $p$. | $\mathcal{T} \times \mathcal{P}$ | Attached Tech Component |
+|  | $\text{Combines}(a, c, t)$ | Atom $a$ strictly unites business component $c$ and tech component $t$. | $\text{Atom} \times \mathcal{C} \times \mathcal{T}$ | Atom (Exclusive Union) |
+|  | $\text{Uses}(t, s)$ | Tech component $t$ delegates complexity to system agent $s$. | $\mathcal{T} \times \mathcal{S}$ | Fractal Rule (Axiom 3) |
+|  | $\text{Inherits}(c, p)$ | Component $c$ inherits from parent component $p$. | $\mathcal{C} \times \mathcal{C}$ | `extends` Relation / Axiom 5 |
+|  | $\text{SameDomain}(c, p)$ | Components $c$ and $p$ share the same conceptual domain. | $\mathcal{C} \times \mathcal{C}$ | Domain Isomorphism / Axiom 5 |
  
 ---
 
