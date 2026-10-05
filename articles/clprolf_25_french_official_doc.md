@@ -1196,28 +1196,55 @@ Clprolf ajoute très peu de concepts.
 
 # XVI) Formalisation axiomatique et théorème d'expressivité
 
-## 1. Contrat Linguistique et Définitions (Les Prédicats)
+### 1. Contrat Linguistique et Définitions (Les Prédicats)
 
 | Type de Prédicat | Prédicat | Signification & Rôle | Domaine / Type | Correspondance Clprolf |
-| :--- | :--- | :--- | :--- | :--- |
+| --- | --- | --- | --- | --- |
 | **Objets & Entités** | $\text{App}(A)$ | $A$ est une application logicielle valide. | $A \in \mathcal{A}$ | Application globale |
-| | $\text{TravailHumain}(h)$ | $h$ est l'activité/travail humain à mécaniser. | $h \in \mathcal{H}$ | Activité réelle |
-| | $\text{ButHumain}(G)$ | $G$ est l'objectif final visé par/pour l'humain. | $G \in \mathcal{G}$ | But téléologique |
-| | $\text{DomaineMetier}(\mathcal{M})$ | $\mathcal{M}$ est l'ensemble de toutes les intentions/règles. | $\mathcal{M} \subseteq \mathcal{D}$ | Modèle Métier |
-| | $\text{SupportExecution}(t_h)$ | $t_h$ est le support/effort d'exécution chez l'humain. | $t_h \in \mathcal{T}_h$ | Support humain |
-| | $\text{ComposantMetier}(c)$ | $c$ est le composant incarnant la logique métier. | $c \in \mathcal{C}$ | `@ClAgent` |
-| | $\text{ComposantTech}(t)$ | $t$ est le composant de support technique. | $t \in \mathcal{T}$ | `@ClWorker` |
-| | $\text{AgentSysteme}(s)$ | $s$ est un agent d'infrastructure/technique basse. | $s \in \mathcal{S}$ | `@ClSystem` |
-| | $\text{Atome}(a)$ | $a$ est l'unité minimale et indivisible du système. | $a \in \text{Atome}$ | Brique atomique |
-| **Relations & Liens** | $\text{Automatise}(A, h)$ | $A$ mécanise/automatise le travail humain $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiome 1 |
-| | $\text{Viser}(\mathcal{M}, G)$ | L'ensemble métier $\mathcal{M}$ tend vers le but $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiome 1 (Décomp.) |
-| | $\text{Partie}(p, A)$ | $p$ est une sous-partie ou composant de $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiome 2 & 3 |
-| | $\text{Contient}(p, a)$ | Le sous-système $p$ contient l'atome de domaine $a$. | $\mathcal{P} \times \text{Atome}$ | Axiome 3 |
-| | $\text{Simule}(p, m)$ | La partie $p$ incruste la portion du domaine $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Composant Métier ($m \subseteq \mathcal{M}$) |
-| | $\text{Associe}(t, p)$ | Le support technique $t$ est adjoint à la partie $p$. | $\mathcal{T} \times \mathcal{P}$ | Composant Tech adossé |
-| | $\text{Combine}(a, c, t)$ | L'atome $a$ réunit strictement le composant métier $c$ et le composant technique $t$. | $\text{Atome} \times \mathcal{C} \times \mathcal{T}$ | Atom (Union exclusive) |
-| | $\text{Utilise}(t, s)$ | Le composant tech $t$ délègue sa complexité à l'agent système $s$. | $\mathcal{T} \times \mathcal{S}$ | Règle fractale (Axiome 3) |
+|  | $\text{TravailHumain}(h)$ | $h$ est l'activité/travail humain à mécaniser. | $h \in \mathcal{H}$ | Activité réelle |
+|  | $\text{ButHumain}(G)$ | $G$ est l'objectif final visé par/pour l'humain. | $G \in \mathcal{G}$ | But téléologique |
+|  | $\text{DomaineMetier}(\mathcal{M})$ | $\mathcal{M}$ est l'ensemble de toutes les intentions/règles. | $\mathcal{M} \subseteq \mathcal{D}$ | Modèle Métier |
+|  | $\text{SupportExecution}(t_h)$ | $t_h$ est le support/effort d'exécution chez l'humain. | $t_h \in \mathcal{T}_h$ | Support humain |
+|  | $\text{Composant}(c)$ | $c$ est un composant logiciel qualifié. | $c \in \mathcal{C}$ | Unité logicielle (Classe)
 
+ |
+|  | $\text{ComposantMetier}(c)$ | $c$ est le composant incarnant la logique métier. | $c \in \mathcal{C}$ | `@ClAgent`<br> |
+|  | $\text{ComposantTech}(t)$ | $t$ est le composant de support technique. | $t \in \mathcal{T}$ | `@ClWorker`<br> |
+|  | $\text{AgentSysteme}(s)$ | $s$ est un agent d'infrastructure/technique basse. | $s \in \mathcal{S}$ | `@ClSystem`<br> |
+|  | $\text{Atome}(a)$ | $a$ est l'unité minimale et indivisible du système. | $a \in \text{Atome}$ | Brique atomique
+
+ |
+| **Relations & Liens** | $\text{Automatise}(A, h)$ | $A$ mécanise/automatise le travail humain $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiome 1
+
+ |
+|  | $\text{Viser}(\mathcal{M}, G)$ | L'ensemble métier $\mathcal{M}$ tend vers le but $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiome 1 (Décomp.)
+
+ |
+|  | $\text{Partie}(p, A)$ | $p$ est une sous-partie ou composant de $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiome 2 & 3
+
+ |
+|  | $\text{Contient}(p, a)$ | Le sous-système $p$ contient l'atome de domaine $a$. | $\mathcal{P} \times \text{Atome}$ | Axiome 3
+
+ |
+|  | $\text{Simule}(p, m)$ | La partie $p$ incruste la portion du domaine $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Composant Métier ($m \subseteq \mathcal{M}$)
+
+ |
+|  | $\text{Associe}(t, p)$ | Le support technique $t$ est adjoint à la partie $p$. | $\mathcal{T} \times \mathcal{P}$ | Composant Tech adossé
+
+ |
+|  | $\text{Combine}(a, c, t)$ | L'atome $a$ réunit strictement le composant métier $c$ et le composant technique $t$. | $\text{Atome} \times \mathcal{C} \times \mathcal{T}$ | Atom (Union exclusive)
+
+ |
+|  | $\text{Utilise}(t, s)$ | Le composant tech $t$ délègue sa complexité à l'agent système $s$. | $\mathcal{T} \times \mathcal{S}$ | Règle fractale (Axiome 3)
+
+ |
+|  | $\text{Herite}(c, p)$ | Le composant $c$ hérite du composant parent $p$. | $\mathcal{C} \times \mathcal{C}$ | Relation `extends` / Axiome 5
+
+ |
+|  | $\text{MemeDomaine}(c, p)$ | Les composants $c$ et $p$ partagent le même domaine conceptuel. | $\mathcal{C} \times \mathcal{C}$ | Isomorphisme de domaine / Axiome 5
+
+ |
+ 
 ## 2. Les Axiomes Fondamentaux
 
 ### Axiome 1 — Automatisation du Travail Humain
@@ -1248,6 +1275,21 @@ Si un composant technique (Worker) fait face à une complexité d'infrastructure
 
 $$\forall t \; \Big( ComposantTech(t) \Rightarrow \forall s \; \big( Utilise(t, s) \Rightarrow Atome(s) \land AgentSysteme(s) \big) \Big)$$
 
+### Axiome 4 — Unicité de la Qualification du Composant
+
+Tout composant $c$ possède exactement une et une seule qualification parmi les trois rôles fondamentaux du système :
+
+$$\forall c \; \Big( \text{Composant}(c) \implies \big(\text{ComposantMetier}(c) \oplus \text{ComposantTech}(c) \oplus \text{AgentSysteme}(c)\big) \Big)$$
+
+---
+
+### Axiome 5 — Invariance du Domaine par Héritage
+
+La relation d'héritage entre deux composants implique l'appartenance stricte au même domaine conceptuel :
+
+$$\forall c, p \; \Big( \big(\text{Composant}(c) \land \text{Composant}(p) \land \text{Herite}(c, p)\big) \implies \text{MemeDomaine}(c, p) \Big)$$
+
+```
 
 ## 3. Dictionnaire de Correspondance Canonique
 
@@ -1330,8 +1372,8 @@ Soient les ensembles de base :
 
 ### Relations topologiques
 
-* $Implements(c, i)$ : Le composant $c$ implémente l'interface $i$.
-* $Inherits(i, j)$ : L'interface $i$ hérite de l'interface $j$.
+* $Implemente(c, i)$ : Le composant $c$ implémente l'interface $i$.
+* $Herite(i, j)$ : L'interface $i$ hérite de l'interface $j$.
 
 ### Définition par Surcharge Contextuelle ($\triangleq$)
 
@@ -1355,13 +1397,13 @@ $$\forall f \in F \; \Big( \text{TargetMetier}(f) \uparrow \text{TargetTech}(f) 
 
 Un composant ne peut implémenter qu'une famille dont la polarité est strictement isomorphe à sa propre nature :
 
-$$\forall c \in C, \forall f \in F \; \Big( Implements(c, f) \implies \big( ComposantMetier(c) \iff TargetMetier(f) \big) \land \big( ComposantTech(c) \iff TargetTech(f) \big) \Big)$$
+$$\forall c \in C, \forall f \in F \; \Big( Implemente(c, f) \implies \big( ComposantMetier(c) \iff TargetMetier(f) \big) \land \big( ComposantTech(c) \iff TargetTech(f) \big) \Big)$$
 
 ### Axiome 3 — Continuité Contextuelle des Traits
 
 Lorsqu'une famille $f$ hérite d'un trait $t$, la compatibilité du trait $t$ est évaluée dynamiquement dans le contexte de la polarité de la famille $f$ :
 
-$$\forall f \in F, \forall t \in T \; \Big( Inherits(f, t) \implies \big( TargetMetier(f) \implies TargetMetier(t) \big) \land \big( TargetTech(f) \implies TargetTech(t) \big) \Big)$$
+$$\forall f \in F, \forall t \in T \; \Big( Herite(f, t) \implies \big( TargetMetier(f) \implies TargetMetier(t) \big) \land \big( TargetTech(f) \implies TargetTech(t) \big) \Big)$$
 
 ---
 
@@ -1371,22 +1413,20 @@ $$\forall f \in F, \forall t \in T \; \Big( Inherits(f, t) \implies \big( Target
 
 Pour tout composant $c$, toute famille $f$ et tout trait $t$, si $f$ hérite de $t$ et que $c$ implémente $f$, alors l'arborescence des contrats préserve la nature de $c$ jusqu'au trait $t$, garantissant la neutralité ontologique des interfaces :
 
-$$\forall c \in C, \forall f, t \in I \; \Big( Famille(f) \land Trait(t) \land Inherits(f, t) \land Implements(c, f) \implies \big( ComposantMetier(c) \implies TargetMetier(t) \big) \land \big( ComposantTech(c) \implies TargetTech(t) \big) \Big)$$
+$$\forall c \in C, \forall f, t \in I \; \Big( Famille(f) \land Trait(t) \land Herite(f, t) \land Implemente(c, f) \implies \big( ComposantMetier(c) \implies TargetMetier(t) \big) \land \big( ComposantTech(c) \implies TargetTech(t) \big) \Big)$$
 
 ### Démonstration analytique
 
-1. **Supposition initiale :** Soit un composant $c$ tel que $ComposantMetier(c)$, une famille $f \in F$ et un trait $t \in T$ tels que $Inherits(f, t)$ et $Implements(c, f)$.
-2. **Application de l'Axiome 2 (Loi du Miroir) :** Puisque $Implements(c, f)$, on déduit immédiatement :
+1. **Supposition initiale :** Soit un composant $c$ tel que $ComposantMetier(c)$, une famille $f \in F$ et un trait $t \in T$ tels que $Herite(f, t)$ et $Implemente(c, f)$.
+2. **Application de l'Axiome 2 (Loi du Miroir) :** Puisque $Implemente(c, f)$, on déduit immédiatement :
 
 $$ComposantMetier(c) \iff TargetMetier(f)$$
 
 
-
 Comme $ComposantMetier(c)$ est vrai par hypothèse, $TargetMetier(f)$ est établi.
-3. **Application de l'Axiome 3 (Continuité Contextuelle) :** Puisque $Inherits(f, t)$, l'Axiome 3 donne :
+3. **Application de l'Axiome 3 (Continuité Contextuelle) :** Puisque $Herite(f, t)$, l'Axiome 3 donne :
 
 $$TargetMetier(f) \implies TargetMetier(t)$$
-
 
 
 Puisque $TargetMetier(f)$ est vrai, l'évaluation du prédicat surchargé pour le trait $t$ donne $\text{TargetMetier}(t) = \text{Vrai}$.
@@ -1424,17 +1464,20 @@ Section ClprolfFormalization.
   Variable ComposantMetier : Object -> Prop.
   Variable ComposantTech   : Object -> Prop.
   Variable SupportTech     : Object -> Prop.
+  Variable Composant       : Object -> Prop.
 
   (* Relations formelles *)
-  Variable Automatise : Object -> Object -> Prop. (* Application -> TravailHumain *)
-  Variable Viser      : Object -> Object -> Prop. (* DomaineMetier -> ButHumain *)
-  Variable Partie     : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contient   : Object -> Object -> Prop. (* Subsystem -> Atome *)
-  Variable Combine    : Object -> Object -> Object -> Prop. (* Atome -> ComposantMetier -> ComposantTech *)
-  Variable Utilise    : Object -> Object -> Prop. (* ComposantTech -> AgentSysteme *)
-  Variable Simule     : Object -> Object -> Prop. (* Subsystem/Agent -> Portion Domaine *)
-  Variable Associe    : Object -> Object -> Prop. (* SupportTech/Worker -> Subsystem/Agent *)
-  Variable SubSet     : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
+  Variable Automatise  : Object -> Object -> Prop. (* Application -> TravailHumain *)
+  Variable Viser       : Object -> Object -> Prop. (* DomaineMetier -> ButHumain *)
+  Variable Partie      : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contient    : Object -> Object -> Prop. (* Subsystem -> Atome *)
+  Variable Combine     : Object -> Object -> Object -> Prop. (* Atome -> ComposantMetier -> ComposantTech *)
+  Variable Utilise     : Object -> Object -> Prop. (* ComposantTech -> AgentSysteme *)
+  Variable Simule      : Object -> Object -> Prop. (* Subsystem/Agent -> Portion Domaine *)
+  Variable Associe     : Object -> Object -> Prop. (* SupportTech/Worker -> Subsystem/Agent *)
+  Variable SubSet      : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
+  Variable Herite      : Object -> Object -> Prop. (* Composant Enfant -> Parent *)
+  Variable MemeDomaine : Object -> Object -> Prop. (* Préservation du domaine *)
 
   (* ================================================================= *)
   (* 2. AXIOMES FONDAMENTAUX DE CLPROLF                                *)
@@ -1484,6 +1527,21 @@ Section ClprolfFormalization.
         ComposantTech t ->
         forall s : Object,
           Utilise t s -> Atome s /\ AgentSysteme s).
+
+  (* Axiome 4 : Unicité de la qualification du composant *)
+  Axiom Axiom4_ComponentUniqueness :
+    forall c : Object,
+      Composant c ->
+      (ComposantMetier c /\ ~ComposantTech c /\ ~AgentSysteme c) \/
+      (~ComposantMetier c /\ ComposantTech c /\ ~AgentSysteme c) \/
+      (~ComposantMetier c /\ ~ComposantTech c /\ AgentSysteme c).
+
+  (* Axiome 5 : Invariance du domaine par héritage *)
+  Axiom Axiom5_InheritanceDomainInvariance :
+    forall c p : Object,
+      Composant c -> Composant p ->
+      Herite c p ->
+      MemeDomaine c p.
 
   (* ================================================================= *)
   (* 3. GRAMMAIRE (AST) DU FRAMEWORK CLPROLF                           *)
@@ -1596,8 +1654,8 @@ Section ClprolfFormalization.
   Definition TargetTech (i : Interface) : Prop :=
     if (fam_dec i) then PolariteTech i else EstCompatibleTech i.
 
-  Variable Implements : Object -> Interface -> Prop.
-  Variable Inherits   : Interface -> Interface -> Prop.
+  Variable Implemente : Object -> Interface -> Prop.
+  Variable HeriteInterface   : Interface -> Interface -> Prop.
 
   (* Axiome 1 : Exclusivité des Familles via Connectif d'Incompatibilité (Sheffer / NAND) *)
   Axiom Contract_Axiom1_FamilyExclusivity :
@@ -1608,7 +1666,7 @@ Section ClprolfFormalization.
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Famille f ->
-      Implements c f ->
+      Implemente c f ->
       (ComposantMetier c <-> TargetMetier f) /\
       (ComposantTech c <-> TargetTech f).
 
@@ -1617,7 +1675,7 @@ Section ClprolfFormalization.
     forall (f t : Interface),
       Famille f ->
       Trait t ->
-      Inherits f t ->
+      HeriteInterface f t ->
       (TargetMetier f -> TargetMetier t) /\
       (TargetTech f -> TargetTech t).
 
@@ -1626,8 +1684,8 @@ Section ClprolfFormalization.
     forall (c : Object) (f t : Interface),
       Famille f ->
       Trait t ->
-      Inherits f t ->
-      Implements c f ->
+      HeriteInterface f t ->
+      Implemente c f ->
       (ComposantMetier c -> TargetMetier t) /\
       (ComposantTech c -> TargetTech t).
   Proof.

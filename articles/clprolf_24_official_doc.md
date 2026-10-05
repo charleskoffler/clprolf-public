@@ -1214,25 +1214,62 @@ ClFree
 ## 1. Linguistic Contract and Definitions (The Predicates)
 
 | Predicate Type | Predicate | Meaning & Role | Domain / Type | Clprolf Mapping |
-| :--- | :--- | :--- | :--- | :--- |
-| **Objects & Entities** | $\text{App}(A)$ | $A$ is a valid software application. | $A \in \mathcal{A}$ | Global Application |
-| | $\text{HumanWork}(h)$ | $h$ is the human activity/work to mechanize. | $h \in \mathcal{H}$ | Real-world Activity |
-| | $\text{HumanGoal}(G)$ | $G$ is the final objective targeted for/by the human. | $G \in \mathcal{G}$ | Teleological Goal |
-| | $\text{BusinessDomain}(\mathcal{M})$ | $\mathcal{M}$ is the set of all intentions/business rules. | $\mathcal{M} \subseteq \mathcal{D}$ | Business Domain Model |
-| | $\text{ExecutionSupport}(t_h)$ | $t_h$ is the human execution support/effort. | $t_h \in \mathcal{T}_h$ | Human Support |
-| | $\text{DomainComponent}(c)$ | $c$ is the component embodying business logic. | $c \in \mathcal{C}$ | `@ClAgent` |
-| | $\text{TechComponent}(t)$ | $t$ is the technical support component. | $t \in \mathcal{T}$ | `@ClWorker` |
-| | $\text{SystemAgent}(s)$ | $s$ is a low-level infrastructure/system agent. | $s \in \mathcal{S}$ | `@ClSystem` |
-| | $\text{Atom}(a)$ | $a$ is the minimal indivisible unit of the system. | $a \in \text{Atom}$ | Atomic Building Block |
-| **Relations & Links** | $\text{Automates}(A, h)$ | $A$ mechanizes/automates human work $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiom 1 |
-| | $\text{Targets}(\mathcal{M}, G)$ | Business set $\mathcal{M}$ targets goal $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiom 1 (Decomp.) |
-| | $\text{Part}(p, A)$ | $p$ is a sub-part or component of $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiom 2 & 3 |
-| | $\text{Contains}(p, a)$ | Sub-system $p$ contains domain atom $a$. | $\mathcal{P} \times \text{Atom}$ | Axiom 3 |
-| | $\text{Simulates}(p, m)$ | Part $p$ embeds domain subset $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Business Component ($m \subseteq \mathcal{M}$) |
-| | $\text{Associates}(t, p)$ | Technical support $t$ is attached to part $p$. | $\mathcal{T} \times \mathcal{P}$ | Attached Tech Component |
-| | $\text{Combines}(a, c, t)$ | Atom $a$ strictly unites business component $c$ and tech component $t$. | $\text{Atom} \times \mathcal{C} \times \mathcal{T}$ | Atom (Exclusive Union) |
-| | $\text{Uses}(t, s)$ | Tech component $t$ delegates complexity to system agent $s$. | $\mathcal{T} \times \mathcal{S}$ | Fractal Rule (Axiom 3) |
+| --- | --- | --- | --- | --- |
+| **Objects & Entities** | $\text{App}(A)$ | $A$ is a valid software application. | $A \in \mathcal{A}$ | Global Application
 
+ |
+|  | $\text{HumanWork}(h)$ | $h$ is the human activity/work to mechanize. | $h \in \mathcal{H}$ | Real-world Activity
+
+ |
+|  | $\text{HumanGoal}(G)$ | $G$ is the final objective targeted for/by the human. | $G \in \mathcal{G}$ | Teleological Goal
+
+ |
+|  | $\text{BusinessDomain}(\mathcal{M})$ | $\mathcal{M}$ is the set of all intentions/business rules. | $\mathcal{M} \subseteq \mathcal{D}$ | Business Domain Model
+
+ |
+|  | $\text{ExecutionSupport}(t_h)$ | $t_h$ is the human execution support/effort. | $t_h \in \mathcal{T}_h$ | Human Support
+
+ |
+|  | $\text{Component}(c)$ | $c$ is a qualified software component. | $c \in \mathcal{C}$ | Software Unit (Class)
+
+ |
+|  | $\text{DomainComponent}(c)$ | $c$ is the component embodying business logic. | $c \in \mathcal{C}$ | `@ClAgent`<br> |
+|  | $\text{TechComponent}(t)$ | $t$ is the technical support component. | $t \in \mathcal{T}$ | `@ClWorker`<br> |
+|  | $\text{SystemAgent}(s)$ | $s$ is a low-level infrastructure/system agent. | $s \in \mathcal{S}$ | `@ClSystem`<br> |
+|  | $\text{Atom}(a)$ | $a$ is the minimal indivisible unit of the system. | $a \in \text{Atom}$ | Atomic Building Block
+
+ |
+| **Relations & Links** | $\text{Automates}(A, h)$ | $A$ mechanizes/automates human work $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiom 1
+
+ |
+|  | $\text{Targets}(\mathcal{M}, G)$ | Business set $\mathcal{M}$ targets goal $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiom 1 (Decomp.)
+
+ |
+|  | $\text{Part}(p, A)$ | $p$ is a sub-part or component of $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiom 2 & 3
+
+ |
+|  | $\text{Contains}(p, a)$ | Sub-system $p$ contains domain atom $a$. | $\mathcal{P} \times \text{Atom}$ | Axiom 3
+
+ |
+|  | $\text{Simulates}(p, m)$ | Part $p$ embeds domain subset $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Business Component ($m \subseteq \mathcal{M}$)
+
+ |
+|  | $\text{Associates}(t, p)$ | Technical support $t$ is attached to part $p$. | $\mathcal{T} \times \mathcal{P}$ | Attached Tech Component
+
+ |
+|  | $\text{Combines}(a, c, t)$ | Atom $a$ strictly unites business component $c$ and tech component $t$. | $\text{Atom} \times \mathcal{C} \times \mathcal{T}$ | Atom (Exclusive Union)
+
+ |
+|  | $\text{Uses}(t, s)$ | Tech component $t$ delegates complexity to system agent $s$. | $\mathcal{T} \times \mathcal{S}$ | Fractal Rule (Axiom 3)
+
+ |
+|  | $\text{Inherits}(c, p)$ | Component $c$ inherits from parent component $p$. | $\mathcal{C} \times \mathcal{C}$ | `extends` Relation / Axiom 5
+
+ |
+|  | $\text{SameDomain}(c, p)$ | Components $c$ and $p$ share the same conceptual domain. | $\mathcal{C} \times \mathcal{C}$ | Domain Isomorphism / Axiom 5
+
+ |
+ 
 ---
 
 ## 2. Fundamental Axioms
@@ -1266,6 +1303,20 @@ If a technical component (Worker) faces heavy infrastructure complexity, it is g
 $$\forall t \; \Big( TechComponent(t) \Rightarrow \forall s \; \big( Uses(t, s) \Rightarrow Atom(s) \land SystemAgent(s) \big) \Big)$$
 
 ---
+
+### Axiom 4 — Uniqueness of Component Qualification
+
+Every component $c$ has exactly one qualification among the three fundamental roles of the system:
+
+$$\forall c \; \Big( \text{Component}(c) \implies \big(\text{BusinessComponent}(c) \oplus \text{TechComponent}(c) \oplus \text{SystemAgent}(c)\big) \Big)$$
+
+---
+
+### Axiom 5 — Domain Invariance through Inheritance
+
+The inheritance relationship between two components implies strict adherence to the same conceptual domain:
+
+$$\forall c, p \; \Big( \big(\text{Component}(c) \land \text{Component}(p) \land \text{Inherits}(c, p)\big) \implies \text{SameDomain}(c, p) \Big)$$
 
 ## 3. Canonical Correspondence Dictionary
 
@@ -1437,6 +1488,7 @@ Section ClprolfFormalization.
   Variable BusinessComponent : Object -> Prop.
   Variable TechComponent   : Object -> Prop.
   Variable TechSupport     : Object -> Prop.
+  Variable Component       : Object -> Prop.
 
   (* Formal relations *)
   Variable Automates : Object -> Object -> Prop. (* Application -> HumanWork *)
@@ -1448,6 +1500,8 @@ Section ClprolfFormalization.
   Variable Simulates : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
   Variable Associates: Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
   Variable SubSet    : Object -> Object -> Prop. (* Inclusion m ⊆ M *)
+  Variable Inherits   : Object -> Object -> Prop. (* Child Component -> Parent *)
+  Variable SameDomain : Object -> Object -> Prop. (* Domain preservation *)
 
   (* ================================================================= *)
   (* 2. CLPROLF FUNDAMENTAL AXIOMS                                     *)
@@ -1497,6 +1551,21 @@ Section ClprolfFormalization.
         TechComponent t ->
         forall s : Object,
           Uses t s -> Atom s /\ SystemAgent s).
+
+  (* Axiom 4: Uniqueness of component qualification *)
+  Axiom Axiom4_ComponentUniqueness :
+    forall c : Object,
+      Component c ->
+      (BusinessComponent c /\ ~TechComponent c /\ ~SystemAgent c) \/
+      (~BusinessComponent c /\ TechComponent c /\ ~SystemAgent c) \/
+      (~BusinessComponent c /\ ~TechComponent c /\ SystemAgent c).
+
+  (* Axiom 5: Domain invariance through inheritance *)
+  Axiom Axiom5_InheritanceDomainInvariance :
+    forall c p : Object,
+      Component c -> Component p ->
+      Inherits c p ->
+      SameDomain c p.
 
   (* ================================================================= *)
   (* 3. CLPROLF FRAMEWORK GRAMMAR (AST)                                *)
@@ -1610,7 +1679,7 @@ Section ClprolfFormalization.
     if (fam_dec i) then TechPolarity i else IsTechCompatible i.
 
   Variable Implements : Object -> Interface -> Prop.
-  Variable Inherits   : Interface -> Interface -> Prop.
+  Variable InterfaceInherits   : Interface -> Interface -> Prop.
 
   (* Axiom 1: Family Exclusivity via Incompatibility Connective (Sheffer / NAND) *)
   Axiom Contract_Axiom1_FamilyExclusivity :
@@ -1630,7 +1699,7 @@ Section ClprolfFormalization.
     forall (f t : Interface),
       Family f ->
       Trait t ->
-      Inherits f t ->
+      InterfaceInherits f t ->
       (TargetBusiness f -> TargetBusiness t) /\
       (TargetTech f -> TargetTech t).
 
@@ -1639,7 +1708,7 @@ Section ClprolfFormalization.
     forall (c : Object) (f t : Interface),
       Family f ->
       Trait t ->
-      Inherits f t ->
+      InterfaceInherits f t ->
       Implements c f ->
       (BusinessComponent c -> TargetBusiness t) /\
       (TechComponent c -> TargetTech t).
