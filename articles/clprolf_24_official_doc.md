@@ -1426,7 +1426,7 @@ $$\forall f \in F, \forall t \in T \; \Big( \text{Inherits}(f, t) \implies \big(
 
 Every class $c \in C$ implements at most one single family $f \in F$, and is strictly forbidden from directly implementing any trait $t \in T$:
 
-$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implements}(c, f) \;\land\; \forall t \in T \quad \neg \text{Implements}(c, t) \Big)$$
+$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implements}(c, f) \land \forall t \in T \quad \neg \text{Implements}(c, t) \Big)$$
 
 ---
 
