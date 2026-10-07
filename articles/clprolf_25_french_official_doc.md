@@ -472,6 +472,13 @@ Lorsque la complexité de l'application augmente, il devient nécessaire de regr
 
 # VIII) Interfaces
 
+Il y a en Clprolf deux types d'interfaces. Une seule est implémentable directement par une classe, ce sont les interfaces de famille (`ClFamily`).
+Le contrat est plus exigeant que le contrat habituel. La classe doit être un composant de même type que le rôle cible demandé par le contrat(la "Target").
+La classe est réduite à un seul contrat possible. En mode non strict, la classe peut implémenter plusieurs interfaces, dont des traits(`ClTrait`).
+En pur Clprolf, les traits sont des exigences pour les interfaces familles, et ne peuvent pas être implémentées par les classes directement. Ce ne sont pas des contrats.
+Ou alors on pourrait dire que ce sont des contrats pour les interfaces de famille. Les traits sont des fonctionnalités communes et transverses entre hiérarchies de familles({`ClFamily`).
+Ils ne peuvent étendre que des interfaces family qui possèdent un des rôles cibles demandés par le trait.
+
 Dans Clprolf, les interfaces sont vues comme :
 
 > des formes abstraites d’héritage.
@@ -482,17 +489,14 @@ ClFamily  = interface principale d’une famille
 ClTrait = trait, capacité commune entre familles
 ClFree = interface libre
 
-Dans Clprolf, les interfaces ne sont pas vues comme de simples
-contrats techniques.
-
 Les relations `extends` et `implements` sont considérées comme
 de véritables relations d’héritage conceptuel, d'où "family".
 
 ---
 
-## VIII.1) `ClFamily`
+## VIII.1) `ClFamily` et le contrat de miroir
 
-Interface représentant une famille abstraite.
+Interface représentant une famille abstraite, et apportant un contrat miroir pour la future implémentation par une classe.
 
 Utilisée pour :
 
@@ -550,15 +554,17 @@ public class HorseImpl extends AnimalImpl implements Horse { (...) }
 
 ## VIII.2) `ClTrait`
 
-Interface représentant une fonctionnalité commune entre plusieurs ClFamily.
+Interface représentant une fonctionnalité commune entre plusieurs ClFamily. Ce n'est pas un contrat pour une classe.
 Les traits utilisent un rôle cible, tout comme les ClFamily :
 
 * @ClAgent
 * @ClWorker
+* @ClSystem
 
-Remarque: une interface @ClTrait peut être annotée à la fois @ClAgent et @ClWorker.
-Cette exception est réservée aux traits véritablement transversaux,
-utilisables aussi bien par des agents que par des workers.
+Mais une interface @ClTrait peut être annotée par plusieurs rôles de composant, @ClAgent, @ClWorker ou @ClSystem.
+Cette exception est réservée aux traits véritablement transversaux, utilisables aussi bien par plusieurs types de composant.
+Cela signifie que l'interface famille héritante doit posséder un de ses rôles.
+En général, un trait ne possède qu'un rôle cible.
 
 ```java
 @ClAgent
@@ -640,22 +646,22 @@ public interface ExternalApi {
 
 ## VIII.5) Utilisation des interfaces
 
-* En Clprolf, les interfaces `Family` se rapprochent des classes abstraites pures.
+* En Clprolf, les interfaces `Family` permettent d'avoir un miroir des composants, mais sans implémentation.
+Le contrat est plus exigeant qu'en Java ou C#, car la classe doit, en plus des méthodes, être un composant du type visé(`ClAgent`, `ClWorker`, ou `ClSystem`).
+Enfin, le contrat est que la classe n'implémente que cette interface family, et pas d'autres, pour avoir un miroir entre les interfaces et leurs implémentations.
+Par contre, plusieurs composants(classes) peuvent implémenter même interface `ClFamily`.
 
-Elles sont destinées à être implémentées par une ou plusieurs futures classes Clprolf.
-Elles possèdent donc un rôle cible (`agent` ou `worker`).
-
-Une classe ne peut implémenter qu’une seule `Family` principale à la fois, et le rôle de la classe doit correspondre au rôle cible de l’interface. Clprolf utilise ainsi une implémentation simple des interfaces, de la même manière que Java utilise un héritage simple des classes. En effet, une `Family` est toujours le reflet structurel de son implémentation. Cela permet notamment d’obtenir un loose coupling systématique.
-Toutefois, l’implémentation multiple n’est pas supprimée, mais déplacée vers la `Family` implémentée par la classe.
-**Ceci peut paraître restrictif et inhabituel, mais cela ne s'applique qu'en mode strict, qui n'est pas le mode par défaut. Cela permet d'éviter que plusieurs implémentations d'une même famille ne répètent un contrat multiple, et aide à comprendre rapidement ce qu'implémentent les classes.**
+Une `Family` est toujours le reflet structurel de son implémentation. Cela permet notamment d’obtenir un loose coupling systématique.
+L’implémentation de plusieurs interfaces family n’est pas supprimée, mais déplacée vers la `Family` implémentée par la classe. Tout reste donc possible.
+**Cela ne s'applique que pour le checker en mode strict.**
 
 * Les interfaces `Trait` expriment une fonctionnalité commune entre plusieurs interfaces `Family`.
 
-Un `Trait` représente donc un trait transversal partagé entre plusieurs familles.
+Un `Trait` représente donc un trait transversal partagé entre plusieurs familles. Ce n'est pas un contrat avec une classe.
 
-Normalement, un `Trait` ne peut être hérité que par une interface `Family`, et non directement par une classe. C'est pour éviter de séparer le trait de son interface famille, et clarifier les implémentations des classes (notamment en cas de multiples implémentations d'une même famille).
+Un `Trait` ne peut être hérité que par une interface `Family`( ou étendre un autre `ClTrait`), et non directement par une classe.
 
-**Cependant, ceci est vrai uniquement en mode strict, qui n'est pas le mode par défaut.**
+**Ceci est vrai uniquement en mode strict du checker. En contrôles non strict, un trait peut être implémenté directement par une classe. Mais on perd alors certains invariants structurels**
 
 ```text
 Classe concrète
@@ -665,28 +671,21 @@ ClFamily
 ClTrait
 ```
 
-Note : une interface `Family` peut hériter de plusieurs interfaces `Family` ou `Trait`.
-Une interface `Trait` ne peut hériter que d’autres `Trait`, car un trait reste un trait.
+Note :
 Un forçage de l’héritage d’interfaces reste possible avec `@ClInterfaceBypass` au-dessus de l’interface (ou `@ClBypass` pour forcer l’héritage entre rôles cibles différents).
 Mais ces forçages ne devraient pas être fréquent.
 
 ### VIII.5.2) Mode strict des interfaces avec flexibilité
 
 Il est possible d'utiliser `ClFree` pour rester strict uniquement sur les interfaces qu'on souhaite, et faire des ClFamily quand on souhaite plus de rigueur, sur des cas précis. Dans ce cas, même en mode strict, on reste ouvert et flexible.
-
+Les interfaces natives Java ou C# sont acceptées et considérées comme `ClFree`.
 ---
 
-## VIII.6) Avantages du "Loose Coupling" systématique par l'interface miroir
+## VIII.6) "Loose Coupling" systématique par l'interface miroir
 
-En mode strict, le fait de restreindre une classe à l'implémentation d'une unique ClFamily (et de déléguer les ClTrait à cette interface) n'est pas une simple contrainte esthétique. C'est le mécanisme même qui garantit un couplage faible (loose coupling) systématique.
-
-Plutôt qu'une classe implémentant de multiples contrats éparpillés, la ClFamily agit comme le "contrat miroir" officiel et complet du composant. Ainsi, lorsqu'un composant A a besoin d'un composant B, il est naturellement poussé à dépendre de la ClFamily de B, et non de son implémentation. L'inversion de dépendance n'est plus une simple recommandation, elle découle mécaniquement de la structure du code.
-
-Le gain est de n'avoir plus qu'une seule hiérarchie, au lieu de la hierarchie de classes + la hiérarchie d'interfaces. Bien sûr, ce mode strict est à utiliser selon les préférences, et situations à résoudre.
+Le contrat miroir, et la séparation des traits, permet d'obtenir un loose coupling d'implémentation de manière structurelle.
 
 ### Un exemple réel des interfaces `ClFamily` et `ClTrait`
-
-Regardons cet exemple réel, qui utilise une conception applicable au mode strict du Framework Clprolf:
 
 ```java
 package com.tngtech.archunit.lang;
@@ -715,11 +714,11 @@ La classe n'implémente pas directement CanBeEvaluated et CanOverrideDescription
 
 ## VIII.7) Remarque sur les interfaces Clprolf et l'Interface Segregation Principle (ISP)
 
-Clprolf aide naturellement à respecter l'ISP et permet d'éviter les *« fat interfaces »* (interfaces fourre-tout). Il ne prétend pas d'être la seule façon de tendre vers l'ISP.
+Clprolf apporte des éléments pour respecter l'ISP et permet d'éviter les *« fat interfaces »* (interfaces fourre-tout).
 
 ### Le problème classique de la *Fat Interface*
 
-Sans découpage strict, on a souvent tendance à créer une interface unique regroupant toutes les fonctionnalités possibles pour un domaine :
+On a souvent tendance à créer une interface unique regroupant toutes les fonctionnalités possibles pour un domaine :
 
 ```java
 // Anti-pattern : Fat Interface qui viole l'ISP
@@ -733,11 +732,9 @@ public interface Machine {
 
 Dans ce schéma, une ancienne imprimante (`OldPrinterImpl`) qui ne sait qu'imprimer serait forcée d'implémenter `scan()` et `fax()`, souvent en levant une exception (`UnsupportedOperationException`), ce qui viole l'ISP.
 
-### La réponse de Clprolf
+### Version avec Clprolf
 
-Clprolf respecte naturellement l'ISP, et permet d'éviter les interfaces trop grosses. Une interface `ClFamily`est le miroir de son implémentation, elle ne peut donc pas imposer des méthodes qui ne correspondent pas à l'implémentation.
-Ainsi, on réalisera naturellement une factorisation en plusieurs `ClFamily`, et avec des `ClTrait`. Et on gardera la relation architecturale (ici entre ModernPrinter et OldPrinter), en évitant la duplication des traits communs.
-Le code améliore ainsi son évolutivité, et lisibilité.
+Le code tend à améliorer l'évolutivité, et lisibilité.
 
 ```java
 @ClAgent
@@ -1253,6 +1250,8 @@ Si un composant technique (Worker) fait face à une complexité d'infrastructure
 
 $$\forall t \; \Big( ComposantTech(t) \Rightarrow \forall s \; \big( Utilise(t, s) \Rightarrow Atome(s) \land AgentSysteme(s) \big) \Big)$$
 
+---
+
 ### Axiome 4 — Unicité de la Qualification du Composant
 
 Tout composant $c$ possède exactement une et une seule qualification parmi les trois rôles fondamentaux du système :
@@ -1266,6 +1265,8 @@ $$\forall c \; \Big( \text{Composant}(c) \implies \big(\text{ComposantMetier}(c)
 La relation d'héritage entre deux composants implique l'appartenance stricte au même domaine conceptuel :
 
 $$\forall c, p \; \Big( \big(\text{Composant}(c) \land \text{Composant}(p) \land \text{Herite}(c, p)\big) \implies \text{MemeDomaine}(c, p) \Big)$$
+
+---
 
 ## 3. Dictionnaire de Correspondance Canonique
 
@@ -1323,9 +1324,8 @@ Cette démonstration prouve que Clprolf n'est pas seulement expressif au sens co
 
 ---
 
----
 
-# XVII) Formalisation mathématique de la neutralité des contrats
+# XVII) Formalisation mathématique de la neutralité des contrats (version Triade)
 
 Afin de démontrer que l'introduction du polymorphisme par interfaces (`ClFamily` et `ClTrait`) ne modifie pas la nature intrinsèque des atomes du système, nous formalisons la théorie des contrats sous forme de système logique et topologique.
 
@@ -1338,8 +1338,9 @@ Soient les ensembles de base :
 
 ### Prédicats de nature des composants
 
-* $ComposantMetier(c)$ : Le composant $c \in C$ porte une responsabilité métier (`@ClAgent`).
-* $ComposantTech(c)$ : Le composant $c \in C$ porte une responsabilité technique (`@ClWorker`).
+* $ComposantMetier(c)$ : Le composant $c \in C$ porte une responsabilité métier (`@ClWorker` Métier).
+* $ComposantTech(c)$ : Le composant $c \in C$ porte une responsabilité technique (`@ClWorker` Tech).
+* $AgentSysteme(c)$ : Le composant $c \in C$ porte une responsabilité d'orchestration ou d'exposition (`@ClAgent`).
 
 ### Prédicats de typologie d'interface
 
@@ -1353,33 +1354,49 @@ Soient les ensembles de base :
 
 ### Définition par Surcharge Contextuelle ($\triangleq$)
 
-Pour préserver une syntaxe unifiée dans toutes les équations, les prédicats de cible sont définis par disjonction de cas selon la nature de l'interface $i \in I$ :
+$$\text{TargetMetier}(i) \triangleq \begin{cases} \text{PolaritéMetier}(i) & \text{si } i \in F \quad (\text{Famille}) \\ \text{EstCompatibleMetier}(i) & \text{si } i \in T \quad (\text{Trait}) \end{cases}$$
 
-$$\text{TargetMetier}(i) \triangleq \begin{cases}  \text{PolaritéMetier}(i) & \text{si } i \in F \quad (\text{Famille : polarité stricte et exclusive}) \\  \text{EstCompatibleMetier}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité réflexive selon le contexte})  \end{cases}$$
+$$\text{TargetTech}(i) \triangleq \begin{cases} \text{PolaritéTech}(i) & \text{si } i \in F \quad (\text{Famille}) \\ \text{EstCompatibleTech}(i) & \text{si } i \in T \quad (\text{Trait}) \end{cases}$$
 
-$$\text{TargetTech}(i) \triangleq \begin{cases}  \text{PolaritéTech}(i) & \text{si } i \in F \quad (\text{Famille : polarité stricte et exclusive}) \\  \text{EstCompatibleTech}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité réflexive selon le contexte})  \end{cases}$$
+$$\text{TargetAgentSyst}(i) \triangleq \begin{cases} \text{PolaritéAgentSyst}(i) & \text{si } i \in F \quad (\text{Famille}) \\ \text{EstCompatibleAgentSyst}(i) & \text{si } i \in T \quad (\text{Trait}) \end{cases}$$
 
 ---
 
 ## 2. Axiomes de la Théorie des Contrats
 
-### Axiome 1 — Exclusivité des Familles
+### Axiome 1 — Exclusivité des Familles via le OU exclusif à 3 branches
 
-Toute famille $f \in F$ possède une polarité stricte et exclusive. Les deux cibles sont mutuellement incompatibles sur une famille, comme l'exprime le connectif d'incompatibilité ($\uparrow$) :
+Toute famille $f \in F$ possède une polarité stricte et exclusive parmi les 3 cibles :
 
-$$\forall f \in F \; \Big( \text{TargetMetier}(f) \uparrow \text{TargetTech}(f) \Big)$$
+$$\forall f \in F \; \Big( (\text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor (\neg \text{TargetMetier}(f) \land \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor (\neg \text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \text{TargetAgentSyst}(f)) \Big)$$
+
+---
 
 ### Axiome 2 — Loi du Miroir Strict
 
-Un composant ne peut implémenter qu'une famille dont la polarité est strictement isomorphe à sa propre nature :
+Un composant ne peut implémenter qu'une famille dont la polarité est strictly isomorphe à sa propre nature :
 
-$$\forall c \in C, \forall f \in F \; \Big( Implemente(c, f) \implies \big( ComposantMetier(c) \iff TargetMetier(f) \big) \land \big( ComposantTech(c) \iff TargetTech(f) \big) \Big)$$
+$$\forall c \in C, \forall f \in F \; \Big( Implemente(c, f) \implies \big( ComposantMetier(c) \iff TargetMetier(f) \big) \land \big( ComposantTech(c) \iff TargetTech(f) \big) \land \big( AgentSysteme(c) \iff TargetAgentSyst(f) \big) \Big)$$
+
+---
 
 ### Axiome 3 — Continuité Contextuelle des Traits
 
-Lorsqu'une famille $f$ hérite d'un trait $t$, la compatibilité du trait $t$ est évaluée dynamiquement dans le contexte de la polarité de la famille $f$ :
+Lorsqu'une famille $f$ hérite d'un trait $t$, la compatibilité du trait $t$ est transmise dans le contexte de la famille :
 
-$$\forall f \in F, \forall t \in T \; \Big( Herite(f, t) \implies \big( TargetMetier(f) \implies TargetMetier(t) \big) \land \big( TargetTech(f) \implies TargetTech(t) \big) \Big)$$
+$$\forall f \in F, \forall t \in T \; \Big( Herite(f, t) \implies \big( TargetMetier(f) \implies TargetMetier(t) \big) \land \big( TargetTech(f) \implies TargetTech(t) \big) \land \big( TargetAgentSyst(f) \implies TargetAgentSyst(t) \big) \Big)$$
+
+---
+
+### Axiome 4 — Unicité du Miroir et Interdiction des Traits Directs
+
+$$\forall c \in C \; \Big( \exists! f \in F \; Implemente(c, f) \;\land\; \forall t \in T \; \neg Implemente(c, t) \Big)$$
+
+---
+
+### Axiome 5 — Invariance de la nature des Traits
+
+$$\forall t \in T, \forall i \in I \; \Big( Herite(t, i) \implies Trait(i) \Big)$$
 
 ---
 
@@ -1387,29 +1404,17 @@ $$\forall f \in F, \forall t \in T \; \Big( Herite(f, t) \implies \big( TargetMe
 
 ### Énoncé du Théorème
 
-Pour tout composant $c$, toute famille $f$ et tout trait $t$, si $f$ hérite de $t$ et que $c$ implémente $f$, alors l'arborescence des contrats préserve la nature de $c$ jusqu'au trait $t$, garantissant la neutralité ontologique des interfaces :
-
-$$\forall c \in C, \forall f, t \in I \; \Big( Famille(f) \land Trait(t) \land Herite(f, t) \land Implemente(c, f) \implies \big( ComposantMetier(c) \implies TargetMetier(t) \big) \land \big( ComposantTech(c) \implies TargetTech(t) \big) \Big)$$
+$$\forall c \in C, \forall f \in F, \forall t \in T \; \Big( Herite(f, t) \land Implemente(c, f) \implies \big( ComposantMetier(c) \implies TargetMetier(t) \big) \land \big( ComposantTech(c) \implies TargetTech(t) \big) \land \big( AgentSysteme(c) \implies TargetAgentSyst(t) \big) \Big)$$
 
 ### Démonstration analytique
 
-1. **Supposition initiale :** Soit un composant $c$ tel que $ComposantMetier(c)$, une famille $f \in F$ et un trait $t \in T$ tels que $Herite(f, t)$ et $Implemente(c, f)$.
-2. **Application de l'Axiome 2 (Loi du Miroir) :** Puisque $Implemente(c, f)$, on déduit immédiatement :
-
-$$ComposantMetier(c) \iff TargetMetier(f)$$
-
-
-Comme $ComposantMetier(c)$ est vrai par hypothèse, $TargetMetier(f)$ est établi.
-3. **Application de l'Axiome 3 (Continuité Contextuelle) :** Puisque $Herite(f, t)$, l'Axiome 3 donne :
-
-$$TargetMetier(f) \implies TargetMetier(t)$$
-
-
-Puisque $TargetMetier(f)$ est vrai, l'évaluation du prédicat surchargé pour le trait $t$ donne $\text{TargetMetier}(t) = \text{Vrai}$.
-4. **Cas des Traits Poly-polaires (ex. `Runnable`) :** Si $t$ est un trait d'infrastructure universel, sa fonction $\text{EstCompatibleMetier}(t)$ renvoie $\text{Vrai}$ dans le contexte de la famille métier $f$, validant l'implication $\text{Vrai} \implies \text{Vrai}$ sans altérer l'identité du composant $c$.
-5. **Conclusion par symétrie :** Le raisonnement s'applique à l'identique pour un composant technique $ComposantTech(c)$.
+1. **Cas Agent Système :** Soit $c$ tel que $AgentSysteme(c)$, $f \in F$, $t \in T$ avec $Herite(f, t)$ et $Implemente(c, f)$.
+2. **Axiome 2 :** $Implemente(c, f) \implies (AgentSysteme(c) \iff TargetAgentSyst(f))$. Comme $AgentSysteme(c)$ est vrai, $TargetAgentSyst(f)$ est établi.
+3. **Axiome 3 :** $Herite(f, t) \implies (TargetAgentSyst(f) \implies TargetAgentSyst(t))$. Donc $TargetAgentSyst(t)$ est vrai.
+4. **Symétrie :** Le raisonnement s'étend de la même manière aux 3 branches.
 
 $$\text{Q.E.D.}$$
+
 
 # XVIII) Certification formelle et Assistant de preuve Coq
 
@@ -1430,17 +1435,17 @@ Section ClprolfFormalization.
   Variable Object : Type.
 
   (* Prédicats d'objets *)
-  Variable App             : Object -> Prop.
-  Variable TravailHumain   : Object -> Prop.
-  Variable ButHumain       : Object -> Prop.
-  Variable DomaineMetier   : Object -> Prop.
-  Variable SupportExecution: Object -> Prop.
-  Variable Atome           : Object -> Prop.
-  Variable AgentSysteme    : Object -> Prop.
-  Variable ComposantMetier : Object -> Prop.
-  Variable ComposantTech   : Object -> Prop.
-  Variable SupportTech     : Object -> Prop.
-  Variable Composant       : Object -> Prop.
+  Variable App              : Object -> Prop.
+  Variable TravailHumain    : Object -> Prop.
+  Variable ButHumain        : Object -> Prop.
+  Variable DomaineMetier    : Object -> Prop.
+  Variable SupportExecution : Object -> Prop.
+  Variable Atome            : Object -> Prop.
+  Variable AgentSysteme     : Object -> Prop.
+  Variable ComposantMetier  : Object -> Prop.
+  Variable ComposantTech    : Object -> Prop.
+  Variable SupportTech      : Object -> Prop.
+  Variable Composant        : Object -> Prop.
 
   (* Relations formelles *)
   Variable Automatise  : Object -> Object -> Prop. (* Application -> TravailHumain *)
@@ -1614,48 +1619,66 @@ Section ClprolfFormalization.
   Variable Famille : Interface -> Prop.
   Variable Trait   : Interface -> Prop.
 
-  (* Prédicats d'évaluation internes *)
+  (* Prédicats d'évaluation internes pour la triade *)
   Variable PolariteMetier      : Interface -> Prop.
   Variable PolariteTech        : Interface -> Prop.
+  Variable PolariteAgent       : Interface -> Prop.
+  
   Variable EstCompatibleMetier : Interface -> Prop.
   Variable EstCompatibleTech   : Interface -> Prop.
+  Variable EstCompatibleAgent  : Interface -> Prop.
 
   (* Décidabilité locale de Famille *)
   Variable fam_dec : forall i : Interface, {Famille i} + {~ Famille i}.
 
-  (* Définition par Surcharge Contextuelle *)
+  (* Définition par Surcharge Contextuelle (3 branches) *)
   Definition TargetMetier (i : Interface) : Prop :=
     if (fam_dec i) then PolariteMetier i else EstCompatibleMetier i.
 
   Definition TargetTech (i : Interface) : Prop :=
     if (fam_dec i) then PolariteTech i else EstCompatibleTech i.
 
-  Variable Implemente : Object -> Interface -> Prop.
-  Variable HeriteInterface   : Interface -> Interface -> Prop.
+  Definition TargetAgent (i : Interface) : Prop :=
+    if (fam_dec i) then PolariteAgent i else EstCompatibleAgent i.
 
-  (* Axiome 1 : Exclusivité des Familles via Connectif d'Incompatibilité (Sheffer / NAND) *)
+  Variable Implemente : Object -> Interface -> Prop.
+  Variable HeriteInterface : Interface -> Interface -> Prop.
+
+  (* Axiome 1 : Exclusivité des Familles via le Ou Exclusif à 3 branches *)
   Axiom Contract_Axiom1_FamilyExclusivity :
     forall f : Interface,
-      Famille f -> ~ (TargetMetier f /\ TargetTech f).
+      Famille f ->
+      (TargetMetier f /\ ~ TargetTech f /\ ~ TargetAgent f) \/
+      (~ TargetMetier f /\ TargetTech f /\ ~ TargetAgent f) \/
+      (~ TargetMetier f /\ ~ TargetTech f /\ TargetAgent f).
 
-  (* Axiome 2 : Loi du Miroir Strict (Composant <-> Famille) *)
+  (* Axiome 2 : Loi du Miroir Strict étendue à la triade *)
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Famille f ->
       Implemente c f ->
       (ComposantMetier c <-> TargetMetier f) /\
-      (ComposantTech c <-> TargetTech f).
+      (ComposantTech c <-> TargetTech f) /\
+      (AgentSysteme c <-> TargetAgent f).
 
-  (* Axiome 3 : Continuité Contextuelle des Traits par Héritage *)
+  (* Axiome 3 : Continuité Contextuelle des Traits par Héritage (3 branches) *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
     forall (f t : Interface),
       Famille f ->
       Trait t ->
       HeriteInterface f t ->
       (TargetMetier f -> TargetMetier t) /\
-      (TargetTech f -> TargetTech t).
+      (TargetTech f -> TargetTech t) /\
+      (TargetAgent f -> TargetAgent t).
+    
+  (* Axiome 4 : Unicité de la famille miroir et interdiction des traits directs *)
+  Axiom Contract_Axiom4_DirectTraitProhibitionAndMirrorUniqueness :
+    forall c : Object,
+      Composant c ->
+        (exists! f : Interface, Famille f /\ Implemente c f) /\
+        (forall t : Interface, Trait t -> ~ Implemente c t).
 
-  (* Théorème de Neutralité des Interfaces *)
+  (* Théorème de Neutralité des Interfaces (3 branches) *)
   Theorem Interface_Neutrality_Theorem :
     forall (c : Object) (f t : Interface),
       Famille f ->
@@ -1663,7 +1686,8 @@ Section ClprolfFormalization.
       HeriteInterface f t ->
       Implemente c f ->
       (ComposantMetier c -> TargetMetier t) /\
-      (ComposantTech c -> TargetTech t).
+      (ComposantTech c -> TargetTech t) /\
+      (AgentSysteme c -> TargetAgent t).
   Proof.
     intros c f t HFam HTrait HInherit HImpl.
     split.
@@ -1672,11 +1696,17 @@ Section ClprolfFormalization.
       assert (HTargetF : TargetMetier f) by (apply HMirrorMetier; exact HMetierC).
       destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [HContMetier _].
       apply HContMetier. exact HTargetF.
-    - intros HTechC.
-      destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ HMirrorTech].
-      assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
-      destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ HContTech].
-      apply HContTech. exact HTargetF.
+    - split.
+      + intros HTechC.
+        destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ [HMirrorTech _]].
+        assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
+        destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ [HContTech _]].
+        apply HContTech. exact HTargetF.
+      + intros HAgentC.
+        destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ [_ HMirrorAgent]].
+        assert (HTargetF : TargetAgent f) by (apply HMirrorAgent; exact HAgentC).
+        destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ [_ HContAgent]].
+        apply HContAgent. exact HTargetF.
   Qed.
 
 End ClprolfFormalization.
@@ -1738,4 +1768,3 @@ Pour démontrer que le formalisme mathématique s'applique directement à la ré
 | **$f$ (`@ClFamily`)** | Contrat-miroir hiérarchique | `TaxCalculatorFamily` |
 
 ---
-

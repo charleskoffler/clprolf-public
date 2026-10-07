@@ -486,7 +486,15 @@ As application complexity grows, grouping agents more granularly becomes essenti
 * **By functional intent:** Breaking down the application according to major business use cases (e.g., `Billing` subsystem, `InventoryManagement` subsystem, `Authentication` subsystem).
 * **By isolation boundary:** Grouping agents that share common security, deployment, or data constraints.
 
+Here is the English translation of your updated chapter:
+
 # VIII) Interfaces
+
+In Clprolf, there are two types of interfaces. Only one is directly implementable by a class: family interfaces (`ClFamily`).
+The contract is more demanding than standard contracts. The class must be a component of the same type as the target role required by the contract (the "Target").
+The class is restricted to a single possible contract. In non-strict mode, a class can implement multiple interfaces, including traits (`ClTrait`).
+In pure Clprolf, traits are requirements for family interfaces and cannot be directly implemented by classes. They are not contracts for classes—or rather, they can be described as contracts for family interfaces. Traits represent common, cross-cutting features shared across family hierarchies (`ClFamily`).
+They can only extend family interfaces that possess one of the target roles required by the trait.
 
 In Clprolf, interfaces are viewed as:
 
@@ -494,21 +502,17 @@ In Clprolf, interfaces are viewed as:
 
 They therefore participate in the structural continuity of the system.
 
-```text
-ClFamily = primary family interface
-ClTrait  = trait, shared capability between families
+ClFamily = main interface of a family
+ClTrait = trait, shared capability between families
 ClFree = unrestricted interface
-```
 
-In Clprolf, interfaces are not viewed as simple technical contracts.
-
-Both `extends` and `implements` relationships are considered genuine conceptual inheritance relationships.
+The `extends` and `implements` relationships are considered genuine conceptual inheritance relationships—hence the term "family".
 
 ---
 
-## VIII.1) `ClFamily`
+## VIII.1) `ClFamily` and the Mirror Contract
 
-An interface representing an abstract family.
+An interface representing an abstract family, providing a mirror contract for future implementation by a class.
 
 Used for:
 
@@ -516,10 +520,10 @@ Used for:
 * decoupling,
 * implementation variants.
 
-Family interfaces also have a target role:
+Family interfaces also possess a target role:
 
-* `ClAgent`
-* or `ClWorker`
+* `@ClAgent`
+* or `@ClWorker`
 
 ---
 
@@ -530,9 +534,10 @@ Family interfaces also have a target role:
 @ClFamily
 public interface Animal {
 
-    void eat(int quantity);
+    void manger(int quantite);
 
 }
+
 ```
 
 The hierarchy of `ClFamily` interfaces naturally reflects the hierarchy of concrete classes.
@@ -542,41 +547,55 @@ The hierarchy of `ClFamily` interfaces naturally reflects the hierarchy of concr
 @ClFamily
 public interface Horse extends Animal {
 
-    void jump(int height);
+    void sauter(int hauteur);
 
 }
+
 ```
 
-Which may lead to:
+Which yields:
 
 ```java
 @ClAgent
 public class AnimalImpl implements Animal { (...) }
+
 ```
 
 ```java
 @ClAgent
 public class HorseImpl extends AnimalImpl implements Horse { (...) }
+
 ```
 
 ---
 
 ## VIII.2) `ClTrait`
 
-An interface representing a shared capability across multiple `ClFamily`.
+An interface representing a shared feature across multiple `ClFamily` interfaces. It is not a contract for a class.
+Traits use a target role, just like `ClFamily`:
 
-Traits also use a target role:
+* `@ClAgent`
+* `@ClWorker`
+* `@ClSystem`
 
-* `ClAgent`
-* `ClWorker`
+However, a `@ClTrait` interface can be annotated with multiple component roles: `@ClAgent`, `@ClWorker`, or `@ClSystem`.
+This exception is reserved for genuinely cross-cutting traits usable across several component types.
+This means that the inheriting family interface must possess one of these roles.
+In general, a trait possesses only one target role.
 
-> **Note: a `@ClTrait` may be annotated with both `@ClAgent` and `@ClWorker`.**
->
-> **This exception is reserved for genuinely cross-cutting traits that can be used by both agents and workers.**
+```java
+@ClAgent
+@ClWorker
+@ClTrait
+public interface Runnable {
+    public void run();
+}
+
+```
 
 ---
 
-### Business Example
+## Business Example
 
 ```java
 @ClAgent
@@ -584,18 +603,20 @@ Traits also use a target role:
 public interface Payable {
     void pay();
 }
+
 ```
 
 ---
 
-### Technical Example
+## Technical Example
 
 ```java
 @ClWorker
 @ClTrait
-public interface Persistable {
-    void save();
+public interface Launcher {
+    void start();
 }
+
 ```
 
 ---
@@ -626,43 +647,46 @@ public interface Persistable {
                │ (inherited by Family) │
                │                       │
      Horse extends Jumpable            │
+
 ```
 
-## VIII.4) `ClFree`
+## VIII.4) `@ClFree`
 
-A generic interface without a specific role. It shouldn't be necessary.
-
-Allows flexibility.
+A generic interface without a specific role.
+Allows flexibility. It is not essential.
 
 ---
 
-### Example
+## Example
 
 ```java
 @ClFree
 public interface ExternalApi {
 }
+
 ```
 
 ---
 
 ## VIII.5) Using Interfaces
 
-* In Clprolf, `Family` interfaces closely resemble pure abstract classes.
+* In Clprolf, `Family` interfaces act as a mirror of components, but without an implementation.
 
-They are intended to be implemented by one or more future Clprolf classes. Therefore, they have a target role (`agent` or `worker`).
+The contract is more demanding than in Java or C#, because the class must not only implement the methods but also be a component of the targeted type (`ClAgent`, `ClWorker`, or `ClSystem`).
+Finally, the contract dictates that a class implements only this single family interface (and no others) to maintain a mirror relationship between interfaces and their implementations.
+However, multiple components (classes) can implement the same `ClFamily` interface.
 
-A class can only implement a single main `Family` at a time, and the class role must match the target role of the interface. Clprolf thus uses single implementation for interfaces, in the same way that Java uses single inheritance for classes. Indeed, a `Family` is always the structural reflection of its implementation. This notably allows for systematic loose coupling.
-However, multiple implementation is not removed, but rather shifted to the `Family` implemented by the class.
-**This might seem restrictive and unconventional, but it only applies in strict mode, which is not the default. This prevents multiple implementations of the same family from repeating a multi-contract declaration, and helps developers quickly understand what the classes actually implement.**
+A `Family` is always the structural reflection of its implementation. This systematically ensures loose coupling.
+Implementing multiple family interfaces is not removed, but rather shifted to the `Family` implemented by the class. Everything remains possible.
+**This only applies to the checker in strict mode.**
 
-* `Trait` interfaces express a common functionality across multiple `Family` interfaces.
+* `Trait` interfaces express a shared capability across multiple `Family` interfaces.
 
-A `Trait` therefore represents a cross-cutting trait shared among several families.
+A `Trait` therefore represents a cross-cutting trait shared among several families. It is not a contract with a class.
 
-Normally, a `Trait` can only be inherited by a `Family` interface, and not directly implemented by a class. This prevents a trait from being separated from its family interface, and clarifies class implementations (especially when a family has multiple implementations).
+A `Trait` can only be inherited by a `Family` interface (or extend another `ClTrait`), and cannot be directly implemented by a class.
 
-**However, this only applies in strict mode, which is not the default.**
+**This is only true in the strict mode of the checker. Under non-strict checks, a trait can be directly implemented by a class, though some structural invariants are lost in the process.**
 
 ```text
 Concrete class
@@ -673,28 +697,22 @@ ClTrait
 
 ```
 
-Note: A `Family` interface can inherit from multiple `Family` or `Trait` interfaces.
-A `Trait` interface can only inherit from other `Traits`, because a trait remains a trait.
+Note:
+Forcing interface inheritance remains possible using `@ClInterfaceBypass` above the interface (or `@ClBypass` to force inheritance between different target roles).
+However, these bypasses should be rare.
 
-> Interface inheritance can still be forced using `@ClInterfaceBypass` above the interface (or `@ClBypass` to force inheritance between different target roles). However, these bypasses should be rare.
+### VIII.5.2) Strict Mode for Interfaces with Flexibility
 
-### VIII.5.2 Strict mode for interfaces with flexibility
-
-It is possible to use `ClFree` to enforce strict rules only on selected interfaces, while applying `ClFamily` when greater rigor is required in specific cases. In this way, even in strict mode, the framework remains open and flexible.
+It is possible to use `@ClFree` to remain strict only on selected interfaces while using `ClFamily` when greater rigor is needed in specific cases. In this way, even in strict mode, the framework remains open and flexible.
+Native Java or C# interfaces are accepted and treated as `@ClFree`.
 
 ---
 
-## VIII.6) Advantages of Systematic Loose Coupling via the Mirror Interface
+## VIII.6) Systematic Loose Coupling via the Mirror Interface
 
-In strict mode, restricting a class to implementing a single ClFamily (and delegating ClTrait interfaces to it) is not merely an aesthetic constraint. It is the very mechanism that guarantees systematic loose coupling.
+The mirror contract and the separation of traits provide structural loose coupling of implementations.
 
-Instead of a class implementing multiple scattered contracts, the ClFamily acts as the official and complete "mirror contract" of the component. Thus, when component A requires component B, it is naturally driven to depend on B's ClFamily, rather than on its concrete implementation. Dependency inversion is no longer just a recommendation; it mechanically arises from the structure of the code.
-
-The gain lies in maintaining a single hierarchy rather than duplicating class and interface hierarchies. Naturally, this strict mode is optional and should be applied according to your team's preferences and specific project needs.
-
-### Real-world example of `ClFamily` and `ClTrait` interfaces
-
-Let’s take a look at this real-world example, which demonstrates a design applicable to the strict mode of the Clprolf Framework:
+### A Real-world Example of `ClFamily` and `ClTrait` Interfaces
 
 ```java
 package com.tngtech.archunit.lang;
@@ -720,15 +738,16 @@ public static final class LayeredArchitecture implements ArchRule {
 
 ```
 
-> In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait`s, while `ArchRule` formalizes the `@ClFamily`. Notice that the `LayeredArchitecture` class only implements the family, which in turn inherits the traits. The class does not directly implement `CanBeEvaluated` and `CanOverrideDescription`.
+> In this example, `CanBeEvaluated` and `CanOverrideDescription` act as `@ClTrait`s, while `ArchRule` formalizes the `@ClFamily`. Notice that the `LayeredArchitecture` class only implements the family, which itself inherits the traits.
+> The class does not directly implement `CanBeEvaluated` or `CanOverrideDescription`.
 
 ## VIII.7) Note on Clprolf Interfaces and the Interface Segregation Principle (ISP)
 
-Clprolf naturally helps adhere to the ISP and prevents *"fat interfaces"* (monolithic interfaces). It does not claim to be the only way to achieve compliance with the ISP.
+Clprolf provides the tools to respect the ISP and helps prevent "fat interfaces" (monolithic interfaces).
 
 ### The Classic *Fat Interface* Problem
 
-Without strict separation, software design often falls into the trap of creating a single monolithic interface containing all possible behaviors:
+There is often a tendency to create a single monolithic interface grouping all possible features for a domain:
 
 ```java
 // Anti-pattern: Fat Interface violating ISP
@@ -740,14 +759,11 @@ public interface Machine {
 
 ```
 
-In this scenario, a legacy printer (`OldPrinterImpl`) that can only print would still be forced to implement `scan()` and `fax()`, often throwing an `UnsupportedOperationException`, directly violating the ISP.
+In this scenario, an older printer (`OldPrinterImpl`) that can only print would still be forced to implement `scan()` and `fax()`, often throwing an exception (`UnsupportedOperationException`), directly violating the ISP.
 
 ### The Clprolf Approach
 
-Clprolf naturally adheres to the ISP and prevents "fat interfaces". Since a `ClFamily` interface acts as the mirror of its implementation, it cannot impose methods that do not belong to that implementation.
-Consequently, code factorization into multiple `ClFamily` interfaces and `ClTrait` components happens organically. This maintains the underlying architectural relationship (here between `ModernPrinter` and `OldPrinter`) while avoiding the duplication of shared traits.
-
-As a result, the codebase gains significantly in maintainability, scalability, and readability.
+The code tends to improve maintainability, scalability, and readability.
 
 ```java
 @ClAgent
@@ -781,13 +797,14 @@ public interface ModernPrinter extends OldPrinter, Scanner, Fax {
 
 @ClAgent
 public class OldPrinterImpl implements OldPrinter {
-    // (...)
+//(…)
 }
 
 @ClAgent
 public class ModernPrinterImpl implements ModernPrinter {
-    // (...)
+//(…)
 }
+
 ```
 
 # IX) Immutability
@@ -1284,6 +1301,8 @@ The inheritance relationship between two components implies strict adherence to 
 
 $$\forall c, p \; \Big( \big(\text{Component}(c) \land \text{Component}(p) \land \text{Inherits}(c, p)\big) \implies \text{SameDomain}(c, p) \Big)$$
 
+---
+
 ## 3. Canonical Correspondence Dictionary
 
 Logical formalism is not a virtual abstraction; it maps with millimeter precision to the concrete concepts of the framework:
@@ -1342,59 +1361,80 @@ This proof demonstrates that Clprolf is not only expressive in the raw computati
 
 # XVII) Mathematical Formalization of Contract Neutrality
 
-To demonstrate that introducing polymorphism via interfaces (`ClFamily` and `ClTrait`) does not alter the intrinsic nature of system atoms, we formalize contract theory as a logical and topological system.
+To demonstrate that introducing interface polymorphism through interfaces (`ClFamily` and `ClTrait`) does not alter the intrinsic nature of system atoms, we formalize Contract Theory as a logical and topological framework.
 
 ## 1. Contract Predicates and Contextual Overloading
 
-Let the base sets be:
+Let the base sets be defined as:
 
 * $C$: The set of software components.
 * $I = F \cup T$: The set of system interfaces, where $F$ is the set of families and $T$ is the set of traits.
 
 ### Component Nature Predicates
 
-* $BusinessComponent(c)$: Component $c \in C$ carries a business responsibility (`@ClAgent`).
-* $TechComponent(c)$: Component $c \in C$ carries a technical responsibility (`@ClWorker`).
+* $\text{BusinessComponent}(c)$: The component $c \in C$ carries a business responsibility (`@ClWorker` Business).
+* $\text{TechComponent}(c)$: The component $c \in C$ carries a technical responsibility (`@ClWorker` Tech).
+* $\text{SystemAgent}(c)$: The component $c \in C$ carries an orchestration or exposure responsibility (`@ClAgent`).
 
 ### Interface Typology Predicates
 
-* $Family(i)$: $i \in F$, interface $i$ is a top-level family.
-* $Trait(i)$: $i \in T$, interface $i$ is a cross-cutting capability.
+* $\text{Family}(i)$: $i \in F$, the interface $i$ is a first-level family.
+* $\text{Trait}(i)$: $i \in T$, the interface $i$ is a cross-cutting capability.
 
 ### Topological Relations
 
-* $Implements(c, i)$: Component $c$ implements interface $i$.
-* $Inherits(i, j)$: Interface $i$ inherits from interface $j$.
+* $\text{Implements}(c, i)$: Component $c$ implements interface $i$.
+* $\text{Inherits}(i, j)$: Interface $i$ inherits from interface $j$.
 
 ### Definition by Contextual Overloading ($\triangleq$)
 
-To preserve a unified syntax across all equations, target predicates are defined by case disjunction depending on the nature of interface $i \in I$:
+$$\text{TargetBusiness}(i) \triangleq \begin{cases} \text{BusinessPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsBusinessCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
 
-$$\text{TargetBusiness}(i) \triangleq \begin{cases} \text{BusinessPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsBusinessCompatible}(i) & \text{if } i \in T \quad (\text{Trait: reflexive compatibility based on context}) \end{cases}$$
+$$\text{TargetTech}(i) \triangleq \begin{cases} \text{TechPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsTechCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
 
-$$\text{TargetTech}(i) \triangleq \begin{cases} \text{TechPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsTechCompatible}(i) & \text{if } i \in T \quad (\text{Trait: reflexive compatibility based on context}) \end{cases}$$
+$$\text{TargetSystAgent}(i) \triangleq \begin{cases} \text{SystAgentPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsSystAgentCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
 
 ---
 
-## 2. Axioms of Contract Theory
+## 2. Contract Theory Axioms
 
-### Axiom 1 — Family Exclusivity
+### Axiom 1 — Family Exclusivity via 3-Branch Exclusive OR
 
-Every family $f \in F$ possesses a strict and exclusive polarity. Both targets are mutually incompatible on a family, as expressed by the incompatibility connective ($\uparrow$ / NAND):
+Every family $f \in F$ possesses a strict and mutually exclusive polarity among the three target roles:
 
-$$\forall f \in F \; \Big( \text{TargetBusiness}(f) \uparrow \text{TargetTech}(f) \Big)$$
+$$\forall f \in F \; \Big( (\text{TargetBusiness}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetSystAgent}(f)) \lor (\neg \text{TargetBusiness}(f) \land \text{TargetTech}(f) \land \neg \text{TargetSystAgent}(f)) \lor (\neg \text{TargetBusiness}(f) \land \neg \text{TargetTech}(f) \land \text{TargetSystAgent}(f)) \Big)$$
+
+---
 
 ### Axiom 2 — Strict Mirror Law
 
 A component can only implement a family whose polarity is strictly isomorphic to its own nature:
 
-$$\forall c \in C, \forall f \in F \; \Big( Implements(c, f) \implies \big( BusinessComponent(c) \iff TargetBusiness(f) \big) \land \big( TechComponent(c) \iff TargetTech(f) \big) \Big)$$
+$$\forall c \in C, \forall f \in F \; \Big( \text{Implements}(c, f) \implies \big( \text{BusinessComponent}(c) \iff \text{TargetBusiness}(f) \big) \land \big( \text{TechComponent}(c) \iff \text{TargetTech}(f) \big) \land \big( \text{SystemAgent}(c) \iff \text{TargetSystAgent}(f) \big) \Big)$$
+
+---
 
 ### Axiom 3 — Contextual Continuity of Traits
 
-When a family $f$ inherits from a trait $t$, the compatibility of trait $t$ is evaluated dynamically within the context of family $f$'s polarity:
+When a family $f$ inherits from a trait $t$, trait compatibility is contextually evaluated through the family's polarity:
 
-$$\forall f \in F, \forall t \in T \; \Big( Inherits(f, t) \implies \big( TargetBusiness(f) \implies TargetBusiness(t) \big) \land \big( TargetTech(f) \implies TargetTech(t) \big) \Big)$$
+$$\forall f \in F, \forall t \in T \; \Big( \text{Inherits}(f, t) \implies \big( \text{TargetBusiness}(f) \implies \text{TargetBusiness}(t) \big) \land \big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetSystAgent}(f) \implies \text{TargetSystAgent}(t) \big) \Big)$$
+
+---
+
+### Axiom 4 — Mirror Uniqueness and Direct Trait Prohibition
+
+Every class $c \in C$ implements at most one single family $f \in F$, and is strictly forbidden from directly implementing any trait $t \in T$:
+
+$$\forall c \in C \; \Big( \exists! f \in F \; \text{Implements}(c, f) \;\land\; \forall t \in T \; \neg \text{Implements}(c, t) \Big)$$
+
+---
+
+### Axiom 5 — Trait Invariance (Prohibition of Family Extension)
+
+A trait $t_1 \in T$ can only inherit from another trait $t_2 \in T$. It is strictly forbidden from inheriting from a family $f \in F$:
+
+$$\forall t \in T, \forall i \in I \; \Big( \text{Inherits}(t, i) \implies \text{Trait}(i) \Big)$$
 
 ---
 
@@ -1402,27 +1442,16 @@ $$\forall f \in F, \forall t \in T \; \Big( Inherits(f, t) \implies \big( Target
 
 ### Theorem Statement
 
-For every component $c$, every family $f$, and every trait $t$, if $f$ inherits from $t$ and $c$ implements $f$, then the contract tree preserves the nature of $c$ down to trait $t$, guaranteeing ontological neutrality of interfaces:
+For any component $c$, any family $f$, and any trait $t$, if $f$ inherits from $t$ and $c$ implements $f$, then the contract hierarchy preserves the nature of $c$ down to trait $t$, guaranteeing the ontological neutrality of interfaces:
 
-$$\forall c \in C, \forall f, t \in I \; \Big( Family(f) \land Trait(t) \land Inherits(f, t) \land Implements(c, f) \implies \big( BusinessComponent(c) \implies TargetBusiness(t) \big) \land \big( TechComponent(c) \implies TargetTech(t) \big) \Big)$$
+$$\forall c \in C, \forall f \in F, \forall t \in T \; \Big( \text{Inherits}(f, t) \land \text{Implements}(c, f) \implies \big( \text{BusinessComponent}(c) \implies \text{TargetBusiness}(t) \big) \land \big( \text{TechComponent}(c) \implies \text{TargetTech}(t) \big) \land \big( \text{SystemAgent}(c) \implies \text{TargetSystAgent}(t) \big) \Big)$$
 
 ### Analytical Proof
 
-1. **Initial Assumption:** Let component $c$ be such that $BusinessComponent(c)$, family $f \in F$, and trait $t \in T$ such that $Inherits(f, t)$ and $Implements(c, f)$.
-2. **Application of Axiom 2 (Mirror Law):** Since $Implements(c, f)$, we immediately deduce:
-
-$$BusinessComponent(c) \iff TargetBusiness(f)$$
-
-Since $BusinessComponent(c)$ is true by hypothesis, $TargetBusiness(f)$ is established.
-
-3. **Application of Axiom 3 (Contextual Continuity):** Since $Inherits(f, t)$, Axiom 3 gives:
-
-$$TargetBusiness(f) \implies TargetBusiness(t)$$
-
-Since $TargetBusiness(f)$ is true, evaluating the overloaded predicate for trait $t$ yields $\text{TargetBusiness}(t) = \text{True}$.
-
-4. **Poly-polar Traits Case (e.g., `Runnable`):** If $t$ is a universal infrastructure trait, its function $\text{IsBusinessCompatible}(t)$ returns $\text{True}$ in the context of business family $f$, validating the implication $\text{True} \implies \text{True}$ without altering the identity of component $c$.
-5. **Conclusion by Symmetry:** The reasoning applies identically to a technical component $TechComponent(c)$.
+1. **System Agent Case:** Let $c$ be a component such that $\text{SystemAgent}(c)$, $f \in F$, and $t \in T$ such that $\text{Inherits}(f, t)$ and $\text{Implements}(c, f)$.
+2. **Applying Axiom 2 (Mirror Law):** From $\text{Implements}(c, f)$, we deduce $\text{SystemAgent}(c) \iff \text{TargetSystAgent}(f)$. Since $\text{SystemAgent}(c)$ holds by hypothesis, $\text{TargetSystAgent}(f)$ is established.
+3. **Applying Axiom 3 (Contextual Continuity):** From $\text{Inherits}(f, t)$, Axiom 3 yields $\text{TargetSystAgent}(f) \implies \text{TargetSystAgent}(t)$. Therefore, $\text{TargetSystAgent}(t) = \text{True}$.
+4. **Symmetry:** The exact same reasoning applies symmetrically to $\text{BusinessComponent}(c)$ and $\text{TechComponent}(c)$.
 
 $$\text{Q.E.D.}$$
 
@@ -1435,6 +1464,7 @@ This machine-checked verification approach allows moving from a paper proof to a
 ---
 
 ```coq
+
 Section ClprolfFormalization.
 
   (* ================================================================= *)
@@ -1444,28 +1474,28 @@ Section ClprolfFormalization.
   Variable Object : Type.
 
   (* Object predicates *)
-  Variable App             : Object -> Prop.
-  Variable HumanWork       : Object -> Prop.
-  Variable HumanGoal       : Object -> Prop.
-  Variable BusinessDomain  : Object -> Prop.
-  Variable ExecutionSupport: Object -> Prop.
-  Variable Atom            : Object -> Prop.
-  Variable SystemAgent     : Object -> Prop.
+  Variable App               : Object -> Prop.
+  Variable HumanWork         : Object -> Prop.
+  Variable HumanGoal         : Object -> Prop.
+  Variable BusinessDomain    : Object -> Prop.
+  Variable ExecutionSupport  : Object -> Prop.
+  Variable Atom              : Object -> Prop.
+  Variable SystemAgent       : Object -> Prop.
   Variable BusinessComponent : Object -> Prop.
-  Variable TechComponent   : Object -> Prop.
-  Variable TechSupport     : Object -> Prop.
-  Variable Component       : Object -> Prop.
+  Variable TechComponent     : Object -> Prop.
+  Variable TechSupport       : Object -> Prop.
+  Variable Component         : Object -> Prop.
 
   (* Formal relations *)
-  Variable Automates : Object -> Object -> Prop. (* Application -> HumanWork *)
-  Variable Target    : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
-  Variable Part      : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contains  : Object -> Object -> Prop. (* Subsystem -> Atom *)
-  Variable Combines  : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
-  Variable Uses      : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
-  Variable Simulates : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
-  Variable Associates: Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
-  Variable SubSet    : Object -> Object -> Prop. (* Inclusion m ⊆ M *)
+  Variable Automates  : Object -> Object -> Prop. (* Application -> HumanWork *)
+  Variable Target     : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
+  Variable Part       : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contains   : Object -> Object -> Prop. (* Subsystem -> Atom *)
+  Variable Combines   : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
+  Variable Uses       : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
+  Variable Simulates  : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
+  Variable Associates : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
+  Variable SubSet     : Object -> Object -> Prop. (* Inclusion m ⊆ M *)
   Variable Inherits   : Object -> Object -> Prop. (* Child Component -> Parent *)
   Variable SameDomain : Object -> Object -> Prop. (* Domain preservation *)
 
@@ -1628,48 +1658,66 @@ Section ClprolfFormalization.
   Variable Family : Interface -> Prop.
   Variable Trait  : Interface -> Prop.
 
-  (* Internal evaluation predicates *)
-  Variable BusinessPolarity    : Interface -> Prop.
-  Variable TechPolarity        : Interface -> Prop.
-  Variable IsBusinessCompatible: Interface -> Prop.
-  Variable IsTechCompatible    : Interface -> Prop.
+  (* Internal evaluation predicates for the 3x3 triad *)
+  Variable BusinessPolarity     : Interface -> Prop.
+  Variable TechPolarity         : Interface -> Prop.
+  Variable SystAgentPolarity    : Interface -> Prop.
+
+  Variable IsBusinessCompatible : Interface -> Prop.
+  Variable IsTechCompatible     : Interface -> Prop.
+  Variable IsSystAgentCompatible: Interface -> Prop.
 
   (* Local decidability of Family *)
   Variable fam_dec : forall i : Interface, {Family i} + {~ Family i}.
 
-  (* Definition by Contextual Overloading *)
+  (* Definition by Contextual Overloading (3 branches) *)
   Definition TargetBusiness (i : Interface) : Prop :=
     if (fam_dec i) then BusinessPolarity i else IsBusinessCompatible i.
 
   Definition TargetTech (i : Interface) : Prop :=
     if (fam_dec i) then TechPolarity i else IsTechCompatible i.
 
-  Variable Implements : Object -> Interface -> Prop.
-  Variable InterfaceInherits   : Interface -> Interface -> Prop.
+  Definition TargetSystAgent (i : Interface) : Prop :=
+    if (fam_dec i) then SystAgentPolarity i else IsSystAgentCompatible i.
 
-  (* Axiom 1: Family Exclusivity via Incompatibility Connective (Sheffer / NAND) *)
+  Variable Implements : Object -> Interface -> Prop.
+  Variable InterfaceInherits : Interface -> Interface -> Prop.
+
+  (* Axiom 1: Family Exclusivity via 3-Branch Exclusive OR *)
   Axiom Contract_Axiom1_FamilyExclusivity :
     forall f : Interface,
-      Family f -> ~ (TargetBusiness f /\ TargetTech f).
+      Family f ->
+      (TargetBusiness f /\ ~ TargetTech f /\ ~ TargetSystAgent f) \/
+      (~ TargetBusiness f /\ TargetTech f /\ ~ TargetSystAgent f) \/
+      (~ TargetBusiness f /\ ~ TargetTech f /\ TargetSystAgent f).
 
-  (* Axiom 2: Strict Mirror Law (Component <-> Family) *)
+  (* Axiom 2: Strict Mirror Law extended to the triad *)
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Family f ->
       Implements c f ->
       (BusinessComponent c <-> TargetBusiness f) /\
-      (TechComponent c <-> TargetTech f).
+      (TechComponent c <-> TargetTech f) /\
+      (SystemAgent c <-> TargetSystAgent f).
 
-  (* Axiom 3: Contextual Continuity of Traits through Inheritance *)
+  (* Axiom 3: Contextual Continuity of Traits through Inheritance (3 branches) *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
     forall (f t : Interface),
       Family f ->
       Trait t ->
       InterfaceInherits f t ->
       (TargetBusiness f -> TargetBusiness t) /\
-      (TargetTech f -> TargetTech t).
+      (TargetTech f -> TargetTech t) /\
+      (TargetSystAgent f -> TargetSystAgent t).
 
-  (* Interface Neutrality Theorem *)
+  (* Axiom 4: Mirror family uniqueness and direct trait prohibition *)
+  Axiom Contract_Axiom4_DirectTraitProhibitionAndMirrorUniqueness :
+    forall c : Object,
+      Component c ->
+        (exists! f : Interface, Family f /\ Implements c f) /\
+        (forall t : Interface, Trait t -> ~ Implements c t).
+
+  (* Interface Neutrality Theorem (3 branches) *)
   Theorem Interface_Neutrality_Theorem :
     forall (c : Object) (f t : Interface),
       Family f ->
@@ -1677,7 +1725,8 @@ Section ClprolfFormalization.
       InterfaceInherits f t ->
       Implements c f ->
       (BusinessComponent c -> TargetBusiness t) /\
-      (TechComponent c -> TargetTech t).
+      (TechComponent c -> TargetTech t) /\
+      (SystemAgent c -> TargetSystAgent t).
   Proof.
     intros c f t HFamily HTrait HInherit HImpl.
     split.
@@ -1686,15 +1735,20 @@ Section ClprolfFormalization.
       assert (HTargetF : TargetBusiness f) by (apply HMirrorBusiness; exact HBusinessC).
       destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [HContBusiness _].
       apply HContBusiness. exact HTargetF.
-    - intros HTechC.
-      destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ HMirrorTech].
-      assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
-      destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ HContTech].
-      apply HContTech. exact HTargetF.
+    - split.
+      + intros HTechC.
+        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [HMirrorTech _]].
+        assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
+        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [HContTech _]].
+        apply HContTech. exact HTargetF.
+      + intros HAgentC.
+        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [_ HMirrorAgent]].
+        assert (HTargetF : TargetSystAgent f) by (apply HMirrorAgent; exact HAgentC).
+        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [_ HContAgent]].
+        apply HContAgent. exact HTargetF.
   Qed.
 
 End ClprolfFormalization.
-
 ```
 
 # XIX) Application Illustrations and Canonical Use Cases
