@@ -1256,7 +1256,7 @@ $$\forall t \; \Big( ComposantTech(t) \Rightarrow \forall s \; \big( Utilise(t, 
 
 Tout composant $c$ possède exactement une et une seule qualification parmi les trois rôles fondamentaux du système :
 
-$$\forall c \; \Big( \text{Composant}(c) \implies \big(\text{ComposantMetier}(c) \oplus \text{ComposantTech}(c) \oplus \text{AgentSysteme}(c)\big) \Big)$$
+$$\forall c \in C \; \Big( \text{Composant}(c) \implies \big( \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \neg \text{SystemAgent}(c) \big) \lor \big( \neg \text{ComposantMetier}(c) \land \text{ComposantTech}(c) \land \neg \text{SystemAgent}(c) \big) \lor \big( \neg \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \text{SystemAgent}(c) \big) \Big)$$
 
 ---
 
@@ -1390,7 +1390,7 @@ $$\forall f \in F, \forall t \in T \; \Big( Herite(f, t) \implies \big( TargetMe
 
 ### Axiome 4 — Unicité du Miroir et Interdiction des Traits Directs
 
-$$\forall c \in C \; \Big( \exists! f \in F \; Implemente(c, f) \;\land\; \forall t \in T \; \neg Implemente(c, t) \Big)$$
+$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implemente}(c, f) \;\land\; \forall t \in T \quad \neg \text{Implemente}(c, t) \Big)$$
 
 ---
 

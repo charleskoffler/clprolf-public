@@ -1291,7 +1291,7 @@ $$\forall t \; \Big( TechComponent(t) \Rightarrow \forall s \; \big( Uses(t, s) 
 
 Every component $c$ has exactly one qualification among the three fundamental roles of the system:
 
-$$\forall c \; \Big( \text{Component}(c) \implies \big(\text{BusinessComponent}(c) \oplus \text{TechComponent}(c) \oplus \text{SystemAgent}(c)\big) \Big)$$
+$$\forall c \in C \; \Big( \text{Component}(c) \implies \big( \text{BusinessComponent}(c) \land \neg \text{TechComponent}(c) \land \neg \text{SystemAgent}(c) \big) \lor \big( \neg \text{BusinessComponent}(c) \land \text{TechComponent}(c) \land \neg \text{SystemAgent}(c) \big) \lor \big( \neg \text{BusinessComponent}(c) \land \neg \text{TechComponent}(c) \land \text{SystemAgent}(c) \big) \Big)$$
 
 ---
 
@@ -1426,7 +1426,7 @@ $$\forall f \in F, \forall t \in T \; \Big( \text{Inherits}(f, t) \implies \big(
 
 Every class $c \in C$ implements at most one single family $f \in F$, and is strictly forbidden from directly implementing any trait $t \in T$:
 
-$$\forall c \in C \; \Big( \exists! f \in F \; \text{Implements}(c, f) \;\land\; \forall t \in T \; \neg \text{Implements}(c, t) \Big)$$
+$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implements}(c, f) \;\land\; \forall t \in T \quad \neg \text{Implements}(c, t) \Big)$$
 
 ---
 
