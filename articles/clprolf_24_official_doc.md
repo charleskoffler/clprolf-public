@@ -534,7 +534,7 @@ Family interfaces also possess a target role:
 @ClFamily
 public interface Animal {
 
-    void manger(int quantite);
+    void eat(int quantity);
 
 }
 
@@ -547,7 +547,7 @@ The hierarchy of `ClFamily` interfaces naturally reflects the hierarchy of concr
 @ClFamily
 public interface Horse extends Animal {
 
-    void sauter(int hauteur);
+    void jump(int height);
 
 }
 

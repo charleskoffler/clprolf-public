@@ -1,3 +1,4 @@
+
 Section ClprolfFormalization.
 
   (* ================================================================= *)
@@ -7,28 +8,28 @@ Section ClprolfFormalization.
   Variable Object : Type.
 
   (* Object predicates *)
-  Variable App             : Object -> Prop.
-  Variable HumanWork       : Object -> Prop.
-  Variable HumanGoal       : Object -> Prop.
-  Variable BusinessDomain  : Object -> Prop.
-  Variable ExecutionSupport: Object -> Prop.
-  Variable Atom            : Object -> Prop.
-  Variable SystemAgent     : Object -> Prop.
+  Variable App               : Object -> Prop.
+  Variable HumanWork         : Object -> Prop.
+  Variable HumanGoal         : Object -> Prop.
+  Variable BusinessDomain    : Object -> Prop.
+  Variable ExecutionSupport  : Object -> Prop.
+  Variable Atom              : Object -> Prop.
+  Variable SystemAgent       : Object -> Prop.
   Variable BusinessComponent : Object -> Prop.
-  Variable TechComponent   : Object -> Prop.
-  Variable TechSupport     : Object -> Prop.
-  Variable Component       : Object -> Prop.
+  Variable TechComponent     : Object -> Prop.
+  Variable TechSupport       : Object -> Prop.
+  Variable Component         : Object -> Prop.
 
   (* Formal relations *)
-  Variable Automates : Object -> Object -> Prop. (* Application -> HumanWork *)
-  Variable Target    : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
-  Variable Part      : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contains  : Object -> Object -> Prop. (* Subsystem -> Atom *)
-  Variable Combines  : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
-  Variable Uses      : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
-  Variable Simulates : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
-  Variable Associates: Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
-  Variable SubSet    : Object -> Object -> Prop. (* Inclusion m ⊆ M *)
+  Variable Automates  : Object -> Object -> Prop. (* Application -> HumanWork *)
+  Variable Target     : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
+  Variable Part       : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contains   : Object -> Object -> Prop. (* Subsystem -> Atom *)
+  Variable Combines   : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
+  Variable Uses       : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
+  Variable Simulates  : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
+  Variable Associates : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
+  Variable SubSet     : Object -> Object -> Prop. (* Inclusion m ⊆ M *)
   Variable Inherits   : Object -> Object -> Prop. (* Child Component -> Parent *)
   Variable SameDomain : Object -> Object -> Prop. (* Domain preservation *)
 
@@ -191,48 +192,66 @@ Section ClprolfFormalization.
   Variable Family : Interface -> Prop.
   Variable Trait  : Interface -> Prop.
 
-  (* Internal evaluation predicates *)
-  Variable BusinessPolarity    : Interface -> Prop.
-  Variable TechPolarity        : Interface -> Prop.
-  Variable IsBusinessCompatible: Interface -> Prop.
-  Variable IsTechCompatible    : Interface -> Prop.
+  (* Internal evaluation predicates for the 3x3 triad *)
+  Variable BusinessPolarity     : Interface -> Prop.
+  Variable TechPolarity         : Interface -> Prop.
+  Variable SystAgentPolarity    : Interface -> Prop.
+
+  Variable IsBusinessCompatible : Interface -> Prop.
+  Variable IsTechCompatible     : Interface -> Prop.
+  Variable IsSystAgentCompatible: Interface -> Prop.
 
   (* Local decidability of Family *)
   Variable fam_dec : forall i : Interface, {Family i} + {~ Family i}.
 
-  (* Definition by Contextual Overloading *)
+  (* Definition by Contextual Overloading (3 branches) *)
   Definition TargetBusiness (i : Interface) : Prop :=
     if (fam_dec i) then BusinessPolarity i else IsBusinessCompatible i.
 
   Definition TargetTech (i : Interface) : Prop :=
     if (fam_dec i) then TechPolarity i else IsTechCompatible i.
 
-  Variable Implements : Object -> Interface -> Prop.
-  Variable InterfaceInherits   : Interface -> Interface -> Prop.
+  Definition TargetSystAgent (i : Interface) : Prop :=
+    if (fam_dec i) then SystAgentPolarity i else IsSystAgentCompatible i.
 
-  (* Axiom 1: Family Exclusivity via Incompatibility Connective (Sheffer / NAND) *)
+  Variable Implements : Object -> Interface -> Prop.
+  Variable InterfaceInherits : Interface -> Interface -> Prop.
+
+  (* Axiom 1: Family Exclusivity via 3-Branch Exclusive OR *)
   Axiom Contract_Axiom1_FamilyExclusivity :
     forall f : Interface,
-      Family f -> ~ (TargetBusiness f /\ TargetTech f).
+      Family f ->
+      (TargetBusiness f /\ ~ TargetTech f /\ ~ TargetSystAgent f) \/
+      (~ TargetBusiness f /\ TargetTech f /\ ~ TargetSystAgent f) \/
+      (~ TargetBusiness f /\ ~ TargetTech f /\ TargetSystAgent f).
 
-  (* Axiom 2: Strict Mirror Law (Component <-> Family) *)
+  (* Axiom 2: Strict Mirror Law extended to the triad *)
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Family f ->
       Implements c f ->
       (BusinessComponent c <-> TargetBusiness f) /\
-      (TechComponent c <-> TargetTech f).
+      (TechComponent c <-> TargetTech f) /\
+      (SystemAgent c <-> TargetSystAgent f).
 
-  (* Axiom 3: Contextual Continuity of Traits through Inheritance *)
+  (* Axiom 3: Contextual Continuity of Traits through Inheritance (3 branches) *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
     forall (f t : Interface),
       Family f ->
       Trait t ->
       InterfaceInherits f t ->
       (TargetBusiness f -> TargetBusiness t) /\
-      (TargetTech f -> TargetTech t).
+      (TargetTech f -> TargetTech t) /\
+      (TargetSystAgent f -> TargetSystAgent t).
 
-  (* Interface Neutrality Theorem *)
+  (* Axiom 4: Mirror family uniqueness and direct trait prohibition *)
+  Axiom Contract_Axiom4_DirectTraitProhibitionAndMirrorUniqueness :
+    forall c : Object,
+      Component c ->
+        (exists! f : Interface, Family f /\ Implements c f) /\
+        (forall t : Interface, Trait t -> ~ Implements c t).
+
+  (* Interface Neutrality Theorem (3 branches) *)
   Theorem Interface_Neutrality_Theorem :
     forall (c : Object) (f t : Interface),
       Family f ->
@@ -240,7 +259,8 @@ Section ClprolfFormalization.
       InterfaceInherits f t ->
       Implements c f ->
       (BusinessComponent c -> TargetBusiness t) /\
-      (TechComponent c -> TargetTech t).
+      (TechComponent c -> TargetTech t) /\
+      (SystemAgent c -> TargetSystAgent t).
   Proof.
     intros c f t HFamily HTrait HInherit HImpl.
     split.
@@ -249,11 +269,17 @@ Section ClprolfFormalization.
       assert (HTargetF : TargetBusiness f) by (apply HMirrorBusiness; exact HBusinessC).
       destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [HContBusiness _].
       apply HContBusiness. exact HTargetF.
-    - intros HTechC.
-      destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ HMirrorTech].
-      assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
-      destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ HContTech].
-      apply HContTech. exact HTargetF.
+    - split.
+      + intros HTechC.
+        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [HMirrorTech _]].
+        assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
+        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [HContTech _]].
+        apply HContTech. exact HTargetF.
+      + intros HAgentC.
+        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [_ HMirrorAgent]].
+        assert (HTargetF : TargetSystAgent f) by (apply HMirrorAgent; exact HAgentC).
+        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [_ HContAgent]].
+        apply HContAgent. exact HTargetF.
   Qed.
 
 End ClprolfFormalization.
