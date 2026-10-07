@@ -1376,7 +1376,7 @@ $$\forall f \in F \; \Big( (\text{TargetMetier}(f) \land \neg \text{TargetTech}(
 
 Un composant ne peut implémenter qu'une famille dont la polarité est strictly isomorphe à sa propre nature :
 
-$$\forall c \in C, \forall f \in F \; \Big( Implemente(c, f) \implies \big( ComposantMetier(c) \iff TargetMetier(f) \big) \land \big( ComposantTech(c) \iff TargetTech(f) \big) \land \big( AgentSysteme(c) \iff TargetAgentSyst(f) \big) \Big)$$
+$$\forall c \in C, \forall f \in F \quad \Big( \text{Implemente}(c, f) \implies \begin{cases} \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \\ \text{ComposantTech}(c) \iff \text{TargetTech}(f) \\ \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \\ \mathbf{\text{MemesMethodes}(c, f)} \end{cases} \Big)$$
 
 ---
 
@@ -1630,6 +1630,12 @@ Section ClprolfFormalization.
 
   (* Décidabilité locale de Famille *)
   Variable fam_dec : forall i : Interface, {Famille i} + {~ Famille i}.
+  
+  Variable Methodes          : Object -> Type.
+  Variable MethodesInterface : Interface -> Type.
+  
+  (* Relation d'identité de signature entre un composant et son interface *)
+  Variable MemesMethodes : Object -> Interface -> Prop.
 
   (* Définition par Surcharge Contextuelle (3 branches) *)
   Definition TargetMetier (i : Interface) : Prop :=
@@ -1638,7 +1644,7 @@ Section ClprolfFormalization.
   Definition TargetTech (i : Interface) : Prop :=
     if (fam_dec i) then PolariteTech i else EstCompatibleTech i.
 
-  Definition TargetAgent (i : Interface) : Prop :=
+  Definition TargetAgentSyst (i : Interface) : Prop :=
     if (fam_dec i) then PolariteAgent i else EstCompatibleAgent i.
 
   Variable Implemente : Object -> Interface -> Prop.
@@ -1648,9 +1654,9 @@ Section ClprolfFormalization.
   Axiom Contract_Axiom1_FamilyExclusivity :
     forall f : Interface,
       Famille f ->
-      (TargetMetier f /\ ~ TargetTech f /\ ~ TargetAgent f) \/
-      (~ TargetMetier f /\ TargetTech f /\ ~ TargetAgent f) \/
-      (~ TargetMetier f /\ ~ TargetTech f /\ TargetAgent f).
+      (TargetMetier f /\ ~ TargetTech f /\ ~ TargetAgentSyst f) \/
+      (~ TargetMetier f /\ TargetTech f /\ ~ TargetAgentSyst f) \/
+      (~ TargetMetier f /\ ~ TargetTech f /\ TargetAgentSyst f).
 
   (* Axiome 2 : Loi du Miroir Strict étendue à la triade *)
   Axiom Contract_Axiom2_MirrorLaw :
@@ -1659,7 +1665,8 @@ Section ClprolfFormalization.
       Implemente c f ->
       (ComposantMetier c <-> TargetMetier f) /\
       (ComposantTech c <-> TargetTech f) /\
-      (AgentSysteme c <-> TargetAgent f).
+      (AgentSysteme c <-> TargetAgentSyst f) /\
+      MemesMethodes c f.
 
   (* Axiome 3 : Continuité Contextuelle des Traits par Héritage (3 branches) *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
@@ -1669,7 +1676,7 @@ Section ClprolfFormalization.
       HeriteInterface f t ->
       (TargetMetier f -> TargetMetier t) /\
       (TargetTech f -> TargetTech t) /\
-      (TargetAgent f -> TargetAgent t).
+      (TargetAgentSyst f -> TargetAgentSyst t).
     
   (* Axiome 4 : Unicité de la famille miroir et interdiction des traits directs *)
   Axiom Contract_Axiom4_DirectTraitProhibitionAndMirrorUniqueness :
@@ -1687,7 +1694,7 @@ Section ClprolfFormalization.
       Implemente c f ->
       (ComposantMetier c -> TargetMetier t) /\
       (ComposantTech c -> TargetTech t) /\
-      (AgentSysteme c -> TargetAgent t).
+      (AgentSysteme c -> TargetAgentSyst t).
   Proof.
     intros c f t HFam HTrait HInherit HImpl.
     split.
@@ -1702,13 +1709,13 @@ Section ClprolfFormalization.
         assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
         destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ [HContTech _]].
         apply HContTech. exact HTargetF.
-      + intros HAgentC.
-        destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ [_ HMirrorAgent]].
-        assert (HTargetF : TargetAgent f) by (apply HMirrorAgent; exact HAgentC).
-        destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ [_ HContAgent]].
-        apply HContAgent. exact HTargetF.
+      + intros HAgentSystC.
+        destruct (Contract_Axiom2_MirrorLaw c f HFam HImpl) as [_ [_ [HMirrorAgentSyst _]]].
+        assert (HTargetF : TargetAgentSyst f) by (apply HMirrorAgentSyst; exact HAgentSystC).
+        destruct (Contract_Axiom3_TraitContextualContinuity f t HFam HTrait HInherit) as [_ [_ HContAgentSyst]].
+        apply HContAgentSyst. exact HTargetF.
   Qed.
-
+  
 End ClprolfFormalization.
 
 ```

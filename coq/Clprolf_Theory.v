@@ -203,6 +203,13 @@ Section ClprolfFormalization.
 
   (* Local decidability of Family *)
   Variable fam_dec : forall i : Interface, {Family i} + {~ Family i}.
+  
+  (* Public method signature types *)
+  Variable Methods          : Object -> Type.
+  Variable InterfaceMethods : Interface -> Type.
+
+  (* Surface identity relation between a component and its interface *)
+  Variable SameMethods : Object -> Interface -> Prop.
 
   (* Definition by Contextual Overloading (3 branches) *)
   Definition TargetBusiness (i : Interface) : Prop :=
@@ -232,7 +239,8 @@ Section ClprolfFormalization.
       Implements c f ->
       (BusinessComponent c <-> TargetBusiness f) /\
       (TechComponent c <-> TargetTech f) /\
-      (SystemAgent c <-> TargetSystAgent f).
+      (SystemAgent c <-> TargetSystAgent f) /\
+      SameMethods c f.
 
   (* Axiom 3: Contextual Continuity of Traits through Inheritance (3 branches) *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
@@ -275,11 +283,11 @@ Section ClprolfFormalization.
         assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
         destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [HContTech _]].
         apply HContTech. exact HTargetF.
-      + intros HAgentC.
-        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [_ HMirrorAgent]].
-        assert (HTargetF : TargetSystAgent f) by (apply HMirrorAgent; exact HAgentC).
-        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [_ HContAgent]].
-        apply HContAgent. exact HTargetF.
+      + intros HSystemAgentC.
+        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [_ [HMirrorSystemAgent _]]].
+        assert (HTargetF : TargetSystAgent f) by (apply HMirrorSystemAgent; exact HSystemAgentC).
+        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [_ HContSystemAgent]].
+        apply HContSystemAgent. exact HTargetF.
   Qed.
 
 End ClprolfFormalization.
