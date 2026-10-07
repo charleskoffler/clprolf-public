@@ -1390,7 +1390,7 @@ $$\forall f \in F, \forall t \in T \; \Big( Herite(f, t) \implies \big( TargetMe
 
 ### Axiome 4 — Unicité du Miroir et Interdiction des Traits Directs
 
-\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implemente}(c, f) \quad\land\quad \forall t \in T \quad \neg \text{Implemente}(c, t) \Big)
+$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implemente}(c, f) \quad\land\quad \forall t \in T \quad \neg \text{Implemente}(c, t) \Big)$$
 
 ---
 
