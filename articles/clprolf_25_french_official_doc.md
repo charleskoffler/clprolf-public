@@ -1256,7 +1256,7 @@ $$\forall t \; \Big( ComposantTech(t) \Rightarrow \forall s \; \big( Utilise(t, 
 
 Tout composant $c$ possède exactement une et une seule qualification parmi les trois rôles fondamentaux du système :
 
-$$\forall c \in C \; \Big( \text{Composant}(c) \implies \big( \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \neg \text{SystemAgent}(c) \big) \lor \big( \neg \text{ComposantMetier}(c) \land \text{ComposantTech}(c) \land \neg \text{SystemAgent}(c) \big) \lor \big( \neg \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \text{SystemAgent}(c) \big) \Big)$$
+$$\forall c \in C \; \Big( \text{Composant}(c) \implies \big( \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \big( \neg \text{ComposantMetier}(c) \land \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \big( \neg \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \text{AgentSysteme}(c) \big) \Big)$$
 
 ---
 
@@ -1622,11 +1622,11 @@ Section ClprolfFormalization.
   (* Prédicats d'évaluation internes pour la triade *)
   Variable PolariteMetier      : Interface -> Prop.
   Variable PolariteTech        : Interface -> Prop.
-  Variable PolariteAgent       : Interface -> Prop.
+  Variable PolariteAgentSyst       : Interface -> Prop.
   
   Variable EstCompatibleMetier : Interface -> Prop.
   Variable EstCompatibleTech   : Interface -> Prop.
-  Variable EstCompatibleAgent  : Interface -> Prop.
+  Variable EstCompatibleAgentSyst  : Interface -> Prop.
 
   (* Décidabilité locale de Famille *)
   Variable fam_dec : forall i : Interface, {Famille i} + {~ Famille i}.
@@ -1645,7 +1645,7 @@ Section ClprolfFormalization.
     if (fam_dec i) then PolariteTech i else EstCompatibleTech i.
 
   Definition TargetAgentSyst (i : Interface) : Prop :=
-    if (fam_dec i) then PolariteAgent i else EstCompatibleAgent i.
+    if (fam_dec i) then PolariteAgentSyst i else EstCompatibleAgentSyst i.
 
   Variable Implemente : Object -> Interface -> Prop.
   Variable HeriteInterface : Interface -> Interface -> Prop.
