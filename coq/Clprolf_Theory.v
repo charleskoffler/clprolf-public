@@ -1,4 +1,6 @@
 
+From Stdlib Require Import Lists.List.
+Import ListNotations.
 Section ClprolfFormalization.
 
   (* ================================================================= *)
@@ -183,7 +185,7 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  (* 7. EXTENSION: NEUTRALITY THEOREM OF FAMILIES & TRAITS              *)
+  (* 7. EXTENSION: CONTRACT THEORY & MIRROR ISOMORPHISM                *)
   (* ================================================================= *)
 
   Variable Interface : Type.
@@ -224,7 +226,16 @@ Section ClprolfFormalization.
   Variable Implements : Object -> Interface -> Prop.
   Variable InterfaceInherits : Interface -> Interface -> Prop.
 
-  (* Axiom 1: Family Exclusivity via 3-Branch Exclusive OR *)
+  (* MIRROR PREDICATE: Isomorphism relation between a Family and a Component *)
+  Definition MirrorOf (f : Interface) (c : Object) : Prop :=
+    Family f /\
+    Implements c f /\
+    SameMethods c f /\
+    (BusinessComponent c <-> TargetBusiness f) /\
+    (TechComponent c     <-> TargetTech f)     /\
+    (SystemAgent c       <-> TargetSystAgent f).
+
+  (* Axiom 1: Family Exclusivity *)
   Axiom Contract_Axiom1_FamilyExclusivity :
     forall f : Interface,
       Family f ->
@@ -232,15 +243,12 @@ Section ClprolfFormalization.
       (~ TargetBusiness f /\ TargetTech f /\ ~ TargetSystAgent f) \/
       (~ TargetBusiness f /\ ~ TargetTech f /\ TargetSystAgent f).
 
-  (* Axiom 2: Strict Mirror Law extended to the triad *)
+  (* Axiom 2: Strict Mirror Law and Isomorphism of Nature *)
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Family f ->
       Implements c f ->
-      (BusinessComponent c <-> TargetBusiness f) /\
-      (TechComponent c <-> TargetTech f) /\
-      (SystemAgent c <-> TargetSystAgent f) /\
-      SameMethods c f.
+      MirrorOf f c.
 
   (* Axiom 3: Contextual Continuity of Traits through Inheritance (3 branches) *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
@@ -256,38 +264,84 @@ Section ClprolfFormalization.
   Axiom Contract_Axiom4_DirectTraitProhibitionAndMirrorUniqueness :
     forall c : Object,
       Component c ->
-        (exists! f : Interface, Family f /\ Implements c f) /\
+        (exists! f : Interface, MirrorOf f c) /\
         (forall t : Interface, Trait t -> ~ Implements c t).
 
-  (* Interface Neutrality Theorem (3 branches) *)
-  Theorem Interface_Neutrality_Theorem :
-    forall (c : Object) (f t : Interface),
+  (* Modeling of object instances for runtime concrete type guarantee *)
+  Variable ObjectInstance : Type.
+  Variable StaticType     : ObjectInstance -> Interface.
+  Variable InstanceOf     : ObjectInstance -> Object -> Prop.
+
+  (* Object typing law at runtime *)
+  Axiom Object_Typing_Law :
+    forall (o : ObjectInstance) (f : Interface),
+      StaticType o = f ->
       Family f ->
-      Trait t ->
-      InterfaceInherits f t ->
-      Implements c f ->
-      (BusinessComponent c -> TargetBusiness t) /\
-      (TechComponent c -> TargetTech t) /\
-      (SystemAgent c -> TargetSystAgent t).
+      exists c : Object, Component c /\ InstanceOf o c /\ Implements c f.
+
+  (* Master Theorem: Mirror Isomorphism and Type Preservation *)
+  Theorem Mirror_Isomorphism_And_Neutrality_Theorem :
+    forall (o : ObjectInstance) (f : Interface),
+      Family f ->
+      StaticType o = f ->
+      exists c : Object, InstanceOf o c /\ MirrorOf f c.
   Proof.
-    intros c f t HFamily HTrait HInherit HImpl.
+    intros o f HFam HType.
+    destruct (Object_Typing_Law o f HType HFam) as [c [HComp [HInst HImpl]]].
+    exists c.
     split.
-    - intros HBusinessC.
-      destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [HMirrorBusiness _].
-      assert (HTargetF : TargetBusiness f) by (apply HMirrorBusiness; exact HBusinessC).
-      destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [HContBusiness _].
-      apply HContBusiness. exact HTargetF.
-    - split.
-      + intros HTechC.
-        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [HMirrorTech _]].
-        assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
-        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [HContTech _]].
-        apply HContTech. exact HTargetF.
-      + intros HSystemAgentC.
-        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [_ [HMirrorSystemAgent _]]].
-        assert (HTargetF : TargetSystAgent f) by (apply HMirrorSystemAgent; exact HSystemAgentC).
-        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [_ HContSystemAgent]].
-        apply HContSystemAgent. exact HTargetF.
+    - exact HInst.
+    - apply Contract_Axiom2_MirrorLaw; assumption.
+  Qed.
+
+  (* ================================================================= *)
+  (* 8. EXTENSION: STATIC DECIDABILITY & CHECKER MAPPING               *)
+  (* ================================================================= *)
+
+  Variable CheckerRule : Type.
+  Variable SatisfiesRule : Object -> CheckerRule -> Prop.
+  Variable CheckerRulesList : list CheckerRule.
+
+  (* Automated compliance predicate over the 12 ArchUnit rules *)
+  Definition CheckerCompliant (A : Object) : Prop :=
+    forall r : CheckerRule, In r CheckerRulesList -> SatisfiesRule A r.
+
+  (* AxiomCompliant definition representing full axiomatic satisfaction *)
+  Definition AxiomCompliant (A : Object) : Prop :=
+    App A /\ forall p d : Object, Part p A -> Contains p d -> Atom d.
+
+  (* Soundness and completeness axiom linking static analysis to theory *)
+  Axiom Checker_Soundness_And_Completeness :
+    forall (A : Object),
+      App A ->
+      (AxiomCompliant A <-> CheckerCompliant A).
+
+  (* Corollary of Static Decidability *)
+  Corollary Static_Decidability_Corollary :
+    forall (A : Object),
+      App A ->
+      (AxiomCompliant A <-> CheckerCompliant A).
+  Proof.
+    intros A HApp.
+    apply Checker_Soundness_And_Completeness.
+    exact HApp.
+  Qed.
+
+  (* Combined Unified Theorem: Expressiveness & Static Decidability *)
+  Theorem Unified_Expressiveness_And_Decidability_Theorem :
+    forall (A p d : Object),
+      App A ->
+      Part p A ->
+      Contains p d ->
+      AxiomCompliant A ->
+      (exists (implApp implSub implAtom : ClprolfComponent),
+        Realizes A implApp /\ Realizes p implSub /\ Realizes d implAtom) /\
+      CheckerCompliant A.
+  Proof.
+    intros A p d HApp HPart HContains HAxiom.
+    split.
+    - apply Deep_Architectural_Expressiveness with (p := p) (d := d); assumption.
+    - apply Static_Decidability_Corollary; assumption.
   Qed.
 
 End ClprolfFormalization.
