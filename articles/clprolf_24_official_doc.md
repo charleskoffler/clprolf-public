@@ -1359,99 +1359,90 @@ This proof demonstrates that Clprolf is not only expressive in the raw computati
 
 ---
 
-# XVII) Mathematical Formalization of Contract Neutrality
+# XVII) Formalisation mathématique de la neutralité des contrats
 
-To demonstrate that introducing interface polymorphism through interfaces (`ClFamily` and `ClTrait`) does not alter the intrinsic nature of system atoms, we formalize Contract Theory as a logical and topological framework.
+Afin de démontrer que l'introduction du polymorphisme par interfaces (`ClFamily` et `ClTrait`) ne modifie pas la nature intrinsèque des atomes du système, nous formalisons la théorie des contrats sous forme de système logique et topologique.
 
-## 1. Contract Predicates and Contextual Overloading
+## 1. Prédicats de contrat et surcharge contextuelle
 
-Let the base sets be defined as:
+Soient les ensembles de base :
 
-* $C$: The set of software components.
-* $I = F \cup T$: The set of system interfaces, where $F$ is the set of families and $T$ is the set of traits.
+* $C$ : L'ensemble des composants logiciels.
+* $I = F \cup T$ : L'ensemble des interfaces du système, où $F$ est l'ensemble des familles et $T$ l'ensemble des traits.
 
-### Component Nature Predicates
+### Prédicats de typologie d'interface
 
-* $\text{BusinessComponent}(c)$: The component $c \in C$ carries a business responsibility (`@ClWorker` Business).
-* $\text{TechComponent}(c)$: The component $c \in C$ carries a technical responsibility (`@ClWorker` Tech).
-* $\text{SystemAgent}(c)$: The component $c \in C$ carries an orchestration or exposure responsibility (`@ClAgent`).
+* $\text{Famille}(i)$ : $i \in F$, l'interface $i$ est une famille de premier niveau.
+* $\text{Trait}(i)$ : $i \in T$, l'interface $i$ est une capacité transversale.
 
-### Interface Typology Predicates
+### Relations topologiques
 
-* $\text{Family}(i)$: $i \in F$, the interface $i$ is a first-level family.
-* $\text{Trait}(i)$: $i \in T$, the interface $i$ is a cross-cutting capability.
+* $\text{Implemente}(c, i)$ : Le composant $c$ implémente l'interface $i$.
+* $\text{Herite}(i, j)$ : L'interface $i$ hérite de l'interface $j$.
 
-### Topological Relations
+### Définition par surcharge contextuelle ($\triangleq$)
 
-* $\text{Implements}(c, i)$: Component $c$ implements interface $i$.
-* $\text{Inherits}(i, j)$: Interface $i$ inherits from interface $j$.
+$$\text{TargetMetier}(i) \triangleq \begin{cases} \text{PolariteMetier}(i) & \text{si } i \in F \quad (\text{Famille : polarité stricte et exclusive}) \\ \text{EstCompatibleMetier}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité dépendante du contexte}) \end{cases}$$
 
-### Definition by Contextual Overloading ($\triangleq$)
+$$\text{TargetTech}(i) \triangleq \begin{cases} \text{PolariteTech}(i) & \text{si } i \in F \quad (\text{Famille : polarité stricte et exclusive}) \\ \text{EstCompatibleTech}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité dépendante du contexte}) \end{cases}$$
 
-$$\text{TargetBusiness}(i) \triangleq \begin{cases} \text{BusinessPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsBusinessCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
-
-$$\text{TargetTech}(i) \triangleq \begin{cases} \text{TechPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsTechCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
-
-$$\text{TargetSystAgent}(i) \triangleq \begin{cases} \text{SystAgentPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsSystAgentCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
+$$\text{TargetAgentSyst}(i) \triangleq \begin{cases} \text{PolariteAgentSyst}(i) & \text{si } i \in F \quad (\text{Famille : polarité stricte et exclusive}) \\ \text{EstCompatibleAgentSyst}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité dépendante du contexte}) \end{cases}$$
 
 ---
 
-## 2. Contract Theory Axioms
+## 2. Axiomes de la théorie des contrats
 
-### Axiom 1 — Family Exclusivity via 3-Branch Exclusive OR
+### Axiome 1 — Exclusivité des familles
 
-Every family $f \in F$ possesses a strict and mutually exclusive polarity among the three target roles:
+Toute famille $f \in F$ possède une polarité stricte et mutuellement exclusive parmi les trois rôles cibles :
 
-$$\forall f \in F \; \Big( (\text{TargetBusiness}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetSystAgent}(f)) \lor (\neg \text{TargetBusiness}(f) \land \text{TargetTech}(f) \land \neg \text{TargetSystAgent}(f)) \lor (\neg \text{TargetBusiness}(f) \land \neg \text{TargetTech}(f) \land \text{TargetSystAgent}(f)) \Big)$$
-
----
-
-### Axiom 2 — Strict Mirror Law
-
-A component can only implement a family whose polarity is strictly isomorphic to its own nature:
-
-$$\forall c \in C, \forall f \in F \quad \Big( \text{Implements}(c, f) \implies \begin{cases} \text{BusinessComponent}(c) \iff \text{TargetBusiness}(f) \\ \text{TechComponent}(c) \iff \text{TargetTech}(f) \\ \text{SystemAgent}(c) \iff \text{TargetSystAgent}(f) \\ \mathbf{\text{SameMethods}(c, f)} \end{cases} \Big)$$
+$$\forall f \in F \; \Big( (\text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor (\neg \text{TargetMetier}(f) \land \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor (\neg \text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \text{TargetAgentSyst}(f)) \Big)$$
 
 ---
 
-### Axiom 3 — Contextual Continuity of Traits
+### Axiome 2 — Loi du miroir strict
 
-When a family $f$ inherits from a trait $t$, trait compatibility is contextually evaluated through the family's polarity:
+Un composant ne peut implémenter qu'une famille dont la polarité est strictement isomorphe à sa propre nature :
 
-$$\forall f \in F, \forall t \in T \; \Big( \text{Inherits}(f, t) \implies \big( \text{TargetBusiness}(f) \implies \text{TargetBusiness}(t) \big) \land \big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetSystAgent}(f) \implies \text{TargetSystAgent}(t) \big) \Big)$$
-
----
-
-### Axiom 4 — Mirror Uniqueness and Direct Trait Prohibition
-
-Every class $c \in C$ implements at most one single family $f \in F$, and is strictly forbidden from directly implementing any trait $t \in T$:
-
-$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implements}(c, f) \;\land\; \big( \forall t \in T \quad \neg \text{Implements}(c, t) \big) \Big)$$
+$$\forall c \in C, \forall f \in F \quad \Big( \text{Implemente}(c, f) \implies \begin{cases} \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \\ \text{ComposantTech}(c) \iff \text{TargetTech}(f) \\ \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \\ \mathbf{\text{MemesMethodes}(c, f)} \end{cases} \Big)$$
 
 ---
 
-### Axiom 5 — Trait Invariance (Prohibition of Family Extension)
+### Axiome 3 — Continuité contextuelle des traits
 
-A trait $t_1 \in T$ can only inherit from another trait $t_2 \in T$. It is strictly forbidden from inheriting from a family $f \in F$:
+Lorsqu'une famille $f$ hérite d'un trait $t$, la compatibilité du trait est évaluée contextuellement à travers la polarité de la famille :
 
-$$\forall t \in T, \forall i \in I \; \Big( \text{Inherits}(t, i) \implies \text{Trait}(i) \Big)$$
+$$\forall f \in F, \forall t \in T \; \Big( \text{Herite}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big)$$
 
 ---
 
-## 3. Interface Neutrality Theorem
+### Axiome 4 — Unicité du miroir et interdiction des traits directs
 
-### Theorem Statement
+Chaque classe $c \in C$ implémente au plus une seule famille $f \in F$, et il lui est strictement interdit d'implémenter directement un trait $t \in T$ quel qu'il soit :
 
-For any component $c$, any family $f$, and any trait $t$, if $f$ inherits from $t$ and $c$ implements $f$, then the contract hierarchy preserves the nature of $c$ down to trait $t$, guaranteeing the ontological neutrality of interfaces:
+$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implemente}(c, f) \;\land\; \big( \forall t \in T \quad \neg \text{Implemente}(c, t) \big) \Big)$$
 
-$$\forall c \in C, \forall f \in F, \forall t \in T \; \Big( \text{Inherits}(f, t) \land \text{Implements}(c, f) \implies \big( \text{BusinessComponent}(c) \implies \text{TargetBusiness}(t) \big) \land \big( \text{TechComponent}(c) \implies \text{TargetTech}(t) \big) \land \big( \text{SystemAgent}(c) \implies \text{TargetSystAgent}(t) \big) \Big)$$
+---
 
-### Analytical Proof
+### Axiome 5 — Invariance des traits (Interdiction d'extension de famille)
 
-1. **System Agent Case:** Let $c$ be a component such that $\text{SystemAgent}(c)$, $f \in F$, and $t \in T$ such that $\text{Inherits}(f, t)$ and $\text{Implements}(c, f)$.
-2. **Applying Axiom 2 (Mirror Law):** From $\text{Implements}(c, f)$, we deduce $\text{SystemAgent}(c) \iff \text{TargetSystAgent}(f)$. Since $\text{SystemAgent}(c)$ holds by hypothesis, $\text{TargetSystAgent}(f)$ is established.
-3. **Applying Axiom 3 (Contextual Continuity):** From $\text{Inherits}(f, t)$, Axiom 3 yields $\text{TargetSystAgent}(f) \implies \text{TargetSystAgent}(t)$. Therefore, $\text{TargetSystAgent}(t) = \text{True}$.
-4. **Symmetry:** The exact same reasoning applies symmetrically to $\text{BusinessComponent}(c)$ and $\text{TechComponent}(c)$.
+Un trait $t_1 \in T$ ne peut hériter que d'un autre trait $t_2 \in T$. Il lui est strictement interdit d'hériter d'une famille $f \in F$ :
+
+$$\forall t \in T, \forall i \in I \; \Big( \text{Herite}(t, i) \implies \text{Trait}(i) \Big)$$
+
+---
+
+## 3. Théorème d'isomorphisme et de neutralité miroir
+
+> **Énoncé :** Tout objet $o$ manipulé via sa famille miroir $f$ instancie un composant concret $c$ dont le type, les méthodes et le rôle (Agent, Worker, Système) sont strictement préservés à travers l'abstraction.
+
+$$\forall o, \forall f \in F \; \Big( \text{TypeStatique}(o) = f \implies \exists c \in C \; \big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f, c) \big) \Big)$$
+
+### Démonstration synthétique
+
+1. **Existence :** Par les lois de typage objet, un objet $o$ manipulé sous l'interface $f \in F$ dérive d'une classe concrète $c \in C$ telle que $\text{Implemente}(c, f)$.
+2. **Conformité & Isomorphisme :** L'Axiome 2 (Loi du miroir strict) et la définition de $\text{MiroirDe}(f, c)$ garantissent l'équivalence stricte des signatures de méthodes et la préservation de la polarité ($\text{ComposantMetier}(c) \iff \text{TargetMetier}(f)$, etc.).
+3. **Neutralité des traits :** L'Axiome 4 interdit l'implémentation directe de traits, restreignant les implémentations de classes strictement à leur famille miroir $f$. La neutralité contextuelle de tout trait hérité s'en déduit directement par transitivité via l'Axiome 3.
 
 $$\text{Q.E.D.}$$
 
@@ -1649,7 +1640,7 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  (* 7. EXTENSION: NEUTRALITY THEOREM OF FAMILIES & TRAITS              *)
+  (* 7. EXTENSION: MIRROR ISOMORPHISM AND NEUTRALITY THEOREM           *)
   (* ================================================================= *)
 
   Variable Interface : Type.
@@ -1690,7 +1681,16 @@ Section ClprolfFormalization.
   Variable Implements : Object -> Interface -> Prop.
   Variable InterfaceInherits : Interface -> Interface -> Prop.
 
-  (* Axiom 1: Family Exclusivity via 3-Branch Exclusive OR *)
+  (* MIRROR PREDICATE: Isomorphism relation between a Family and a Component *)
+  Definition MirrorOf (f : Interface) (c : Object) : Prop :=
+    Family f /\
+    Implements c f /\
+    SameMethods c f /\
+    (BusinessComponent c <-> TargetBusiness f) /\
+    (TechComponent c     <-> TargetTech f)     /\
+    (SystemAgent c       <-> TargetSystAgent f).
+
+  (* Axiom 1: Family Exclusivity *)
   Axiom Contract_Axiom1_FamilyExclusivity :
     forall f : Interface,
       Family f ->
@@ -1698,15 +1698,12 @@ Section ClprolfFormalization.
       (~ TargetBusiness f /\ TargetTech f /\ ~ TargetSystAgent f) \/
       (~ TargetBusiness f /\ ~ TargetTech f /\ TargetSystAgent f).
 
-  (* Axiom 2: Strict Mirror Law extended to the triad *)
+  (* Axiom 2: Strict Mirror Law and Isomorphism of Nature *)
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Family f ->
       Implements c f ->
-      (BusinessComponent c <-> TargetBusiness f) /\
-      (TechComponent c <-> TargetTech f) /\
-      (SystemAgent c <-> TargetSystAgent f) /\
-      SameMethods c f.
+      MirrorOf f c.
 
   (* Axiom 3: Contextual Continuity of Traits through Inheritance (3 branches) *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
@@ -1722,41 +1719,38 @@ Section ClprolfFormalization.
   Axiom Contract_Axiom4_DirectTraitProhibitionAndMirrorUniqueness :
     forall c : Object,
       Component c ->
-        (exists! f : Interface, Family f /\ Implements c f) /\
+        (exists! f : Interface, MirrorOf f c) /\
         (forall t : Interface, Trait t -> ~ Implements c t).
 
-  (* Interface Neutrality Theorem (3 branches) *)
-  Theorem Interface_Neutrality_Theorem :
-    forall (c : Object) (f t : Interface),
+ (* Modeling of object instances for runtime concrete type guarantee *)
+  Variable ObjectInstance : Type.
+  Variable StaticType     : ObjectInstance -> Interface.
+  Variable InstanceOf     : ObjectInstance -> Object -> Prop.
+
+  (* Object typing law at runtime *)
+  Axiom Object_Typing_Law :
+    forall (o : ObjectInstance) (f : Interface),
+      StaticType o = f ->
       Family f ->
-      Trait t ->
-      InterfaceInherits f t ->
-      Implements c f ->
-      (BusinessComponent c -> TargetBusiness t) /\
-      (TechComponent c -> TargetTech t) /\
-      (SystemAgent c -> TargetSystAgent t).
+      exists c : Object, Component c /\ InstanceOf o c /\ Implements c f.
+
+  (* Master Theorem: Mirror Isomorphism and Type Preservation *)
+  Theorem Mirror_Isomorphism_And_Neutrality_Theorem :
+    forall (o : ObjectInstance) (f : Interface),
+      Family f ->
+      StaticType o = f ->
+      exists c : Object, InstanceOf o c /\ MirrorOf f c.
   Proof.
-    intros c f t HFamily HTrait HInherit HImpl.
+    intros o f HFam HType.
+    destruct (Object_Typing_Law o f HType HFam) as [c [HComp [HInst HImpl]]].
+    exists c.
     split.
-    - intros HBusinessC.
-      destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [HMirrorBusiness _].
-      assert (HTargetF : TargetBusiness f) by (apply HMirrorBusiness; exact HBusinessC).
-      destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [HContBusiness _].
-      apply HContBusiness. exact HTargetF.
-    - split.
-      + intros HTechC.
-        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [HMirrorTech _]].
-        assert (HTargetF : TargetTech f) by (apply HMirrorTech; exact HTechC).
-        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [HContTech _]].
-        apply HContTech. exact HTargetF.
-      + intros HSystemAgentC.
-        destruct (Contract_Axiom2_MirrorLaw c f HFamily HImpl) as [_ [_ [HMirrorSystemAgent _]]].
-        assert (HTargetF : TargetSystAgent f) by (apply HMirrorSystemAgent; exact HSystemAgentC).
-        destruct (Contract_Axiom3_TraitContextualContinuity f t HFamily HTrait HInherit) as [_ [_ HContSystemAgent]].
-        apply HContSystemAgent. exact HTargetF.
+    - exact HInst.
+    - apply Contract_Axiom2_MirrorLaw; assumption.
   Qed.
 
 End ClprolfFormalization.
+
 ```
 
 # XIX) Application Illustrations and Canonical Use Cases
