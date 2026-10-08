@@ -1449,24 +1449,10 @@ Let $f \in F$ be a Family interface and $c \in C$ a concrete component. The pred
 
 $$\text{MirrorOf}(f, c) \iff \big( \text{Family}(f) \land \text{Implements}(c, f) \land \text{SamePublicMethods}(c, f) \land \text{SamePolarity}(f, c) \big)$$
 
-*Where $\text{SamePolarity}(f, c)$ guarantees perfect contextual alignment (Business, Technical, or System Agent) between the interface and the component.*
+where $\text{SamePolarity}(f, c)$ *guarantees perfect contextual alignment (Business, Technical, or System Agent) between the interface and the component.*
 
 ---
 
-
-### Definition of the Mirror Predicate
-
-We introduce the relational predicate:
-
-$$\text{MirrorOf}(f, c) \quad \text{or} \quad \text{MiroirDe}(f, c)$$
-
-* **Domain / Type:** $F \times C$ (Family Interfaces $\times$ Components)
-* **Meaning:** Family $f \in F$ is the exact mirror interface of component $c \in C$.
-* **Logical Definition:**
-
-$$\forall c \in C, \forall f \in F \; \Big( \text{MirrorOf}(f, c) \iff \big( \text{Family}(f) \land \text{Implements}(c, f) \land \text{SamePublicMethods}(c, f) \land \text{SamePolarity}(f, c) \big) \Big)$$
-
----
 
 ### Axiom 1 — Family Exclusivity
 

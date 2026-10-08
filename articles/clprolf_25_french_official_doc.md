@@ -1426,7 +1426,7 @@ Soit $f \in F$ une interface Famille et $c \in C$ un composant concret. Le préd
 
 $$\text{MiroirDe}(f, c) \iff \big( \text{Famille}(f) \land \text{Implemente}(c, f) \land \text{MemesMethodesPubliques}(c, f) \land \text{MemePolarite}(f, c) \big)$$
 
-*Où $\text{MemePolarite}(f, c)$ garantit la parfaite adéquation contextuelle (Métier, Technique ou Agent Système) entre l'interface et le composant.*
+où $\text{MemePolarite}(f, c)$ garantit la parfaite adéquation contextuelle (Métier, Technique ou Agent Système) entre l'interface et le composant.
 
 ---
 
