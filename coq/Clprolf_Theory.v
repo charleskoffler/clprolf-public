@@ -211,7 +211,7 @@ Section ClprolfFormalization.
   Variable InterfaceMethods : Interface -> Type.
 
   (* Surface identity relation between a component and its interface *)
-  Variable SameMethods : Object -> Interface -> Prop.
+  Variable SamePublicMethods : Object -> Interface -> Prop.
 
   (* Definition by Contextual Overloading (3 branches) *)
   Definition TargetBusiness (i : Interface) : Prop :=
@@ -230,7 +230,7 @@ Section ClprolfFormalization.
   Definition MirrorOf (f : Interface) (c : Object) : Prop :=
     Family f /\
     Implements c f /\
-    SameMethods c f /\
+    SamePublicMethods c f /\
     (BusinessComponent c <-> TargetBusiness f) /\
     (TechComponent c     <-> TargetTech f)     /\
     (SystemAgent c       <-> TargetSystAgent f).

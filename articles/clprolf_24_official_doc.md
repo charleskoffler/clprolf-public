@@ -1422,6 +1422,38 @@ $$\text{TargetSystAgent}(i) \triangleq \begin{cases} \text{SystAgentPolarity}(i)
 
 ## 2. Contract Theory Axioms and Mirror Predicate
 
+
+### **Definition — Contextual Polarity Predicate**
+
+Let $f \in F$ be a Family interface and $c \in C$ a concrete component. The predicate $\text{SamePolarity}(f, c)$ holds if and only if the application role of the component corresponds exactly to the contextual target of the family:
+
+$$\begin{aligned} \text{SamePolarity}(f, c) \iff \;& \big( \text{BusinessComponent}(c) \iff \text{TargetBusiness}(f) \big) \;\land \\ & \big( \text{TechComponent}(c) \iff \text{TargetTech}(f) \big) \;\land \\ & \big( \text{SystemAgent}(c) \iff \text{TargetSystemAgent}(f) \big) \end{aligned}$$
+
+---
+
+### **Definition — Signature Equivalence Predicate ($\text{SamePublicMethods}$)**
+
+Let $f \in F$ be a Family interface and $c \in C$ a concrete component. Let $\mathcal{M}_{\text{pub}}(x)$ be the function returning the set of public method signatures (names, return types, and parameter arity) of an element $x$.
+
+The predicate $\text{SamePublicMethods}(c, f)$ holds if and only if the component provides a public interface strictly identical to the one declared by its mirror family:
+
+$$\text{SamePublicMethods}(c, f) \iff \Big( \mathcal{M}_{\text{pub}}(f) \subseteq \mathcal{M}_{\text{pub}}(c) \Big)$$
+
+*Remark: In strict OOP, the implementation guaranteed by subtyping requires that the entire set of public methods of the family $f$ be fully supported by the concrete class $c$, without any alteration of signatures.*
+
+---
+
+### **Definition — Mirror Predicate ($\text{MirrorOf}$)**
+
+Let $f \in F$ be a Family interface and $c \in C$ a concrete component. The predicate $\text{MirrorOf}(f, c)$ establishes formal isomorphism and perfect neutrality of nature between the family and its implementation:
+
+$$\text{MirrorOf}(f, c) \iff \big( \text{Family}(f) \land \text{Implements}(c, f) \land \text{SamePublicMethods}(c, f) \land \text{SamePolarity}(f, c) \big)$$
+
+*Where $\text{SamePolarity}(f, c)$ guarantees perfect contextual alignment (Business, Technical, or System Agent) between the interface and the component.*
+
+---
+
+
 ### Definition of the Mirror Predicate
 
 We introduce the relational predicate:
@@ -1432,7 +1464,7 @@ $$\text{MirrorOf}(f, c) \quad \text{or} \quad \text{MiroirDe}(f, c)$$
 * **Meaning:** Family $f \in F$ is the exact mirror interface of component $c \in C$.
 * **Logical Definition:**
 
-$$\forall c \in C, \forall f \in F \; \Big( \text{MirrorOf}(f, c) \iff \big( \text{Family}(f) \land \text{Implements}(c, f) \land \text{SameMethods}(c, f) \land \text{SamePolarity}(f, c) \big) \Big)$$
+$$\forall c \in C, \forall f \in F \; \Big( \text{MirrorOf}(f, c) \iff \big( \text{Family}(f) \land \text{Implements}(c, f) \land \text{SamePublicMethods}(c, f) \land \text{SamePolarity}(f, c) \big) \Big)$$
 
 ---
 
@@ -1448,7 +1480,7 @@ $$\forall f \in F \; \Big( (\text{TargetBusiness}(f) \land \neg \text{TargetTech
 
 A component can only implement a family whose polarity is strictly isomorphic to its own nature:
 
-$$\forall c \in C, \forall f \in F \; \Big( \text{MirrorOf}(f, c) \implies \begin{cases} \text{BusinessComponent}(c) \iff \text{TargetBusiness}(f) \\ \text{TechComponent}(c) \iff \text{TargetTech}(f) \\ \text{SystemAgent}(c) \iff \text{TargetSystAgent}(f) \end{cases} \Big)$$
+$$\forall c \in C, \forall f \in F \quad \Big( \text{Family}(f) \land \text{Implements}(c, f) \implies \text{MirrorOf}(f, c) \Big)$$
 
 ---
 
@@ -1476,6 +1508,7 @@ $$\forall t \in T, \forall i \in I \; \Big( \text{Inherits}(t, i) \implies \text
 
 
 ## 3. Mirror Isomorphism and Neutrality Theorem
+
 
 > **Statement:** Any object $o$ manipulated via its mirror family $f$ instantiates a concrete component $c$ whose type, methods, and role (Agent, Worker, System) are strictly preserved through the abstraction.
 
@@ -1713,7 +1746,7 @@ Section ClprolfFormalization.
   Variable InterfaceMethods : Interface -> Type.
 
   (* Surface identity relation between a component and its interface *)
-  Variable SameMethods : Object -> Interface -> Prop.
+  Variable SamePublicMethods : Object -> Interface -> Prop.
 
   (* Definition by Contextual Overloading (3 branches) *)
   Definition TargetBusiness (i : Interface) : Prop :=
@@ -1732,7 +1765,7 @@ Section ClprolfFormalization.
   Definition MirrorOf (f : Interface) (c : Object) : Prop :=
     Family f /\
     Implements c f /\
-    SameMethods c f /\
+    SamePublicMethods c f /\
     (BusinessComponent c <-> TargetBusiness f) /\
     (TechComponent c     <-> TargetTech f)     /\
     (SystemAgent c       <-> TargetSystAgent f).

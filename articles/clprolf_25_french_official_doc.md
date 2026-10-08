@@ -1399,6 +1399,38 @@ $$\text{TargetAgentSyst}(i) \triangleq \begin{cases} \text{PolariteAgentSyst}(i)
 
 ## 2. Axiomes de la théorie des contrats
 
+
+### **Définition — Prédicat de Polarité Contextuelle**
+
+Soit $f \in F$ une interface Famille et $c \in C$ un composant concret. Le prédicat $\text{MemePolarite}(f, c)$ est vrai si et seulement si le rôle applicatif du composant correspond exactement à la cible contextuelle de la famille :
+
+$$\begin{aligned} \text{MemePolarite}(f, c) \iff \;& \big( \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \big) \;\land \\ & \big( \text{ComposantTech}(c) \iff \text{TargetTech}(f) \big) \;\land \\ & \big( \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \big) \end{aligned}$$
+
+---
+
+### **Définition — Prédicat d'Équivalence des Signatures ($\text{MemesMethodesPubliques}$)**
+
+Soit $f \in F$ une interface Famille et $c \in C$ un composant concret. Soit $\mathcal{M}_{\text{pub}}(x)$ la fonction renvoyant l'ensemble des signatures de méthodes publiques (noms, types de retour et arité des paramètres) d'un élément $x$.
+
+Le prédicat $\text{MemesMethodesPubliques}(c, f)$ est vrai si et meule si le composant offre une interface publique strictement identique à celle déclarée par sa famille miroir :
+
+$$\text{MemesMethodesPubliques}(c, f) \iff \Big( \mathcal{M}_{\text{pub}}(f) \subseteq \mathcal{M}_{\text{pub}}(c) \Big)$$
+
+*Remarque : En POO stricte, l'implémentation garantie par la sous-typage impose que l'ensemble des méthodes publiques de la famille $f$ soit intégralement porté par la classe concrète $c$, sans altération des signatures.*
+
+---
+
+### **Définition — Prédicat Miroir ($\text{MiroirDe}$)**
+
+Soit $f \in F$ une interface Famille et $c \in C$ un composant concret. Le prédicat $\text{MiroirDe}(f, c)$ établit l'isomorphisme formel et la parfaite neutralité de nature entre la famille et son implémentation :
+
+$$\text{MiroirDe}(f, c) \iff \big( \text{Famille}(f) \land \text{Implemente}(c, f) \land \text{MemesMethodesPubliques}(c, f) \land \text{MemePolarite}(f, c) \big)$$
+
+*Où $\text{MemePolarite}(f, c)$ garantit la parfaite adéquation contextuelle (Métier, Technique ou Agent Système) entre l'interface et le composant.*
+
+---
+
+
 ### Axiome 1 — Exclusivité des familles
 
 Toute famille $f \in F$ possède une polarité stricte et mutuellement exclusive parmi les trois rôles cibles :
@@ -1411,7 +1443,7 @@ $$\forall f \in F \; \Big( (\text{TargetMetier}(f) \land \neg \text{TargetTech}(
 
 Un composant ne peut implémenter qu'une famille dont la polarité est strictement isomorphe à sa propre nature :
 
-$$\forall c \in C, \forall f \in F \quad \Big( \text{Implemente}(c, f) \implies \begin{cases} \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \\ \text{ComposantTech}(c) \iff \text{TargetTech}(f) \\ \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \\ \mathbf{\text{MemesMethodes}(c, f)} \end{cases} \Big)$$
+$$\forall c \in C, \forall f \in F \quad \Big( \text{Famille}(f) \land \text{Implemente}(c, f) \implies \text{MiroirDe}(f, c) \Big)$$
 
 ---
 
@@ -1444,6 +1476,7 @@ $$\forall t \in T, \forall i \in I \; \Big( \text{Herite}(t, i) \implies \text{T
 > **Énoncé :** Tout objet $o$ manipulé via sa famille miroir $f$ instancie un composant concret $c$ dont le type, les méthodes et le rôle (Agent, Worker, Système) sont strictement préservés à travers l'abstraction.
 
 $$\forall o, \forall f \in F \; \Big( \text{TypeStatique}(o) = f \implies \exists c \in C \; \big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f, c) \big) \Big)$$
+
 
 ### Démonstration synthétique
 
@@ -1674,7 +1707,7 @@ Section ClprolfFormalization.
   Variable MethodesInterface : Interface -> Type.
   
   (* Relation d'identité de signature entre un composant et son interface *)
-  Variable MemesMethodes : Object -> Interface -> Prop.
+  Variable MemesMethodesPubliques : Object -> Interface -> Prop.
 
   (* Définition par Surcharge Contextuelle (3 branches) *)
   Definition TargetMetier (i : Interface) : Prop :=
@@ -1693,7 +1726,7 @@ Section ClprolfFormalization.
   Definition MiroirDe (f : Interface) (c : Object) : Prop :=
     Famille f /\
     Implemente c f /\
-    MemesMethodes c f /\
+    MemesMethodesPubliques c f /\
     (ComposantMetier c <-> TargetMetier f) /\
     (ComposantTech c   <-> TargetTech f)   /\
     (AgentSysteme c    <-> TargetAgentSyst f).
