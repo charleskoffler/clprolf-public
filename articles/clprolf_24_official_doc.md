@@ -1427,7 +1427,7 @@ $$\text{TargetSystAgent}(i) \triangleq \begin{cases} \text{SystAgentPolarity}(i)
 
 Let $f \in F$ be a Family interface and $c \in C$ a concrete component. The predicate $\text{SamePolarity}(f, c)$ holds if and only if the application role of the component corresponds exactly to the contextual target of the family:
 
-$$\begin{aligned} \text{SamePolarity}(f, c) \iff \;& \big( \text{BusinessComponent}(c) \iff \text{TargetBusiness}(f) \big) \;\land \\ & \big( \text{TechComponent}(c) \iff \text{TargetTech}(f) \big) \;\land \\ & \big( \text{SystemAgent}(c) \iff \text{TargetSystemAgent}(f) \big) \end{aligned}$$
+$$\begin{aligned} \text{SamePolarity}(f, c) \iff & \big( \text{BusinessComponent}(c) \iff \text{TargetBusiness}(f) \big) \land \\ & \big( \text{TechComponent}(c) \iff \text{TargetTech}(f) \big) \land \\ & \big( \text{SystemAgent}(c) \iff \text{TargetSystemAgent}(f) \big) \end{aligned}$$
 
 ---
 

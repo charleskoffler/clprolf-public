@@ -1404,7 +1404,7 @@ $$\text{TargetAgentSyst}(i) \triangleq \begin{cases} \text{PolariteAgentSyst}(i)
 
 Soit $f \in F$ une interface Famille et $c \in C$ un composant concret. Le prédicat $\text{MemePolarite}(f, c)$ est vrai si et seulement si le rôle applicatif du composant correspond exactement à la cible contextuelle de la famille :
 
-$$\begin{aligned} \text{MemePolarite}(f, c) \iff \;& \big( \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \big) \;\land \\ & \big( \text{ComposantTech}(c) \iff \text{TargetTech}(f) \big) \;\land \\ & \big( \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \big) \end{aligned}$$
+$$\begin{aligned} \text{MemePolarite}(f, c) \iff & \big( \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \big) \land \\ & \big( \text{ComposantTech}(c) \iff \text{TargetTech}(f) \big) \land \\ & \big( \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \big) \end{aligned}$$
 
 ---
 
