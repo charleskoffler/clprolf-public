@@ -1352,7 +1352,7 @@ $$\forall A \in \mathcal{A}, \quad \text{ConformeAxiomes}(A) \iff \text{Conforme
 | **Axiome 1 (Section XVII)** — Typage obligatoire des interfaces | `clprolf_interfaces_must_have_target_role` | Force `@ClFamily` à avoir exactement un rôle cible et `@ClTrait` au moins un. |
 | **Axiome 3 (Section XVII)** — Héritage de trait par une interface | `inheriting_interface_role_must_match_trait_interface_target_role` | Garantit la compatibilité du rôle lors de l'héritage d'un trait par une interface. |
 | **Axiome 1 (Section XVII)** — Héritage entre familles | `family_interface_target_role_must_match_inherited_family_interface` | Assure la préservation de domaine lors de l'extension d'une `@ClFamily` par une autre. |
-| **Règle stricte 1 (Optionnelle)** — Qualification exhaustive des classes | `optional_all_classes_should_have_clprolf_role` | Exige que toute classe concrète possède un rôle (`@ClAgent`, `@ClWorker`, `@ClDraft`). |
+| **Axiome 4 (Section XVI)** — Qualification exhaustive des classes | `optional_all_classes_should_have_clprolf_role` | Exige que toute classe concrète possède un rôle (`@ClAgent`, `@ClWorker`, `@ClDraft`). |
 | **Règle stricte 2 (Optionnelle)** — Qualification exhaustive des interfaces | `optional_all_interfaces_should_have_clprolf_role` | Exige que toute interface possède un rôle (`@ClFamily`, `@ClTrait`, `@ClFree`). |
 | **Axiome 4 (Section XVII)** — Interdiction des traits directs | `optional_class_should_not_implement_trait_directly` | En mode strict, interdit l'implémentation directe d'un `@ClTrait` par une classe. |
 | **Axiome 4 (Section XVII)** — Unicité de la famille miroir | `optional_class_must_implement_only_one_family_interface` | En mode strict, garantit qu'une classe n'implémente qu'une seule `@ClFamily`. |
@@ -1463,12 +1463,13 @@ $$\forall f \in F, \forall t \in T \; \Big( \text{HeriteStar}(f, t) \implies \bi
 
 ---
 
-### **Axiome 4 — Unicité de la famille miroir et interdiction des traits directs**
 
-Chaque classe $c \in C$ implémente au plus une seule famille $f \in F$, et il lui est strictement interdit d'implémenter directement un trait $t \in T$ quel qu'il soit :
+### **Axiome 4 — Unicité de la Famille Miroir et Interdiction des Traits Directs**
 
-$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implemente}(c, f) \;\land\; \big( \forall t \in T \quad \neg \text{Implemente}(c, t) \big) \Big)$$
 
+ Chaque classe $c \in C$ implémente au plus une seule famille $f \in F$ — **ce qui implique l'existence d'un unique miroir pour chaque composant** —, et il lui est strictement interdit d'implémenter directement un trait $t \in T$ quel qu'il soit :
+ $$\forall c \in C, \quad \Big( \exists! f \in F, \ \text{MiroirDe}(f, c) \Big) \;\land\; \Big( \forall t \in T, \ \neg \text{Implemente}(c, t) \Big)$$
+ 
 ---
 
 ### **Axiome 5 — Invariance des traits (Interdiction d'extension de famille)**
@@ -1540,6 +1541,7 @@ Cette démarche de vérification mécanique (*machine-checked*) permet de passer
 From Stdlib Require Import Lists.List.
 Import ListNotations.
 Require Import StdlibRelations.Relation_Operators.
+Import Relation_Operators.
 
 Section ClprolfFormalization.
 
@@ -1828,7 +1830,8 @@ Section ClprolfFormalization.
       (TargetTech f -> TargetTech t) /\
       (TargetAgentSyst f -> TargetAgentSyst t).
 
-  (* Axiome 4 : Unicité du miroir et interdiction des traits directs *)
+  (* Axiome 4 : Unicité de la famille miroir et interdiction des traits directs
+     (Garantit qu'il existe un unique miroir f pour tout composant c) *)
   Axiom Contract_Axiom4_MirrorUniquenessAndNoDirectTrait :
     forall c : Object,
       Composant c ->

@@ -1,6 +1,8 @@
+
 From Stdlib Require Import Lists.List.
 Import ListNotations.
 Require Import Stdlib.Relations.Relation_Operators.
+Import Relation_Operators.
 
 Section ClprolfFormalization.
 
@@ -246,7 +248,8 @@ Section ClprolfFormalization.
       (TargetTech f -> TargetTech t) /\
       (TargetSystAgent f -> TargetSystAgent t).
 
-  (* Axiom 4: Mirror Family Uniqueness and Direct Trait Prohibition *)
+(* Axiom 4: Mirror Family Uniqueness and Direct Trait Prohibition
+     (Guarantees that a unique mirror f exists for every component c) *)
   Axiom Contract_Axiom4_MirrorUniquenessAndNoDirectTrait :
     forall c : Object,
       Component c ->

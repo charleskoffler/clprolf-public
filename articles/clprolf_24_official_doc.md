@@ -1376,7 +1376,7 @@ $$\forall A \in \mathcal{A}, \quad \text{AxiomCompliant}(A) \iff \text{CheckerCo
 | **Axiom 1 (Section XVII)** — Mandatory Interface Typing | `clprolf_interfaces_must_have_target_role` | Forces `@ClFamily` to have exactly one target role and `@ClTrait` at least one. |
 | **Axiom 3 (Section XVII)** — Trait Inheritance by Interface | `inheriting_interface_role_must_match_trait_interface_target_role` | Guarantees role compatibility when an interface inherits a trait. |
 | **Axiom 1 (Section XVII)** — Inter-Family Inheritance | `family_interface_target_role_must_match_inherited_family_interface` | Ensures domain preservation when extending a `@ClFamily` with another. |
-| **Strict Rule 1 (Optional)** — Exhaustive Class Qualification | `optional_all_classes_should_have_clprolf_role` | Requires all concrete classes to possess a role (`@ClAgent`, `@ClWorker`, `@ClDraft`). |
+| **Axiom 4 (Section XVI)** — Exhaustive Class Qualification | `optional_all_classes_should_have_clprolf_role` | Requires all concrete classes to possess a role (`@ClAgent`, `@ClWorker`, `@ClDraft`). |
 | **Strict Rule 2 (Optional)** — Exhaustive Interface Qualification | `optional_all_interfaces_should_have_clprolf_role` | Requires all interfaces to possess a role (`@ClFamily`, `@ClTrait`, `@ClFree`). |
 | **Axiom 4 (Section XVII)** — Direct Trait Prohibition | `optional_class_should_not_implement_trait_directly` | In strict mode, forbids direct implementation of `@ClTrait` by a class. |
 | **Axiom 4 (Section XVII)** — Mirror Family Uniqueness | `optional_class_must_implement_only_one_family_interface` | In strict mode, guarantees a class implements at most one `@ClFamily`. |
@@ -1481,13 +1481,13 @@ $$\forall f \in F, \forall t \in T \; \Big( \text{InheritsStar}(f, t) \implies \
 
 ---
 
+
 ### **Axiom 4 — Mirror Family Uniqueness and Direct Trait Prohibition**
 
-Every class $c \in C$ implements at most one family $f \in F$, and is strictly forbidden from directly implementing any trait $t \in T$:
+Every class $c \in C$ implements at most one single family $f \in F$ — **thus guaranteeing the existence of a unique mirror for each component** —, and is strictly forbidden from directly implementing any trait $t \in T$:
 
-$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implements}(c, f) \;\land\; \big( \forall t \in T \quad \neg \text{Implements}(c, t) \big) \Big)$$
+$$\forall c \in C, \quad \Big( \exists! f \in F, \ \text{MirrorOf}(f, c) \Big) \;\land\; \Big( \forall t \in T, \ \neg \text{Implements}(c, t) \Big)$$
 
----
 
 ### **Axiom 5 — Trait Invariance (Prohibition of Family Extension)**
 
@@ -1559,7 +1559,8 @@ This machine-checked verification approach allows moving from a paper proof to a
 
 From Stdlib Require Import Lists.List.
 Import ListNotations.
-Require Import StdlibRelations.Relation_Operators.
+Require Import Stdlib.Relations.Relation_Operators.
+Import Relation_Operators.
 
 Section ClprolfFormalization.
 
@@ -1805,7 +1806,8 @@ Section ClprolfFormalization.
       (TargetTech f -> TargetTech t) /\
       (TargetSystAgent f -> TargetSystAgent t).
 
-  (* Axiom 4: Mirror Family Uniqueness and Direct Trait Prohibition *)
+(* Axiom 4: Mirror Family Uniqueness and Direct Trait Prohibition
+     (Guarantees that a unique mirror f exists for every component c) *)
   Axiom Contract_Axiom4_MirrorUniquenessAndNoDirectTrait :
     forall c : Object,
       Component c ->
