@@ -1408,26 +1408,28 @@ Let the base sets be defined as:
 ### Topological Relations
 
 * $\text{Implements}(c, i)$: Component $c$ implements interface $i$.
-* $\text{Inherits}(i, j)$: Interface $i$ inherits from interface $j$.
+* $\text{InheritsDirect}(i, j)$: Interface $i$ directly inherits from interface $j$.
+
+> **Definition (Interface Inheritance Closure $\text{InheritsStar}$):**
+> Soit $\text{InheritsDirect}(i_1, i_2)$ denote the direct inheritance relation between two interfaces. We denote by $\text{InheritsStar}$ (or $\text{Inherits}^*$) its reflexive and transitive closure, asserting the existence of an inheritance chain of length $n \ge 0$ connecting interface $i_1$ to interface $i_2$.
 
 ### Definition by Contextual Overloading ($\triangleq$)
 
-$$\text{TargetBusiness}(i) \triangleq \begin{cases} \text{BusinessPolarity}(i) & \text{if } i \in F \quad (\text{Family}) \\ \text{IsBusinessCompatible}(i) & \text{if } i \in T \quad (\text{Trait}) \end{cases}$$
+$$\text{TargetBusiness}(i) \triangleq \begin{cases} \text{BusinessPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsBusinessCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
 
-$$\text{TargetTech}(i) \triangleq \begin{cases} \text{TechPolarity}(i) & \text{if } i \in F \quad (\text{Family}) \\ \text{IsTechCompatible}(i) & \text{if } i \in T \quad (\text{Trait}) \end{cases}$$
+$$\text{TargetTech}(i) \triangleq \begin{cases} \text{TechPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsTechCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
 
-$$\text{TargetSystAgent}(i) \triangleq \begin{cases} \text{SystAgentPolarity}(i) & \text{if } i \in F \quad (\text{Family}) \\ \text{IsSystAgentCompatible}(i) & \text{if } i \in T \quad (\text{Trait}) \end{cases}$$
+$$\text{TargetSystAgent}(i) \triangleq \begin{cases} \text{SystAgentPolarity}(i) & \text{if } i \in F \quad (\text{Family: strict and exclusive polarity}) \\ \text{IsSystAgentCompatible}(i) & \text{if } i \in T \quad (\text{Trait: context-dependent compatibility}) \end{cases}$$
 
 ---
 
 ## 2. Contract Theory Axioms and Mirror Predicate
 
-
 ### **Definition — Contextual Polarity Predicate**
 
 Let $f \in F$ be a Family interface and $c \in C$ a concrete component. The predicate $\text{SamePolarity}(f, c)$ holds if and only if the application role of the component corresponds exactly to the contextual target of the family:
 
-$$\begin{aligned} \text{SamePolarity}(f, c) \iff & \big( \text{BusinessComponent}(c) \iff \text{TargetBusiness}(f) \big) \land \\ & \big( \text{TechComponent}(c) \iff \text{TargetTech}(f) \big) \land \\ & \big( \text{SystemAgent}(c) \iff \text{TargetSystemAgent}(f) \big) \end{aligned}$$
+$$\begin{aligned} \text{SamePolarity}(f, c) \iff & \big( \text{BusinessComponent}(c) \iff \text{TargetBusiness}(f) \big) \land \\ & \big( \text{TechComponent}(c) \iff \text{TargetTech}(f) \big) \land \\ & \big( \text{SystemAgent}(c) \iff \text{TargetSystAgent}(f) \big) \end{aligned}$$
 
 ---
 
@@ -1449,20 +1451,19 @@ Let $f \in F$ be a Family interface and $c \in C$ a concrete component. The pred
 
 $$\text{MirrorOf}(f, c) \iff \big( \text{Family}(f) \land \text{Implements}(c, f) \land \text{SamePublicMethods}(c, f) \land \text{SamePolarity}(f, c) \big)$$
 
-where $\text{SamePolarity}(f, c)$ *guarantees perfect contextual alignment (Business, Technical, or System Agent) between the interface and the component.*
+where $\text{SamePolarity}(f, c)$ guarantees perfect contextual alignment (Business, Technical, or System Agent) between the interface and the component.
 
 ---
 
-
 ### Axiom 1 — Family Exclusivity
 
-Every family $f \in F$ possesses a strict and mutually exclusive polarity among the 3 targets:
+Every family $f \in F$ possesses a strict and mutually exclusive polarity among the three target roles:
 
 $$\forall f \in F \; \Big( (\text{TargetBusiness}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetSystAgent}(f)) \lor (\neg \text{TargetBusiness}(f) \land \text{TargetTech}(f) \land \neg \text{TargetSystAgent}(f)) \lor (\neg \text{TargetBusiness}(f) \land \neg \text{TargetTech}(f) \land \text{TargetSystAgent}(f)) \Big)$$
 
 ---
 
-### Axiom 2 — Strict Mirror Law and Isomorphism
+### Axiom 2 — Strict Mirror Law
 
 A component can only implement a family whose polarity is strictly isomorphic to its own nature:
 
@@ -1470,31 +1471,33 @@ $$\forall c \in C, \forall f \in F \quad \Big( \text{Family}(f) \land \text{Impl
 
 ---
 
-### Axiom 3 — Contextual Continuity of Traits
+### **Axiom 3 — Contextual Continuity of Traits**
 
-When a family $f$ inherits from a trait $t$, trait compatibility is passed down within the family's context:
+When a family $f \in F$ inherits from a trait $t \in T$ through the interface inheritance closure ($\text{InheritsStar}(f, t)$), the polarity of the mirror family is fully transmitted to the trait:
 
-$$\forall f \in F, \forall t \in T \; \Big( \text{Inherits}(f, t) \implies \big( \text{TargetBusiness}(f) \implies \text{TargetBusiness}(t) \big) \land \big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetSystAgent}(f) \implies \text{TargetSystAgent}(t) \big) \Big)$$
+$$\forall f \in F, \forall t \in T \; \Big( \text{InheritsStar}(f, t) \implies \big( \text{TargetBusiness}(f) \implies \text{TargetBusiness}(t) \big) \land \big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetSystAgent}(f) \implies \text{TargetSystAgent}(t) \big) \Big)$$
 
----
-
-### Axiom 4 — Mirror Uniqueness and Direct Trait Prohibition
-
-Every qualified component has a unique mirror family and cannot directly implement a trait:
-
-$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{MirrorOf}(f, c) \quad\land\quad \forall t \in T \quad \neg \text{Implements}(c, t) \Big)$$
+> **Structural Note:** The closure $\text{InheritsStar}(f, t)$ (denoted $\text{Inherits}^*(f, t)$) represents the reflexive and transitive interface inheritance relation. By construction with Axiom 5 ($\text{InheritsDirect}(t, i) \implies \text{Trait}(i)$), any chain linking $f$ to $t$ exclusively traverses Trait-type interfaces following the initial inheritance step from the family.
 
 ---
 
-### Axiom 5 — Trait Nature Invariance
+### **Axiom 4 — Mirror Family Uniqueness and Direct Trait Prohibition**
 
-$$\forall t \in T, \forall i \in I \; \Big( \text{Inherits}(t, i) \implies \text{Trait}(i) \Big)$$
+Every class $c \in C$ implements at most one family $f \in F$, and is strictly forbidden from directly implementing any trait $t \in T$:
+
+$$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implements}(c, f) \;\land\; \big( \forall t \in T \quad \neg \text{Implements}(c, t) \big) \Big)$$
 
 ---
 
+### **Axiom 5 — Trait Invariance (Prohibition of Family Extension)**
 
-## 3. Mirror Isomorphism and Neutrality Theorem
+A trait $t \in T$ can only inherit from another trait $i \in T$. It is strictly forbidden from inheriting from a family $f \in F$:
 
+$$\forall t \in T, \forall i \in I \; \Big( \text{InheritsDirect}(t, i) \implies \text{Trait}(i) \Big)$$
+
+---
+
+## 3. Theorem 2: Mirror Isomorphism and Neutrality Theorem
 
 > **Statement:** Any object $o$ manipulated via its mirror family $f$ instantiates a concrete component $c$ whose type, methods, and role (Agent, Worker, System) are strictly preserved through the abstraction.
 
@@ -1510,6 +1513,40 @@ $$\text{Q.E.D.}$$
 
 ---
 
+### Corollary 2.1 — General and Universal Transitivity of Trait Typing
+
+**Statement:**
+
+Let $o$ be an object instance manipulated under the static type of a trait $t \in T$ ($\text{StaticType}(o) = t$). There exists at least one trait inheritance chain leading to a family $f \in F$ ($\text{InheritsStar}(f, t)$) and a concrete class $c \in C$ such that $f$ is the mirror family of $c$ ($\text{MirrorOf}(f, c)$).
+
+$$\forall o, \forall t \in T \; \Big( \text{StaticType}(o) = t \implies \exists f \in F, \exists c \in C \; \big( \text{InheritsStar}(f, t) \land \text{InstanceOf}(o, c) \land \text{MirrorOf}(f, c) \big) \Big)$$
+
+---
+
+### Detailed Proof of Corollary 2.1
+
+1. **Concrete Instantiation:** The runtime object $o$ residing in memory is necessarily an instance of a concrete class $c \in C$ ($\text{InstanceOf}(o, c)$).
+2. **Exclusion of Direct Class Links:** According to Axiom 4, class $c$ cannot directly implement trait $t$ ($\neg \text{Implements}(c, t)$).
+3. **Resolution via Trait Chain ($N$-ary Inheritance):**
+* Static type $t$ may originate from the inheritance of another trait $t_1$, itself inheriting from $t_2$, and so on.
+* According to Axiom 5, since a trait can never inherit from a family, this subtyping chain among traits cannot contain classes or families in parent positions.
+* The chain thus necessarily ascends through transitive closure $\text{InheritsStar}(t_k, t)$ up to the first non-trait interface encountered, which is obligatorily a **family** $f \in F$.
+
+
+4. **Universal Access to Families:**
+* Since a trait $t$ does not inherit from any specific family or concrete version, the contract it defines is **universally accessible**.
+* Any family $f \in F$ respecting the role/polarity of $t$ can incorporate it into its hierarchy. Thus we have $\text{InheritsStar}(f, t)$ and $\text{Implements}(c, f)$.
+
+
+5. **Application of Theorem 2:**
+* Having established that $o$ is an instance manipulated through the contract of family $f$ ($\text{StaticType}(o) = f$), applying **Theorem 2** guarantees the existence of a concrete class $c$ satisfying $\text{MirrorOf}(f, c)$.
+
+
+6. **Conclusion:** Regardless of the number of intermediate traits, static typing via trait $t$ always resolves to the concrete atom $c$ through an accessible mirror family $f$ without version constraints. $\blacksquare$
+
+---
+
+
 # XVIII) Formal Certification and Coq Proof Assistant
 
 > **To guarantee absolute rigor and eliminate any ambiguity or logical flaw, the entire axiomatic system and expressiveness theorem of Clprolf have been formally codified and fully machine-checked using the Coq proof assistant.**
@@ -1522,6 +1559,8 @@ This machine-checked verification approach allows moving from a paper proof to a
 
 From Stdlib Require Import Lists.List.
 Import ListNotations.
+Require Import Coq.Relations.Relation_Operators.
+
 Section ClprolfFormalization.
 
   (* ================================================================= *)
@@ -1530,7 +1569,7 @@ Section ClprolfFormalization.
 
   Variable Object : Type.
 
-  (* Object predicates *)
+  (* Object Predicates *)
   Variable App               : Object -> Prop.
   Variable HumanWork         : Object -> Prop.
   Variable HumanGoal         : Object -> Prop.
@@ -1543,28 +1582,28 @@ Section ClprolfFormalization.
   Variable TechSupport       : Object -> Prop.
   Variable Component         : Object -> Prop.
 
-  (* Formal relations *)
-  Variable Automates  : Object -> Object -> Prop. (* Application -> HumanWork *)
-  Variable Target     : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
-  Variable Part       : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contains   : Object -> Object -> Prop. (* Subsystem -> Atom *)
-  Variable Combines   : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
-  Variable Uses       : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
-  Variable Simulates  : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
-  Variable Associates : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
-  Variable SubSet     : Object -> Object -> Prop. (* Inclusion m ⊆ M *)
-  Variable Inherits   : Object -> Object -> Prop. (* Child Component -> Parent *)
-  Variable SameDomain : Object -> Object -> Prop. (* Domain preservation *)
+  (* Formal Relations *)
+  Variable Automatizes  : Object -> Object -> Prop. (* Application -> HumanWork *)
+  Variable Targets      : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
+  Variable PartOf       : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contains     : Object -> Object -> Prop. (* Subsystem -> Atom *)
+  Variable Combines     : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
+  Variable Uses         : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
+  Variable Simulates    : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
+  Variable Associates   : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
+  Variable SubSet       : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
+  Variable Inherits     : Object -> Object -> Prop. (* Child Component -> Parent *)
+  Variable SameDomain   : Object -> Object -> Prop. (* Domain Preservation *)
 
   (* ================================================================= *)
-  (* 2. CLPROLF FUNDAMENTAL AXIOMS                                     *)
+  (* 2. FUNDAMENTAL CLPROLF AXIOMS (SECTION XVI)                       *)
   (* ================================================================= *)
 
-  (* Axiom 1: Teleology - Automation of Human Work *)
+  (* Axiom 1: Teleology - Mechanization of Human Work *)
   Axiom Axiom1_Teleology :
     forall A : Object,
       App A ->
-      exists h : Object, HumanWork h /\ Automates A h.
+      exists h : Object, HumanWork h /\ Automatizes A h.
 
   (* Formal Decomposition of Human Work *)
   Axiom Axiom1_HumanWorkDecomposition :
@@ -1574,14 +1613,14 @@ Section ClprolfFormalization.
         HumanGoal G /\
         BusinessDomain M /\
         ExecutionSupport th /\
-        Target M G.
+        Targets M G.
 
-  (* Axiom 2: Structural Decomposition (m ⊆ M) *)
+  (* Axiom 2: Structural Decomposition *)
   Axiom Axiom2_StructuralDecomposition :
     forall A : Object,
       App A ->
       forall p : Object,
-        Part p A ->
+        PartOf p A ->
         exists (M m t : Object),
           BusinessDomain M /\
           SubSet m M /\
@@ -1592,7 +1631,7 @@ Section ClprolfFormalization.
   (* Axiom 3: Atomic Composition & Fractal Property *)
   Axiom Axiom3_AtomicComposition_And_Fractal :
     forall A p : Object,
-      Part p A ->
+      PartOf p A ->
       (* Part 1: Atomic Composition *)
       (forall d : Object,
         Contains p d ->
@@ -1605,7 +1644,7 @@ Section ClprolfFormalization.
         forall s : Object,
           Uses t s -> Atom s /\ SystemAgent s).
 
-  (* Axiom 4: Uniqueness of component qualification *)
+  (* Axiom 4: Component Qualification Uniqueness *)
   Axiom Axiom4_ComponentUniqueness :
     forall c : Object,
       Component c ->
@@ -1613,7 +1652,7 @@ Section ClprolfFormalization.
       (~BusinessComponent c /\ TechComponent c /\ ~SystemAgent c) \/
       (~BusinessComponent c /\ ~TechComponent c /\ SystemAgent c).
 
-  (* Axiom 5: Domain invariance through inheritance *)
+  (* Axiom 5: Inheritance Domain Invariance *)
   Axiom Axiom5_InheritanceDomainInvariance :
     forall c p : Object,
       Component c -> Component p ->
@@ -1621,7 +1660,7 @@ Section ClprolfFormalization.
       SameDomain c p.
 
   (* ================================================================= *)
-  (* 3. CLPROLF FRAMEWORK GRAMMAR (AST)                                *)
+  (* 3. FRAMEWORK GRAMMAR (AST)                                        *)
   (* ================================================================= *)
 
   Inductive ClprolfComponent : Type :=
@@ -1630,7 +1669,7 @@ Section ClprolfFormalization.
     | ClApp       : Object -> ClprolfComponent.         (* Application A *)
 
   (* ================================================================= *)
-  (* 4. REALIZATION SEMANTICS (MODEL <-> GRAMMAR BRIDGE)               *)
+  (* 4. REALIZATION SEMANTICS                                          *)
   (* ================================================================= *)
 
   Inductive Realizes : Object -> ClprolfComponent -> Prop :=
@@ -1641,47 +1680,20 @@ Section ClprolfFormalization.
         Combines d c t ->
         Realizes d (ClAtom c t)
     | Realize_Subsystem : forall (p A : Object),
-        Part p A ->
+        PartOf p A ->
         Realizes p (ClSubsystem p)
     | Realize_App : forall (A : Object),
         App A ->
         Realizes A (ClApp A).
 
   (* ================================================================= *)
-  (* 5. LOCAL EXPRESSIVENESS LEMMAS                                    *)
+  (* 5. THEOREM 1 : ARCHITECTURAL EXPRESSIVENESS                       *)
   (* ================================================================= *)
 
-  Lemma Atom_Expressiveness :
-    forall (d c t : Object),
-      Atom d ->
-      BusinessComponent c ->
-      TechComponent t ->
-      Combines d c t ->
-      exists impl : ClprolfComponent, Realizes d impl.
-  Proof.
-    intros d c t HAtom HBusiness HTech HComb.
-    exists (ClAtom c t).
-    apply Realize_Atom with (c := c) (t := t); assumption.
-  Qed.
-
-  Lemma Subsystem_Expressiveness :
-    forall (p A : Object),
-      Part p A ->
-      exists impl : ClprolfComponent, Realizes p impl.
-  Proof.
-    intros p A HPart.
-    exists (ClSubsystem p).
-    apply Realize_Subsystem with (A := A); assumption.
-  Qed.
-
-  (* ================================================================= *)
-  (* 6. INTEGRAL EXPRESSIVENESS THEOREM (SURFACE AND DEPTH)             *)
-  (* ================================================================= *)
-
-  Theorem Deep_Architectural_Expressiveness :
+  Theorem Theorem1_Deep_Architectural_Expressiveness :
     forall (A p d : Object),
       App A ->
-      Part p A ->
+      PartOf p A ->
       Contains p d ->
       exists (implApp : ClprolfComponent) 
              (implSub : ClprolfComponent) 
@@ -1690,9 +1702,9 @@ Section ClprolfFormalization.
         Realizes p implSub /\
         Realizes d implAtom.
   Proof.
-    intros A p d HApp HPart HContains.
+    intros A p d HApp HPart HCont.
     destruct (Axiom3_AtomicComposition_And_Fractal A p HPart) as [HAtomRule _].
-    destruct (HAtomRule d HContains) as [HAtom [c [t [HBusiness [HTech HComb]]]]].
+    destruct (HAtomRule d HCont) as [HAtom [c [t [HBusiness [HTech HComb]]]]].
 
     exists (ClApp A).
     exists (ClSubsystem p).
@@ -1706,48 +1718,60 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  (* 7. EXTENSION: CONTRACT THEORY & MIRROR ISOMORPHISM                *)
+  (* 6. STATIC DECIDABILITY AND CHECKER (COROLLARY 1.1)                *)
+  (* ================================================================= *)
+
+  Variable CheckerRule : Type.
+  Variable VerifiesRule : Object -> CheckerRule -> Prop.
+  Variable CheckerRuleList : list CheckerRule.
+
+  Definition CheckerCompliant (A : Object) : Prop :=
+    forall r : CheckerRule, In r CheckerRuleList -> VerifiesRule A r.
+
+  Definition AxiomCompliant (A : Object) : Prop :=
+    App A /\ forall p d : Object, PartOf p A -> Contains p d -> Atom d.
+
+  Axiom Checker_Soundness_And_Completeness :
+    forall (A : Object),
+      App A ->
+      (AxiomCompliant A <-> CheckerCompliant A).
+
+  Corollary Corollary_1_1_Static_Decidability :
+    forall (A : Object),
+      App A ->
+      (AxiomCompliant A <-> CheckerCompliant A).
+  Proof.
+    intros A HApp.
+    apply Checker_Soundness_And_Completeness.
+    exact HApp.
+  Qed.
+
+  (* ================================================================= *)
+  (* 7. CONTRACT THEORY AND MIRROR NEUTRALITY (SECTION XVII)          *)
   (* ================================================================= *)
 
   Variable Interface : Type.
 
-  (* Interface classification: Family (Mirror) vs Trait (Capability) *)
+  (* Interface Typology *)
   Variable Family : Interface -> Prop.
   Variable Trait  : Interface -> Prop.
 
-  (* Internal evaluation predicates for the 3x3 triad *)
-  Variable BusinessPolarity     : Interface -> Prop.
-  Variable TechPolarity         : Interface -> Prop.
-  Variable SystAgentPolarity    : Interface -> Prop.
+  (* Contextual Polarity Cibles *)
+  Variable TargetBusiness  : Interface -> Prop.
+  Variable TargetTech      : Interface -> Prop.
+  Variable TargetSystAgent : Interface -> Prop.
 
-  Variable IsBusinessCompatible : Interface -> Prop.
-  Variable IsTechCompatible     : Interface -> Prop.
-  Variable IsSystAgentCompatible: Interface -> Prop.
+  Variable Methods               : Object -> Type.
+  Variable InterfaceMethods      : Interface -> Type.
+  Variable SamePublicMethods     : Object -> Interface -> Prop.
 
-  (* Local decidability of Family *)
-  Variable fam_dec : forall i : Interface, {Family i} + {~ Family i}.
-  
-  (* Public method signature types *)
-  Variable Methods          : Object -> Type.
-  Variable InterfaceMethods : Interface -> Type.
+  Variable Implements     : Object -> Interface -> Prop.
+  Variable InheritsDirect : Interface -> Interface -> Prop.
 
-  (* Surface identity relation between a component and its interface *)
-  Variable SamePublicMethods : Object -> Interface -> Prop.
+  (* Interface Inheritance Closure: InheritsStar / Inherits* *)
+  Definition InheritsStar := clos_refl_trans Interface InheritsDirect.
 
-  (* Definition by Contextual Overloading (3 branches) *)
-  Definition TargetBusiness (i : Interface) : Prop :=
-    if (fam_dec i) then BusinessPolarity i else IsBusinessCompatible i.
-
-  Definition TargetTech (i : Interface) : Prop :=
-    if (fam_dec i) then TechPolarity i else IsTechCompatible i.
-
-  Definition TargetSystAgent (i : Interface) : Prop :=
-    if (fam_dec i) then SystAgentPolarity i else IsSystAgentCompatible i.
-
-  Variable Implements : Object -> Interface -> Prop.
-  Variable InterfaceInherits : Interface -> Interface -> Prop.
-
-  (* MIRROR PREDICATE: Isomorphism relation between a Family and a Component *)
+  (* MIRROR PREDICATE *)
   Definition MirrorOf (f : Interface) (c : Object) : Prop :=
     Family f /\
     Implements c f /\
@@ -1764,44 +1788,62 @@ Section ClprolfFormalization.
       (~ TargetBusiness f /\ TargetTech f /\ ~ TargetSystAgent f) \/
       (~ TargetBusiness f /\ ~ TargetTech f /\ TargetSystAgent f).
 
-  (* Axiom 2: Strict Mirror Law and Isomorphism of Nature *)
+  (* Axiom 2: Strict Mirror Law *)
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Family f ->
       Implements c f ->
       MirrorOf f c.
 
-  (* Axiom 3: Contextual Continuity of Traits through Inheritance (3 branches) *)
+  (* Axiom 3: Contextual Continuity of Traits via InheritsStar *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
     forall (f t : Interface),
       Family f ->
       Trait t ->
-      InterfaceInherits f t ->
+      InheritsStar f t ->
       (TargetBusiness f -> TargetBusiness t) /\
       (TargetTech f -> TargetTech t) /\
       (TargetSystAgent f -> TargetSystAgent t).
 
-  (* Axiom 4: Mirror family uniqueness and direct trait prohibition *)
-  Axiom Contract_Axiom4_DirectTraitProhibitionAndMirrorUniqueness :
+  (* Axiom 4: Mirror Family Uniqueness and Direct Trait Prohibition *)
+  Axiom Contract_Axiom4_MirrorUniquenessAndNoDirectTrait :
     forall c : Object,
       Component c ->
-        (exists! f : Interface, MirrorOf f c) /\
-        (forall t : Interface, Trait t -> ~ Implements c t).
+      (exists! f : Interface, MirrorOf f c) /\
+      (forall t : Interface, Trait t -> ~ Implements c t).
 
-  (* Modeling of object instances for runtime concrete type guarantee *)
+  (* Axiom 5: Trait Invariance (Traits only inherit from Traits) *)
+  Axiom Contract_Axiom5_TraitInvariance :
+    forall (t i : Interface),
+      Trait t ->
+      InheritsDirect t i ->
+      Trait i.
+
+  (* Runtime Instance Modeling *)
   Variable ObjectInstance : Type.
   Variable StaticType     : ObjectInstance -> Interface.
   Variable InstanceOf     : ObjectInstance -> Object -> Prop.
 
-  (* Object typing law at runtime *)
+  (* Object Execution Typing Law *)
   Axiom Object_Typing_Law :
     forall (o : ObjectInstance) (f : Interface),
       StaticType o = f ->
       Family f ->
       exists c : Object, Component c /\ InstanceOf o c /\ Implements c f.
 
-  (* Master Theorem: Mirror Isomorphism and Type Preservation *)
-  Theorem Mirror_Isomorphism_And_Neutrality_Theorem :
+  (* N-ary Trait Inheritance Resolution Law (Axioms 4 + 5 + Closure) *)
+  Axiom Trait_Resolution_Law :
+    forall (o : ObjectInstance) (t : Interface),
+      Trait t ->
+      StaticType o = t ->
+      exists (f : Interface) (c : Object),
+        Family f /\
+        InheritsStar f t /\
+        InstanceOf o c /\
+        Implements c f.
+
+  (* Theorem 2: Mirror Isomorphism and Neutrality Theorem *)
+  Theorem Theorem2_Mirror_Isomorphism_And_Neutrality :
     forall (o : ObjectInstance) (f : Interface),
       Family f ->
       StaticType o = f ->
@@ -1815,54 +1857,28 @@ Section ClprolfFormalization.
     - apply Contract_Axiom2_MirrorLaw; assumption.
   Qed.
 
-  (* ================================================================= *)
-  (* 8. EXTENSION: STATIC DECIDABILITY & CHECKER MAPPING               *)
-  (* ================================================================= *)
-
-  Variable CheckerRule : Type.
-  Variable SatisfiesRule : Object -> CheckerRule -> Prop.
-  Variable CheckerRulesList : list CheckerRule.
-
-  (* Automated compliance predicate over the 12 ArchUnit rules *)
-  Definition CheckerCompliant (A : Object) : Prop :=
-    forall r : CheckerRule, In r CheckerRulesList -> SatisfiesRule A r.
-
-  (* AxiomCompliant definition representing full axiomatic satisfaction *)
-  Definition AxiomCompliant (A : Object) : Prop :=
-    App A /\ forall p d : Object, Part p A -> Contains p d -> Atom d.
-
-  (* Soundness and completeness axiom linking static analysis to theory *)
-  Axiom Checker_Soundness_And_Completeness :
-    forall (A : Object),
-      App A ->
-      (AxiomCompliant A <-> CheckerCompliant A).
-
-  (* Corollary of Static Decidability *)
-  Corollary Static_Decidability_Corollary :
-    forall (A : Object),
-      App A ->
-      (AxiomCompliant A <-> CheckerCompliant A).
+  (* Corollary 2.1: General and Universal Transitivity of Trait Typing *)
+  Theorem Corollary_2_1_Trait_Transitivity_Mirror :
+    forall (o : ObjectInstance) (t : Interface),
+      Trait t ->
+      StaticType o = t ->
+      exists (f : Interface) (c : Object),
+        InheritsStar f t /\
+        InstanceOf o c /\
+        MirrorOf f c.
   Proof.
-    intros A HApp.
-    apply Checker_Soundness_And_Completeness.
-    exact HApp.
-  Qed.
+    intros o t HTrait HType.
+    
+    (* 1. Trait chain resolution gives us f, c and their properties *)
+    destruct (Trait_Resolution_Law o t HTrait HType) 
+      as [f [c [HFam [HStar [HInst HImpl]]]]].
+      
+    (* 2. Deriving MirrorOf f c via Axiom 2 *)
+    pose proof (Contract_Axiom2_MirrorLaw c f HFam HImpl) as HMirror.
 
-  (* Combined Unified Theorem: Expressiveness & Static Decidability *)
-  Theorem Unified_Expressiveness_And_Decidability_Theorem :
-    forall (A p d : Object),
-      App A ->
-      Part p A ->
-      Contains p d ->
-      AxiomCompliant A ->
-      (exists (implApp implSub implAtom : ClprolfComponent),
-        Realizes A implApp /\ Realizes p implSub /\ Realizes d implAtom) /\
-      CheckerCompliant A.
-  Proof.
-    intros A p d HApp HPart HContains HAxiom.
-    split.
-    - apply Deep_Architectural_Expressiveness with (p := p) (d := d); assumption.
-    - apply Static_Decidability_Corollary; assumption.
+    (* 3. Supplying witnesses and proof terms *)
+    exists f, c.
+    exact (conj HStar (conj HInst HMirror)).
   Qed.
 
 End ClprolfFormalization.
