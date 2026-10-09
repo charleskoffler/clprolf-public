@@ -1486,7 +1486,7 @@ $$\forall f \in F, \forall t \in T \; \Big( \text{InheritsStar}(f, t) \implies \
 
 Every class $c \in C$ implements at most one single family $f \in F$ — **thus guaranteeing the existence of a unique mirror for each component** —, and is strictly forbidden from directly implementing any trait $t \in T$:
 
-$$\forall c \in C, \quad \Big( \exists! f \in F, \ \text{MirrorOf}(f, c) \Big) \;\land\; \Big( \forall t \in T, \ \neg \text{Implements}(c, t) \Big)$$
+$$\forall c \in C, \quad \Big( \exists! f \in F, \ \text{MirrorOf}(f, c) \Big) \land \Big( \forall t \in T, \ \neg \text{Implements}(c, t) \Big)$$
 
 
 ### **Axiom 5 — Trait Invariance (Prohibition of Family Extension)**

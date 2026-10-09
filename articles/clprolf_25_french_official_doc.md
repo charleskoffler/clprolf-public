@@ -1468,7 +1468,7 @@ $$\forall f \in F, \forall t \in T \; \Big( \text{HeriteStar}(f, t) \implies \bi
 
 
  Chaque classe $c \in C$ implémente au plus une seule famille $f \in F$ — **ce qui implique l'existence d'un unique miroir pour chaque composant** —, et il lui est strictement interdit d'implémenter directement un trait $t \in T$ quel qu'il soit :
- $$\forall c \in C, \quad \Big( \exists! f \in F, \ \text{MiroirDe}(f, c) \Big) \;\land\; \Big( \forall t \in T, \ \neg \text{Implemente}(c, t) \Big)$$
+ $$\forall c \in C, \quad \Big( \exists! f \in F, \ \text{MiroirDe}(f, c) \Big) \land \Big( \forall t \in T, \ \neg \text{Implemente}(c, t) \Big)$$
  
 ---
 
