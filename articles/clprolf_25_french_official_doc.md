@@ -1539,7 +1539,7 @@ Cette démarche de vérification mécanique (*machine-checked*) permet de passer
 ```coq
 From Stdlib Require Import Lists.List.
 Import ListNotations.
-Require Import Coq.Relations.Relation_Operators.
+Require Import StdlibRelations.Relation_Operators.
 
 Section ClprolfFormalization.
 

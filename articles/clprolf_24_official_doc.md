@@ -1559,7 +1559,7 @@ This machine-checked verification approach allows moving from a paper proof to a
 
 From Stdlib Require Import Lists.List.
 Import ListNotations.
-Require Import Coq.Relations.Relation_Operators.
+Require Import StdlibRelations.Relation_Operators.
 
 Section ClprolfFormalization.
 
