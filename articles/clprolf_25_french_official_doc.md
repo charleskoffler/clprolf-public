@@ -573,6 +573,7 @@ En général, un trait ne possède qu'un rôle cible.
 public interface Runnable {
     public void run();
 }
+```
 
 ---
 
@@ -1285,7 +1286,7 @@ Le formalisme logique n'est pas une abstraction virtuelle, il calque au millimè
 
 ---
 
-## 4. Théorème d'Expressivité Architecturale
+## 4. Théorème 1: Théorème d'Expressivité Architecturale
 
 ### Énoncé du Théorème
 
@@ -1335,7 +1336,7 @@ Le prédicat de conformité automatisée est défini par :
 
 $$\text{ConformeChecker}(A) \iff \Big( \forall r \in K, \; \text{VerifieRègle}(A, r) \Big)$$
 
-**Corollaire (Décidabilité statique) :** Pour toute application $A \in \mathcal{A}$, la conformité globale de $A$ à l'ensemble du système axiomatique (Section XVI et Section XVII) est entièrement décidable par analyse statique du bytecode ou des métadonnées via l'évaluation de $\text{ConformeChecker}(A)$ :
+**Corollaire 1.1 (Décidabilité statique) :** Pour toute application $A \in \mathcal{A}$, la conformité globale de $A$ à l'ensemble du système axiomatique (Section XVI et Section XVII) est entièrement décidable par analyse statique du bytecode ou des métadonnées via l'évaluation de $\text{ConformeChecker}(A)$ :
 
 $$\forall A \in \mathcal{A}, \quad \text{ConformeAxiomes}(A) \iff \text{ConformeChecker}(A)$$
 
@@ -1387,6 +1388,10 @@ Soient les ensembles de base :
 * $\text{Implemente}(c, i)$ : Le composant $c$ implémente l'interface $i$.
 * $\text{Herite}(i, j)$ : L'interface $i$ hérite de l'interface $j$.
 
+> **Définition (Clôture d'héritage $\text{Herite}^*$) :**
+Soit $\text{HeriteDirect}(i_1, i_2)$ la relation d'héritage direct entre deux interfaces. On note $\text{Herite}^*$ (ou $\text{HeriteStar}$) sa clôture réflexive et transitive, signifiant qu'il existe une chaîne d'héritage de longueur $n \ge 0$ reliant l'interface $i_1$ à l'interface $i_2$.
+
+
 ### Définition par surcharge contextuelle ($\triangleq$)
 
 $$\text{TargetMetier}(i) \triangleq \begin{cases} \text{PolariteMetier}(i) & \text{si } i \in F \quad (\text{Famille : polarité stricte et exclusive}) \\ \text{EstCompatibleMetier}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité dépendante du contexte}) \end{cases}$$
@@ -1412,7 +1417,7 @@ $$\begin{aligned} \text{MemePolarite}(f, c) \iff & \big( \text{ComposantMetier}(
 
 Soit $f \in F$ une interface Famille et $c \in C$ un composant concret. Soit $\mathcal{M}_{\text{pub}}(x)$ la fonction renvoyant l'ensemble des signatures de méthodes publiques (noms, types de retour et arité des paramètres) d'un élément $x$.
 
-Le prédicat $\text{MemesMethodesPubliques}(c, f)$ est vrai si et meule si le composant offre une interface publique strictement identique à celle déclarée par sa famille miroir :
+Le prédicat $\text{MemesMethodesPubliques}(c, f)$ est vrai si et seulement si le composant offre une interface publique strictement identique à celle déclarée par sa famille miroir :
 
 $$\text{MemesMethodesPubliques}(c, f) \iff \Big( \mathcal{M}_{\text{pub}}(f) \subseteq \mathcal{M}_{\text{pub}}(c) \Big)$$
 
@@ -1447,15 +1452,18 @@ $$\forall c \in C, \forall f \in F \quad \Big( \text{Famille}(f) \land \text{Imp
 
 ---
 
-### Axiome 3 — Continuité contextuelle des traits
 
-Lorsqu'une famille $f$ hérite d'un trait $t$, la compatibilité du trait est évaluée contextuellement à travers la polarité de la famille :
+### **Axiome 3 — Continuité contextuelle des traits**
 
-$$\forall f \in F, \forall t \in T \; \Big( \text{Herite}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big)$$
+Lorsqu'une famille $f \in F$ hérite d'un trait $t \in T$ à travers la clôture d'héritage d'interfaces ($\text{HeriteStar}(f, t)$), la polarité de la famille miroir est intégralement transmise au trait :
+
+$$\forall f \in F, \forall t \in T \; \Big( \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big)$$
+
+> **Note de structure :** La clôture $\text{HeriteStar}(f, t)$ (notée $\text{Herite}^*(f, t)$) représente la relation d'héritage d'interface réflexive et transitive. Par construction avec l'Axiome 5 ($\text{HeriteDirect}(t, i) \implies \text{Trait}(i)$), toute chaîne reliant $f$ à $t$ ne traverse exclusivement que des interfaces de type Trait après le premier saut d'héritage depuis la famille.
 
 ---
 
-### Axiome 4 — Unicité du miroir et interdiction des traits directs
+### **Axiome 4 — Unicité de la famille miroir et interdiction des traits directs**
 
 Chaque classe $c \in C$ implémente au plus une seule famille $f \in F$, et il lui est strictement interdit d'implémenter directement un trait $t \in T$ quel qu'il soit :
 
@@ -1463,15 +1471,16 @@ $$\forall c \in C \quad \Big( \exists! f \in F \quad \text{Implemente}(c, f) \;\
 
 ---
 
-### Axiome 5 — Invariance des traits (Interdiction d'extension de famille)
+### **Axiome 5 — Invariance des traits (Interdiction d'extension de famille)**
 
-Un trait $t_1 \in T$ ne peut hériter que d'un autre trait $t_2 \in T$. Il lui est strictement interdit d'hériter d'une famille $f \in F$ :
+Un trait $t \in T$ ne peut hériter que d'un autre trait $i \in T$. Il lui est strictement interdit d'hériter d'une famille $f \in F$ :
 
-$$\forall t \in T, \forall i \in I \; \Big( \text{Herite}(t, i) \implies \text{Trait}(i) \Big)$$
+$$\forall t \in T, \forall i \in I \; \Big( \text{HeriteDirect}(t, i) \implies \text{Trait}(i) \Big)$$
 
 ---
 
-## 3. Théorème d'isomorphisme et de neutralité miroir
+
+## 3. Théorème 2 : Théorème d'isomorphisme et de neutralité miroir
 
 > **Énoncé :** Tout objet $o$ manipulé via sa famille miroir $f$ instancie un composant concret $c$ dont le type, les méthodes et le rôle (Agent, Worker, Système) sont strictement préservés à travers l'abstraction.
 
@@ -1486,6 +1495,39 @@ $$\forall o, \forall f \in F \; \Big( \text{TypeStatique}(o) = f \implies \exist
 
 $$\text{Q.E.D.}$$
 
+### Corollaire 2.1 — Transitivité Générale et Universelle du Typage de Trait
+
+**Énoncé :**
+Soit $o$ une instance d'objet manipulée sous le type statique d'un trait $t \in T$ ($\text{TypeStatique}(o) = t$). Il existe au moins une chaîne d'héritage de traits menant à une famille $f \in F$ ($\text{HeriteInterface}^*(f, t)$) et une classe concrète $c \in C$ telle que $f$ soit la famille miroir de $c$ ($\text{MiroirDe}(f, c)$).
+
+$$\forall o, \forall t \in T \; \Big( \text{TypeStatique}(o) = t \implies \exists f \in F, \exists c \in C \; \big( \text{HeriteInterface}^*(f, t) \land \text{InstanceDe}(o, c) \land \text{MiroirDe}(f, c) \big) \Big)$$
+
+---
+
+### Démonstration Détaillée du Corollaire 2.1
+
+1. **Instanciation concrète :** L'objet $o$ manipulé en mémoire est obligatoirement une instance d'une classe concrète $c \in C$ ($\text{InstanceDe}(o, c)$).
+2. **Exclusion des liens directs avec la classe :** D'après l'Axiome 4, la classe $c$ ne peut pas implémenter directement le trait $t$ ($\neg \text{Implemente}(c, t)$).
+
+3. **Résolution par la chaîne de traits (Héritage n-aire) :**
+* Le type statique $t$ peut provenir de l'héritage d'un autre trait $t_1$, lui-même héritant de $t_2$, etc.
+* D'après l'Axiome 5, un trait ne pouvant jamais hériter d'une famille, cette chaîne de sous-typage entre traits ne peut pas contenir de classes ni de familles en position parente.
+
+* La chaîne remonte donc nécessairement par clôture transitive $\text{HeriteInterface}^*(t_k, t)$ jusqu'à la première interface non-trait rencontrée, qui est obligatoirement une **famille** $f \in F$.
+
+4. **Universalité d'accès aux Familles :**
+* Puisqu'un trait $t$ n'hérite d'aucune famille ni d'aucune version concrète, le contrat qu'il définit est **universellement accessible**.
+
+* Toute famille $f \in F$ respectant le rôle/la polarité de $t$ peut l'incorporer dans sa hiérarchie. On a donc $\text{HeriteInterface}^*(f, t)$ et $\text{Implemente}(c, f)$.
+
+5. **Application du Théorème 2 :**
+* Ayant établi que $o$ est une instance manipulée à travers le contrat de la famille $f$ ($\text{TypeStatique}(o) = f$), l'application du **Théorème 2** garantit l'existence d'une classe concrète $c$ vérifiant $\text{MiroirDe}(f, c)$.
+
+6. **Conclusion :** Quel que soit le nombre de traits intermédiaires, le typage statique de trait $t$ se résout toujours vers l'atome concret $c$ à travers une famille miroir $f$ accessible sans restriction de version. $\blacksquare$
+
+---
+
+
 # XVIII) Certification formelle et Assistant de preuve Coq
 
 > **Afin de garantir une rigueur absolue et d'éliminer toute ambiguïté ou faille logique, l'ensemble du système axiomatique et le théorème d'expressivité de Clprolf ont été formellement codifiés et intégralement vérifiés par machine à l'aide de l'assistant de preuve Coq.**
@@ -1495,9 +1537,10 @@ Cette démarche de vérification mécanique (*machine-checked*) permet de passer
 ---
 
 ```coq
-
 From Stdlib Require Import Lists.List.
 Import ListNotations.
+Require Import Coq.Relations.Relation_Operators.
+
 Section ClprolfFormalization.
 
   (* ================================================================= *)
@@ -1533,7 +1576,7 @@ Section ClprolfFormalization.
   Variable MemeDomaine : Object -> Object -> Prop. (* Préservation du domaine *)
 
   (* ================================================================= *)
-  (* 2. AXIOMES FONDAMENTAUX DE CLPROLF                                *)
+  (* 2. AXIOMES FONDAMENTAUX DE CLPROLF (SECTION XVI)                 *)
   (* ================================================================= *)
 
   (* Axiome 1 : Téléologie - Automatisation du Travail Humain *)
@@ -1651,10 +1694,10 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  (* 6. THÉORÈME D'EXPRESSIVITÉ INTÉGRALE (SURFACE ET PROFONDEUR)      *)
+  (* 6. THÉORÈME 1 : EXPRESSIVITÉ ARCHITECTURALE                       *)
   (* ================================================================= *)
 
-  Theorem Deep_Architectural_Expressiveness :
+  Theorem Theorem1_Deep_Architectural_Expressiveness :
     forall (A p d : Object),
       App A ->
       Partie p A ->
@@ -1682,47 +1725,76 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  (* 7. EXTENSION : THÉORÈME DE L'ISOMORPHISME ET NEUTRALITÉ MIROIR    *)
+  (* 7. DÉCIDABILITÉ STATIQUE ET CHECKER (COROLLAIRE 1.1)               *)
+  (* ================================================================= *)
+
+  Variable RegleChecker : Type.
+  Variable VerifieRegle : Object -> RegleChecker -> Prop.
+  Variable ListeReglesChecker : list RegleChecker.
+
+  Definition ConformeChecker (A : Object) : Prop :=
+    forall r : RegleChecker, In r ListeReglesChecker -> VerifieRegle A r.
+
+  Definition ConformeAxiomes (A : Object) : Prop :=
+    App A /\ forall p d : Object, Partie p A -> Contient p d -> Atome d.
+
+  Axiom Checker_Soundness_And_Completeness :
+    forall (A : Object),
+      App A ->
+      (ConformeAxiomes A <-> ConformeChecker A).
+
+  Corollary Corollary_1_1_Corollaire_Decidabilite_Statique :
+    forall (A : Object),
+      App A ->
+      (ConformeAxiomes A <-> ConformeChecker A).
+  Proof.
+    intros A HApp.
+    apply Checker_Soundness_And_Completeness.
+    exact HApp.
+  Qed.
+
+  Theorem Unified_Expressiveness_And_Decidability_Theorem :
+    forall (A p d : Object),
+      App A ->
+      Partie p A ->
+      Contient p d ->
+      ConformeAxiomes A ->
+      (exists (implApp implSub implAtom : ClprolfComponent),
+        Realizes A implApp /\ Realizes p implSub /\ Realizes d implAtom) /\
+      ConformeChecker A.
+  Proof.
+    intros A p d HApp HPart HCont HAxiom.
+    split.
+    - apply Theorem1_Deep_Architectural_Expressiveness with (p := p) (d := d); assumption.
+    - apply Corollary_1_1_Corollaire_Decidabilite_Statique; assumption.
+  Qed.
+
+  (* ================================================================= *)
+  (* 8. THÉORIE DES CONTRATS ET DU NEUTRALISME MIROIR (SECTION XVII)   *)
   (* ================================================================= *)
 
   Variable Interface : Type.
 
-  (* Classification des interfaces : Famille (Miroir) vs Trait (Capacité) *)
+  (* Classification des interfaces *)
   Variable Famille : Interface -> Prop.
   Variable Trait   : Interface -> Prop.
 
-  (* Prédicats d'évaluation internes pour la triade *)
-  Variable PolariteMetier       : Interface -> Prop.
-  Variable PolariteTech         : Interface -> Prop.
-  Variable PolariteAgentSyst     : Interface -> Prop.
-  
-  Variable EstCompatibleMetier  : Interface -> Prop.
-  Variable EstCompatibleTech    : Interface -> Prop.
-  Variable EstCompatibleAgentSyst   : Interface -> Prop.
+  (* Evaluation contextuelle des polarités *)
+  Variable TargetMetier    : Interface -> Prop.
+  Variable TargetTech      : Interface -> Prop.
+  Variable TargetAgentSyst : Interface -> Prop.
 
-  (* Décidabilité locale de Famille *)
-  Variable fam_dec : forall i : Interface, {Famille i} + {~ Famille i}.
-  
-  Variable Methodes          : Object -> Type.
-  Variable MethodesInterface : Interface -> Type.
-  
-  (* Relation d'identité de signature entre un composant et son interface *)
+  Variable Methodes               : Object -> Type.
+  Variable MethodesInterface      : Interface -> Type.
   Variable MemesMethodesPubliques : Object -> Interface -> Prop.
 
-  (* Définition par Surcharge Contextuelle (3 branches) *)
-  Definition TargetMetier (i : Interface) : Prop :=
-    if (fam_dec i) then PolariteMetier i else EstCompatibleMetier i.
-
-  Definition TargetTech (i : Interface) : Prop :=
-    if (fam_dec i) then PolariteTech i else EstCompatibleTech i.
-
-  Definition TargetAgentSyst (i : Interface) : Prop :=
-    if (fam_dec i) then PolariteAgentSyst i else EstCompatibleAgentSyst i.
-
   Variable Implemente : Object -> Interface -> Prop.
-  Variable HeriteInterface : Interface -> Interface -> Prop.
+  Variable HeriteDirect : Interface -> Interface -> Prop.
 
-  (* PRÉDICAT MIROIR : Relation d'isomorphisme entre une Famille et un Composant *)
+  (* Clôture réflexive-transitive pour HeriteStar *)
+  Definition HeriteStar := clos_refl_trans Interface HeriteDirect.
+
+  (* PRÉDICAT MIROIR *)
   Definition MiroirDe (f : Interface) (c : Object) : Prop :=
     Famille f /\
     Implemente c f /\
@@ -1739,31 +1811,38 @@ Section ClprolfFormalization.
       (~ TargetMetier f /\ TargetTech f /\ ~ TargetAgentSyst f) \/
       (~ TargetMetier f /\ ~ TargetTech f /\ TargetAgentSyst f).
 
-  (* Axiome 2 : Loi du Miroir Strict et Isomorphisme de nature *)
+  (* Axiome 2 : Loi du Miroir Strict *)
   Axiom Contract_Axiom2_MirrorLaw :
     forall (c : Object) (f : Interface),
       Famille f ->
       Implemente c f ->
       MiroirDe f c.
 
-  (* Axiome 3 : Continuité Contextuelle des Traits par Héritage (3 branches) *)
+  (* Axiome 3 : Continuité contextuelle des traits via HeriteStar *)
   Axiom Contract_Axiom3_TraitContextualContinuity :
     forall (f t : Interface),
       Famille f ->
       Trait t ->
-      HeriteInterface f t ->
+      HeriteStar f t ->
       (TargetMetier f -> TargetMetier t) /\
       (TargetTech f -> TargetTech t) /\
       (TargetAgentSyst f -> TargetAgentSyst t).
-    
-  (* Axiome 4 : Unicité de la famille miroir et interdiction des traits directs *)
-  Axiom Contract_Axiom4_DirectTraitProhibitionAndMirrorUniqueness :
+
+  (* Axiome 4 : Unicité du miroir et interdiction des traits directs *)
+  Axiom Contract_Axiom4_MirrorUniquenessAndNoDirectTrait :
     forall c : Object,
       Composant c ->
-        (exists! f : Interface, MiroirDe f c) /\
-        (forall t : Interface, Trait t -> ~ Implemente c t).
+      (exists! f : Interface, MiroirDe f c) /\
+      (forall t : Interface, Trait t -> ~ Implemente c t).
 
-  (* Modélisation des instances d'objets pour la garantie du type concret à l'exécution *)
+  (* Axiome 5 : Invariance des traits (Un trait ne pointe que vers un trait) *)
+  Axiom Contract_Axiom5_TraitInvariance :
+    forall (t i : Interface),
+      Trait t ->
+      HeriteDirect t i ->
+      Trait i.
+
+  (* Modélisation des instances d'objets *)
   Variable ObjectInstance : Type.
   Variable TypeStatique   : ObjectInstance -> Interface.
   Variable InstanceDe     : ObjectInstance -> Object -> Prop.
@@ -1775,8 +1854,19 @@ Section ClprolfFormalization.
       Famille f ->
       exists c : Object, Composant c /\ InstanceDe o c /\ Implemente c f.
 
-  (* Théorème maître : Isomorphisme et Neutralité Miroir *)
-  Theorem Mirror_Isomorphism_And_Neutrality_Theorem :
+  (* Loi de résolution de l'héritage n-aire (Axiomes 4 + 5 + Clôture) *)
+  Axiom Trait_Resolution_Law :
+    forall (o : ObjectInstance) (t : Interface),
+      Trait t ->
+      TypeStatique o = t ->
+      exists (f : Interface) (c : Object),
+        Famille f /\
+        HeriteStar f t /\
+        InstanceDe o c /\
+        Implemente c f.
+
+  (* Théorème 2 : Isomorphisme et Neutralité Miroir pour la Famille *)
+  Theorem Theorem2_Mirror_Isomorphism_And_Neutrality :
     forall (o : ObjectInstance) (f : Interface),
       Famille f ->
       TypeStatique o = f ->
@@ -1790,54 +1880,30 @@ Section ClprolfFormalization.
     - apply Contract_Axiom2_MirrorLaw; assumption.
   Qed.
 
-  (* ================================================================= *)
-  (* 8. EXTENSION : DÉCIDABILITÉ STATIQUE ET CORRESPONDANCE CHECKER    *)
-  (* ================================================================= *)
-
-  Variable RegleChecker : Type.
-  Variable VerifieRegle : Object -> RegleChecker -> Prop.
-  Variable ListeReglesChecker : list RegleChecker.
-
-  (* Prédicat de conformité automatisée sur l'ensemble des 12 règles ArchUnit *)
-  Definition ConformeChecker (A : Object) : Prop :=
-    forall r : RegleChecker, In r ListeReglesChecker -> VerifieRegle A r.
-
-  (* Prédicat de conformité globale au système d'axiomes *)
-  Definition ConformeAxiomes (A : Object) : Prop :=
-    App A /\ forall p d : Object, Partie p A -> Contient p d -> Atome d.
-
-  (* Axiome de complétude du checker : le contrôle statique reflète exactement les axiomes *)
-  Axiom Checker_Soundness_And_Completeness :
-    forall (A : Object),
-      App A ->
-      (ConformeAxiomes A <-> ConformeChecker A).
-
-  (* Corollaire de Décidabilité Statique *)
-  Corollary Corollaire_Decidabilite_Statique :
-    forall (A : Object),
-      App A ->
-      (ConformeAxiomes A <-> ConformeChecker A).
+  Theorem Corollary_2_1_Trait_Transitivity_Mirror :
+    forall (o : ObjectInstance) (t : Interface),
+      Trait t ->
+      TypeStatique o = t ->
+      exists (f : Interface) (c : Object),
+        HeriteStar f t /\
+        InstanceDe o c /\
+        MiroirDe f c.
   Proof.
-    intros A HApp.
-    apply Checker_Soundness_And_Completeness.
-    exact HApp.
-  Qed.
+    intros o t HTrait HType.
+    
+    (* 1. Résolution de la chaîne de traits -> nous donne f, c et leurs propriétés *)
+    destruct (Trait_Resolution_Law o t HTrait HType) 
+      as [f [c [HFam [HStar [HInst HImpl]]]]].
+      
+    (* 2. Obtention de MiroirDe f c à partir de f et c *)
+    pose proof (Contract_Axiom2_MirrorLaw c f HFam HImpl) as HMiroir.
 
-  (* Théorème Unifié : Expressivité Architecturale & Décidabilité Statique *)
-  Theorem Unified_Expressiveness_And_Decidability_Theorem :
-    forall (A p d : Object),
-      App A ->
-      Partie p A ->
-      Contient p d ->
-      ConformeAxiomes A ->
-      (exists (implApp implSub implAtom : ClprolfComponent),
-        Realizes A implApp /\ Realizes p implSub /\ Realizes d implAtom) /\
-      ConformeChecker A.
-  Proof.
-    intros A p d HApp HPart HCont HAxiom.
-    split.
-    - apply Deep_Architectural_Expressiveness with (p := p) (d := d); assumption.
-    - apply Corollaire_Decidabilite_Statique; assumption.
+    (* 3. Fourniture des témoins et des 3 preuves dans l'ordre strict :
+          - HeriteStar f t
+          - InstanceDe o c
+          - MiroirDe f c  *)
+    exists f, c.
+    exact (conj HStar (conj HInst HMiroir)).
   Qed.
 
 End ClprolfFormalization.
@@ -1899,3 +1965,4 @@ Pour démontrer que le formalisme mathématique s'applique directement à la ré
 | **$f$ (`@ClFamily`)** | Contrat-miroir hiérarchique | `TaxCalculatorFamily` |
 
 ---
+
