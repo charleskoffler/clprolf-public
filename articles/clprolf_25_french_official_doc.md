@@ -1217,7 +1217,7 @@ Clprolf ajoute très peu de concepts.
 |  | $\text{Associe}(t, p)$ | Le support technique $t$ est adjoint à la partie $p$. | $\mathcal{T} \times \mathcal{P}$ | Composant Tech adossé |
 |  | $\text{Combine}(a, c, t)$ | L'atome $a$ réunit strictly le composant métier $c$ et le composant technique $t$. | $\text{Atome} \times \mathcal{C} \times \mathcal{T}$ | Atom (Union exclusive) |
 |  | $\text{Utilise}(t, s)$ | Le composant tech $t$ délègue sa complexité à l'agent système $s$. | $\mathcal{T} \times \mathcal{S}$ | Règle fractale (Axiome 3) |
-|  | $\text{Herite}(c, p)$ | Le composant $c$ hérite du composant parent $p$. | $\mathcal{C} \times \mathcal{C}$ | Relation `extends` / Axiome 5 |
+|  | $\text{HeriteDirectComposant}(c, p)$ | Le composant $c$ hérite du composant parent $p$. | $\mathcal{C} \times \mathcal{C}$ | Relation `extends` / Axiome 5 |
 |  | $\text{MemeDomaine}(c, p)$ | Les composants $c$ et $p$ partagent le même domaine conceptuel. | $\mathcal{C} \times \mathcal{C}$ | Isomorphisme de domaine / Axiome 5 |
 
  
@@ -1265,7 +1265,7 @@ $$\forall c \in C \; \Big( \text{Composant}(c) \implies \big( \text{ComposantMet
 
 La relation d'héritage entre deux composants implique l'appartenance stricte au même domaine conceptuel :
 
-$$\forall c, p \; \Big( \big(\text{Composant}(c) \land \text{Composant}(p) \land \text{Herite}(c, p)\big) \implies \text{MemeDomaine}(c, p) \Big)$$
+$$\forall c, p \; \Big( \big(\text{Composant}(c) \land \text{Composant}(p) \land \text{HeriteDirectComposant}(c, p)\big) \implies \text{MemeDomaine}(c, p) \Big)$$
 
 ---
 
@@ -1351,7 +1351,7 @@ $$\forall A \in \mathcal{A}, \quad \text{ConformeAxiomes}(A) \iff \text{Conforme
 | **Axiome 5 (Section XVII)** — Invariance de nature des traits | `trait_interfaces_must_extend_only_trait_interfaces` | Interdit à un `@ClTrait` d'hériter d'une `@ClFamily` (extension exclusive entre traits). |
 | **Axiome 1 (Section XVII)** — Typage obligatoire des interfaces | `clprolf_interfaces_must_have_target_role` | Force `@ClFamily` à avoir exactement un rôle cible et `@ClTrait` au moins un. |
 | **Axiome 3 (Section XVII)** — Héritage de trait par une interface | `inheriting_interface_role_must_match_trait_interface_target_role` | Garantit la compatibilité du rôle lors de l'héritage d'un trait par une interface. |
-| **Axiome 1 (Section XVII)** — Héritage entre familles | `family_interface_target_role_must_match_inherited_family_interface` | Assure la préservation de domaine lors de l'extension d'une `@ClFamily` par une autre. |
+| **Axiome 7, 6 (Section XVII)** — Héritage entre familles | `family_interface_target_role_must_match_inherited_family_interface` | Assure la préservation de domaine lors de l'extension d'une `@ClFamily` par une autre. |
 | **Axiome 4 (Section XVI)** — Qualification exhaustive des classes | `optional_all_classes_should_have_clprolf_role` | Exige que toute classe concrète possède un rôle (`@ClAgent`, `@ClWorker`, `@ClDraft`). |
 | **Règle stricte 2 (Optionnelle)** — Qualification exhaustive des interfaces | `optional_all_interfaces_should_have_clprolf_role` | Exige que toute interface possède un rôle (`@ClFamily`, `@ClTrait`, `@ClFree`). |
 | **Axiome 4 (Section XVII)** — Interdiction des traits directs | `optional_class_should_not_implement_trait_directly` | En mode strict, interdit l'implémentation directe d'un `@ClTrait` par une classe. |
@@ -1480,54 +1480,113 @@ $$\forall t \in T, \forall i \in I \; \Big( \text{HeriteDirect}(t, i) \implies \
 
 ---
 
+### **Axiome 6 — Projection d'héritage (Isomorphisme d'héritage Miroir)**
+
+Si un composant $c$ hérite directement d'un composant parent $p$, alors l'interface miroir $f_c$ associée à $c$ hérite obligatoirement de l'interface miroir $f_p$ associée à $p$ :
+
+$$\forall c, p \in C, \forall f_c, f_p \in F \; \Big( \big( \text{HeriteDirectComposant}(c, p) \land \text{MiroirDe}(f_c, c) \land \text{MiroirDe}(f_p, p) \big) \implies \text{HeriteDirect}(f_c, f_p) \Big)$$
+
+---
+
+### **Lemme 6.1 — Extension Transitive de la Projection Miroir**
+
+$$\forall c, p \in C, \quad \text{HeriteStarComposant}(c, p) \implies \exists! f_c, f_p \in F, \; \big( \text{MiroirDe}(f_c, c) \land \text{MiroirDe}(f_p, p) \land \text{HeriteStar}(f_c, f_p) \big)$$
+
+---
+
+### **Démonstration (par récurrence sur la longueur de la chaîne d'héritage)**
+
+**1. Cas de base (Chaîne de longueur 1) :**
+
+* Par hypothèse, $\text{HeriteDirectComposant}(c, p)$.
+* Par l'**Axiome 4 (Unicité de la Famille Miroir)**, il existe un unique $f_c \in F$ et un unique $f_p \in F$ tels que $\text{MiroirDe}(f_c, c)$ et $\text{MiroirDe}(f_p, p)$.
+
+
+* Par l'**Axiome 6 (Projection d'héritage)** :
+
+$$\big(\text{HeriteDirectComposant}(c, p) \land \text{MiroirDe}(f_c, c) \land \text{MiroirDe}(f_p, p)\big) \implies \text{HeriteDirect}(f_c, f_p)$$
+
+* Puisque $\text{HeriteDirect}(f_c, f_p) \implies \text{HeriteStar}(f_c, f_p)$, la propriété est vérifiée au rang 1.
+
+**2. Hérédité (Chaîne de longueur $n + 1$) :**
+
+* Soit une chaîne $c = c_0 \to c_1 \to \dots \to c_n \to c_{n+1} = p$ telle que $\text{HeriteDirectComposant}(c_i, c_{i+1})$.
+* Par hypothèse de récurrence sur la sous-chaîne $c_0 \to \dots \to c_n$, il existe un unique couple $(f_{c_0}, f_{c_n}) \in F^2$ tel que $\text{MiroirDe}(f_{c_0}, c_0) \land \text{MiroirDe}(f_{c_n}, c_n) \land \text{HeriteStar}(f_{c_0}, f_{c_n})$.
+* Au pas $n+1$, pour la transition $c_n \to c_{n+1}$, l'Axiome 6 s'applique et donne $\text{HeriteDirect}(f_{c_n}, f_{c_{n+1}})$.
+* Par **transitivité** de la clôture réflexive-transitive $\text{HeriteStar}$ dans l'espace $F$ :
+
+$$\text{HeriteStar}(f_{c_0}, f_{c_n}) \land \text{HeriteDirect}(f_{c_n}, f_{c_{n+1}}) \implies \text{HeriteStar}(f_{c_0}, f_{c_{n+1}})$$
+
+* L'**Axiome 4** garantit l'existence et l'unicité des miroirs $f_{c_0}$ et $f_{c_{n+1}}$. $\quad \blacksquare$
+
+---
 
 ## 3. Théorème 2 : Théorème d'isomorphisme et de neutralité miroir
 
-> **Énoncé :** Tout objet $o$ manipulé via sa famille miroir $f$ instancie un composant concret $c$ dont le type, les méthodes et le rôle (Agent, Worker, Système) sont strictement préservés à travers l'abstraction.
+> **Énoncé :** Tout objet $o$ manipulé via une famille $f$ instancie un composant concret unique $c$ dont la famille miroir unique $f'$ hérite (ou est égale à) $f$ dans la hiérarchie des familles.
 
-$$\forall o, \forall f \in F \; \Big( \text{TypeStatique}(o) = f \implies \exists c \in C \; \big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f, c) \big) \Big)$$
+### Énoncé Formel du Théorème
+
+$$\forall o, \forall f \in F, \quad \Big( \text{TypeStatique}(o, f) \land \exists! c \in C \; \text{InstanceDe}(o, c) \Big) \implies \exists! f' \in F \; \Big( \text{MiroirDe}(f', c) \land \text{HeriteStarFamille}(f', f) \Big)$$
+
+---
+
+### Démonstration Formelle
+
+1. **Unicité du Composant d'Origine (Runtime) :**
+Par la prémisse, l'objet $o$ manipulé lors de l'affectation à $f$ dérive d'une instance concrète unique $c \in C$, telle que $\text{InstanceDe}(o, c)$.
+2. **Existence et Unicité de la Famille Miroir :**
+L'**Axiome 4 (Unicité de la Famille Miroir)** garantit que le composant $c$ possède une interface miroir unique $f' \in F$ telle que $\text{MiroirDe}(f', c)$.
 
 
-### Démonstration synthétique
+3. **Projection de la Hiérarchie d'Implémentation (Lemme 6.1) :**
+Si $c$ hérite dans $C$ d'une chaîne d'ancêtres $p_1, \dots, p_n$, le **Lemme 6.1 (Extension Transitive de la Projection Miroir)** ($\text{HeriteStarComposant}(c, p) \implies \text{HeriteStarFamille}(f_c, f_p)$) projette directement cette chaîne d'implémentation dans $F$ pour donner $\text{HeriteStarFamille}(f', f)$. $\quad \blacksquare$
 
-1. **Existence :** Par les lois de typage objet, un objet $o$ manipulé sous l'interface $f \in F$ dérive d'une classe concrète $c \in C$ telle que $\text{Implemente}(c, f)$.
-2. **Conformité & Isomorphisme :** L'Axiome 2 (Loi du miroir strict) et la définition de $\text{MiroirDe}(f, c)$ garantissent l'équivalence stricte des signatures de méthodes et la préservation de la polarité ($\text{ComposantMetier}(c) \iff \text{TargetMetier}(f)$, etc.).
-3. **Neutralité des traits :** L'Axiome 4 interdit l'implémentation directe de traits, restreignant les implémentations de classes strictement à leur famille miroir $f$. La neutralité contextuelle de tout trait hérité s'en déduit directement par transitivité via l'Axiome 3.
+---
 
-$$\text{Q.E.D.}$$
-
-### Corollaire 2.1 — Transitivité Générale et Universelle du Typage de Trait
+### **Corollaire 2.1 — Transitivité Générale et Universelle du Typage de Trait**
 
 **Énoncé :**
-Soit $o$ une instance d'objet manipulée sous le type statique d'un trait $t \in T$ ($\text{TypeStatique}(o) = t$). Il existe au moins une chaîne d'héritage de traits menant à une famille $f \in F$ ($\text{HeriteInterface}^*(f, t)$) et une classe concrète $c \in C$ telle que $f$ soit la famille miroir de $c$ ($\text{MiroirDe}(f, c)$).
+Soit $o$ une instance d'objet manipulée sous le type statique d'un trait $t \in T$ ($\text{TypeStatique}(o, t)$). Il existe une famille $f \in F$ incorporant le trait ($\text{HeriteStar}(f, t)$), et l'objet $o$ dérive d'une instance concrète unique $c \in C$ dont la famille miroir unique $f' \in F$ satisfait $\text{HeriteStarFamille}(f', f)$ et $\text{MiroirDe}(f', c)$.
 
-$$\forall o, \forall t \in T \; \Big( \text{TypeStatique}(o) = t \implies \exists f \in F, \exists c \in C \; \big( \text{HeriteInterface}^*(f, t) \land \text{InstanceDe}(o, c) \land \text{MiroirDe}(f, c) \big) \Big)$$
+$$\forall o, \forall t \in T, \quad \Big( \text{TypeStatique}(o, t) \land \exists! c \in C \; \text{InstanceDe}(o, c) \Big) \implies \exists f, f' \in F \; \Big( \text{HeriteStar}(f, t) \land \text{MiroirDe}(f', c) \land \text{HeriteStarFamille}(f', f) \Big)$$
 
 ---
 
-### Démonstration Détaillée du Corollaire 2.1
+### **Démonstration Détaillée du Corollaire 2.1**
 
-1. **Instanciation concrète :** L'objet $o$ manipulé en mémoire est obligatoirement une instance d'une classe concrète $c \in C$ ($\text{InstanceDe}(o, c)$).
-2. **Exclusion des liens directs avec la classe :** D'après l'Axiome 4, la classe $c$ ne peut pas implémenter directement le trait $t$ ($\neg \text{Implemente}(c, t)$).
+1. **Instanciation concrète et unicité :**
+Par la prémisse, l'objet $o$ manipulé en mémoire dérive d'une instance concrète unique d'une classe $c \in C$ ($\text{InstanceDe}(o, c)$).
+2. **Exclusion des liens directs avec la classe :**
+D'après l'**Axiom 4**, la classe $c$ ne peut pas implémenter directement le trait $t$ ($\forall t \in T, \neg \text{Implemente}(c, t)$).
 
-3. **Résolution par la chaîne de traits (Héritage n-aire) :**
-* Le type statique $t$ peut provenir de l'héritage d'un autre trait $t_1$, lui-même héritant de $t_2$, etc.
-* D'après l'Axiome 5, un trait ne pouvant jamais hériter d'une famille, cette chaîne de sous-typage entre traits ne peut pas contenir de classes ni de familles en position parente.
 
-* La chaîne remonte donc nécessairement par clôture transitive $\text{HeriteInterface}^*(t_k, t)$ jusqu'à la première interface non-trait rencontrée, qui est obligatoirement une **famille** $f \in F$.
+3. **Résolution par la chaîne de traits (Héritage $n$-aire) :**
+* Le type statique $t$ provient de l'héritage d'un autre trait $t_1$, lui-même héritant de $t_2$, etc.
+* D'après l'**Axiome 5**, un trait ne pouvant jamais hériter d'une famille, cette chaîne de sous-typage entre traits ne peut pas contenir de classes ni de familles en position parente.
+
+
+* La chaîne remonte donc nécessairement par clôture transitive $\text{HeriteStar}(t_k, t)$ jusqu'à la première interface non-trait rencontrée, qui est obligatoirement une **famille** $f \in F$.
+
 
 4. **Universalité d'accès aux Familles :**
-* Puisqu'un trait $t$ n'hérite d'aucune famille ni d'aucune version concrète, le contrat qu'il définit est **universellement accessible**.
-
-* Toute famille $f \in F$ respectant le rôle/la polarité de $t$ peut l'incorporer dans sa hiérarchie. On a donc $\text{HeriteInterface}^*(f, t)$ et $\text{Implemente}(c, f)$.
-
+Puisqu'un trait $t$ n'hérite d'aucune famille ni d'aucune version concrète, le contrat qu'il définit est **universellement accessible**. Toute famille $f \in F$ respectant la polarité de $t$ peut l'incorporer dans sa hiérarchie ($\text{HeriteStar}(f, t)$).
 5. **Application du Théorème 2 :**
-* Ayant établi que $o$ est une instance manipulée à travers le contrat de la famille $f$ ($\text{TypeStatique}(o) = f$), l'application du **Théorème 2** garantit l'existence d'une classe concrète $c$ vérifiant $\text{MiroirDe}(f, c)$.
+Ayant établi que $o$ est manipulé sous le contrat de l'interface $f$ qui englobe $t$ ($\text{TypeStatique}(o, f)$), l'application directe du **Théorème 2** garantit l'existence et l'unicité de la famille miroir $f' \in F$ associée à $c$ telle que $\text{MiroirDe}(f', c)$ et $\text{HeriteStarFamille}(f', f)$.
 
-6. **Conclusion :** Quel que soit le nombre de traits intermédiaires, le typage statique de trait $t$ se résout toujours vers l'atome concret $c$ à travers une famille miroir $f$ accessible sans restriction de version. $\blacksquare$
+
+6. **Conclusion :**
+Quel que soit le niveau d'abstraction ou le nombre de traits intermédiaires, le typage statique de trait $t$ se résout toujours vers l'atome concret unique $c$ à travers sa famille miroir $f'$ via la famille englobante $f$. $\quad \blacksquare$
 
 ---
 
+### **Axiome 7 — Invariance du Domaine pour les Familles (Préservation du Domaine entre Familles)**
+
+L'extension ou l'héritage d'une interface de famille $f_1$ par une interface de famille $f_2$ implique le respect strict du même domaine et rôle cible (Agent ou Worker) :
+
+$$\forall f_1, f_2 \in F \; \Big( \text{HeriteDirect}(f_1, f_2) \implies \text{MemeDomaineFamille}(f_1, f_2) \Big)$$
+
+---
 
 # XVIII) Certification formelle et Assistant de preuve Coq
 
@@ -1538,9 +1597,10 @@ Cette démarche de vérification mécanique (*machine-checked*) permet de passer
 ---
 
 ```coq
+
 From Stdlib Require Import Lists.List.
 Import ListNotations.
-Require Import StdlibRelations.Relation_Operators.
+Require Import Stdlib.Relations.Relation_Operators.
 Import Relation_Operators.
 
 Section ClprolfFormalization.
@@ -1565,17 +1625,20 @@ Section ClprolfFormalization.
   Variable Composant        : Object -> Prop.
 
   (* Relations formelles *)
-  Variable Automatise  : Object -> Object -> Prop. (* Application -> TravailHumain *)
-  Variable Viser       : Object -> Object -> Prop. (* DomaineMetier -> ButHumain *)
-  Variable Partie      : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contient    : Object -> Object -> Prop. (* Subsystem -> Atome *)
-  Variable Combine     : Object -> Object -> Object -> Prop. (* Atome -> ComposantMetier -> ComposantTech *)
-  Variable Utilise     : Object -> Object -> Prop. (* ComposantTech -> AgentSysteme *)
-  Variable Simule      : Object -> Object -> Prop. (* Subsystem/Agent -> Portion Domaine *)
-  Variable Associe     : Object -> Object -> Prop. (* SupportTech/Worker -> Subsystem/Agent *)
-  Variable SubSet      : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
-  Variable Herite      : Object -> Object -> Prop. (* Composant Enfant -> Parent *)
-  Variable MemeDomaine : Object -> Object -> Prop. (* Préservation du domaine *)
+  Variable Automatise             : Object -> Object -> Prop. (* Application -> TravailHumain *)
+  Variable Viser                  : Object -> Object -> Prop. (* DomaineMetier -> ButHumain *)
+  Variable Partie                 : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contient               : Object -> Object -> Prop. (* Subsystem -> Atome *)
+  Variable Combine                : Object -> Object -> Object -> Prop. (* Atome -> ComposantMetier -> ComposantTech *)
+  Variable Utilise                : Object -> Object -> Prop. (* ComposantTech -> AgentSysteme *)
+  Variable Simule                 : Object -> Object -> Prop. (* Subsystem/Agent -> Portion Domaine *)
+  Variable Associe                : Object -> Object -> Prop. (* SupportTech/Worker -> Subsystem/Agent *)
+  Variable SubSet                 : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
+  Variable HeriteDirectComposant  : Object -> Object -> Prop. (* Composant Enfant -> Parent *)
+  Variable MemeDomaine            : Object -> Object -> Prop. (* Préservation du domaine *)
+
+  (* Clôture réflexive-transitive pour l'héritage des composants *)
+  Definition HeriteStarComposant := clos_refl_trans Object HeriteDirectComposant.
 
   (* ================================================================= *)
   (* 2. AXIOMES FONDAMENTAUX DE CLPROLF (SECTION XVI)                 *)
@@ -1638,7 +1701,7 @@ Section ClprolfFormalization.
   Axiom Axiom5_InheritanceDomainInvariance :
     forall c p : Object,
       Composant c -> Composant p ->
-      Herite c p ->
+      HeriteDirectComposant c p ->
       MemeDomaine c p.
 
   (* ================================================================= *)
@@ -1790,10 +1853,11 @@ Section ClprolfFormalization.
   Variable MethodesInterface      : Interface -> Type.
   Variable MemesMethodesPubliques : Object -> Interface -> Prop.
 
-  Variable Implemente : Object -> Interface -> Prop.
-  Variable HeriteDirect : Interface -> Interface -> Prop.
+  Variable Implemente           : Object -> Interface -> Prop.
+  Variable HeriteDirect         : Interface -> Interface -> Prop.
+  Variable MemeDomaineFamille   : Interface -> Interface -> Prop.
 
-  (* Clôture réflexive-transitive pour HeriteStar *)
+  (* Clôture réflexive-transitive pour HeriteStar des interfaces *)
   Definition HeriteStar := clos_refl_trans Interface HeriteDirect.
 
   (* PRÉDICAT MIROIR *)
@@ -1830,8 +1894,7 @@ Section ClprolfFormalization.
       (TargetTech f -> TargetTech t) /\
       (TargetAgentSyst f -> TargetAgentSyst t).
 
-  (* Axiome 4 : Unicité de la famille miroir et interdiction des traits directs
-     (Garantit qu'il existe un unique miroir f pour tout composant c) *)
+  (* Axiome 4 : Unicité de la famille miroir et interdiction des traits directs *)
   Axiom Contract_Axiom4_MirrorUniquenessAndNoDirectTrait :
     forall c : Object,
       Composant c ->
@@ -1845,15 +1908,30 @@ Section ClprolfFormalization.
       HeriteDirect t i ->
       Trait i.
 
+  (* Axiome 6 : Projection d'héritage (Isomorphisme d'héritage Miroir) *)
+  Axiom Contract_Axiom6_InheritanceProjection :
+    forall (c p : Object) (fc fp : Interface),
+      HeriteDirectComposant c p ->
+      MiroirDe fc c ->
+      MiroirDe fp p ->
+      HeriteDirect fc fp.
+
+  (* Axiome 7 : Invariance du Domaine pour les Familles *)
+  Axiom Contract_Axiom7_FamilyDomainInvariance :
+    forall (f1 f2 : Interface),
+      Famille f1 -> Famille f2 ->
+      HeriteDirect f1 f2 ->
+      MemeDomaineFamille f1 f2.
+
   (* Modélisation des instances d'objets *)
   Variable ObjectInstance : Type.
-  Variable TypeStatique   : ObjectInstance -> Interface.
+  Variable TypeStatique   : ObjectInstance -> Interface -> Prop.
   Variable InstanceDe     : ObjectInstance -> Object -> Prop.
 
   (* Axiome de typage objet à l'exécution *)
   Axiom Object_Typing_Law :
     forall (o : ObjectInstance) (f : Interface),
-      TypeStatique o = f ->
+      TypeStatique o f ->
       Famille f ->
       exists c : Object, Composant c /\ InstanceDe o c /\ Implemente c f.
 
@@ -1861,52 +1939,98 @@ Section ClprolfFormalization.
   Axiom Trait_Resolution_Law :
     forall (o : ObjectInstance) (t : Interface),
       Trait t ->
-      TypeStatique o = t ->
+      TypeStatique o t ->
       exists (f : Interface) (c : Object),
         Famille f /\
         HeriteStar f t /\
         InstanceDe o c /\
         Implemente c f.
 
-  (* Théorème 2 : Isomorphisme et Neutralité Miroir pour la Famille *)
+  (* ================================================================= *)
+  (* THÉORÈME 2 : ISOMORPHISME ET NEUTRALITÉ MIROIR                     *)
+  (* ================================================================= *)
+
   Theorem Theorem2_Mirror_Isomorphism_And_Neutrality :
     forall (o : ObjectInstance) (f : Interface),
       Famille f ->
-      TypeStatique o = f ->
-      exists c : Object, InstanceDe o c /\ MiroirDe f c.
+      TypeStatique o f ->
+      (exists! c : Object, InstanceDe o c) ->
+      exists! f' : Interface,
+        exists c : Object,
+          InstanceDe o c /\ MiroirDe f' c /\ HeriteStar f' f.
   Proof.
-    intros o f HFam HType.
-    destruct (Object_Typing_Law o f HType HFam) as [c [HComp [HInst HImpl]]].
-    exists c.
+    intros o f HFam HType [c [HInst HUniqC]].
+    destruct (Object_Typing_Law o f HType HFam) as [c0 [HComp [HInst0 HImpl0]]].
+    assert (EqC : c0 = c).
+    {
+      pose proof (HUniqC c0 HInst0) as H.
+      symmetry; exact H.
+    }
+    subst c0.
+    
+    pose proof (Contract_Axiom2_MirrorLaw c f HFam HImpl0) as HMiroirF.
+    destruct (Contract_Axiom4_MirrorUniquenessAndNoDirectTrait c HComp) as [[f' [HMiroir HUniqF]] _].
+    
+    assert (EqF : f = f').
+    {
+      pose proof (HUniqF f HMiroirF) as H.
+      symmetry; exact H.
+    }
+    subst f.
+
+    exists f'.
     split.
-    - exact HInst.
-    - apply Contract_Axiom2_MirrorLaw; assumption.
+    - exists c.
+      split.
+      + exact HInst.
+      + split.
+        * exact HMiroir.
+        * apply rt_refl.
+    - intros f'' [c1 [HInst1 [HMiroir1 HStar1]]].
+      assert (EqC1 : c1 = c).
+      {
+        pose proof (HUniqC c1 HInst1) as H.
+        symmetry; exact H.
+      }
+      subst c1.
+      apply HUniqF. exact HMiroir1.
   Qed.
+
+  (* ================================================================= *)
+  (* COROLLAIRE 2.1 : TRANSITIVITÉ UNIVERSELLE DU TYPAGE DE TRAIT     *)
+  (* ================================================================= *)
 
   Theorem Corollary_2_1_Trait_Transitivity_Mirror :
     forall (o : ObjectInstance) (t : Interface),
       Trait t ->
-      TypeStatique o = t ->
-      exists (f : Interface) (c : Object),
+      TypeStatique o t ->
+      (exists! c : Object, InstanceDe o c) ->
+      exists (f f' : Interface),
         HeriteStar f t /\
-        InstanceDe o c /\
-        MiroirDe f c.
+        (exists c : Object, InstanceDe o c /\ MiroirDe f' c /\ HeriteStar f' f).
   Proof.
-    intros o t HTrait HType.
-    
-    (* 1. Résolution de la chaîne de traits -> nous donne f, c et leurs propriétés *)
-    destruct (Trait_Resolution_Law o t HTrait HType) 
+    intros o t HTrait HType [c_real [HInstReal HUniqC_proof]].
+    destruct (Trait_Resolution_Law o t HTrait HType)
       as [f [c [HFam [HStar [HInst HImpl]]]]].
-      
-    (* 2. Obtention de MiroirDe f c à partir de f et c *)
-    pose proof (Contract_Axiom2_MirrorLaw c f HFam HImpl) as HMiroir.
+    
+    assert (EqC : c = c_real).
+    {
+      pose proof (HUniqC_proof c HInst) as H.
+      symmetry; exact H.
+    }
+    subst c.
 
-    (* 3. Fourniture des témoins et des 3 preuves dans l'ordre strict :
-          - HeriteStar f t
-          - InstanceDe o c
-          - MiroirDe f c  *)
-    exists f, c.
-    exact (conj HStar (conj HInst HMiroir)).
+    pose proof (Contract_Axiom2_MirrorLaw c_real f HFam HImpl) as HMiroirF.
+
+    exists f, f.
+    split.
+    - exact HStar.
+    - exists c_real.
+      split.
+      + exact HInstReal.
+      + split.
+        * exact HMiroirF.
+        * apply rt_refl.
   Qed.
 
 End ClprolfFormalization.
