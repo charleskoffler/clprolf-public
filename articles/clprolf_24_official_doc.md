@@ -1375,7 +1375,7 @@ $$\forall A \in \mathcal{A}, \quad \text{AxiomCompliant}(A) \iff \text{CheckerCo
 | **Axiom 5 (Section XVII)** — Trait Nature Invariance | `trait_interfaces_must_extend_only_trait_interfaces` | Forbids a `@ClTrait` from extending a `@ClFamily` (exclusive trait extension). |
 | **Axiom 1 (Section XVII)** — Mandatory Interface Typing | `clprolf_interfaces_must_have_target_role` | Forces `@ClFamily` to have exactly one target role and `@ClTrait` at least one. |
 | **Axiom 3 (Section XVII)** — Trait Inheritance by Interface | `inheriting_interface_role_must_match_trait_interface_target_role` | Guarantees role compatibility when an interface inherits a trait. |
-| **Axiom 1 (Section XVII)** — Inter-Family Inheritance | `family_interface_target_role_must_match_inherited_family_interface` | Ensures domain preservation when extending a `@ClFamily` with another. |
+| **Axiom 7, 6 (Section XVII)** — Inter-Family Inheritance | `family_interface_target_role_must_match_inherited_family_interface` | Ensures domain preservation when extending a `@ClFamily` with another. |
 | **Axiom 4 (Section XVI)** — Exhaustive Class Qualification | `optional_all_classes_should_have_clprolf_role` | Requires all concrete classes to possess a role (`@ClAgent`, `@ClWorker`, `@ClDraft`). |
 | **Strict Rule 2 (Optional)** — Exhaustive Interface Qualification | `optional_all_interfaces_should_have_clprolf_role` | Requires all interfaces to possess a role (`@ClFamily`, `@ClTrait`, `@ClFree`). |
 | **Axiom 4 (Section XVII)** — Direct Trait Prohibition | `optional_class_should_not_implement_trait_directly` | In strict mode, forbids direct implementation of `@ClTrait` by a class. |
