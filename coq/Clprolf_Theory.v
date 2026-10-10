@@ -26,17 +26,20 @@ Section ClprolfFormalization.
   Variable Component         : Object -> Prop.
 
   (* Formal Relations *)
-  Variable Automatizes  : Object -> Object -> Prop. (* Application -> HumanWork *)
-  Variable Targets      : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
-  Variable PartOf       : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contains     : Object -> Object -> Prop. (* Subsystem -> Atom *)
-  Variable Combines     : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
-  Variable Uses         : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
-  Variable Simulates    : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
-  Variable Associates   : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
-  Variable SubSet       : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
-  Variable Inherits     : Object -> Object -> Prop. (* Child Component -> Parent *)
-  Variable SameDomain   : Object -> Object -> Prop. (* Domain Preservation *)
+  Variable Automatizes             : Object -> Object -> Prop. (* Application -> HumanWork *)
+  Variable Targets                 : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
+  Variable PartOf                  : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contains                : Object -> Object -> Prop. (* Subsystem -> Atom *)
+  Variable Combines                : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
+  Variable Uses                    : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
+  Variable Simulates               : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
+  Variable Associates              : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
+  Variable SubSet                  : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
+  Variable InheritsDirectComponent : Object -> Object -> Prop. (* Child Component -> Parent *)
+  Variable SameDomain              : Object -> Object -> Prop. (* Domain Preservation *)
+
+  (* Reflexive-transitive closure for component inheritance *)
+  Definition InheritsStarComponent := clos_refl_trans Object InheritsDirectComponent.
 
   (* ================================================================= *)
   (* 2. FUNDAMENTAL CLPROLF AXIOMS (SECTION XVI)                       *)
@@ -58,7 +61,7 @@ Section ClprolfFormalization.
         ExecutionSupport th /\
         Targets M G.
 
-  (* Axiom 2: Structural Decomposition *)
+  (* Axiom 2: Structural Decomposition (m ⊆ M) *)
   Axiom Axiom2_StructuralDecomposition :
     forall A : Object,
       App A ->
@@ -99,7 +102,7 @@ Section ClprolfFormalization.
   Axiom Axiom5_InheritanceDomainInvariance :
     forall c p : Object,
       Component c -> Component p ->
-      Inherits c p ->
+      InheritsDirectComponent c p ->
       SameDomain c p.
 
   (* ================================================================= *)
@@ -112,7 +115,7 @@ Section ClprolfFormalization.
     | ClApp       : Object -> ClprolfComponent.         (* Application A *)
 
   (* ================================================================= *)
-  (* 4. REALIZATION SEMANTICS                                          *)
+  (* 4. REALIZATION SEMANTICS (MODEL <-> GRAMMAR BRIDGE)               *)
   (* ================================================================= *)
 
   Inductive Realizes : Object -> ClprolfComponent -> Prop :=
@@ -130,7 +133,34 @@ Section ClprolfFormalization.
         Realizes A (ClApp A).
 
   (* ================================================================= *)
-  (* 5. THEOREM 1 : ARCHITECTURAL EXPRESSIVENESS                       *)
+  (* 5. LOCAL EXPRESSIVENESS LEMMAS                                   *)
+  (* ================================================================= *)
+
+  Lemma Atom_Expressiveness :
+    forall (d c t : Object),
+      Atom d ->
+      BusinessComponent c ->
+      TechComponent t ->
+      Combines d c t ->
+      exists impl : ClprolfComponent, Realizes d impl.
+  Proof.
+    intros d c t HAtom HBusiness HTech HComb.
+    exists (ClAtom c t).
+    apply Realize_Atom with (c := c) (t := t); assumption.
+  Qed.
+
+  Lemma Subsystem_Expressiveness :
+    forall (p A : Object),
+      PartOf p A ->
+      exists impl : ClprolfComponent, Realizes p impl.
+  Proof.
+    intros p A HPart.
+    exists (ClSubsystem p).
+    apply Realize_Subsystem with (A := A); assumption.
+  Qed.
+
+  (* ================================================================= *)
+  (* 6. THEOREM 1: ARCHITECTURAL EXPRESSIVENESS                        *)
   (* ================================================================= *)
 
   Theorem Theorem1_Deep_Architectural_Expressiveness :
@@ -161,7 +191,7 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  (* 6. STATIC DECIDABILITY AND CHECKER (COROLLARY 1.1)                *)
+  (* 7. STATIC DECIDABILITY AND CHECKER (COROLLARY 1.1)                *)
   (* ================================================================= *)
 
   Variable CheckerRule : Type.
@@ -189,17 +219,33 @@ Section ClprolfFormalization.
     exact HApp.
   Qed.
 
+  Theorem Unified_Expressiveness_And_Decidability_Theorem :
+    forall (A p d : Object),
+      App A ->
+      PartOf p A ->
+      Contains p d ->
+      AxiomCompliant A ->
+      (exists (implApp implSub implAtom : ClprolfComponent),
+        Realizes A implApp /\ Realizes p implSub /\ Realizes d implAtom) /\
+      CheckerCompliant A.
+  Proof.
+    intros A p d HApp HPart HCont HAxiom.
+    split.
+    - apply Theorem1_Deep_Architectural_Expressiveness with (p := p) (d := d); assumption.
+    - apply Corollary_1_1_Static_Decidability; assumption.
+  Qed.
+
   (* ================================================================= *)
-  (* 7. CONTRACT THEORY AND MIRROR NEUTRALITY (SECTION XVII)          *)
+  (* 8. CONTRACT THEORY AND MIRROR NEUTRALITY (SECTION XVII)           *)
   (* ================================================================= *)
 
   Variable Interface : Type.
 
-  (* Interface Typology *)
+  (* Interface Classification *)
   Variable Family : Interface -> Prop.
   Variable Trait  : Interface -> Prop.
 
-  (* Contextual Polarity Cibles *)
+  (* Contextual Polarity Evaluation *)
   Variable TargetBusiness  : Interface -> Prop.
   Variable TargetTech      : Interface -> Prop.
   Variable TargetSystAgent : Interface -> Prop.
@@ -208,10 +254,11 @@ Section ClprolfFormalization.
   Variable InterfaceMethods      : Interface -> Type.
   Variable SamePublicMethods     : Object -> Interface -> Prop.
 
-  Variable Implements     : Object -> Interface -> Prop.
-  Variable InheritsDirect : Interface -> Interface -> Prop.
+  Variable Implements          : Object -> Interface -> Prop.
+  Variable InheritsDirect      : Interface -> Interface -> Prop.
+  Variable SameFamilyDomain    : Interface -> Interface -> Prop.
 
-  (* Interface Inheritance Closure: InheritsStar / Inherits* *)
+  (* Reflexive-transitive closure for interface InheritsStar *)
   Definition InheritsStar := clos_refl_trans Interface InheritsDirect.
 
   (* MIRROR PREDICATE *)
@@ -248,8 +295,7 @@ Section ClprolfFormalization.
       (TargetTech f -> TargetTech t) /\
       (TargetSystAgent f -> TargetSystAgent t).
 
-(* Axiom 4: Mirror Family Uniqueness and Direct Trait Prohibition
-     (Guarantees that a unique mirror f exists for every component c) *)
+  (* Axiom 4: Mirror Family Uniqueness and Direct Trait Prohibition *)
   Axiom Contract_Axiom4_MirrorUniquenessAndNoDirectTrait :
     forall c : Object,
       Component c ->
@@ -263,15 +309,30 @@ Section ClprolfFormalization.
       InheritsDirect t i ->
       Trait i.
 
-  (* Runtime Instance Modeling *)
+  (* Axiom 6: Inheritance Projection (Mirror Inheritance Isomorphism) *)
+  Axiom Contract_Axiom6_InheritanceProjection :
+    forall (c p : Object) (fc fp : Interface),
+      InheritsDirectComponent c p ->
+      MirrorOf fc c ->
+      MirrorOf fp p ->
+      InheritsDirect fc fp.
+
+  (* Axiom 7: Family Domain Invariance *)
+  Axiom Contract_Axiom7_FamilyDomainInvariance :
+    forall (f1 f2 : Interface),
+      Family f1 -> Family f2 ->
+      InheritsDirect f1 f2 ->
+      SameFamilyDomain f1 f2.
+
+  (* Object Instances Modeling *)
   Variable ObjectInstance : Type.
-  Variable StaticType     : ObjectInstance -> Interface.
+  Variable StaticType     : ObjectInstance -> Interface -> Prop.
   Variable InstanceOf     : ObjectInstance -> Object -> Prop.
 
-  (* Object Execution Typing Law *)
+  (* Runtime Object Typing Law *)
   Axiom Object_Typing_Law :
     forall (o : ObjectInstance) (f : Interface),
-      StaticType o = f ->
+      StaticType o f ->
       Family f ->
       exists c : Object, Component c /\ InstanceOf o c /\ Implements c f.
 
@@ -279,50 +340,98 @@ Section ClprolfFormalization.
   Axiom Trait_Resolution_Law :
     forall (o : ObjectInstance) (t : Interface),
       Trait t ->
-      StaticType o = t ->
+      StaticType o t ->
       exists (f : Interface) (c : Object),
         Family f /\
         InheritsStar f t /\
         InstanceOf o c /\
         Implements c f.
 
-  (* Theorem 2: Mirror Isomorphism and Neutrality Theorem *)
+  (* ================================================================= *)
+  (* THEOREM 2: MIRROR ISOMORPHISM AND NEUTRALITY                      *)
+  (* ================================================================= *)
+
   Theorem Theorem2_Mirror_Isomorphism_And_Neutrality :
     forall (o : ObjectInstance) (f : Interface),
       Family f ->
-      StaticType o = f ->
-      exists c : Object, InstanceOf o c /\ MirrorOf f c.
+      StaticType o f ->
+      (exists! c : Object, InstanceOf o c) ->
+      exists! f' : Interface,
+        exists c : Object,
+          InstanceOf o c /\ MirrorOf f' c /\ InheritsStar f' f.
   Proof.
-    intros o f HFam HType.
-    destruct (Object_Typing_Law o f HType HFam) as [c [HComp [HInst HImpl]]].
-    exists c.
+    intros o f HFam HType [c [HInst HUniqC]].
+    destruct (Object_Typing_Law o f HType HFam) as [c0 [HComp [HInst0 HImpl0]]].
+    assert (EqC : c0 = c).
+    {
+      pose proof (HUniqC c0 HInst0) as H.
+      symmetry; exact H.
+    }
+    subst c0.
+    
+    pose proof (Contract_Axiom2_MirrorLaw c f HFam HImpl0) as HMirrorF.
+    destruct (Contract_Axiom4_MirrorUniquenessAndNoDirectTrait c HComp) as [[f' [HMirror HUniqF]] _].
+    
+    assert (EqF : f = f').
+    {
+      pose proof (HUniqF f HMirrorF) as H.
+      symmetry; exact H.
+    }
+    subst f.
+
+    exists f'.
     split.
-    - exact HInst.
-    - apply Contract_Axiom2_MirrorLaw; assumption.
+    - exists c.
+      split.
+      + exact HInst.
+      + split.
+        * exact HMirror.
+        * apply rt_refl.
+    - intros f'' [c1 [HInst1 [HMirror1 HStar1]]].
+      assert (EqC1 : c1 = c).
+      {
+        pose proof (HUniqC c1 HInst1) as H.
+        symmetry; exact H.
+      }
+      subst c1.
+      apply HUniqF. exact HMirror1.
   Qed.
 
-  (* Corollary 2.1: General and Universal Transitivity of Trait Typing *)
+  (* ================================================================= *)
+  (* COROLLARY 2.1: GENERAL AND UNIVERSAL TRANSITIVITY OF TRAIT TYPING *)
+  (* ================================================================= *)
+
   Theorem Corollary_2_1_Trait_Transitivity_Mirror :
     forall (o : ObjectInstance) (t : Interface),
       Trait t ->
-      StaticType o = t ->
-      exists (f : Interface) (c : Object),
+      StaticType o t ->
+      (exists! c : Object, InstanceOf o c) ->
+      exists (f f' : Interface),
         InheritsStar f t /\
-        InstanceOf o c /\
-        MirrorOf f c.
+        (exists c : Object, InstanceOf o c /\ MirrorOf f' c /\ InheritsStar f' f).
   Proof.
-    intros o t HTrait HType.
-    
-    (* 1. Trait chain resolution gives us f, c and their properties *)
-    destruct (Trait_Resolution_Law o t HTrait HType) 
+    intros o t HTrait HType [c_real [HInstReal HUniqC_proof]].
+    destruct (Trait_Resolution_Law o t HTrait HType)
       as [f [c [HFam [HStar [HInst HImpl]]]]].
-      
-    (* 2. Deriving MirrorOf f c via Axiom 2 *)
-    pose proof (Contract_Axiom2_MirrorLaw c f HFam HImpl) as HMirror.
+    
+    assert (EqC : c = c_real).
+    {
+      pose proof (HUniqC_proof c HInst) as H.
+      symmetry; exact H.
+    }
+    subst c.
 
-    (* 3. Supplying witnesses and proof terms *)
-    exists f, c.
-    exact (conj HStar (conj HInst HMirror)).
+    pose proof (Contract_Axiom2_MirrorLaw c_real f HFam HImpl) as HMirrorF.
+
+    exists f, f.
+    split.
+    - exact HStar.
+    - exists c_real.
+      split.
+      + exact HInstReal.
+      + split.
+        * exact HMirrorF.
+        * apply rt_refl.
   Qed.
 
 End ClprolfFormalization.
