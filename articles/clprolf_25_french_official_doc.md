@@ -643,6 +643,7 @@ Permet de rester flexible. Elle n'est pas indispensable.
 public interface ExternalApi {
 }
 ```
+
 ---
 
 ## VIII.5) Utilisation des interfaces
@@ -680,6 +681,7 @@ Mais ces forçages ne devraient pas être fréquent.
 
 Il est possible d'utiliser `ClFree` pour rester strict uniquement sur les interfaces qu'on souhaite, et faire des ClFamily quand on souhaite plus de rigueur, sur des cas précis. Dans ce cas, même en mode strict, on reste ouvert et flexible.
 Les interfaces natives Java ou C# sont acceptées et considérées comme `ClFree`.
+
 ---
 
 ## VIII.6) "Loose Coupling" systématique par l'interface miroir
