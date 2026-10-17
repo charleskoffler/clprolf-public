@@ -455,7 +455,7 @@ Le framework agit surtout comme :
 
 # VII) Les Sous-systèmes (*Subsystems*) — Découpage et Organisation
 
-Dans **Clprolf**, la notion de **sous-système** est l'unité d'organisation logique qui donne son sens au modèle métier. Un sous-système regroupe un ensemble cohérent de `@ClAgent` (et leurs `@ClWorker` associés) pour simuler un domaine fonctionnel précis.
+Dans **Clprolf**, la notion de **sous-système** est l'unité d'organisation logique qui donne son sens au modèle métier. Un sous-système regroupe un ensemble cohérent de `@ClAgent` (et leurs `@ClWorker` associés) pour simuler un domaine fonctionnel précis. En Java, il est implémenté par un package, ou un module. L'équivalent en .NET C# est un namespace ou une assembly.
 
 ### 1. La règle du sous-système par défaut
 
@@ -1201,7 +1201,7 @@ Clprolf ajoute très peu de concepts.
 
 | Type de Prédicat | Prédicat | Signification & Rôle | Domaine / Type | Correspondance Clprolf |
 | --- | --- | --- | --- | --- |
-| **Objets & Entités** | $\text{App}(A)$ | $A$ est une application logicielle valide. | $A \in \mathcal{A}$ | Application globale |
+| **Objets & Entités** | $\text{AppAutom}(A)$ | $A$ est une application d'automatisation valide. | $A \in \mathcal{A}$ | Application globale |
 |  | $\text{TravailHumain}(h)$ | $h$ est l'activité/travail humain à mécaniser. | $h \in \mathcal{H}$ | Activité réelle |
 |  | $\text{ButHumain}(G)$ | $G$ est l'objectif final visé par/pour l'humain. | $G \in \mathcal{G}$ | But téléologique |
 |  | $\text{DomaineMetier}(\mathcal{M})$ | $\mathcal{M}$ est l'ensemble de toutes les intentions/règles. | $\mathcal{M} \subseteq \mathcal{D}$ | Modèle Métier |
@@ -1225,9 +1225,9 @@ Clprolf ajoute très peu de concepts.
  
 ## 2. Les Axiomes Fondamentaux
 
-### Axiome 1 — Automatisation du Travail Humain
+### Axiome 1 — Applications d'automatisation
 
-$$\forall A \; \Big( App(A) \implies \exists h \; \big( TravailHumain(h) \land Automatise(A, h) \big) \Big)$$
+$$\forall A \; \Big( AppAutom(A) \implies \exists h \; \big( TravailHumain(h) \land Automatise(A, h) \big) \Big)$$
 
 #### Décomposition du Travail Humain ($h$)
 
@@ -1237,7 +1237,7 @@ $$\forall h \; \Big( TravailHumain(h) \iff \exists G \, \exists \mathcal{M} \, \
 
 ### Axiome 2 — Décomposition Structurelle
 
-$$\forall A \; \Big( App(A) \implies \forall p \; \big( Partie(p, A) \implies \exists m \, \exists t \; ( m \subseteq \mathcal{M} \land SupportTech(t) \land Simule(p, m) \land Associe(t, p) ) \big) \Big)$$
+$$\forall A \; \Big( AppAutom(A) \implies \forall p \; \big( Partie(p, A) \implies \exists m \, \exists t \; ( m \subseteq \mathcal{M} \land SupportTech(t) \land Simule(p, m) \land Associe(t, p) ) \big) \Big)$$
 
 ---
 
@@ -1245,7 +1245,7 @@ $$\forall A \; \Big( App(A) \implies \forall p \; \big( Partie(p, A) \implies \e
 
 Chaque sous-système $p$ d'une application $A$ est composé d'atomes de domaine $d$. Un atome de domaine est l'union exclusive d'un composant métier $c$ et d'un composant technique $t$.
 
-$$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( Partie(p, A) \Rightarrow \forall d \; ( Contient(p, d) \Rightarrow Atome(d) \land \exists c \, \exists t \; (ComposantMetier(c) \land ComposantTech(t) \land Combine(d, c, t)) ) \big) \Big)$$
+$$\forall A \; \Big( AppAutom(A) \Rightarrow \forall p \; \big( Partie(p, A) \Rightarrow \forall d \; ( Contient(p, d) \Rightarrow Atome(d) \land \exists c \, \exists t \; (ComposantMetier(c) \land ComposantTech(t) \land Combine(d, c, t)) ) \big) \Big)$$
 
 **Règle de délégation fractale :**
 
@@ -1271,6 +1271,51 @@ $$\forall c, p \; \Big( \big(\text{Composant}(c) \land \text{Composant}(p) \land
 
 ---
 
+## Axiomes de Génération POO
+
+### Axiome Gen-POO-1 — Génération des Composants Concrets ($c \in C$)
+
+1. **Composant Métier (`@ClAgent`) :**
+
+$$\forall c \; \Big( \text{ComposantMetier}(c) \implies \exists \text{Classe} \in \mathcal{C}_{\text{poo}} \; \big( \text{Annote}(\text{Classe}, \text{@ClAgent}) \land \text{Realise}(\text{Classe}, c) \big) \Big)$$
+
+
+2. **Composant Technique (`@ClWorker`) :**
+
+$$\forall t \; \Big( \text{ComposantTech}(t) \implies \exists \text{Classe} \in \mathcal{C}_{\text{poo}} \; \big( \text{Annote}(\text{Classe}, \text{@ClWorker}) \land \text{Realise}(\text{Classe}, t) \big) \Big)$$
+
+
+3. **Agent Système (`@ClSystem`) :**
+
+$$\forall s \; \Big( \text{AgentSysteme}(s) \implies \exists \text{Classe} \in \mathcal{C}_{\text{poo}} \; \big( \text{Annote}(\text{Classe}, \text{@ClSystem}) \land \text{Realise}(\text{Classe}, s) \big) \Big)$$
+
+
+---
+
+### Axiome Gen-POO-2 — Génération des Interfaces Clprolf ($\mathcal{I} = F \cup T \subseteq \mathcal{I}_{\text{poo}}$)
+
+1. **Interface de Famille (`@ClFamily`) :**
+
+$$\forall f \; \Big( \text{Famille}(f) \implies \exists \text{InterfacePoo} \in \mathcal{I}_{\text{poo}} \; \big( \text{Annote}(\text{InterfacePoo}, \text{@ClFamily}) \land \text{Realise}(\text{InterfacePoo}, f) \big) \Big)$$
+
+
+2. **Interface de Trait (`@ClTrait`) :**
+
+$$\forall t \; \Big( \text{Trait}(t) \implies \exists \text{InterfacePoo} \in \mathcal{I}_{\text{poo}} \; \big( \text{Annote}(\text{InterfacePoo}, \text{@ClTrait}) \land \text{Realise}(\text{InterfacePoo}, t) \big) \Big)$$
+
+
+### Axiome Gen-POO-3 — Lien de Composition POO des Atomes
+
+$$\begin{aligned} \forall d \; \Big( \text{Atome}(d) \implies \exists c \, \exists t \; \big( & (\text{ComposantMetier}(c) \lor \text{AgentSysteme}(c)) \\ & \land \text{ComposantTech}(t) \\ & \land \text{CompositionPOO}(c, t) \big) \Big) \end{aligned}$$
+
+---
+
+### Axiome Gen-POO-4 — Réalisation des Sous-systèmes ($p \in \mathcal{P}$)
+
+$$\forall p \; \Big( Partie(p, A) \implies \exists Subsystem \in \mathcal{S}_{\text{clprolf}} \; \big( Realise(Subsystem, p) \big) \Big)$$
+
+---
+
 ## 3. Dictionnaire de Correspondance Canonique
 
 Le formalisme logique n'est pas une abstraction virtuelle, il calque au millimètre près les concepts concrets du framework :
@@ -1288,47 +1333,50 @@ Le formalisme logique n'est pas une abstraction virtuelle, il calque au millimè
 
 ---
 
-## 4. Théorème 1: Théorème d'Expressivité Architecturale
+
+## 4. Théorème 1 : Théorème d'Expressivité Architecturale
 
 ### Énoncé du Théorème
 
-Pour toute application globale $A$ pouvant être décrite de manière cohérente dans ce système formel, il existe une implémentation complète, exacte et sans angle mort dans le framework Clprolf qui la réalise.
+Pour toute application globale $A$ pouvant être décrite de manière cohérente dans ce système formel, il existe une implémentation complète, exacte et sans angle mort dans le framework Clprolf qui la réalise, dont chaque niveau d'abstraction est ancré dans le code concret par les **Axiomes de Génération POO** ($\text{Gen-POO-1}$ à $\text{Gen-POO-4}$).
 
+---
 
-### **Démonstration du Théorème d'Expressivité Architecturale et de Décidabilité Statique**
+### Démonstration du Théorème d'Expressivité Architecturale et de Décidabilité Statique
 
-La démonstration s'effectue en deux étapes : la réalisation structurelle par induction (Partie I), puis la décidabilité statique par le checker (Partie II).
+La démonstration s'effectue en deux étapes : la réalisation structurelle par induction appuyée sur la matérialisation POO (**Partie I**), puis la décidabilité statique par le checker (**Partie II**).
 
-#### **Partie I : Réalisation de l'Expressivité (par induction structurelle)**
+#### **Partie I : Réalisation de l'Expressivité (par induction structurelle et matérialisation POO)**
 
 1. **Cas de Base (L'Atome de Domaine) :**
-* *Donnée formelle :* Selon l'Axiome 3, l'unité minimale est l'atome $d$, défini par $\text{Combine}(d, c, t)$.
+* *Donnée formelle :* Selon l'Axiome 3, l'unité minimale est l'atome $d$, défini par $\text{Combine}(d, c, t)$ où $c$ est un composant métier (ou agent système) et $t$ un composant technique.
+* *Matérialisation POO :*
+* Par l'**Axiome Gen-POO-1**, l'existence du composant $c$ implique l'existence d'une classe POO munie de l'annotation `@ClAgent` (ou `@ClSystem`) qui le réalise : $\exists \text{Classe}_c \in \mathcal{C}_{\text{poo}} \; (\text{Annote}(\text{Classe}_c, \text{@ClAgent}) \land \text{Realise}(\text{Classe}_c, c))$.
+* Par l'**Axiome Gen-POO-1**, l'existence du composant $t$ implique l'existence d'une classe POO munie de l'annotation `@ClWorker` qui le réalise : $\exists \text{Classe}_t \in \mathcal{C}_{\text{poo}} \; (\text{Annote}(\text{Classe}_t, \text{@ClWorker}) \land \text{Realise}(\text{Classe}_t, t))$.
+* Par l'**Axiome Gen-POO-3**, la combinaison $\text{Combine}(d, c, t)$ de l'atome $d$ garantit l'existence d'un lien de composition POO entre ces deux classes ($\text{CompositionPOO}(c, t)$).
 
 
-* *Correspondance Clprolf :* Le framework possède l'abstraction native du binôme `@ClAgent` + `@ClWorker`. Le composant métier $c$ devient un Agent, le composant technique $t$ devient un Worker. Si le Worker $t$ est complexe, la règle de délégation garantit qu'il peut appeler des Agents Systèmes ($s$).
-
-
-* *Conclusion :* Clprolf sait encoder 100 % des briques atomiques de base.
+* *Conclusion :* Tout atome de domaine est intégralement matérialisé par des classes POO annotées et liées par composition.
 
 
 2. **Étape Inductive 1 (La Partie / Le Sous-système) :**
-* *Hypothèse d'induction :* Supposons que Clprolf sait encoder les atomes de domaine.
-* *Donnée formelle :* Selon l'Axiome 2, une partie $p$ de l'application est un ensemble fini d'atomes de domaine.
+* *Hypothèse d'induction :* Supposons que tout atome $d$ possède une réalisation POO valide.
+* *Donnée formelle :* Selon l'Axiome 2, une partie $p$ de l'application est un ensemble fini d'atomes de domaine ($p \in \mathcal{P}$).
+* *Matérialisation POO :* Par l'**Axiome Gen-POO-4**, l'existence de la partie $p$ implique la présence d'un sous-système Clprolf concret regroupant les classes et interfaces de cette partie :
+
+$$\exists \text{Subsystem} \in \mathcal{S}_{\text{clprolf}} \; \big( \text{Realise}(\text{Subsystem}, p) \big)$$
 
 
-* *Correspondance Clprolf :* Clprolf fournit le concept de `Subsystem`. Un sous-système est un conteneur regroupant un ensemble fini d'Agents et de Workers interconnectés.
-
-
-* *Conclusion :* La partie $p$ est intégralement réalisable sous forme de sous-système Clprolf.
+* *Conclusion :* La partie $p$ est intégralement réalisée sous forme d'un `Subsystem` Clprolf dans l'organisation du code.
 
 
 3. **Étape Inductive 2 (L'Application Globale) :**
-* *Hypothèse d'induction :* Supposons que Clprolf sait encoder les sous-systèmes.
-* *Donnée formelle :* Selon l'Axiome 1, l'application complète $A$ est l'union finie de toutes ses parties ($A = \bigcup P_i$).
+* *Hypothèse d'induction :* Supposons que toute partie $p$ est réalisée sous forme de sous-système Clprolf.
+* *Donnée formelle :* Selon l'Axiome 1, l'application complète $A$ est l'assemblage de toutes ses parties ($A = \bigcup p_i$).
+* *Conclusion :* L'application $A$ est réalisée par l'orchestration globale de l'ensemble des sous-systèmes Clprolf dérivés.
 
 
-* *Correspondance Clprolf :* L'application globale Clprolf finale assemble, déploie et orchestre nativement l'ensemble de ces sous-systèmes.
-
+---
 
 #### **Partie II : Décidabilité Statique via $\text{ConformeChecker}(A)$**
 
@@ -1338,9 +1386,14 @@ Le prédicat de conformité automatisée est défini par :
 
 $$\text{ConformeChecker}(A) \iff \Big( \forall r \in K, \; \text{VerifieRègle}(A, r) \Big)$$
 
-**Corollaire 1.1 (Décidabilité statique) :** Pour toute application $A \in \mathcal{A}$, la conformité globale de $A$ à l'ensemble du système axiomatique (Section XVI et Section XVII) est entièrement décidable par analyse statique du bytecode ou des métadonnées via l'évaluation de $\text{ConformeChecker}(A)$ :
+**Corollaire 1.1 (Décidabilité statique) :** Pour toute application $A \in \mathcal{A}$, la conformité globale de $A$ à l'ensemble du système axiomatique est entièrement décidable par analyse statique du bytecode ou des métadonnées via l'évaluation de $\text{ConformeChecker}(A)$ :
 
 $$\forall A \in \mathcal{A}, \quad \text{ConformeAxiomes}(A) \iff \text{ConformeChecker}(A)$$
+
+$$\text{Q.E.D.}$$
+
+---
+
 
 ##### **Table de correspondance canonique (Axiomes vs Règles du Checker)**
 
@@ -1361,13 +1414,7 @@ $$\forall A \in \mathcal{A}, \quad \text{ConformeAxiomes}(A) \iff \text{Conforme
 
 $$\text{Q.E.D.}$$
 
-
-## 5. Conclusion Finale — La Force de la Structure Fractale
-
-Cette démonstration prouve que Clprolf n'est pas seulement expressif au sens computationnel brut (Turing), mais au sens architectural : tout système composé de composants métiers et techniques — ce qui inclut l'intégralité des applications logicielles du monde réel — possède une représentation canonique et fractale dans Clprolf.
-
 ---
-
 
 # XVII) Formalisation mathématique de la neutralité des contrats
 
@@ -1614,7 +1661,7 @@ Section ClprolfFormalization.
   Variable Object : Type.
 
   (* Prédicats d'objets *)
-  Variable App               : Object -> Prop.
+  Variable AppAutom               : Object -> Prop.
   Variable TravailHumain    : Object -> Prop.
   Variable ButHumain        : Object -> Prop.
   Variable DomaineMetier    : Object -> Prop.
@@ -1649,7 +1696,7 @@ Section ClprolfFormalization.
   (* Axiome 1 : Téléologie - Automatisation du Travail Humain *)
   Axiom Axiom1_Teleologie :
     forall A : Object,
-      App A ->
+      AppAutom A ->
       exists h : Object, TravailHumain h /\ Automatise A h.
 
   (* Décomposition formelle du Travail Humain *)
@@ -1665,7 +1712,7 @@ Section ClprolfFormalization.
   (* Axiome 2 : Décomposition Structurelle (m ⊆ M) *)
   Axiom Axiom2_DecompositionStructurelle :
     forall A : Object,
-      App A ->
+      AppAutom A ->
       forall p : Object,
         Partie p A ->
         exists (M m t : Object),
@@ -1706,138 +1753,123 @@ Section ClprolfFormalization.
       HeriteDirectComposant c p ->
       MemeDomaine c p.
 
+ (* ================================================================= *)
+  (* 3. AXIOMES DE GÉNÉRATION POO (GEN-POO-1 à GEN-POO-4)                *)
   (* ================================================================= *)
-  (* 3. GRAMMAIRE (AST) DU FRAMEWORK CLPROLF                           *)
+
+  Variable ClassPOO     : Type.
+  Variable InterfacePOO : Type.
+  Variable SubsystemPOO : Type.
+
+  Variable AnnoteClass     : ClassPOO -> Object -> Prop. (* Ex: @ClAgent, @ClWorker *)
+  Variable RealiseClass     : ClassPOO -> Object -> Prop.
+  Variable CompositionPOO   : ClassPOO -> ClassPOO -> Prop.
+  Variable RealiseSubsystem : SubsystemPOO -> Object -> Prop.
+
+  (* Gen-POO-1 : Réalisation des composants concrets par des classes POO *)
+  Axiom Gen_POO_1_Agent :
+    forall c : Object,
+      ComposantMetier c ->
+      exists cl : ClassPOO, AnnoteClass cl c /\ RealiseClass cl c.
+
+  Axiom Gen_POO_1_Worker :
+    forall t : Object,
+      ComposantTech t ->
+      exists cl : ClassPOO, AnnoteClass cl t /\ RealiseClass cl t.
+
+  Axiom Gen_POO_1_System :
+    forall s : Object,
+      AgentSysteme s ->
+      exists cl : ClassPOO, AnnoteClass cl s /\ RealiseClass cl s.
+
+  (* Gen-POO-3 : Lien de composition POO entre les classes sous-jacentes à l'atome *)
+  Axiom Gen_POO_3_AtomComposition :
+    forall (d c t : Object),
+      Atome d ->
+      Combine d c t ->
+      exists (cl_c cl_t : ClassPOO),
+        RealiseClass cl_c c /\
+        RealiseClass cl_t t /\
+        CompositionPOO cl_c cl_t.
+
+  (* Gen-POO-4 : Réalisation des parties de l'application par des sous-systèmes *)
+  Axiom Gen_POO_4_Subsystem :
+    forall (p A : Object),
+      Partie p A ->
+      exists sub : SubsystemPOO, RealiseSubsystem sub p.
+
+  (* ================================================================= *)
+  (* 4. GRAMMAIRE DU CODE POO CONCRET MATÉRIALISÉ                      *)
   (* ================================================================= *)
 
   Inductive ClprolfComponent : Type :=
-    | ClAtom      : Object -> Object -> ClprolfComponent (* Atome (c, t) *)
-    | ClSubsystem : Object -> ClprolfComponent          (* Sous-système p *)
-    | ClApp       : Object -> ClprolfComponent.         (* Application A *)
+    | ClAtomCode      : ClassPOO -> ClassPOO -> ClprolfComponent (* Paire de classes POO liées *)
+    | ClSubsystemCode : SubsystemPOO -> ClprolfComponent        (* Package / Namespace POO *)
+    | ClAppCode       : Object -> ClprolfComponent.              (* Application unifiée *)
 
   (* ================================================================= *)
-  (* 4. SÉMANTIQUE DE RÉALISATION (PONT MODÈLE <-> GRAMMAIRE)          *)
+  (* 5. SÉMANTIQUE DE RÉALISATION BASÉE SUR LES ARTÉFACTS POO           *)
   (* ================================================================= *)
 
   Inductive Realizes : Object -> ClprolfComponent -> Prop :=
-    | Realize_Atom : forall (d c t : Object),
+    | Realize_Atom_Via_OOP : forall (d c t : Object) (cl_c cl_t : ClassPOO),
         Atome d ->
-        ComposantMetier c ->
-        ComposantTech t ->
         Combine d c t ->
-        Realizes d (ClAtom c t)
-    | Realize_Subsystem : forall (p A : Object),
+        RealiseClass cl_c c ->
+        RealiseClass cl_t t ->
+        CompositionPOO cl_c cl_t ->
+        Realizes d (ClAtomCode cl_c cl_t)
+
+    | Realize_Subsystem_Via_OOP : forall (p A : Object) (sub : SubsystemPOO),
         Partie p A ->
-        Realizes p (ClSubsystem p)
+        RealiseSubsystem sub p ->
+        Realizes p (ClSubsystemCode sub)
+
     | Realize_App : forall (A : Object),
-        App A ->
-        Realizes A (ClApp A).
+        AppAutom A ->
+        Realizes A (ClAppCode A).
 
   (* ================================================================= *)
-  (* 5. LEMMES D'EXPRESSIVITÉ LOCAUX                                   *)
-  (* ================================================================= *)
-
-  Lemma Atom_Expressiveness :
-    forall (d c t : Object),
-      Atome d ->
-      ComposantMetier c ->
-      ComposantTech t ->
-      Combine d c t ->
-      exists impl : ClprolfComponent, Realizes d impl.
-  Proof.
-    intros d c t HAtome HMetier HTech HComb.
-    exists (ClAtom c t).
-    apply Realize_Atom with (c := c) (t := t); assumption.
-  Qed.
-
-  Lemma Subsystem_Expressiveness :
-    forall (p A : Object),
-      Partie p A ->
-      exists impl : ClprolfComponent, Realizes p impl.
-  Proof.
-    intros p A HPart.
-    exists (ClSubsystem p).
-    apply Realize_Subsystem with (A := A); assumption.
-  Qed.
-
-  (* ================================================================= *)
-  (* 6. THÉORÈME 1 : EXPRESSIVITÉ ARCHITECTURALE                       *)
+  (* 6. THÉORÈME 1                                                        *)
   (* ================================================================= *)
 
   Theorem Theorem1_Deep_Architectural_Expressiveness :
     forall (A p d : Object),
-      App A ->
+      AppAutom A ->
       Partie p A ->
       Contient p d ->
-      exists (implApp : ClprolfComponent) 
-             (implSub : ClprolfComponent) 
-             (implAtom : ClprolfComponent),
+      exists (implApp implSub implAtom : ClprolfComponent),
         Realizes A implApp /\
         Realizes p implSub /\
         Realizes d implAtom.
   Proof.
     intros A p d HApp HPart HCont.
+
+    (* 1. Extraction de la structure atomique via Axiome 3 *)
     destruct (Axiom3_CompositionAtomique_Et_Fractale A p HPart) as [HAtomRule _].
     destruct (HAtomRule d HCont) as [HAtom [c [t [HMetier [HTech HComb]]]]].
 
-    exists (ClApp A).
-    exists (ClSubsystem p).
-    exists (ClAtom c t).
+    (* 2. Application de Gen-POO-3 pour extraire les classes POO et la composition *)
+    destruct (Gen_POO_3_AtomComposition d c t HAtom HComb) 
+      as [cl_c [cl_t [HRealC [HRealT HCompPOO]]]].
+
+    (* 3. Application de Gen-POO-4 pour extraire le sous-système concret *)
+    destruct (Gen_POO_4_Subsystem p A HPart) as [sub HRealSub].
+
+    (* 4. Témoins concrets basés sur le code POO généré *)
+    exists (ClAppCode A).
+    exists (ClSubsystemCode sub).
+    exists (ClAtomCode cl_c cl_t).
 
     split.
     - apply Realize_App. exact HApp.
     - split.
-      + apply Realize_Subsystem with (A := A). exact HPart.
-      + apply Realize_Atom with (c := c) (t := t); assumption.
+      + apply Realize_Subsystem_Via_OOP with (A := A) (sub := sub); assumption.
+      + apply Realize_Atom_Via_OOP with (c := c) (t := t) (cl_c := cl_c) (cl_t := cl_t); assumption.
   Qed.
 
   (* ================================================================= *)
-  (* 7. DÉCIDABILITÉ STATIQUE ET CHECKER (COROLLAIRE 1.1)               *)
-  (* ================================================================= *)
-
-  Variable RegleChecker : Type.
-  Variable VerifieRegle : Object -> RegleChecker -> Prop.
-  Variable ListeReglesChecker : list RegleChecker.
-
-  Definition ConformeChecker (A : Object) : Prop :=
-    forall r : RegleChecker, In r ListeReglesChecker -> VerifieRegle A r.
-
-  Definition ConformeAxiomes (A : Object) : Prop :=
-    App A /\ forall p d : Object, Partie p A -> Contient p d -> Atome d.
-
-  Axiom Checker_Soundness_And_Completeness :
-    forall (A : Object),
-      App A ->
-      (ConformeAxiomes A <-> ConformeChecker A).
-
-  Corollary Corollary_1_1_Corollaire_Decidabilite_Statique :
-    forall (A : Object),
-      App A ->
-      (ConformeAxiomes A <-> ConformeChecker A).
-  Proof.
-    intros A HApp.
-    apply Checker_Soundness_And_Completeness.
-    exact HApp.
-  Qed.
-
-  Theorem Unified_Expressiveness_And_Decidability_Theorem :
-    forall (A p d : Object),
-      App A ->
-      Partie p A ->
-      Contient p d ->
-      ConformeAxiomes A ->
-      (exists (implApp implSub implAtom : ClprolfComponent),
-        Realizes A implApp /\ Realizes p implSub /\ Realizes d implAtom) /\
-      ConformeChecker A.
-  Proof.
-    intros A p d HApp HPart HCont HAxiom.
-    split.
-    - apply Theorem1_Deep_Architectural_Expressiveness with (p := p) (d := d); assumption.
-    - apply Corollary_1_1_Corollaire_Decidabilite_Statique; assumption.
-  Qed.
-
-  (* ================================================================= *)
-  (* 8. THÉORIE DES CONTRATS ET DU NEUTRALISME MIROIR (SECTION XVII)   *)
+  (* 7. THÉORIE DES CONTRATS ET DU NEUTRALISME MIROIR (SECTION XVII)   *)
   (* ================================================================= *)
 
   Variable Interface : Type.

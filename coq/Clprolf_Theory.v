@@ -13,7 +13,7 @@ Section ClprolfFormalization.
   Variable Object : Type.
 
   (* Object Predicates *)
-  Variable App               : Object -> Prop.
+  Variable AutomApp               : Object -> Prop.
   Variable HumanWork         : Object -> Prop.
   Variable HumanGoal         : Object -> Prop.
   Variable BusinessDomain    : Object -> Prop.
@@ -48,7 +48,7 @@ Section ClprolfFormalization.
   (* Axiom 1: Teleology - Mechanization of Human Work *)
   Axiom Axiom1_Teleology :
     forall A : Object,
-      App A ->
+      AutomApp A ->
       exists h : Object, HumanWork h /\ Automatizes A h.
 
   (* Formal Decomposition of Human Work *)
@@ -64,7 +64,7 @@ Section ClprolfFormalization.
   (* Axiom 2: Structural Decomposition (m ⊆ M) *)
   Axiom Axiom2_StructuralDecomposition :
     forall A : Object,
-      App A ->
+      AutomApp A ->
       forall p : Object,
         PartOf p A ->
         exists (M m t : Object),
@@ -105,89 +105,119 @@ Section ClprolfFormalization.
       InheritsDirectComponent c p ->
       SameDomain c p.
 
+ (* ================================================================= *)
+  (* 3. OOP GENERATION AXIOMS (GEN-OOP-1 TO GEN-OOP-4)                  *)
   (* ================================================================= *)
-  (* 3. FRAMEWORK GRAMMAR (AST)                                        *)
+
+  Variable OopClass     : Type.
+  Variable OopInterface : Type.
+  Variable OopSubsystem : Type.
+
+  Variable AnnotatesClass   : OopClass -> Object -> Prop. (* e.g., @ClAgent, @ClWorker *)
+  Variable RealizesClass    : OopClass -> Object -> Prop.
+  Variable OopComposition   : OopClass -> OopClass -> Prop.
+  Variable RealizesSubsystem: OopSubsystem -> Object -> Prop.
+
+  (* Gen-OOP-1: Concrete components realized by OOP classes *)
+  Axiom Gen_OOP_1_Agent :
+    forall c : Object,
+      BusinessComponent c ->
+      exists cl : OopClass, AnnotatesClass cl c /\ RealizesClass cl c.
+
+  Axiom Gen_OOP_1_Worker :
+    forall t : Object,
+      TechComponent t ->
+      exists cl : OopClass, AnnotatesClass cl t /\ RealizesClass cl t.
+
+  Axiom Gen_OOP_1_System :
+    forall s : Object,
+      SystemAgent s ->
+      exists cl : OopClass, AnnotatesClass cl s /\ RealizesClass cl s.
+
+  (* Gen-OOP-3: Composition link between underlying OOP classes of an Atom *)
+  Axiom Gen_OOP_3_AtomComposition :
+    forall (d c t : Object),
+      Atom d ->
+      Combines d c t ->
+      exists (cl_c cl_t : OopClass),
+        RealizesClass cl_c c /\
+        RealizesClass cl_t t /\
+        OopComposition cl_c cl_t.
+
+  (* Gen-OOP-4: Realization of application parts by subsystems *)
+  Axiom Gen_OOP_4_Subsystem :
+    forall (p A : Object),
+      PartOf p A ->
+      exists sub : OopSubsystem, RealizesSubsystem sub p.
+
+  (* ================================================================= *)
+  (* 4. GRAMMAR OF MATERIALIZED CONCRETE OOP CODE                     *)
   (* ================================================================= *)
 
   Inductive ClprolfComponent : Type :=
-    | ClAtom      : Object -> Object -> ClprolfComponent (* Atom (c, t) *)
-    | ClSubsystem : Object -> ClprolfComponent          (* Subsystem p *)
-    | ClApp       : Object -> ClprolfComponent.         (* Application A *)
+    | ClAtomCode      : OopClass -> OopClass -> ClprolfComponent (* Pair of linked OOP classes *)
+    | ClSubsystemCode : OopSubsystem -> ClprolfComponent        (* Package / Namespace *)
+    | ClAppCode       : Object -> ClprolfComponent.              (* Unified Application *)
 
   (* ================================================================= *)
-  (* 4. REALIZATION SEMANTICS (MODEL <-> GRAMMAR BRIDGE)               *)
+  (* 5. REALIZATION SEMANTICS BASED ON OOP ARTEFACTS                   *)
   (* ================================================================= *)
 
   Inductive Realizes : Object -> ClprolfComponent -> Prop :=
-    | Realize_Atom : forall (d c t : Object),
+    | Realize_Atom_Via_OOP : forall (d c t : Object) (cl_c cl_t : OopClass),
         Atom d ->
-        BusinessComponent c ->
-        TechComponent t ->
         Combines d c t ->
-        Realizes d (ClAtom c t)
-    | Realize_Subsystem : forall (p A : Object),
+        RealizesClass cl_c c ->
+        RealizesClass cl_t t ->
+        OopComposition cl_c cl_t ->
+        Realizes d (ClAtomCode cl_c cl_t)
+
+    | Realize_Subsystem_Via_OOP : forall (p A : Object) (sub : OopSubsystem),
         PartOf p A ->
-        Realizes p (ClSubsystem p)
+        RealizesSubsystem sub p ->
+        Realizes p (ClSubsystemCode sub)
+
     | Realize_App : forall (A : Object),
-        App A ->
-        Realizes A (ClApp A).
+        AutomApp A ->
+        Realizes A (ClAppCode A).
 
   (* ================================================================= *)
-  (* 5. LOCAL EXPRESSIVENESS LEMMAS                                   *)
-  (* ================================================================= *)
-
-  Lemma Atom_Expressiveness :
-    forall (d c t : Object),
-      Atom d ->
-      BusinessComponent c ->
-      TechComponent t ->
-      Combines d c t ->
-      exists impl : ClprolfComponent, Realizes d impl.
-  Proof.
-    intros d c t HAtom HBusiness HTech HComb.
-    exists (ClAtom c t).
-    apply Realize_Atom with (c := c) (t := t); assumption.
-  Qed.
-
-  Lemma Subsystem_Expressiveness :
-    forall (p A : Object),
-      PartOf p A ->
-      exists impl : ClprolfComponent, Realizes p impl.
-  Proof.
-    intros p A HPart.
-    exists (ClSubsystem p).
-    apply Realize_Subsystem with (A := A); assumption.
-  Qed.
-
-  (* ================================================================= *)
-  (* 6. THEOREM 1: ARCHITECTURAL EXPRESSIVENESS                        *)
+  (* 6. THEOREM 1: ARCHITECTURAL EXPRESSIVENESS                         *)
   (* ================================================================= *)
 
   Theorem Theorem1_Deep_Architectural_Expressiveness :
     forall (A p d : Object),
-      App A ->
+      AutomApp A ->
       PartOf p A ->
       Contains p d ->
-      exists (implApp : ClprolfComponent) 
-             (implSub : ClprolfComponent) 
-             (implAtom : ClprolfComponent),
+      exists (implApp implSub implAtom : ClprolfComponent),
         Realizes A implApp /\
         Realizes p implSub /\
         Realizes d implAtom.
   Proof.
     intros A p d HApp HPart HCont.
+
+    (* 1. Extract atomic structure using Axiom 3 *)
     destruct (Axiom3_AtomicComposition_And_Fractal A p HPart) as [HAtomRule _].
     destruct (HAtomRule d HCont) as [HAtom [c [t [HBusiness [HTech HComb]]]]].
 
-    exists (ClApp A).
-    exists (ClSubsystem p).
-    exists (ClAtom c t).
+    (* 2. Apply Gen-OOP-3 to obtain OOP classes and composition *)
+    destruct (Gen_OOP_3_AtomComposition d c t HAtom HComb) 
+      as [cl_c [cl_t [HRealC [HRealT HOopComp]]]].
+
+    (* 3. Apply Gen-OOP-4 to obtain concrete subsystem *)
+    destruct (Gen_OOP_4_Subsystem p A HPart) as [sub HRealSub].
+
+    (* 4. Witnesses based on generated OOP code *)
+    exists (ClAppCode A).
+    exists (ClSubsystemCode sub).
+    exists (ClAtomCode cl_c cl_t).
 
     split.
     - apply Realize_App. exact HApp.
     - split.
-      + apply Realize_Subsystem with (A := A). exact HPart.
-      + apply Realize_Atom with (c := c) (t := t); assumption.
+      + apply Realize_Subsystem_Via_OOP with (A := A) (sub := sub); assumption.
+      + apply Realize_Atom_Via_OOP with (c := c) (t := t) (cl_c := cl_c) (cl_t := cl_t); assumption.
   Qed.
 
   (* ================================================================= *)
@@ -202,16 +232,16 @@ Section ClprolfFormalization.
     forall r : CheckerRule, In r CheckerRuleList -> VerifiesRule A r.
 
   Definition AxiomCompliant (A : Object) : Prop :=
-    App A /\ forall p d : Object, PartOf p A -> Contains p d -> Atom d.
+    AutomApp A /\ forall p d : Object, PartOf p A -> Contains p d -> Atom d.
 
   Axiom Checker_Soundness_And_Completeness :
     forall (A : Object),
-      App A ->
+      AutomApp A ->
       (AxiomCompliant A <-> CheckerCompliant A).
 
   Corollary Corollary_1_1_Static_Decidability :
     forall (A : Object),
-      App A ->
+      AutomApp A ->
       (AxiomCompliant A <-> CheckerCompliant A).
   Proof.
     intros A HApp.
@@ -221,7 +251,7 @@ Section ClprolfFormalization.
 
   Theorem Unified_Expressiveness_And_Decidability_Theorem :
     forall (A p d : Object),
-      App A ->
+      AutomApp A ->
       PartOf p A ->
       Contains p d ->
       AxiomCompliant A ->

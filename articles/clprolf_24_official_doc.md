@@ -471,7 +471,7 @@ The framework mainly acts as:
 
 ## VII) Subsystems — Decomposition and Organization
 
-In **Clprolf**, the concept of a **subsystem** is the logical organizational unit that gives meaning to the business model. A subsystem groups a coherent set of `@ClAgent` components (and their associated `@ClWorker` components) to simulate a specific functional domain.
+In **Clprolf**, the concept of a **subsystem** is the logical organizational unit that gives meaning to the business model. A subsystem groups a coherent set of `@ClAgent` components (and their associated `@ClWorker` components) to simulate a specific functional domain. In Java, it is implemented by a package or a module. The equivalent in .NET (C#) is a namespace or an assembly.
 
 ### 1. The Default Subsystem Rule
 
@@ -1232,7 +1232,7 @@ ClFree
 
 | Predicate Type | Predicate | Meaning & Role | Domain / Type | Clprolf Mapping |
 | --- | --- | --- | --- | --- |
-| **Objects & Entities** | $\text{App}(A)$ | $A$ is a valid software application. | $A \in \mathcal{A}$ | Global Application |
+| **Objects & Entities** | $\text{AutomApp}(A)$ | $A$ is a valid automation application. | $A \in \mathcal{A}$ | Global Application |
 |  | $\text{HumanWork}(h)$ | $h$ is the human activity/work to mechanize. | $h \in \mathcal{H}$ | Real-world Activity |
 |  | $\text{HumanGoal}(G)$ | $G$ is the final objective targeted for/by the human. | $G \in \mathcal{G}$ | Teleological Goal |
 |  | $\text{BusinessDomain}(\mathcal{M})$ | $\mathcal{M}$ is the set of all intentions/business rules. | $\mathcal{M} \subseteq \mathcal{D}$ | Business Domain Model |
@@ -1257,19 +1257,19 @@ ClFree
 
 ## 2. Fundamental Axioms
 
-### Axiom 1 — Automation of Human Work
+### Axiom 1 — Automation Applications
 
-$$\forall A \; \Big( App(A) \implies \exists h \; \big( HumanWork(h) \land Automates(A, h) \big) \Big)$$
+$$\forall A \; \Big( AutomApp(A) \implies \exists h \; \big( HumanWork(h) \land Automates(A, h) \big) \Big)$$
 
 #### Decomposition of Human Work ($h$)
 
-$$\forall h \; \Big( HumanWork(h) \iff \exists G \, \exists \mathcal{M} \, \exists t_h \; \big( HumanGoal(G) \land BusinessDomain(\mathcal{M}) \land ExecutionSupport(t_h) \land Target(\mathcal{M}, G) \big) \Big)$$
+$$\forall h \; \Big( HumanWork(h) \iff \exists G \, \exists \mathcal{M} \, \exists t_h \; \big( HumanGoal(G) \land BusinessDomain(\mathcal{M}) \land ExecutionSupport(t_h) \land Targets(\mathcal{M}, G) \big) \Big)$$
 
 ---
 
 ### Axiom 2 — Structural Decomposition
 
-$$\forall A \; \Big( App(A) \implies \forall p \; \big( Part(p, A) \implies \exists m \, \exists t \; ( m \subseteq \mathcal{M} \land TechSupport(t) \land Simulates(p, m) \land Associates(t, p) ) \big) \Big)$$
+$$\forall A \; \Big( AutomApp(A) \implies \forall p \; \big( Part(p, A) \implies \exists m \, \exists t \; ( m \subseteq \mathcal{M} \land TechSupport(t) \land Simulates(p, m) \land Associates(t, p) ) \big) \Big)$$
 
 ---
 
@@ -1277,7 +1277,7 @@ $$\forall A \; \Big( App(A) \implies \forall p \; \big( Part(p, A) \implies \exi
 
 Every subsystem $p$ of an application $A$ is composed of domain atoms $d$. A domain atom is the exclusive union of a business component $c$ and a technical component $t$.
 
-$$\forall A \; \Big( App(A) \Rightarrow \forall p \; \big( Part(p, A) \Rightarrow \forall d \; ( Contains(p, d) \Rightarrow Atom(d) \land \exists c \, \exists t \; (BusinessComponent(c) \land TechComponent(t) \land Combines(d, c, t)) ) \big) \Big)$$
+$$\forall A \; \Big( AutomApp(A) \Rightarrow \forall p \; \big( Part(p, A) \Rightarrow \forall d \; ( Contains(p, d) \Rightarrow Atom(d) \land \exists c \, \exists t \; (BusinessComponent(c) \land TechComponent(t) \land Combines(d, c, t)) ) \big) \Big)$$
 
 **Fractal Delegation Rule:**
 
@@ -1303,6 +1303,52 @@ $$\forall c, p \; \Big( \big(\text{Component}(c) \land \text{Component}(p) \land
 
 ---
 
+
+## Axiom Gen-OOP-1 — Concrete Component Generation ($c \in C$)
+
+1. **Domain Component (`@ClAgent`):**
+
+$$\forall c \; \Big( DomainComponent(c) \implies \exists Class \in \mathcal{C}_{\text{oop}} \; \big( AnnotatedWith(Class, \text{@ClAgent}) \land Realizes(Class, c) \big) \Big)$$
+
+
+2. **Technical Component (`@ClWorker`):**
+
+$$\forall t \; \Big( TechComponent(t) \implies \exists Class \in \mathcal{C}_{\text{oop}} \; \big( AnnotatedWith(Class, \text{@ClWorker}) \land Realizes(Class, t) \big) \Big)$$
+
+
+3. **System Agent (`@ClSystem`):**
+
+$$\forall s \; \Big( SystemAgent(s) \implies \exists Class \in \mathcal{C}_{\text{oop}} \; \big( AnnotatedWith(Class, \text{@ClSystem}) \land Realizes(Class, s) \big) \Big)$$
+
+---
+
+### Axiom Gen-OOP-2 — Clprolf Interface Generation ($\mathcal{I} = F \cup T \subseteq \mathcal{I}_{\text{oop}}$)
+
+1. **Family Interface (`@ClFamily`):**
+
+$$\forall f \; \Big( Family(f) \implies \exists IntOop \in \mathcal{I}_{\text{oop}} \; \big( AnnotatedWith(IntOop, \text{@ClFamily}) \land Realizes(IntOop, f) \big) \Big)$$
+
+
+2. **Trait Interface (`@ClTrait`):**
+
+$$\forall t \; \Big( Trait(t) \implies \exists IntOop \in \mathcal{I}_{\text{oop}} \; \big( AnnotatedWith(IntOop, \text{@ClTrait}) \land Realizes(IntOop, t) \big) \Big)$$
+
+---
+
+### Axiom Gen-OOP-3 — OOP Composition Link for Atoms
+
+$$\begin{aligned} \forall d \; \Big( Atom(d) \implies \exists c \, \exists t \; \big( & (DomainComponent(c) \lor SystemAgent(c)) \\ & \land TechComponent(t) \\ & \land OopComposition(c, t) \big) \Big) \end{aligned}$$
+
+---
+
+
+### Axiom Gen-OOP-4 — Subsystem Realization ($p \in \mathcal{P}$)
+
+$$\forall p \; \Big( Part(p, A) \implies \exists Subsystem \in \mathcal{S}_{\text{clprolf}} \; \big( Realizes(Subsystem, p) \big) \Big)$$
+
+---
+
+
 ## 3. Canonical Correspondence Dictionary
 
 Logical formalism is not a virtual abstraction; it maps with millimeter precision to the concrete concepts of the framework:
@@ -1320,49 +1366,68 @@ Logical formalism is not a virtual abstraction; it maps with millimeter precisio
 
 ---
 
-## 4. Architectural Expressiveness Theorem
+Voici la traduction anglaise rigoureuse et adaptée pour votre documentation officielle :
+
+---
+
+## 4. Theorem 1: Theorem of Architectural Expressiveness
 
 ### Theorem Statement
 
-For any global application $A$ that can be coherently described in this formal system, there exists a complete, exact, and blind-spot-free implementation in the Clprolf framework that realizes it
+For any global application $A$ that can be coherently described within this formal system, there exists a complete, exact, and exhaustive implementation within the Clprolf framework that realizes it, where each level of abstraction is anchored into concrete code via the **OOP Generation Axioms** ($\text{Gen-OOP-1}$ to $\text{Gen-OOP-4}$).
 
-### **Proof of the Architectural Expressiveness and Static Decidability Theorem**
+---
 
-The proof proceeds in two steps: structural realization by induction (Part I), followed by static decidability via the checker (Part II).
+### Proof of the Theorem of Architectural Expressiveness and Static Decidability
 
-#### **Part I: Expressiveness Realization (by Structural Induction)**
+The proof proceeds in two steps: structural realization by induction supported by OOP materialization (**Part I**), followed by static decidability via the checker (**Part II**).
+
+#### **Part I: Realization of Expressiveness (via Structural Induction and OOP Materialization)**
 
 1. **Base Case (The Domain Atom):**
-* *Formal Statement:* According to Axiom 3, the minimal unit is atom $d$, defined by $\text{Combines}(d, c, t)$.
-* *Clprolf Mapping:* The framework provides the native abstraction of the `@ClAgent` + `@ClWorker` pair. The business component $c$ becomes an Agent, and the technical component $t$ becomes a Worker. If the Worker $t$ is complex, the delegation rule guarantees that it can invoke System Agents ($s$).
-* *Conclusion:* Clprolf can encode 100% of the foundational atomic building blocks.
+* *Formal Specification:* According to Axiom 3, the minimal unit is the atom $d$, defined by $\text{Combines}(d, c, t)$ where $c$ is a domain component (or system agent) and $t$ is a technical component.
+* *OOP Materialization:*
+* By **Axiom Gen-OOP-1**, the existence of component $c$ implies the existence of an OOP class annotated with `@ClAgent` (or `@ClSystem`) that realizes it: $\exists \text{Class}_c \in \mathcal{C}_{\text{oop}} \; (\text{AnnotatedWith}(\text{Class}_c, \text{@ClAgent}) \land \text{Realizes}(\text{Class}_c, c))$.
+* By **Axiom Gen-OOP-1**, the existence of component $t$ implies the existence of an OOP class annotated with `@ClWorker` that realizes it: $\exists \text{Class}_t \in \mathcal{C}_{\text{oop}} \; (\text{AnnotatedWith}(\text{Class}_t, \text{@ClWorker}) \land \text{Realizes}(\text{Class}_t, t))$.
+* By **Axiom Gen-OOP-3**, the combination $\text{Combines}(d, c, t)$ of atom $d$ guarantees the existence of an OOP composition link between these two classes ($\text{OopComposition}(c, t)$).
+
+
+* *Conclusion:* Every domain atom is fully materialized by annotated OOP classes linked via composition.
 
 
 2. **Inductive Step 1 (The Part / Subsystem):**
-* *Induction Hypothesis:* Assume that Clprolf can encode domain atoms.
-* *Formal Statement:* According to Axiom 2, a part $p$ of the application is a finite set of domain atoms.
-* *Clprolf Mapping:* Clprolf provides the `Subsystem` concept. A subsystem is a container grouping a finite set of interconnected Agents and Workers.
-* *Conclusion:* The part $p$ is fully realizable as a Clprolf subsystem.
+* *Induction Hypothesis:* Assume that every atom $d$ has a valid OOP realization.
+* *Formal Specification:* According to Axiom 2, a part $p$ of the application is a finite set of domain atoms ($p \in \mathcal{P}$).
+* *OOP Materialization:* By **Axiom Gen-OOP-4**, the existence of part $p$ implies the presence of a concrete Clprolf subsystem grouping the classes and interfaces belonging to that part:
 
+
+
+$$\exists \text{Subsystem} \in \mathcal{S}_{\text{clprolf}} \; \big( \text{Realizes}(\text{Subsystem}, p) \big)$$
+
+* *Conclusion:* Part $p$ is fully realized as a Clprolf `Subsystem` within the code organization.
 
 3. **Inductive Step 2 (The Global Application):**
-* *Induction Hypothesis:* Assume that Clprolf can encode subsystems.
-* *Formal Statement:* According to Axiom 1, the complete application $A$ is the finite union of all its parts ($A = \bigcup P_i$).
-* *Clprolf Mapping:* The final global Clprolf application natively assembles, deploys, and orchestrates all these subsystems.
+* *Induction Hypothesis:* Assume that every part $p$ is realized as a Clprolf subsystem.
+* *Formal Specification:* According to Axiom 1, the complete application $A$ is the assembly of all its parts ($A = \bigcup p_i$).
+* *Conclusion:* Application $A$ is realized by the global orchestration of all derived Clprolf subsystems.
 
 
 
-#### **Part II: Static Decidability via $\text{CheckerCompliant}(A)$**
+---
+
+#### **Part II: Static Decidability via $\text{ConformsToChecker}(A)$**
 
 Let $K = \{r_1, r_2, \dots, r_{12}\}$ be the set of static validation rules executed by the ArchUnit / ArchUnitNET checker.
 
 The automated compliance predicate is defined as:
 
-$$\text{CheckerCompliant}(A) \iff \Big( \forall r \in K, \; \text{SatisfiesRule}(A, r) \Big)$$
+$$\text{ConformsToChecker}(A) \iff \Big( \forall r \in K, \; \text{VerifiesRule}(A, r) \Big)$$
 
-**Corollary (Static Decidability):** For any application $A \in \mathcal{A}$, the global compliance of $A$ with the full axiomatic system (Section XVI and Section XVII) is completely decidable via static analysis of bytecode or metadata by evaluating $\text{CheckerCompliant}(A)$:
+**Corollary 1.1 (Static Decidability):** For any application $A \in \mathcal{A}$, the global compliance of $A$ with the entire axiomatic system is fully decidable via static analysis of bytecode or metadata by evaluating $\text{ConformsToChecker}(A)$:
 
-$$\forall A \in \mathcal{A}, \quad \text{AxiomCompliant}(A) \iff \text{CheckerCompliant}(A)$$
+$$\forall A \in \mathcal{A}, \quad \text{ConformsToAxioms}(A) \iff \text{ConformsToChecker}(A)$$
+
+$$\text{Q.E.D.}$$
 
 ##### **Canonical Mapping Table (Axioms vs. Checker Rules)**
 
@@ -1382,10 +1447,6 @@ $$\forall A \in \mathcal{A}, \quad \text{AxiomCompliant}(A) \iff \text{CheckerCo
 | **Axiom 4 (Section XVII)** — Mirror Family Uniqueness | `optional_class_must_implement_only_one_family_interface` | In strict mode, guarantees a class implements at most one `@ClFamily`. |
 
 $$\text{Q.E.D.}$$
-
-## 5. Final Conclusion — The Power of Fractal Structure
-
-This proof demonstrates that Clprolf is not only expressive in the raw computational sense (Turing), but in the architectural sense: any system composed of business and technical components — which includes all real-world software applications — has a canonical and fractal representation in Clprolf.
 
 ---
 
@@ -1635,7 +1696,7 @@ Section ClprolfFormalization.
   Variable Object : Type.
 
   (* Object Predicates *)
-  Variable App               : Object -> Prop.
+  Variable AutomApp               : Object -> Prop.
   Variable HumanWork         : Object -> Prop.
   Variable HumanGoal         : Object -> Prop.
   Variable BusinessDomain    : Object -> Prop.
@@ -1670,7 +1731,7 @@ Section ClprolfFormalization.
   (* Axiom 1: Teleology - Mechanization of Human Work *)
   Axiom Axiom1_Teleology :
     forall A : Object,
-      App A ->
+      AutomApp A ->
       exists h : Object, HumanWork h /\ Automatizes A h.
 
   (* Formal Decomposition of Human Work *)
@@ -1686,7 +1747,7 @@ Section ClprolfFormalization.
   (* Axiom 2: Structural Decomposition (m ⊆ M) *)
   Axiom Axiom2_StructuralDecomposition :
     forall A : Object,
-      App A ->
+      AutomApp A ->
       forall p : Object,
         PartOf p A ->
         exists (M m t : Object),
@@ -1727,89 +1788,119 @@ Section ClprolfFormalization.
       InheritsDirectComponent c p ->
       SameDomain c p.
 
+ (* ================================================================= *)
+  (* 3. OOP GENERATION AXIOMS (GEN-OOP-1 TO GEN-OOP-4)                  *)
   (* ================================================================= *)
-  (* 3. FRAMEWORK GRAMMAR (AST)                                        *)
+
+  Variable OopClass     : Type.
+  Variable OopInterface : Type.
+  Variable OopSubsystem : Type.
+
+  Variable AnnotatesClass   : OopClass -> Object -> Prop. (* e.g., @ClAgent, @ClWorker *)
+  Variable RealizesClass    : OopClass -> Object -> Prop.
+  Variable OopComposition   : OopClass -> OopClass -> Prop.
+  Variable RealizesSubsystem: OopSubsystem -> Object -> Prop.
+
+  (* Gen-OOP-1: Concrete components realized by OOP classes *)
+  Axiom Gen_OOP_1_Agent :
+    forall c : Object,
+      BusinessComponent c ->
+      exists cl : OopClass, AnnotatesClass cl c /\ RealizesClass cl c.
+
+  Axiom Gen_OOP_1_Worker :
+    forall t : Object,
+      TechComponent t ->
+      exists cl : OopClass, AnnotatesClass cl t /\ RealizesClass cl t.
+
+  Axiom Gen_OOP_1_System :
+    forall s : Object,
+      SystemAgent s ->
+      exists cl : OopClass, AnnotatesClass cl s /\ RealizesClass cl s.
+
+  (* Gen-OOP-3: Composition link between underlying OOP classes of an Atom *)
+  Axiom Gen_OOP_3_AtomComposition :
+    forall (d c t : Object),
+      Atom d ->
+      Combines d c t ->
+      exists (cl_c cl_t : OopClass),
+        RealizesClass cl_c c /\
+        RealizesClass cl_t t /\
+        OopComposition cl_c cl_t.
+
+  (* Gen-OOP-4: Realization of application parts by subsystems *)
+  Axiom Gen_OOP_4_Subsystem :
+    forall (p A : Object),
+      PartOf p A ->
+      exists sub : OopSubsystem, RealizesSubsystem sub p.
+
+  (* ================================================================= *)
+  (* 4. GRAMMAR OF MATERIALIZED CONCRETE OOP CODE                     *)
   (* ================================================================= *)
 
   Inductive ClprolfComponent : Type :=
-    | ClAtom      : Object -> Object -> ClprolfComponent (* Atom (c, t) *)
-    | ClSubsystem : Object -> ClprolfComponent          (* Subsystem p *)
-    | ClApp       : Object -> ClprolfComponent.         (* Application A *)
+    | ClAtomCode      : OopClass -> OopClass -> ClprolfComponent (* Pair of linked OOP classes *)
+    | ClSubsystemCode : OopSubsystem -> ClprolfComponent        (* Package / Namespace *)
+    | ClAppCode       : Object -> ClprolfComponent.              (* Unified Application *)
 
   (* ================================================================= *)
-  (* 4. REALIZATION SEMANTICS (MODEL <-> GRAMMAR BRIDGE)               *)
+  (* 5. REALIZATION SEMANTICS BASED ON OOP ARTEFACTS                   *)
   (* ================================================================= *)
 
   Inductive Realizes : Object -> ClprolfComponent -> Prop :=
-    | Realize_Atom : forall (d c t : Object),
+    | Realize_Atom_Via_OOP : forall (d c t : Object) (cl_c cl_t : OopClass),
         Atom d ->
-        BusinessComponent c ->
-        TechComponent t ->
         Combines d c t ->
-        Realizes d (ClAtom c t)
-    | Realize_Subsystem : forall (p A : Object),
+        RealizesClass cl_c c ->
+        RealizesClass cl_t t ->
+        OopComposition cl_c cl_t ->
+        Realizes d (ClAtomCode cl_c cl_t)
+
+    | Realize_Subsystem_Via_OOP : forall (p A : Object) (sub : OopSubsystem),
         PartOf p A ->
-        Realizes p (ClSubsystem p)
+        RealizesSubsystem sub p ->
+        Realizes p (ClSubsystemCode sub)
+
     | Realize_App : forall (A : Object),
-        App A ->
-        Realizes A (ClApp A).
+        AutomApp A ->
+        Realizes A (ClAppCode A).
 
   (* ================================================================= *)
-  (* 5. LOCAL EXPRESSIVENESS LEMMAS                                   *)
-  (* ================================================================= *)
-
-  Lemma Atom_Expressiveness :
-    forall (d c t : Object),
-      Atom d ->
-      BusinessComponent c ->
-      TechComponent t ->
-      Combines d c t ->
-      exists impl : ClprolfComponent, Realizes d impl.
-  Proof.
-    intros d c t HAtom HBusiness HTech HComb.
-    exists (ClAtom c t).
-    apply Realize_Atom with (c := c) (t := t); assumption.
-  Qed.
-
-  Lemma Subsystem_Expressiveness :
-    forall (p A : Object),
-      PartOf p A ->
-      exists impl : ClprolfComponent, Realizes p impl.
-  Proof.
-    intros p A HPart.
-    exists (ClSubsystem p).
-    apply Realize_Subsystem with (A := A); assumption.
-  Qed.
-
-  (* ================================================================= *)
-  (* 6. THEOREM 1: ARCHITECTURAL EXPRESSIVENESS                        *)
+  (* 6. THEOREM 1: ARCHITECTURAL EXPRESSIVENESS                         *)
   (* ================================================================= *)
 
   Theorem Theorem1_Deep_Architectural_Expressiveness :
     forall (A p d : Object),
-      App A ->
+      AutomApp A ->
       PartOf p A ->
       Contains p d ->
-      exists (implApp : ClprolfComponent) 
-             (implSub : ClprolfComponent) 
-             (implAtom : ClprolfComponent),
+      exists (implApp implSub implAtom : ClprolfComponent),
         Realizes A implApp /\
         Realizes p implSub /\
         Realizes d implAtom.
   Proof.
     intros A p d HApp HPart HCont.
+
+    (* 1. Extract atomic structure using Axiom 3 *)
     destruct (Axiom3_AtomicComposition_And_Fractal A p HPart) as [HAtomRule _].
     destruct (HAtomRule d HCont) as [HAtom [c [t [HBusiness [HTech HComb]]]]].
 
-    exists (ClApp A).
-    exists (ClSubsystem p).
-    exists (ClAtom c t).
+    (* 2. Apply Gen-OOP-3 to obtain OOP classes and composition *)
+    destruct (Gen_OOP_3_AtomComposition d c t HAtom HComb) 
+      as [cl_c [cl_t [HRealC [HRealT HOopComp]]]].
+
+    (* 3. Apply Gen-OOP-4 to obtain concrete subsystem *)
+    destruct (Gen_OOP_4_Subsystem p A HPart) as [sub HRealSub].
+
+    (* 4. Witnesses based on generated OOP code *)
+    exists (ClAppCode A).
+    exists (ClSubsystemCode sub).
+    exists (ClAtomCode cl_c cl_t).
 
     split.
     - apply Realize_App. exact HApp.
     - split.
-      + apply Realize_Subsystem with (A := A). exact HPart.
-      + apply Realize_Atom with (c := c) (t := t); assumption.
+      + apply Realize_Subsystem_Via_OOP with (A := A) (sub := sub); assumption.
+      + apply Realize_Atom_Via_OOP with (c := c) (t := t) (cl_c := cl_c) (cl_t := cl_t); assumption.
   Qed.
 
   (* ================================================================= *)
@@ -1824,16 +1915,16 @@ Section ClprolfFormalization.
     forall r : CheckerRule, In r CheckerRuleList -> VerifiesRule A r.
 
   Definition AxiomCompliant (A : Object) : Prop :=
-    App A /\ forall p d : Object, PartOf p A -> Contains p d -> Atom d.
+    AutomApp A /\ forall p d : Object, PartOf p A -> Contains p d -> Atom d.
 
   Axiom Checker_Soundness_And_Completeness :
     forall (A : Object),
-      App A ->
+      AutomApp A ->
       (AxiomCompliant A <-> CheckerCompliant A).
 
   Corollary Corollary_1_1_Static_Decidability :
     forall (A : Object),
-      App A ->
+      AutomApp A ->
       (AxiomCompliant A <-> CheckerCompliant A).
   Proof.
     intros A HApp.
@@ -1843,7 +1934,7 @@ Section ClprolfFormalization.
 
   Theorem Unified_Expressiveness_And_Decidability_Theorem :
     forall (A p d : Object),
-      App A ->
+      AutomApp A ->
       PartOf p A ->
       Contains p d ->
       AxiomCompliant A ->
