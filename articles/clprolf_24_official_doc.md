@@ -1421,94 +1421,22 @@ Since the analysis controls the entirety of the axiomatic system via a finite se
 
 $$\text{Q.E.D.}$$
 
-##### Correspondence Table: Rule $\leftrightarrow$ Axiom
+#### Correspondence Table: Rule $\leftrightarrow$ Axiom
 
 | Checker Rule ($r_i$) | Formal Axiom(s) Verified | Scope & Control Mode | Completeness of Static Verification |
 | --- | --- | --- | --- |
-| **$r_1$: `clprolf_classes_must_not_mix_agent_and_worker**` | **Axiom 4 (Section XVI)**<br>
-
-<br>*(Component Qualification Uniqueness)* | **Strict & Standard Mode**<br>
-
-<br>Prohibits combining `@ClAgent` and `@ClWorker` roles on the same class. | **Complete**<br>
-
-<br>Inspection of bytecode and annotations guarantees strict role exclusivity. |
-| **$r_2$: `agent_worker_inheritance_must_not_mix**` | **Axiom 5 (Section XVI)**<br>
-
-<br>*(Domain Invariance through Inheritance & $\text{MemeDomaine}$)* | **Strict & Standard Mode**<br>
-
-<br>Prevents cross-inheritance between a `@ClAgent` and a `@ClWorker`. | **Complete (Minimalist)**<br>
-
-<br>$\text{MemeDomaine}$ is checked minimally: the checker enforces **exclusivity and compatibility of target roles** during inheritance without analyzing deep business semantics. |
-| **$r_3$: `family_role_must_match_implementation**` | **Axiom 2 (Section XVII)**<br>
-
-<br>*(Strict Mirror Law / Target Role & $\text{MiroirDe}$)* | **Strict & Standard Mode**<br>
-
-<br>Verifies target role isomorphism between the `@ClFamily` interface and its concrete class. | **Adapted (For Flexibility)**<br>
-
-<br>Fully verifies role polarity. For developer flexibility, the checker does not enforce exact public method equality (classes can expose additional methods). |
-| **$r_4$: `(non-strict) trait_interface_role_must_match_direct_implementation**` | *Based on Axiom 3 (Section XVII)*<br>
-
-<br>*(Trait Compatibility)* | **NON-STRICT MODE ONLY**<br>
-
-<br>*(NOT USED in the formal system)* | **Outside Formal System**<br>
-
-<br>Tolerance rule for legacy code. Excluded from strict theoretical proofs. |
-| **$r_5$: `trait_interfaces_must_extend_only_trait_interfaces**` | **Axiom 5 (Section XVII)**<br>
-
-<br>*(Trait Invariance / Prohibition of Family Extension)* | **Strict & Standard Mode**<br>
-
-<br>Forces a `@ClTrait` to extend only other `@ClTrait` interfaces. | **Complete**<br>
-
-<br>Inspection of the interface graph guarantees no trait inherits from a family. |
-| **$r_6$: `clprolf_interfaces_must_have_target_role**` | **Axiom 1 (Section XVII)**<br>
-
-<br>*(Interface Target Role Exclusivity)* | **Strict & Standard Mode**<br>
-
-<br>Verifies that a `@ClFamily` possesses a single, exclusive target role. | **Complete**<br>
-
-<br>Guarantees the presence and consistency of polarity annotations on interfaces. |
-| **$r_7$: `inheriting_interface_role_must_match_trait_interface_target_role**` | **Axiom 3 (Section XVII)**<br>
-
-<br>*(Contextual Trait Continuity)* | **Strict & Standard Mode**<br>
-
-<br>Ensures that an interface inheriting a trait has a compatible role. | **Complete**<br>
-
-<br>Ensures seamless polarity transmission along interface inheritance chains. |
-| **$r_8$: `family_interface_target_role_must_match_inherited_family_interface**` | **Axioms 6 & 7 (Section XVII)**<br>
-
-<br>*(Domain Invariance Between Families)* | **Strict & Standard Mode**<br>
-
-<br>Ensures role preservation when a `@ClFamily` extends another. | **Complete**<br>
-
-<br>Validates hierarchy isomorphism across mirror families. |
-| **$r_9$: `optional_all_classes_should_have_clprolf_role**` | **Axiom 4 (Section XVI)**<br>
-
-<br>*(Exhaustive Component Qualification)* | **Strict Mode**<br>
-
-<br>Requires every concrete system class to carry an explicit Clprolf role. | **Complete**<br>
-
-<br>Guarantees that 100% of system classes fall within the model's ontology. |
-| **$r_{10}$: `optional_all_interfaces_should_have_clprolf_role**` | **Axiom 1 (Section XVII)**<br>
-
-<br>*(Exhaustive Interface Qualification)* | **Strict Mode**<br>
-
-<br>Requires every project interface to carry a Clprolf role (`@ClFamily`, `@ClTrait`, etc.). | **Complete**<br>
-
-<br>Guarantees that no out-of-model interface escapes verification. |
-| **$r_{11}$: `optional_class_should_not_implement_trait_directly**` | **Axiom 4 (Section XVII)**<br>
-
-<br>*(Prohibition of Direct Traits on Classes)* | **Strict Mode**<br>
-
-<br>Prohibits concrete classes from implementing a `@ClTrait` directly. | **Complete**<br>
-
-<br>Validates mandatory usage of the `@ClFamily` mirror interface. |
-| **$r_{12}$: `optional_class_must_implement_only_one_family_interface**` | **Axiom 4 (Section XVII)**<br>
-
-<br>*(Mirror Family Uniqueness)* | **Strict Mode**<br>
-
-<br>Ensures a concrete class implements at most one `@ClFamily` interface. | **Complete**<br>
-
-<br>Guarantees the existence and uniqueness of the mirror interface for each component. |
+| **$r_1$ : `clprolf_classes_must_not_mix_agent_and_worker**` | **Axiom 4 (Section XVI)** (Component Qualification Uniqueness) | **Strict & Standard Mode** - Prohibits combining `@ClAgent` and `@ClWorker` roles on the same class. | **Complete** - Bytecode and annotation inspection guarantees strict role exclusivity. |
+| **$r_2$ : `agent_worker_inheritance_must_not_mix**` | **Axiom 5 (Section XVI)** (Domain Invariance through Inheritance & `MemeDomaine`) | **Strict & Standard Mode** - Prevents cross-inheritance between a `@ClAgent` and a `@ClWorker`. | **Complete (Minimalist)** - `MemeDomaine` is verified minimally: the checker checks target role exclusivity and compatibility during inheritance. |
+| **$r_3$ : `family_role_must_match_implementation**` | **Axiom 2 (Section XVII)** (Strict Mirror Law / Target Role & `MiroirDe`) | **Strict & Standard Mode** - Verifies target role isomorphism between the `@ClFamily` interface and its concrete class. | **Adapted (For Flexibility)** - Fully verifies role polarity. The checker does not enforce exact public method equality to allow design flexibility. |
+| **$r_4$ : `(non-strict) trait_interface_role_must_match_direct_implementation**` | *Axiom 3 (Section XVII)* (Trait Compatibility) | **NON-STRICT MODE ONLY** - Not used in the formal system. | **Outside Formal System** - Tolerance rule for legacy code. Excluded from strict theoretical proofs. |
+| **$r_5$ : `trait_interfaces_must_extend_only_trait_interfaces**` | **Axiom 5 (Section XVII)** (Trait Invariance / Prohibition of Family Extension) | **Strict & Standard Mode** - Forces a `@ClTrait` to extend only other `@ClTrait` interfaces. | **Complete** - Interface graph inspection guarantees no trait inherits from a family. |
+| **$r_6$ : `clprolf_interfaces_must_have_target_role**` | **Axiom 1 (Section XVII)** (Interface Target Role Exclusivity) | **Strict & Standard Mode** - Verifies that a `@ClFamily` possesses a single and exclusive target role. | **Complete** - Guarantees the presence and consistency of polarity annotations on interfaces. |
+| **$r_7$ : `inheriting_interface_role_must_match_trait_interface_target_role**` | **Axiom 3 (Section XVII)** (Contextual Trait Continuity) | **Strict & Standard Mode** - Ensures that an interface inheriting a trait has a compatible role. | **Complete** - Ensures seamless polarity transmission along interface inheritance chains. |
+| **$r_8$ : `family_interface_target_role_must_match_inherited_family_interface**` | **Axioms 6 & 7 (Section XVII)** (Domain Invariance Between Families) | **Strict & Standard Mode** - Ensures role preservation when a `@ClFamily` extends another. | **Complete** - Validates hierarchy isomorphism across mirror families. |
+| **$r_9$ : `optional_all_classes_should_have_clprolf_role**` | **Axiom 4 (Section XVI)** (Exhaustive Component Qualification) | **Strict Mode** - Requires every concrete system class to carry an explicit Clprolf role. | **Complete** - Guarantees that 100% of system classes fall within the model's ontology. |
+| **$r_{10}$ : `optional_all_interfaces_should_have_clprolf_role**` | **Axiom 1 (Section XVII)** (Exhaustive Interface Qualification) | **Strict Mode** - Requires every project interface to carry a Clprolf role (`@ClFamily`, `@ClTrait`, etc.). | **Complete** - Guarantees that no out-of-model interface escapes verification. |
+| **$r_{11}$ : `optional_class_should_not_implement_trait_directly**` | **Axiom 4 (Section XVII)** (Prohibition of Direct Traits on Classes) | **Strict Mode** - Prohibits concrete classes from implementing a `@ClTrait` directly. | **Complete** - Validates mandatory usage of the `@ClFamily` mirror interface. |
+| **$r_{12}$ : `optional_class_must_implement_only_one_family_interface**` | **Axiom 4 (Section XVII)** (Mirror Family Uniqueness) | **Strict Mode** - Ensures a concrete class implements only one `@ClFamily` interface. | **Complete** - Guarantees the existence and uniqueness of the mirror interface for each component. |
 
 ---
 

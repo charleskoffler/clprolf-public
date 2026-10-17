@@ -1413,94 +1413,22 @@ Puisque l'analyse contrôle la totalité du système axiomatique via un nombre f
 $$\text{Q.E.D.}$$
 
 
-##### Tableau de correspondance Règle $\leftrightarrow$ Axiome
+#### Tableau de correspondance Règle $\leftrightarrow$ Axiome
 
 | Règle du Checker ($r_i$) | Axiome(s) Formel(s) Vérifié(s) | Portée & Mode de Contrôle | Complétude de la Vérification Statique |
 | --- | --- | --- | --- |
-| **$r_1$ : `clprolf_classes_must_not_mix_agent_and_worker**` | **Axiome 4 (Section XVI)**<br>
-
-<br>*(Unicité de qualification du composant)* | **Mode Strict & Standard**<br>
-
-<br>Interdit le cumul des rôles `@ClAgent` et `@ClWorker` sur une même classe. | **Complète**<br>
-
-<br>L'inspection du bytecode et des annotations garantit l'exclusivité stricte du rôle. |
-| **$r_2$ : `agent_worker_inheritance_must_not_mix**` | **Axiome 5 (Section XVI)**<br>
-
-<br>*(Invariance du domaine par héritage & $\text{MemeDomaine}$)* | **Mode Strict & Standard**<br>
-
-<br>Empêche l'héritage croisé entre un `@ClAgent` et un `@ClWorker`. | **Complète (Minimaliste)**<br>
-
-<br>$\text{MemeDomaine}$ est vérifié de façon minimale : le checker contrôle **exclusivité et compatibilité des rôles** lors de l'héritage, sans analyser la sémantique métier profonde. |
-| **$r_3$ : `family_role_must_match_implementation**` | **Axiome 2 (Section XVII)**<br>
-
-<br>*(Loi du miroir strict / Target Role & $\text{MiroirDe}$)* | **Mode Strict & Standard**<br>
-
-<br>Vérifie l'isomorphisme du rôle cible entre l'interface `@ClFamily` et sa classe concrète. | **Adaptée (Par Souplesse)**<br>
-
-<br>Vérifie entièrement la polarité du rôle. Par souplesse, le checker n'impose pas l'égalité exacte des méthodes publiques (la classe peut exposer des méthodes propres). |
-| **$r_4$ : `(non-strict) trait_interface_role_must_match_direct_implementation**` | *S'appuie sur Axiome 3 (Section XVII)*<br>
-
-<br>*(Compatibilité des traits)* | **MODE NON STRICT UNIQUEMENT**<br>
-
-<br>*(NON UTILISÉE dans le système formel)* | **Hors Système Formel**<br>
-
-<br>Règle de tolérance pour le code legacy. Exclue de la preuve théorique stricte. |
-| **$r_5$ : `trait_interfaces_must_extend_only_trait_interfaces**` | **Axiome 5 (Section XVII)**<br>
-
-<br>*(Invariance des traits / Interdiction d'extension de famille)* | **Mode Strict & Standard**<br>
-
-<br>Force un `@ClTrait` à n'étendre que d'autres `@ClTrait`. | **Complète**<br>
-
-<br>L'inspection du graphe d'interfaces garantit qu'aucun trait n'hérite d'une famille. |
-| **$r_6$ : `clprolf_interfaces_must_have_target_role**` | **Axiome 1 (Section XVII)**<br>
-
-<br>*(Exclusivité des rôles cibles d'interfaces)* | **Mode Strict & Standard**<br>
-
-<br>Vérifie qu'une `@ClFamily` possède un rôle cible unique et exclusif. | **Complète**<br>
-
-<br>Garantit la présence et la cohérence des annotations de polarité sur les interfaces. |
-| **$r_7$ : `inheriting_interface_role_must_match_trait_interface_target_role**` | **Axiome 3 (Section XVII)**<br>
-
-<br>*(Continuité contextuelle des traits)* | **Mode Strict & Standard**<br>
-
-<br>Contrôle que l'interface qui hérite d'un trait possède un rôle compatible. | **Complète**<br>
-
-<br>Assure la transmission sans faille de la polarité le long de la chaîne d'héritage d'interfaces. |
-| **$r_8$ : `family_interface_target_role_must_match_inherited_family_interface**` | **Axiome 7 & 6 (Section XVII)**<br>
-
-<br>*(Invariance du domaine entre familles)* | **Mode Strict & Standard**<br>
-
-<br>Assure la préservation du rôle lors de l'extension d'une `@ClFamily` par une autre. | **Complète**<br>
-
-<br>Valide l'isomorphisme de la hiérarchie des familles miroirs. |
-| **$r_9$ : `optional_all_classes_should_have_clprolf_role**` | **Axiome 4 (Section XVI)**<br>
-
-<br>*(Qualification exhaustive des composants)* | **Mode Strict**<br>
-
-<br>Oblige toute classe concrète du système à posséder un rôle Clprolf explicite. | **Complète**<br>
-
-<br>Garantit que 100 % des classes du système entrent dans l'ontologie du modèle. |
-| **$r_{10}$ : `optional_all_interfaces_should_have_clprolf_role**` | **Axiome 1 (Section XVII)**<br>
-
-<br>*(Qualification exhaustive des interfaces)* | **Mode Strict**<br>
-
-<br>Exige que toute interface du projet possède un rôle Clprolf (`@ClFamily`, `@ClTrait`, etc.). | **Complète**<br>
-
-<br>Garantit qu'aucune interface hors-modèle n'échappe au contrôle. |
-| **$r_{11}$ : `optional_class_should_not_implement_trait_directly**` | **Axiome 4 (Section XVII)**<br>
-
-<br>*(Interdiction des traits directs par les classes)* | **Mode Strict**<br>
-
-<br>Interdit à une classe concrète d'implémenter directement un `@ClTrait`. | **Complète**<br>
-
-<br>Valide le passage obligatoire par l'interface miroir `@ClFamily`. |
-| **$r_{12}$ : `optional_class_must_implement_only_one_family_interface**` | **Axiome 4 (Section XVII)**<br>
-
-<br>*(Unicité de la famille miroir)* | **Mode Strict**<br>
-
-<br>S'assure qu'une classe concrète n'implémente qu'une seule interface `@ClFamily`. | **Complète**<br>
-
-<br>Garantit l'existence et l'unicité du miroir pour chaque composant. |
+| **$r_1$ : `clprolf_classes_must_not_mix_agent_and_worker**` | **Axiome 4 (Section XVI)** (Unicité de qualification du composant) | **Mode Strict & Standard** - Interdit le cumul des rôles `@ClAgent` et `@ClWorker` sur une même classe. | **Complète** - L'inspection du bytecode et des annotations garantit l'exclusivité stricte du rôle. |
+| **$r_2$ : `agent_worker_inheritance_must_not_mix**` | **Axiome 5 (Section XVI)** (Invariance du domaine par héritage & `MemeDomaine`) | **Mode Strict & Standard** - Empêche l'héritage croisé entre un `@ClAgent` et un `@ClWorker`. | **Complète (Minimaliste)** - `MemeDomaine` est vérifié de façon minimale : le checker contrôle l'exclusivité et la compatibilité des rôles lors de l'héritage. |
+| **$r_3$ : `family_role_must_match_implementation**` | **Axiome 2 (Section XVII)** (Loi du miroir strict / Target Role & `MiroirDe`) | **Mode Strict & Standard** - Vérifie l'isomorphisme du rôle cible entre l'interface `@ClFamily` et sa classe concrète. | **Adaptée (Par Souplesse)** - Vérifie entièrement la polarité du rôle. Le checker n'impose pas l'égalité exacte des méthodes publiques pour laisser de la souplesse. |
+| **$r_4$ : `(non-strict) trait_interface_role_must_match_direct_implementation**` | *Axiome 3 (Section XVII)* (Compatibilité des traits) | **MODE NON STRICT UNIQUEMENT** - Non utilisée dans le système formel. | **Hors Système Formel** - Règle de tolérance pour le code legacy. Exclue de la preuve théorique stricte. |
+| **$r_5$ : `trait_interfaces_must_extend_only_trait_interfaces**` | **Axiome 5 (Section XVII)** (Invariance des traits / Interdiction d'extension de famille) | **Mode Strict & Standard** - Force un `@ClTrait` à n'étendre que d'autres `@ClTrait`. | **Complète** - L'inspection du graphe d'interfaces garantit qu'aucun trait n'hérite d'une famille. |
+| **$r_6$ : `clprolf_interfaces_must_have_target_role**` | **Axiome 1 (Section XVII)** (Exclusivité des rôles cibles d'interfaces) | **Mode Strict & Standard** - Vérifie qu'une `@ClFamily` possède un rôle cible unique et exclusif. | **Complète** - Garantit la présence et la cohérence des annotations de polarité sur les interfaces. |
+| **$r_7$ : `inheriting_interface_role_must_match_trait_interface_target_role**` | **Axiome 3 (Section XVII)** (Continuité contextuelle des traits) | **Mode Strict & Standard** - Contrôle que l'interface qui hérite d'un trait possède un rôle compatible. | **Complète** - Assure la transmission sans faille de la polarité le long de la chaîne d'héritage. |
+| **$r_8$ : `family_interface_target_role_must_match_inherited_family_interface**` | **Axiomes 6 & 7 (Section XVII)** (Invariance du domaine entre familles) | **Mode Strict & Standard** - Assure la préservation du rôle lors de l'extension d'une `@ClFamily` par une autre. | **Complète** - Valide l'isomorphisme de la hiérarchie des familles miroirs. |
+| **$r_9$ : `optional_all_classes_should_have_clprolf_role**` | **Axiome 4 (Section XVI)** (Qualification exhaustive des composants) | **Mode Strict** - Oblige toute classe concrète du système à posséder un rôle Clprolf explicite. | **Complète** - Garantit que 100% des classes du système entrent dans l'ontologie du modèle. |
+| **$r_{10}$ : `optional_all_interfaces_should_have_clprolf_role**` | **Axiome 1 (Section XVII)** (Qualification exhaustive des interfaces) | **Mode Strict** - Exige que toute interface du projet possède un rôle Clprolf (`@ClFamily`, `@ClTrait`, etc.). | **Complète** - Garantit qu'aucune interface hors-modèle n'échappe au contrôle. |
+| **$r_{11}$ : `optional_class_should_not_implement_trait_directly**` | **Axiome 4 (Section XVII)** (Interdiction des traits directs par les classes) | **Mode Strict** - Interdit à une classe concrète d'implémenter directement un `@ClTrait`. | **Complète** - Valide le passage obligatoire par l'interface miroir `@ClFamily`. |
+| **$r_{12}$ : `optional_class_must_implement_only_one_family_interface**` | **Axiome 4 (Section XVII)** (Unicité de la famille miroir) | **Mode Strict** - S'assure qu'une classe concrète n'implémente qu'une seule interface `@ClFamily`. | **Complète** - Garantit l'existence et l'unicité du miroir pour chaque composant. |
 
 ###### Remarque
 
@@ -2226,4 +2154,3 @@ Pour démontrer que le formalisme mathématique s'applique directement à la ré
 | **$f$ (`@ClFamily`)** | Contrat-miroir hiérarchique | `TaxCalculatorFamily` |
 
 ---
-
