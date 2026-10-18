@@ -1218,7 +1218,7 @@ Clprolf ajoute très peu de concepts.
 |  | $\text{Simule}(p, m)$ | La partie $p$ incruste la portion du domaine $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Composant Métier ($m \subseteq \mathcal{M}$) |
 |  | $\text{Associe}(t, p)$ | Le support technique $t$ est adjoint à la partie $p$. | $\mathcal{T} \times \mathcal{P}$ | Composant Tech adossé |
 |  | $\text{Combine}(a, c, t)$ | L'atome $a$ réunit strictly le composant métier $c$ et le composant technique $t$. | $\text{Atome} \times \mathcal{C} \times \mathcal{T}$ | Atom (Union exclusive) |
-|  | $\text{Utilise}(t, s)$ | Le composant tech $t$ délègue sa complexité à l'agent système $s$. | $\mathcal{T} \times \mathcal{S}$ | Règle fractale (Axiome 3) |
+|  | $\text{DelegueA}(t, s)$ | Le composant tech $t$ délègue sa complexité à l'atome système $s$. | $\mathcal{T} \times \mathcal{S}$ | Règle de délégation récursive (Axiome 3) |
 |  | $\text{HeriteDirectComposant}(c, p)$ | Le composant $c$ hérite du composant parent $p$. | $\mathcal{C} \times \mathcal{C}$ | Relation `extends` / Axiome 5 |
 |  | $\text{MemeDomaine}(c, p)$ | Les composants $c$ et $p$ partagent le même domaine conceptuel. | $\mathcal{C} \times \mathcal{C}$ | Isomorphisme de domaine / Axiome 5 |
 
@@ -1237,7 +1237,7 @@ $$\forall h \; \Big( TravailHumain(h) \iff \exists G \, \exists \mathcal{M} \, \
 
 ### Axiome 2 — Décomposition Structurelle
 
-$$\forall A \; \Big( AppAutom(A) \implies \forall p \; \big( Partie(p, A) \implies \exists m \, \exists t \; ( m \subseteq \mathcal{M} \land SupportTech(t) \land Simule(p, m) \land Associe(t, p) ) \big) \Big)$$
+$$\forall A \; \Big( \text{AppAutom}(A) \implies \exists \mathcal{M} \; \big( \text{DomaineMetier}(\mathcal{M}) \land \forall p \; ( \text{Partie}(p,A) \implies \exists m, t \; ( m \subseteq \mathcal{M} \land \text{SupportTech}(t) \land \text{Simule}(p,m) \land \text{Associe}(t, p) ) ) \big) \Big)$$
 
 ---
 
@@ -1247,11 +1247,11 @@ Chaque sous-système $p$ d'une application $A$ est composé d'atomes de domaine 
 
 $$\forall A \; \Big( AppAutom(A) \Rightarrow \forall p \; \big( Partie(p, A) \Rightarrow \forall d \; ( Contient(p, d) \Rightarrow Atome(d) \land \exists c \, \exists t \; (ComposantMetier(c) \land ComposantTech(t) \land Combine(d, c, t)) ) \big) \Big)$$
 
-**Règle de délégation fractale :**
+**Règle de délégation récursive :**
 
-Si un composant technique (Worker) fait face à une complexité d'infrastructure lourde, il a la garantie de pouvoir déléguer cette tâche à des Agents Systèmes. Tout Agent Système est explicitement défini comme étant lui-même un atome de domaine complet.
+Si un composant technique (Worker) fait face à une complexité d'infrastructure lourde, il a la garantie de pouvoir déléguer cette tâche à des Atomes Systèmes. Tout Atome Système est explicitement défini comme étant lui-même un atome de domaine complet.
 
-$$\forall t \; \Big( ComposantTech(t) \Rightarrow \forall s \; \big( Utilise(t, s) \Rightarrow Atome(s) \land AgentSysteme(s) \big) \Big)$$
+$$\forall t \; \Big( \text{ComposantTech}(t) \Rightarrow \forall s \; \big( \text{DelegueA}(t, s) \Rightarrow \exists a, w \; ( \text{Combine}(s, a, w) \land \text{Atome}(s) \land \text{AgentSysteme}(a) \land \text{Worker}(w) ) \big) \Big)$$
 
 ---
 
@@ -1706,7 +1706,7 @@ Section ClprolfFormalization.
   Variable Partie                 : Object -> Object -> Prop. (* Subsystem -> Application *)
   Variable Contient               : Object -> Object -> Prop. (* Subsystem -> Atome *)
   Variable Combine                : Object -> Object -> Object -> Prop. (* Atome -> ComposantMetier -> ComposantTech *)
-  Variable Utilise                : Object -> Object -> Prop. (* ComposantTech -> AgentSysteme *)
+  Variable DelegueA               : Object -> Object -> Prop. (* ComposantTech -> AtomeSysteme *)
   Variable Simule                 : Object -> Object -> Prop. (* Subsystem/Agent -> Portion Domaine *)
   Variable Associe                : Object -> Object -> Prop. (* SupportTech/Worker -> Subsystem/Agent *)
   Variable SubSet                 : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
@@ -1737,20 +1737,22 @@ Section ClprolfFormalization.
         Viser M G.
 
   (* Axiome 2 : Décomposition Structurelle (m ⊆ M) *)
+
   Axiom Axiom2_DecompositionStructurelle :
     forall A : Object,
       AppAutom A ->
-      forall p : Object,
-        Partie p A ->
-        exists (M m t : Object),
-          DomaineMetier M /\
-          SubSet m M /\
-          SupportTech t /\
-          Simule p m /\
-          Associe t p.
+      exists M : Object,
+        DomaineMetier M /\
+        forall p : Object,
+          Partie p A ->
+          exists (m t : Object),
+            SubSet m M /\
+            SupportTech t /\
+            Simule p m /\
+            Associe t p.
 
-  (* Axiome 3 : Composition Atomique & Propriété Fractale *)
-  Axiom Axiom3_CompositionAtomique_Et_Fractale :
+  (* Axiome 3 : Composition Atomique & Propriété de délégation récursive *)
+  Axiom Axiom3_CompositionAtomique_Et_Delegation_Syst :
     forall A p : Object,
       Partie p A ->
       (* Part 1 : Composition Atomique *)
@@ -1759,11 +1761,13 @@ Section ClprolfFormalization.
         Atome d /\
         exists c t : Object,
           ComposantMetier c /\ ComposantTech t /\ Combine d c t) /\
-      (* Part 2 : Règle de Délégation Fractale des Workers *)
+      (* Part 2 : Principe de Délégation Récursive des Workers *)
       (forall t : Object,
         ComposantTech t ->
         forall s : Object,
-          Utilise t s -> Atome s /\ AgentSysteme s).
+          DelegueA t s -> 
+          exists a w : Object,
+            Combine s a w /\ Atome s /\ AgentSysteme a /\ Worker w).
 
   (* Axiome 4 : Unicité de la qualification du composant *)
   Axiom Axiom4_ComponentUniqueness :
@@ -1873,7 +1877,7 @@ Section ClprolfFormalization.
     intros A p d HApp HPart HCont.
 
     (* 1. Extraction de la structure atomique via Axiome 3 *)
-    destruct (Axiom3_CompositionAtomique_Et_Fractale A p HPart) as [HAtomRule _].
+    destruct (Axiom3_CompositionAtomique_Et_Delegation_Syst A p HPart) as [HAtomRule _].
     destruct (HAtomRule d HCont) as [HAtom [c [t [HMetier [HTech HComb]]]]].
 
     (* 2. Application de Gen-POO-3 pour extraire les classes POO et la composition *)
@@ -2153,3 +2157,4 @@ Pour démontrer que le formalisme mathématique s'applique directement à la ré
 | **$f$ (`@ClFamily`)** | Contrat-miroir hiérarchique | `TaxCalculatorFamily` |
 
 ---
+

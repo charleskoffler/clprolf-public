@@ -1249,7 +1249,7 @@ ClFree
 |  | $\text{Simulates}(p, m)$ | Part $p$ embeds domain subset $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Business Component ($m \subseteq \mathcal{M}$) |
 |  | $\text{Associates}(t, p)$ | Technical support $t$ is attached to part $p$. | $\mathcal{T} \times \mathcal{P}$ | Attached Tech Component |
 |  | $\text{Combines}(a, c, t)$ | Atom $a$ strictly unites business component $c$ and tech component $t$. | $\text{Atom} \times \mathcal{C} \times \mathcal{T}$ | Atom (Exclusive Union) |
-|  | $\text{Uses}(t, s)$ | Tech component $t$ delegates complexity to system agent $s$. | $\mathcal{T} \times \mathcal{S}$ | Fractal Rule (Axiom 3) |
+|  | $\text{DelegatesTo}(t, s)$ | Tech component $t$ delegates complexity to system atom $s$. | $\mathcal{T} \times \mathcal{S}$ | System delegation Rule (Axiom 3) |
 |  | $\text{InheritsDirectComponent}(c, p)$ | Component $c$ inherits from parent component $p$. | $\mathcal{C} \times \mathcal{C}$ | `extends` Relation / Axiom 5 |
 |  | $\text{SameDomain}(c, p)$ | Components $c$ and $p$ share the same conceptual domain. | $\mathcal{C} \times \mathcal{C}$ | Domain Isomorphism / Axiom 5 |
  
@@ -1269,7 +1269,7 @@ $$\forall h \; \Big( HumanWork(h) \iff \exists G \, \exists \mathcal{M} \, \exis
 
 ### Axiom 2 — Structural Decomposition
 
-$$\forall A \; \Big( AutomApp(A) \implies \forall p \; \big( Part(p, A) \implies \exists m \, \exists t \; ( m \subseteq \mathcal{M} \land TechSupport(t) \land Simulates(p, m) \land Associates(t, p) ) \big) \Big)$$
+$$\forall A \; \Big( \text{AutomApp}(A) \implies \exists \mathcal{M} \; \big( \text{BusinessDomain}(\mathcal{M}) \land \forall p \; ( \text{Part}(p, A) \implies \exists m, t \; ( m \subseteq \mathcal{M} \land \text{TechSupport}(t) \land \text{Simulates}(p, m) \land \text{Associates}(t, p) ) ) \big) \Big)$$
 
 ---
 
@@ -1279,11 +1279,11 @@ Every subsystem $p$ of an application $A$ is composed of domain atoms $d$. A dom
 
 $$\forall A \; \Big( AutomApp(A) \Rightarrow \forall p \; \big( Part(p, A) \Rightarrow \forall d \; ( Contains(p, d) \Rightarrow Atom(d) \land \exists c \, \exists t \; (BusinessComponent(c) \land TechComponent(t) \land Combines(d, c, t)) ) \big) \Big)$$
 
-**Fractal Delegation Rule:**
+**Recursive Delegation Rule:**
 
-If a technical component (Worker) faces heavy infrastructure complexity, it is guaranteed the ability to delegate this task to System Agents. Every System Agent is explicitly defined as a complete domain atom itself.
+If a technical component (Worker) encounters significant infrastructure complexity, it is guaranteed the ability to delegate that task to System Atoms. Every System Atom is explicitly defined as a complete domain atom in its own right.
 
-$$\forall t \; \Big( TechComponent(t) \Rightarrow \forall s \; \big( Uses(t, s) \Rightarrow Atom(s) \land SystemAgent(s) \big) \Big)$$
+$$\forall t \; \Big( \text{TechComponent}(t) \Rightarrow \forall s \; \big( \text{DelegatesTo}(t, s) \Rightarrow \exists a, w \; ( \text{Combine}(s, a, w) \land \text{Atom}(s) \land \text{SystemAgent}(a) \land \text{Worker}(w) ) \big) \Big)$$
 
 ---
 
@@ -1695,17 +1695,18 @@ Section ClprolfFormalization.
   Variable Object : Type.
 
   (* Object Predicates *)
-  Variable AutomApp               : Object -> Prop.
-  Variable HumanWork         : Object -> Prop.
-  Variable HumanGoal         : Object -> Prop.
-  Variable BusinessDomain    : Object -> Prop.
-  Variable ExecutionSupport  : Object -> Prop.
-  Variable Atom              : Object -> Prop.
-  Variable SystemAgent       : Object -> Prop.
-  Variable BusinessComponent : Object -> Prop.
-  Variable TechComponent     : Object -> Prop.
-  Variable TechSupport       : Object -> Prop.
-  Variable Component         : Object -> Prop.
+  Variable AutomApp         : Object -> Prop.
+  Variable HumanWork        : Object -> Prop.
+  Variable HumanGoal        : Object -> Prop.
+  Variable BusinessDomain   : Object -> Prop.
+  Variable ExecutionSupport : Object -> Prop.
+  Variable Atom             : Object -> Prop.
+  Variable SystemAgent      : Object -> Prop.
+  Variable BusinessComponent: Object -> Prop.
+  Variable TechComponent    : Object -> Prop.
+  Variable TechSupport      : Object -> Prop.
+  Variable Worker           : Object -> Prop.
+  Variable Component        : Object -> Prop.
 
   (* Formal Relations *)
   Variable Automatizes             : Object -> Object -> Prop. (* Application -> HumanWork *)
@@ -1713,7 +1714,7 @@ Section ClprolfFormalization.
   Variable PartOf                  : Object -> Object -> Prop. (* Subsystem -> Application *)
   Variable Contains                : Object -> Object -> Prop. (* Subsystem -> Atom *)
   Variable Combines                : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
-  Variable Uses                    : Object -> Object -> Prop. (* TechComponent -> SystemAgent *)
+  Variable DelegatesTo             : Object -> Object -> Prop. (* TechComponent -> SystemAtom *)
   Variable Simulates               : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
   Variable Associates              : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
   Variable SubSet                  : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
@@ -1747,17 +1748,18 @@ Section ClprolfFormalization.
   Axiom Axiom2_StructuralDecomposition :
     forall A : Object,
       AutomApp A ->
-      forall p : Object,
-        PartOf p A ->
-        exists (M m t : Object),
-          BusinessDomain M /\
-          SubSet m M /\
-          TechSupport t /\
-          Simulates p m /\
-          Associates t p.
+      exists M : Object,
+        BusinessDomain M /\
+        forall p : Object,
+          PartOf p A ->
+          exists (m t : Object),
+            SubSet m M /\
+            TechSupport t /\
+            Simulates p m /\
+            Associates t p.
 
-  (* Axiom 3: Atomic Composition & Fractal Property *)
-  Axiom Axiom3_AtomicComposition_And_Fractal :
+  (* Axiom 3: Atomic Composition & Recursive Delegation Property *)
+  Axiom Axiom3_AtomicComposition_And_RecursiveDelegation :
     forall A p : Object,
       PartOf p A ->
       (* Part 1: Atomic Composition *)
@@ -1766,11 +1768,13 @@ Section ClprolfFormalization.
         Atom d /\
         exists c t : Object,
           BusinessComponent c /\ TechComponent t /\ Combines d c t) /\
-      (* Part 2: Worker Fractal Delegation Rule *)
+      (* Part 2: Worker Recursive Delegation Rule *)
       (forall t : Object,
         TechComponent t ->
         forall s : Object,
-          Uses t s -> Atom s /\ SystemAgent s).
+          DelegatesTo t s -> 
+          exists a w : Object,
+            Combines s a w /\ Atom s /\ SystemAgent a /\ Worker w).
 
   (* Axiom 4: Component Qualification Uniqueness *)
   Axiom Axiom4_ComponentUniqueness :
@@ -1787,20 +1791,19 @@ Section ClprolfFormalization.
       InheritsDirectComponent c p ->
       SameDomain c p.
 
- (* ================================================================= *)
-  (* 3. OOP GENERATION AXIOMS (GEN-OOP-1 TO GEN-OOP-4)                  *)
+  (* ================================================================= *)
+  (* 3. OOP GENERATION AXIOMS (GEN-OOP-1 TO GEN-OOP-4)                 *)
   (* ================================================================= *)
 
   Variable OopClass     : Type.
   Variable OopInterface : Type.
   Variable OopSubsystem : Type.
 
-  Variable AnnotatesClass   : OopClass -> Object -> Prop. (* e.g., @ClAgent, @ClWorker *)
+  Variable AnnotatesClass   : OopClass -> Object -> Prop.
   Variable RealizesClass    : OopClass -> Object -> Prop.
   Variable OopComposition   : OopClass -> OopClass -> Prop.
   Variable RealizesSubsystem: OopSubsystem -> Object -> Prop.
 
-  (* Gen-OOP-1: Concrete components realized by OOP classes *)
   Axiom Gen_OOP_1_Agent :
     forall c : Object,
       BusinessComponent c ->
@@ -1816,7 +1819,6 @@ Section ClprolfFormalization.
       SystemAgent s ->
       exists cl : OopClass, AnnotatesClass cl s /\ RealizesClass cl s.
 
-  (* Gen-OOP-3: Composition link between underlying OOP classes of an Atom *)
   Axiom Gen_OOP_3_AtomComposition :
     forall (d c t : Object),
       Atom d ->
@@ -1826,20 +1828,19 @@ Section ClprolfFormalization.
         RealizesClass cl_t t /\
         OopComposition cl_c cl_t.
 
-  (* Gen-OOP-4: Realization of application parts by subsystems *)
   Axiom Gen_OOP_4_Subsystem :
     forall (p A : Object),
       PartOf p A ->
       exists sub : OopSubsystem, RealizesSubsystem sub p.
 
   (* ================================================================= *)
-  (* 4. GRAMMAR OF MATERIALIZED CONCRETE OOP CODE                     *)
+  (* 4. GRAMMAR OF MATERIALIZED CONCRETE OOP CODE                      *)
   (* ================================================================= *)
 
   Inductive ClprolfComponent : Type :=
-    | ClAtomCode      : OopClass -> OopClass -> ClprolfComponent (* Pair of linked OOP classes *)
-    | ClSubsystemCode : OopSubsystem -> ClprolfComponent        (* Package / Namespace *)
-    | ClAppCode       : Object -> ClprolfComponent.              (* Unified Application *)
+    | ClAtomCode      : OopClass -> OopClass -> ClprolfComponent
+    | ClSubsystemCode : OopSubsystem -> ClprolfComponent
+    | ClAppCode       : Object -> ClprolfComponent.
 
   (* ================================================================= *)
   (* 5. REALIZATION SEMANTICS BASED ON OOP ARTEFACTS                   *)
@@ -1864,7 +1865,7 @@ Section ClprolfFormalization.
         Realizes A (ClAppCode A).
 
   (* ================================================================= *)
-  (* 6. THEOREM 1: ARCHITECTURAL EXPRESSIVENESS                         *)
+  (* 6. THEOREM 1: ARCHITECTURAL EXPRESSIVENESS                        *)
   (* ================================================================= *)
 
   Theorem Theorem1_Deep_Architectural_Expressiveness :
@@ -1880,7 +1881,7 @@ Section ClprolfFormalization.
     intros A p d HApp HPart HCont.
 
     (* 1. Extract atomic structure using Axiom 3 *)
-    destruct (Axiom3_AtomicComposition_And_Fractal A p HPart) as [HAtomRule _].
+    destruct (Axiom3_AtomicComposition_And_RecursiveDelegation A p HPart) as [HAtomRule _].
     destruct (HAtomRule d HCont) as [HAtom [c [t [HBusiness [HTech HComb]]]]].
 
     (* 2. Apply Gen-OOP-3 to obtain OOP classes and composition *)
@@ -1970,7 +1971,6 @@ Section ClprolfFormalization.
   Variable InheritsDirect      : Interface -> Interface -> Prop.
   Variable SameFamilyDomain    : Interface -> Interface -> Prop.
 
-  (* Reflexive-transitive closure for interface InheritsStar *)
   Definition InheritsStar := clos_refl_trans Interface InheritsDirect.
 
   (* MIRROR PREDICATE *)
