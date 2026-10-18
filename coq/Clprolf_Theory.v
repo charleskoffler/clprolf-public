@@ -7,7 +7,7 @@ Import Relation_Operators.
 Section ClprolfFormalization.
 
   (* ================================================================= *)
-  (* 1. BASE TYPING AND CANONICAL PREDICATES                           *)
+  (* 1. BASE TYPING AND CANONICAL PREDICATES                         *)
   (* ================================================================= *)
 
   Variable Object : Type.
@@ -27,17 +27,20 @@ Section ClprolfFormalization.
   Variable Component        : Object -> Prop.
 
   (* Formal Relations *)
-  Variable Automatizes             : Object -> Object -> Prop. (* Application -> HumanWork *)
-  Variable Targets                 : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
-  Variable PartOf                  : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contains                : Object -> Object -> Prop. (* Subsystem -> Atom *)
-  Variable Combines                : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
-  Variable DelegatesTo             : Object -> Object -> Prop. (* TechComponent -> SystemAtom *)
-  Variable Simulates               : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
-  Variable Associates              : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
-  Variable SubSet                  : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
+  Variable Automates             : Object -> Object -> Prop. (* Application -> HumanWork *)
+  Variable Pursues               : Object -> Object -> Prop. (* HumanWork -> HumanGoal *)
+  Variable HasDomain             : Object -> Object -> Prop. (* HumanWork -> BusinessDomain *)
+  Variable ReliesOn              : Object -> Object -> Prop. (* HumanWork -> ExecutionSupport *)
+  Variable Serves                : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
+  Variable PartOf                : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contains              : Object -> Object -> Prop. (* Subsystem -> Atom *)
+  Variable Combines              : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
+  Variable DelegatesTo           : Object -> Object -> Prop. (* TechComponent -> SystemAtom *)
+  Variable Simulates             : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
+  Variable Associates            : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
+  Variable SubSet                : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
   Variable InheritsDirectComponent : Object -> Object -> Prop. (* Child Component -> Parent *)
-  Variable SameDomain              : Object -> Object -> Prop. (* Domain Preservation *)
+  Variable SameDomain            : Object -> Object -> Prop. (* Domain Preservation *)
 
   (* Reflexive-transitive closure for component inheritance *)
   Definition InheritsStarComponent := clos_refl_trans Object InheritsDirectComponent.
@@ -50,7 +53,7 @@ Section ClprolfFormalization.
   Axiom Axiom1_Teleology :
     forall A : Object,
       AutomApp A ->
-      exists h : Object, HumanWork h /\ Automatizes A h.
+      exists h : Object, HumanWork h /\ Automates A h.
 
   (* Formal Decomposition of Human Work *)
   Axiom Axiom1_HumanWorkDecomposition :
@@ -60,7 +63,10 @@ Section ClprolfFormalization.
         HumanGoal G /\
         BusinessDomain M /\
         ExecutionSupport th /\
-        Targets M G.
+        Pursues h G /\
+        HasDomain h M /\
+        ReliesOn h th /\
+        Serves M G.
 
   (* Axiom 2: Structural Decomposition (m ⊆ M) *)
   Axiom Axiom2_StructuralDecomposition :
@@ -285,9 +291,9 @@ Section ClprolfFormalization.
   Variable InterfaceMethods      : Interface -> Type.
   Variable SamePublicMethods     : Object -> Interface -> Prop.
 
-  Variable Implements          : Object -> Interface -> Prop.
-  Variable InheritsDirect      : Interface -> Interface -> Prop.
-  Variable SameFamilyDomain    : Interface -> Interface -> Prop.
+  Variable Implements           : Object -> Interface -> Prop.
+  Variable InheritsDirect       : Interface -> Interface -> Prop.
+  Variable SameFamilyDomain     : Interface -> Interface -> Prop.
 
   Definition InheritsStar := clos_refl_trans Interface InheritsDirect.
 

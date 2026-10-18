@@ -1243,7 +1243,10 @@ ClFree
 |  | $\text{SystemAgent}(s)$ | $s$ is a low-level infrastructure/system agent. | $s \in \mathcal{S}$ | `@ClSystem` |
 |  | $\text{Atom}(a)$ | $a$ is the minimal indivisible unit of the system. | $a \in \text{Atom}$ | Atomic Building Block |
 | **Relations & Links** | $\text{Automates}(A, h)$ | $A$ mechanizes/automates human work $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiom 1 |
-|  | $\text{Targets}(\mathcal{M}, G)$ | Business set $\mathcal{M}$ targets goal $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiom 1 (Decomp.) |
+|  | $\text{Pursues}(h, G)$ | Human work $h$ actively pursues goal $G$. | $\mathcal{H} \times \mathcal{G}$ | Axiom 1 (Work) |
+|  | $\text{HasDomain}(h, \mathcal{M})$ | Human work $h$ operates within domain $\mathcal{M}$. | $\mathcal{H} \times \mathcal{D}$ | Axiom 1 (Work) |
+|  | $\text{ReliesOn}(h, t_h)$ | Human work $h$ relies on execution support $t_h$. | $\mathcal{H} \times \mathcal{T}_h$ | Axiom 1 (Work) |
+|  | $\text{Serves}(\mathcal{M}, G)$ | Business domain $\mathcal{M}$ is designed to serve goal $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiom 1 (Model) |
 |  | $\text{Part}(p, A)$ | $p$ is a sub-part or component of $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiom 2 & 3 |
 |  | $\text{Contains}(p, a)$ | Sub-system $p$ contains domain atom $a$. | $\mathcal{P} \times \text{Atom}$ | Axiom 3 |
 |  | $\text{Simulates}(p, m)$ | Part $p$ embeds domain subset $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Business Component ($m \subseteq \mathcal{M}$) |
@@ -1263,7 +1266,7 @@ $$\forall A \; \Big( AutomApp(A) \implies \exists h \; \big( HumanWork(h) \land 
 
 #### Decomposition of Human Work ($h$)
 
-$$\forall h \; \Big( HumanWork(h) \iff \exists G \, \exists \mathcal{M} \, \exists t_h \; \big( HumanGoal(G) \land BusinessDomain(\mathcal{M}) \land ExecutionSupport(t_h) \land Targets(\mathcal{M}, G) \big) \Big)$$
+$$\forall h \; \Big( \text{HumanWork}(h) \iff \exists G, \mathcal{M}, t_h \; \big( \text{HumanGoal}(G) \land \text{BusinessDomain}(\mathcal{M}) \land \text{ExecutionSupport}(t_h) \land \text{Pursues}(h, G) \land \text{HasDomain}(h, \mathcal{M}) \land \text{ReliesOn}(h, t_h) \land \text{Serves}(\mathcal{M}, G) \big) \Big)$$
 
 ---
 
@@ -1689,7 +1692,7 @@ Import Relation_Operators.
 Section ClprolfFormalization.
 
   (* ================================================================= *)
-  (* 1. BASE TYPING AND CANONICAL PREDICATES                           *)
+  (* 1. BASE TYPING AND CANONICAL PREDICATES                         *)
   (* ================================================================= *)
 
   Variable Object : Type.
@@ -1709,17 +1712,20 @@ Section ClprolfFormalization.
   Variable Component        : Object -> Prop.
 
   (* Formal Relations *)
-  Variable Automatizes             : Object -> Object -> Prop. (* Application -> HumanWork *)
-  Variable Targets                 : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
-  Variable PartOf                  : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contains                : Object -> Object -> Prop. (* Subsystem -> Atom *)
-  Variable Combines                : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
-  Variable DelegatesTo             : Object -> Object -> Prop. (* TechComponent -> SystemAtom *)
-  Variable Simulates               : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
-  Variable Associates              : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
-  Variable SubSet                  : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
+  Variable Automates             : Object -> Object -> Prop. (* Application -> HumanWork *)
+  Variable Pursues               : Object -> Object -> Prop. (* HumanWork -> HumanGoal *)
+  Variable HasDomain             : Object -> Object -> Prop. (* HumanWork -> BusinessDomain *)
+  Variable ReliesOn              : Object -> Object -> Prop. (* HumanWork -> ExecutionSupport *)
+  Variable Serves                : Object -> Object -> Prop. (* BusinessDomain -> HumanGoal *)
+  Variable PartOf                : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contains              : Object -> Object -> Prop. (* Subsystem -> Atom *)
+  Variable Combines              : Object -> Object -> Object -> Prop. (* Atom -> BusinessComponent -> TechComponent *)
+  Variable DelegatesTo           : Object -> Object -> Prop. (* TechComponent -> SystemAtom *)
+  Variable Simulates             : Object -> Object -> Prop. (* Subsystem/Agent -> Domain Portion *)
+  Variable Associates            : Object -> Object -> Prop. (* TechSupport/Worker -> Subsystem/Agent *)
+  Variable SubSet                : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
   Variable InheritsDirectComponent : Object -> Object -> Prop. (* Child Component -> Parent *)
-  Variable SameDomain              : Object -> Object -> Prop. (* Domain Preservation *)
+  Variable SameDomain            : Object -> Object -> Prop. (* Domain Preservation *)
 
   (* Reflexive-transitive closure for component inheritance *)
   Definition InheritsStarComponent := clos_refl_trans Object InheritsDirectComponent.
@@ -1732,7 +1738,7 @@ Section ClprolfFormalization.
   Axiom Axiom1_Teleology :
     forall A : Object,
       AutomApp A ->
-      exists h : Object, HumanWork h /\ Automatizes A h.
+      exists h : Object, HumanWork h /\ Automates A h.
 
   (* Formal Decomposition of Human Work *)
   Axiom Axiom1_HumanWorkDecomposition :
@@ -1742,7 +1748,10 @@ Section ClprolfFormalization.
         HumanGoal G /\
         BusinessDomain M /\
         ExecutionSupport th /\
-        Targets M G.
+        Pursues h G /\
+        HasDomain h M /\
+        ReliesOn h th /\
+        Serves M G.
 
   (* Axiom 2: Structural Decomposition (m ⊆ M) *)
   Axiom Axiom2_StructuralDecomposition :
@@ -1967,9 +1976,9 @@ Section ClprolfFormalization.
   Variable InterfaceMethods      : Interface -> Type.
   Variable SamePublicMethods     : Object -> Interface -> Prop.
 
-  Variable Implements          : Object -> Interface -> Prop.
-  Variable InheritsDirect      : Interface -> Interface -> Prop.
-  Variable SameFamilyDomain    : Interface -> Interface -> Prop.
+  Variable Implements           : Object -> Interface -> Prop.
+  Variable InheritsDirect       : Interface -> Interface -> Prop.
+  Variable SameFamilyDomain     : Interface -> Interface -> Prop.
 
   Definition InheritsStar := clos_refl_trans Interface InheritsDirect.
 
@@ -2060,7 +2069,7 @@ Section ClprolfFormalization.
         Implements c f.
 
   (* ================================================================= *)
-  (* THEOREM 2: MIRROR ISOMORPHISM AND NEUTRALITY                      *)
+  /* THEOREM 2: MIRROR ISOMORPHISM AND NEUTRALITY                      *)
   (* ================================================================= *)
 
   Theorem Theorem2_Mirror_Isomorphism_And_Neutrality :
@@ -2110,7 +2119,7 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  (* COROLLARY 2.1: GENERAL AND UNIVERSAL TRANSITIVITY OF TRAIT TYPING *)
+  /* COROLLARY 2.1: GENERAL AND UNIVERSAL TRANSITIVITY OF TRAIT TYPING *)
   (* ================================================================= *)
 
   Theorem Corollary_2_1_Trait_Transitivity_Mirror :

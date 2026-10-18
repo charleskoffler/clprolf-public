@@ -1212,12 +1212,15 @@ Clprolf ajoute très peu de concepts.
 |  | $\text{AgentSysteme}(s)$ | $s$ est un agent d'infrastructure/technique basse. | $s \in \mathcal{S}$ | `@ClSystem` |
 |  | $\text{Atome}(a)$ | $a$ est l'unité minimale et indivisible du système. | $a \in \text{Atome}$ | Brique atomique |
 | **Relations & Liens** | $\text{Automatise}(A, h)$ | $A$ mécanise/automatise le travail humain $h$. | $\mathcal{A} \times \mathcal{H}$ | Axiome 1 |
-|  | $\text{Viser}(\mathcal{M}, G)$ | L'ensemble métier $\mathcal{M}$ tend vers le but $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiome 1 (Décomp.) |
+|  | $\text{Poursuit}(h, G)$ | Le travail humain $h$ poursuit activement le but $G$. | $\mathcal{H} \times \mathcal{G}$ | Axiome 1 (Travail) |
+|  | $\text{APourDomaine}(h, \mathcal{M})$ | Le travail humain $h$ s'exerce au sein du domaine $\mathcal{M}$. | $\mathcal{H} \times \mathcal{D}$ | Axiome 1 (Travail) |
+|  | $\text{SAppuieSur}(h, t_h)$ | Le travail $h$ s'appuie sur le support d'exécution $t_h$. | $\mathcal{H} \times \mathcal{T}_h$ | Axiome 1 (Travail) |
+|  | $\text{Sert}(\mathcal{M}, G)$ | Le domaine métier $\mathcal{M}$ est conçu pour servir le but $G$. | $\mathcal{D} \times \mathcal{G}$ | Axiome 1 (Modèle) |
 |  | $\text{Partie}(p, A)$ | $p$ est une sous-partie ou composant de $A$. | $\mathcal{P} \times \mathcal{A}$ | Axiome 2 & 3 |
 |  | $\text{Contient}(p, a)$ | Le sous-système $p$ contient l'atome de domaine $a$. | $\mathcal{P} \times \text{Atome}$ | Axiome 3 |
 |  | $\text{Simule}(p, m)$ | La partie $p$ incruste la portion du domaine $m \subseteq \mathcal{M}$. | $\mathcal{P} \times \mathcal{D}$ | Composant Métier ($m \subseteq \mathcal{M}$) |
 |  | $\text{Associe}(t, p)$ | Le support technique $t$ est adjoint à la partie $p$. | $\mathcal{T} \times \mathcal{P}$ | Composant Tech adossé |
-|  | $\text{Combine}(a, c, t)$ | L'atome $a$ réunit strictly le composant métier $c$ et le composant technique $t$. | $\text{Atome} \times \mathcal{C} \times \mathcal{T}$ | Atom (Union exclusive) |
+|  | $\text{Combine}(a, c, t)$ | L'atome $a$ réunit strictement le composant métier $c$ et le composant technique $t$. | $\text{Atome} \times \mathcal{C} \times \mathcal{T}$ | Atom (Union exclusive) |
 |  | $\text{DelegueA}(t, s)$ | Le composant tech $t$ délègue sa complexité à l'atome système $s$. | $\mathcal{T} \times \mathcal{S}$ | Règle de délégation récursive (Axiome 3) |
 |  | $\text{HeriteDirectComposant}(c, p)$ | Le composant $c$ hérite du composant parent $p$. | $\mathcal{C} \times \mathcal{C}$ | Relation `extends` / Axiome 5 |
 |  | $\text{MemeDomaine}(c, p)$ | Les composants $c$ et $p$ partagent le même domaine conceptuel. | $\mathcal{C} \times \mathcal{C}$ | Isomorphisme de domaine / Axiome 5 |
@@ -1231,7 +1234,7 @@ $$\forall A \; \Big( AppAutom(A) \implies \exists h \; \big( TravailHumain(h) \l
 
 #### Décomposition du Travail Humain ($h$)
 
-$$\forall h \; \Big( TravailHumain(h) \iff \exists G \, \exists \mathcal{M} \, \exists t_h \; \big( ButHumain(G) \land DomaineMetier(\mathcal{M}) \land SupportExecution(t_h) \land Viser(\mathcal{M}, G) \big) \Big)$$
+$$\forall h \; \Big( \text{TravailHumain}(h) \iff \exists G, \mathcal{M}, t_h \; \big( \text{ButHumain}(G) \land \text{DomaineMetier}(\mathcal{M}) \land \text{SupportExecution}(t_h) \land \text{Poursuit}(h, G) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{SAppuieSur}(h, t_h) \land \text{Sert}(\mathcal{M}, G) \big) \Big)$$
 
 ---
 
@@ -1682,18 +1685,18 @@ Import Relation_Operators.
 Section ClprolfFormalization.
 
   (* ================================================================= *)
-  (* 1. TYPAGE DE BASE ET PRÉDICATS CANONIQUES                         *)
+  (* 1. TYPAGE DE BASE ET PRÉDICATS CANONIQUES                        *)
   (* ================================================================= *)
 
   Variable Object : Type.
 
   (* Prédicats d'objets *)
-  Variable AppAutom               : Object -> Prop.
+  Variable AppAutom             : Object -> Prop.
   Variable TravailHumain    : Object -> Prop.
   Variable ButHumain        : Object -> Prop.
   Variable DomaineMetier    : Object -> Prop.
   Variable SupportExecution : Object -> Prop.
-  Variable Atome             : Object -> Prop.
+  Variable Atome            : Object -> Prop.
   Variable AgentSysteme     : Object -> Prop.
   Variable ComposantMetier  : Object -> Prop.
   Variable ComposantTech    : Object -> Prop.
@@ -1701,23 +1704,26 @@ Section ClprolfFormalization.
   Variable Composant        : Object -> Prop.
 
   (* Relations formelles *)
-  Variable Automatise             : Object -> Object -> Prop. (* Application -> TravailHumain *)
-  Variable Viser                  : Object -> Object -> Prop. (* DomaineMetier -> ButHumain *)
-  Variable Partie                 : Object -> Object -> Prop. (* Subsystem -> Application *)
-  Variable Contient               : Object -> Object -> Prop. (* Subsystem -> Atome *)
-  Variable Combine                : Object -> Object -> Object -> Prop. (* Atome -> ComposantMetier -> ComposantTech *)
-  Variable DelegueA               : Object -> Object -> Prop. (* ComposantTech -> AtomeSysteme *)
-  Variable Simule                 : Object -> Object -> Prop. (* Subsystem/Agent -> Portion Domaine *)
-  Variable Associe                : Object -> Object -> Prop. (* SupportTech/Worker -> Subsystem/Agent *)
-  Variable SubSet                 : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
+  Variable Automatise           : Object -> Object -> Prop. (* Application -> TravailHumain *)
+  Variable Poursuit             : Object -> Object -> Prop. (* TravailHumain -> ButHumain *)
+  Variable APourDomaine         : Object -> Object -> Prop. (* TravailHumain -> DomaineMetier *)
+  Variable SAppuieSur           : Object -> Object -> Prop. (* TravailHumain -> SupportExecution *)
+  Variable Sert                 : Object -> Object -> Prop. (* DomaineMetier -> ButHumain *)
+  Variable Partie               : Object -> Object -> Prop. (* Subsystem -> Application *)
+  Variable Contient             : Object -> Object -> Prop. (* Subsystem -> Atome *)
+  Variable Combine              : Object -> Object -> Object -> Prop. (* Atome -> ComposantMetier -> ComposantTech *)
+  Variable DelegueA             : Object -> Object -> Prop. (* ComposantTech -> AtomeSysteme *)
+  Variable Simule               : Object -> Object -> Prop. (* Subsystem/Agent -> Portion Domaine *)
+  Variable Associe              : Object -> Object -> Prop. (* SupportTech/Worker -> Subsystem/Agent *)
+  Variable SubSet               : Object -> Object -> Prop. (* Inclusions m ⊆ M *)
   Variable HeriteDirectComposant  : Object -> Object -> Prop. (* Composant Enfant -> Parent *)
-  Variable MemeDomaine            : Object -> Object -> Prop. (* Préservation du domaine *)
+  Variable MemeDomaine          : Object -> Object -> Prop. (* Préservation du domaine *)
 
   (* Clôture réflexive-transitive pour l'héritage des composants *)
   Definition HeriteStarComposant := clos_refl_trans Object HeriteDirectComposant.
 
   (* ================================================================= *)
-  (* 2. AXIOMES FONDAMENTAUX DE CLPROLF (SECTION XVI)                 *)
+  (* 2. AXIOMES FONDAMENTAUX DE CLPROLF (SECTION XVI)                  *)
   (* ================================================================= *)
 
   (* Axiome 1 : Téléologie - Automatisation du Travail Humain *)
@@ -1734,10 +1740,12 @@ Section ClprolfFormalization.
         ButHumain G /\
         DomaineMetier M /\
         SupportExecution th /\
-        Viser M G.
+        Poursuit h G /\
+        APourDomaine h M /\
+        SAppuieSur h th /\
+        Sert M G.
 
   (* Axiome 2 : Décomposition Structurelle (m ⊆ M) *)
-
   Axiom Axiom2_DecompositionStructurelle :
     forall A : Object,
       AppAutom A ->
@@ -1767,7 +1775,7 @@ Section ClprolfFormalization.
         forall s : Object,
           DelegueA t s -> 
           exists a w : Object,
-            Combine s a w /\ Atome s /\ AgentSysteme a /\ Worker w).
+            Combine s a w /\ Atome s /\ AgentSysteme a /\ ComposantTech w).
 
   (* Axiome 4 : Unicité de la qualification du composant *)
   Axiom Axiom4_ComponentUniqueness :
@@ -1784,8 +1792,8 @@ Section ClprolfFormalization.
       HeriteDirectComposant c p ->
       MemeDomaine c p.
 
- (* ================================================================= *)
-  (* 3. AXIOMES DE GÉNÉRATION POO (GEN-POO-1 à GEN-POO-4)                *)
+  (* ================================================================= *)
+  (* 3. AXIOMES DE GÉNÉRATION POO (GEN-POO-1 à GEN-POO-4)              *)
   (* ================================================================= *)
 
   Variable ClassPOO     : Type.
@@ -1839,7 +1847,7 @@ Section ClprolfFormalization.
     | ClAppCode       : Object -> ClprolfComponent.              (* Application unifiée *)
 
   (* ================================================================= *)
-  (* 5. SÉMANTIQUE DE RÉALISATION BASÉE SUR LES ARTÉFACTS POO           *)
+  (* 5. SÉMANTIQUE DE RÉALISATION BASÉE SUR LES ARTÉFACTS POO          *)
   (* ================================================================= *)
 
   Inductive Realizes : Object -> ClprolfComponent -> Prop :=
@@ -1861,7 +1869,7 @@ Section ClprolfFormalization.
         Realizes A (ClAppCode A).
 
   (* ================================================================= *)
-  (* 6. THÉORÈME 1                                                        *)
+  (* 6. THÉORÈME 1                                                     *)
   (* ================================================================= *)
 
   Theorem Theorem1_Deep_Architectural_Expressiveness :
@@ -1914,8 +1922,8 @@ Section ClprolfFormalization.
   Variable TargetTech      : Interface -> Prop.
   Variable TargetAgentSyst : Interface -> Prop.
 
-  Variable Methodes               : Object -> Type.
-  Variable MethodesInterface      : Interface -> Type.
+  Variable Methodes                : Object -> Type.
+  Variable MethodesInterface       : Interface -> Type.
   Variable MemesMethodesPubliques : Object -> Interface -> Prop.
 
   Variable Implemente           : Object -> Interface -> Prop.
@@ -2012,7 +2020,7 @@ Section ClprolfFormalization.
         Implemente c f.
 
   (* ================================================================= *)
-  (* THÉORÈME 2 : ISOMORPHISME ET NEUTRALITÉ MIROIR                     *)
+  (* THÉORÈME 2 : ISOMORPHISME ET NEUTRALITÉ MIROIR                   *)
   (* ================================================================= *)
 
   Theorem Theorem2_Mirror_Isomorphism_And_Neutrality :
