@@ -1228,6 +1228,8 @@ ClFree
 
 # XVI) Axiomatic Formalization and Expressiveness Theorem
 
+CLPROLF is an Embedded Domain-Specific Language (EDSL) designed for education and complex applications. It is materialized through annotations and a static semantic compliance checker, with Java or C# as the host language. Let us now examine its formalization in first-order logic and its set of axioms. The first axiom establishes a teleological approach to automation.
+
 ## 1. Linguistic Contract and Definitions (The Predicates)
 
 | Predicate Type | Predicate | Meaning & Role | Domain / Type | Clprolf Mapping |
@@ -2069,7 +2071,7 @@ Section ClprolfFormalization.
         Implements c f.
 
   (* ================================================================= *)
-  /* THEOREM 2: MIRROR ISOMORPHISM AND NEUTRALITY                      *)
+  (* THEOREM 2: MIRROR ISOMORPHISM AND NEUTRALITY                      *)
   (* ================================================================= *)
 
   Theorem Theorem2_Mirror_Isomorphism_And_Neutrality :
@@ -2119,7 +2121,7 @@ Section ClprolfFormalization.
   Qed.
 
   (* ================================================================= *)
-  /* COROLLARY 2.1: GENERAL AND UNIVERSAL TRANSITIVITY OF TRAIT TYPING *)
+  (* COROLLARY 2.1: GENERAL AND UNIVERSAL TRANSITIVITY OF TRAIT TYPING *)
   (* ================================================================= *)
 
   Theorem Corollary_2_1_Trait_Transitivity_Mirror :

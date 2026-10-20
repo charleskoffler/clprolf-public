@@ -1196,6 +1196,8 @@ Clprolf ajoute très peu de concepts.
 
 # XVI) Formalisation axiomatique et théorème d'expressivité
 
+Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications complexes. Il se présente sous la forme d'annotations et d'un checker statique de conformité sémantique. Le langage hôte est Java ou C#. Voyons la formalisation en logique de premier ordre, et les axiomes. Le premier axiome propose une approche téléologique de l'automatisation.
+
 ### 1. Contrat Linguistique et Définitions (Les Prédicats)
 
 
@@ -2165,4 +2167,3 @@ Pour démontrer que le formalisme mathématique s'applique directement à la ré
 | **$f$ (`@ClFamily`)** | Contrat-miroir hiérarchique | `TaxCalculatorFamily` |
 
 ---
-
