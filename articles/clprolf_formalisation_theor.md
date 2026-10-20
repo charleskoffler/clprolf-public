@@ -9,25 +9,33 @@ Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications compl
 Le premier axiome propose une approche téléologique de l'automatisation.
 
 ### Axiome 1 - Applications d'automatisation
-$$\forall A \; \Big(\text{AppAutom}(A) \implies \exists h \; \big(\text{TravailHumain}(h) \land \text{Automatise}(A,h) \big) \Big)$$
+$$\forall A \; \Big(\text{AppAutom}(A) \implies \exists! h \; \big(\text{TravailHumain}(h) \land \text{Automatise}(A,h) \big) \Big)$$
 
-#### Le travail humain ($h$)
+### Axiome 1b - Le travail humain ($h$)
 
-$$\forall h \; \Big( \text{TravailHumain}(h) \iff \exists G, \mathcal{M}, t_h \; \big( \text{ButHumain}(G) \land \text{DomaineMetier}(\mathcal{M}) \land \text{SupportExecution}(t_h) \land \text{Poursuit}(h, G) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{SAppuieSur}(h, t_h) \land \text{Sert}(\mathcal{M}, G) \big) \Big)$$
+$$\forall h \; \Big( \text{TravailHumain}(h) \iff \exists! G, \exists! \mathcal{M}, \exists! t_h \; \big( \text{ButHumain}(G) \land \text{DomaineMetier}(\mathcal{M}) \land \text{SupportExecution}(t_h) \land \text{Poursuit}(h, G) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{SAppuieSur}(h, t_h) \land \text{Sert}(\mathcal{M}, G) \big) \Big)$$
+
+### Axiome 1c - La complétude des parties
+
+$$\forall A, h, \mathcal{M} \; \Big( \big( \text{AppAutom}(A) \land \text{Automatise}(A,h) \land \text{APourDomaine}(h, \mathcal{M}) \big) \implies \mathcal{M} = \bigcup \left\{ m \;\middle\vert{}\; \exists p \; \big( \text{Partie}(p, A) \land \text{Simule}(p, m) \big) \right\} \Big)$$
 
 ### Axiome 2 — Décomposition Structurelle en parties
 
-$$\forall A, p \; \Big( \text{AppAutom}(A) \land \text{Partie}(p,A) \implies \exists! \mathcal{M}, m, t \; \big( \text{DomaineMetier}(\mathcal{M}) \land m \subseteq \mathcal{M} \land \text{SupportTech}(t) \land \text{Simule}(p,m) \land \text{Associe}(t, p) \big) \Big)$$
+$$\forall A, p, h, \mathcal{M} \; \Big( \big( \text{AppAutom}(A) \land \text{Automatise}(A, h) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{Partie}(p, A) \big) \implies \exists! m, \exists! t \; \big( m \subseteq \mathcal{M} \land \text{SupportTech}(t) \land \text{Simule}(p, m) \land \text{Associe}(t, p) \big) \Big)$$
 
 ### Axiome 3 - Décomposition atomique des parties et auto-similarité structurelle
 
-$$\forall A, p, d \; \Big( \text{AppAutom}(A) \land \text{Partie}(p, A) \land \text{Contient}(p, d) \implies \text{Atome}(d) \land \exists c, t \; (\text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Combine}(d, c, t)) \Big)$$
+$$\forall A, p, d \; \Big( \text{AppAutom}(A) \land \text{Partie}(p, A) \land \text{Atome}(d) \land \text{Contient}(p, d) \implies \exists! c, \exists! t \; (\text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Combine}(d, c, t)) \Big)$$
 
-#### Principe de délégation récursive ####
+### Axiome 3b — Exclusivité du composant métier
+
+$$\forall d_1, d_2, c, t_1, t_2 \; \Big( \big( \text{Combine}(d_1, c, t_1) \land \text{Combine}(d_2, c, t_2) \big) \implies d_1 = d_2 \Big)$$
+
+### Axiome 3c — Principe de délégation récursive
 
 Un composant technique peut déléguer à un atome système, les tâches de complexité lourde. L'atome système est lui-même défini comme un atome de domaine
 
-$$\forall t, s \; \Big( \text{ComposantTech}(t) \land \text{DelegueA}(t, s) \implies \text{Atome}(s) \land \exists a, w \; \big( \text{AgentSysteme}(a) \land \text{ComposantTech}(w) \land \text{Combine}(s, a, w) \big) \Big)$$
+$$\forall t, s \; \Big( \text{ComposantTech}(t) \land \text{DelegueA}(t, s) \implies \exists a, w \; \big( \text{Atome}(s) \land \text{AgentSysteme}(a) \land \text{ComposantTech}(w) \land \text{Combine}(s, a, w) \big) \Big)$$
 
 ### Axiome 4 - Unicité de la qualification des composants
 
@@ -53,5 +61,19 @@ $$\forall c \; \Big(  \text{ComposantTech}(c) \implies \exists! classe \in \math
 
 $$\forall c \; \Big(  \text{AgentSysteme}(c) \implies \exists! classe \in \mathcal{C}_{\text{poo}} \; \big( \text{Annote}(classe, @ClSystem) \land \text{Realise}( classe, c) \big) \Big) $$
 
-# Axiomes et théorèmes sur les interfaces
 
+### Axiome GEN-POO-2 - Génération des interfaces Clprolf ($\mathcal{I} = F \cup T$)
+
+1. **Interface de Famille**
+
+$$\forall f \; \Big( \text{Famille}(f) \implies \exists! interfacePoo \in \mathcal{I}_{\text{poo}} \; \big( \text{Annote}(interfacePoo, @Family) \land \text{Realise}(interfacePoo, f) \big) \Big)$$
+
+2. **Interface de Trait**
+
+$$\forall t \; \Big( \text{Trait}(t) \implies \exists! interfacePoo \in \mathcal{I}_{\text{poo}} \; \big( \text{Annote}(interfacePoo, @Trait) \land \text{Realise}(interfacePoo, t) \big) \Big)$$
+
+### Axiome GEN-POO-3 - Lien de composition entre les composants d'un atome
+
+$$\begin{aligned} \forall d, c, t \; \Big( & \text{Atome}(d) \land \text{Combine}(d, c, t) \\ & \implies (\text{ComposantMetier}(c) \lor \text{AgentSysteme}(c)) \\ & \quad \land \text{ComposantTech}(t) \\ & \quad \land \text{CompositionPOO}(c, t) \Big) \end{aligned}$$
+
+## Axiomes et théorèmes sur les interfaces 
