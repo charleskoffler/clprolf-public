@@ -1,31 +1,113 @@
-# Introduction
+<!-- Clprolf formalisation v1.7 (20261026). UNE APPLICATION AUTOMATISE UN OU PLUSIEURS TRAVAILS HUMAINS. AJOUT DE THEOREME ET LA DEMONSTRATION DU THEOREME 1 + LEMME ET SA DEMONSTATION. Ajout des dictionnaires complets. Numérotation des chapitres. Découpage des lignes trop longues, avec des "aligned"  -->
+
+# Formalisation axiomatique de Clprolf
+
+## I. Introduction
 
 Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications complexes. Il se présente sous la forme d'annotations et d'un checker statique de conformité sémantique. Le langage hôte est Java ou C#.
 
-# Formalisation en système formel
+## II. Dictionnaires du système
 
-## Axiomes et théorèmes axés sur les composants
+### 1. Dictionnaire des Ensembles (Univers du Discours)
+
+* **$\mathcal{A}_{\text{aut}}$** : L'ensemble des applications d'automatisation.
+* **$\mathcal{H}$** : L'ensemble des travaux humains à automatiser.
+* **$\mathcal{G}$** : L'ensemble des buts / objectifs fonctionnels humains.
+* **$\mathcal{M}_{\text{global}}$** : L'ensemble universel de tous les domaines métiers possibles (ensemble d'ensembles : $\mathcal{M}_{\text{global}} = \{ \mathcal{M}_1, \mathcal{M}_2, \dots \}$).
+* **$\mathcal{M}_h \in \mathcal{M}_{\text{global}}$** : Le domaine métier conceptuel spécifique, **unique** et invariant pour un travail humain $h$ donné.
+* **$\mathcal{P}(\mathcal{M}_h)$** : L'ensemble des parties de $\mathcal{M}_h$ (l'ensemble de tous les sous-domaines $m \subseteq \mathcal{M}_h$ possibles).
+* **$\mathcal{SE}$** : L'ensemble des supports d'exécution physiques ou organisationnels.
+* **$\mathcal{P}$** : L'ensemble des parties / sous-systèmes logiques de l'application $A$.
+* **$\mathcal{D}$** : L'ensemble des atomes de domaine $d = (c, t)$.
+* **$\mathcal{C}$** : L'ensemble des composants abstraits ($\mathcal{C} = \mathcal{C}_{\text{metier}} \cup \mathcal{C}_{\text{tech}} \cup \mathcal{C}_{\text{syst}}$).
+* **$\mathcal{C}_{\text{poo}}$** : L'ensemble des classes concrètes (Java / C#).
+* **$\mathcal{I}_{\text{poo}}$** : L'ensemble des interfaces POO ($\mathcal{I}_{\text{poo}} = F \cup T$).
+* **$\mathcal{S}_{\text{poo}}$** : L'ensemble des sous-systèmes / packages POO.
+
+---
+
+### 2. Dictionnaire des Prédicats Primitifs
+
+#### a. Prédicats Macro-Structurels et Téléologiques
+
+* $\text{AppAutom}(A)$ : $A \in \mathcal{A}_{\text{aut}}$ est une application d'automatisation.
+* $\text{TravailHumain}(h)$ : $h \in \mathcal{H}$ est un travail humain formalisé.
+* $\text{Automatise}(A, h)$ : L'application $A$ automatise le travail $h$.
+* $\text{ButHumain}(G)$ : $G \in \mathcal{G}$ est un but fonctionnel.
+* $\text{DomaineMetier}(\mathcal{M})$ : $\mathcal{M} \in \mathcal{M}_{\text{global}}$ est un univers de règles et concepts métiers.
+* $\text{SupportExecution}(se)$ : $se \in \mathcal{SE}$ représente le support d'exécution du travail humain.
+* $\text{Poursuit}(h, G)$ : Le travail $h$ vise l'accomplissement du but $G$.
+* $\text{APourDomaine}(h, \mathcal{M}_h)$ : Le travail $h$ s'inscrit dans l'unique domaine métier $\mathcal{M}_h$.
+* $\text{SAppuieSur}(h, se)$ : Le travail $h$ repose sur le support d'exécution $se$.
+* $\text{Partie}(p, A)$ : $p \in \mathcal{P}$ est un sous-système / module de l'application $A$.
+* $\text{Simule}(p, m)$ : La partie $p$ simule le sous-domaine métier $m \subseteq \mathcal{M}_h$ (avec $m \in \mathcal{P}(\mathcal{M}_h)$).
+* $\text{SupportTech}(t)$ : $t$ est un support technique d'infrastructure.
+* $\text{Associe}(t, p)$ : Le support $t$ soutient la partie $p$.
+
+---
+
+#### b. Prédicats Atomiques et Typage des Composants
+
+* $\text{Atome}(d)$ : $d \in \mathcal{D}$ est un atome architectural indivisible.
+* $\text{Contient}(p, d)$ : La partie $p$ contient l'atome $d$.
+* $\text{Combine}(d, c, t)$ : L'atome $d$ lie de manière univoque le composant métier $c$ et le composant technique $t$.
+* $\text{ComposantMetier}(c)$ : $c$ est un composant de logique métier pure (`@ClAgent`).
+* $\text{ComposantTech}(t)$ : $t$ est un service technique au service d'un agent (`@ClWorker`).
+* $\text{AgentSysteme}(s)$ : $s$ est une abstraction système orientée domaine (`@ClSystem`).
+* $\text{DelegueA}(t, s)$ : Le composant $t$ délègue son travail bas niveau à l'agent système $s$.
+
+---
+
+#### c. Prédicats d'Héritage et Ancrage POO
+
+* $\text{HeriteDirectComposant}(c_1, c_2)$ : $c_1$ hérite directement de $c_2$.
+* $\text{HeriteStarComposant}(c_1, c_2)$ : Fermeture réflexive-transitive de l'héritage entre composants ($\ge 0$ niveau).
+* $\text{MemeDomaine}(c_1, c_2)$ : $c_1$ et $c_2$ appartiennent au même domaine conceptuel.
+* $\text{Annote}(elem, \alpha)$ : L'élément POO ($elem \in \mathcal{C}_{\text{poo}} \cup \mathcal{I}_{\text{poo}}$) porte l'annotation $\alpha$.
+* $\text{Realise}(elem_{\text{poo}}, comp_{\text{formel}})$ : Le code POO concrétise le composant ou l'interface formelle.
+* $\text{CompositionPOO}(cl_1, cl_2)$ : La classe $cl_1$ détient une référence de composition vers $cl_2$.
+* $\text{SubsystemPOO}(s)$ : $s \in \mathcal{S}_{\text{poo}}$ est un module / package POO.
+
+---
+
+#### d. Prédicats des Interfaces et Dualité Miroir (Section II)
+
+* $\text{Famille}(f)$ : $f \in F$ est une interface de famille (`@ClFamily`).
+* $\text{Trait}(t)$ : $t \in T$ est une interface de trait/capacité (`@ClTrait`).
+* $\text{Implemente}(c, f)$ : Le composant/classe $c$ implémente l'interface $f$.
+* $\text{TargetMetier}(i)$ / $\text{TargetTech}(i)$ / $\text{TargetAgentSyst}(i)$ : Indique si l'interface $i$ cible/est compatible avec le rôle Métier, Technique ou Système.
+* $\text{MemePolarite}(f, c)$ : Équivalence exacte de polarité/rôle entre l'interface $f$ et le composant $c$.
+* $\text{MiroirDe}(f, c)$ : $f$ est l'interface miroir exacte du composant $c$.
+* $\text{HeriteDirect}(i_1, i_2)$ : L'interface $i_1$ étend directement $i_2$.
+* $\text{HeriteStar}(i_1, i_2)$ : Fermeture réflexive-transitive de l'héritage d'interfaces.
+* $\text{MemeDomaineFamille}(f_1, f_2)$ : Conservation du domaine entre deux interfaces de famille.
+* $\text{TypeStatique}(o, f)$ : Variable/objet $o$ manipulé sous le type statique de l'interface $f$.
+* $\text{InstanceDe}(o, c)$ : L'objet $o$ est une instance dynamique réelle de la classe $c$.
+
+---
+
+## III. Axiomes et théorèmes axés sur les composants
 
 Le premier axiome propose une approche téléologique de l'automatisation.
 
 ### Axiome 1 - Applications d'automatisation
-$$\forall A \; \Big(\text{AppAutom}(A) \implies \exists! h \; \big(\text{TravailHumain}(h) \land \text{Automatise}(A,h) \big) \Big)$$
+$$\forall A \; \Big(\text{AppAutom}(A) \implies \exists h \; \big(\text{TravailHumain}(h) \land \text{Automatise}(A,h) \big) \Big)$$
 
 ### Axiome 1b.1 - Le travail humain ($h$)
 
-$$\forall h \; \Big( \text{TravailHumain}(h) \implies \exists G, \exists! \mathcal{M}, \exists! se_h \; \big( \text{ButHumain}(G) \land \text{DomaineMetier}(\mathcal{M}) \land \text{SupportExecution}(se_h) \land \text{Poursuit}(h, G) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{SAppuieSur}(h, se_h) \big) \Big)$$
+$$\begin{aligned} \forall h \; \Big( \text{TravailHumain}(h) &\implies \exists G, \exists! \mathcal{M}, \exists! se_h \; \big( \text{ButHumain}(G) \land \text{DomaineMetier}(\mathcal{M}) \land \text{SupportExecution}(se_h) \\ &\land \text{Poursuit}(h, G) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{SAppuieSur}(h, se_h) \big) \Big) \end{aligned}$$
 
 ### Axiome 1b.2 - Réciproque du travail humain
 
-$$\forall h, G, \mathcal{M}, se_h \; \Big( \big( \text{ButHumain}(G) \land \text{DomaineMetier}(\mathcal{M}) \land \text{SupportExecution}(se_h) \land \text{Poursuit}(h, G) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{SAppuieSur}(h, se_h) \big) \implies \text{TravailHumain}(h) \Big)$$
+$$\begin{aligned} \forall h, G, \mathcal{M}, se_h \; \Big( \big( &\text{ButHumain}(G) \land \text{DomaineMetier}(\mathcal{M}) \land \text{SupportExecution}(se_h) \land \text{Poursuit}(h, G) \\ &\land \text{APourDomaine}(h, \mathcal{M}) \land \text{SAppuieSur}(h, se_h) \big) \implies \text{TravailHumain}(h) \Big) \end{aligned}$$
 
 ### Axiome 2 — Décomposition Structurelle en parties
 
-$$\forall A, p, h, \mathcal{M} \; \Big( \big( \text{AppAutom}(A) \land \text{Automatise}(A, h) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{Partie}(p, A) \big) \implies \exists! m, \exists! t \; \big( m \subseteq \mathcal{M} \land \text{SupportTech}(t) \land \text{Simule}(p, m) \land \text{Associe}(t, p) \big) \Big)$$
+$$\begin{aligned} \forall A, p, h, \mathcal{M} \; \Big( \big( &\text{AppAutom}(A) \land \text{Automatise}(A, h) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{Partie}(p, A) \big) \implies \\ &\exists! m, \exists! t \; \big( m \subseteq \mathcal{M} \land \text{SupportTech}(t) \land \text{Simule}(p, m) \land \text{Associe}(t, p) \big) \Big) \end{aligned}$$
 
 ### Axiome 3 - Décomposition atomique des parties et auto-similarité structurelle
 
-$$\forall A, p, d \; \Big( \text{AppAutom}(A) \land \text{Partie}(p, A) \land \text{Atome}(d) \land \text{Contient}(p, d) \implies \exists! c, \exists! t \; (\text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Combine}(d, c, t)) \Big)$$
+$$\begin{aligned} \forall A, p, d \; \Big( &\text{AppAutom}(A) \land \text{Partie}(p, A) \land \text{Atome}(d) \land \text{Contient}(p, d) \implies \\  &\exists! c, \exists! t \; (\text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Combine}(d, c, t)) \Big) \end{aligned}$$
 
 ### Axiome 3b — Exclusivité du composant métier
 
@@ -39,7 +121,9 @@ $$\forall t, s \; \Big( \text{ComposantTech}(t) \land \text{DelegueA}(t, s) \imp
 
 ### Axiome 4 - Unicité de la qualification des composants
 
-$$\forall c \; \Big( \text{Composant}(c) \implies \big(  \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \big(  \neg \text{ComposantMetier}(c) \land \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \big( \neg \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \text{AgentSysteme}(c) \big) \Big)$$
+$$\begin{aligned} \forall c \; &\Big( \text{Composant}(c) \implies \big(  \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \\
+&\big(  \neg \text{ComposantMetier}(c) \land \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \\
+ &\big( \neg \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \text{AgentSysteme}(c) \big) \Big) \end{aligned}$$
 
 ### Axiome 5 - Invariance du domaine par héritage
 
@@ -71,11 +155,11 @@ $$\forall A, p \; \Big( \text{AppAutom}(A) \land \text{Partie}(p, A) \implies \e
 
 ### Axiome RECIPR-ATOME-METIER
 
-$$\forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; \Big( \big( \text{Annote}(cl_c, \text{@ClAgent}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{CompositionPOO}(cl_c, cl_t) \big) \implies \exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big)$$
+$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClAgent}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{CompositionPOO}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
 
 ### Axiome RECIPR-ATOME-SYSTEME
 
-$$\forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; \Big( \big( \text{Annote}(cl_c, \text{@ClSystem}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{CompositionPOO}(cl_c, cl_t) \big) \implies \exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{AgentSysteme}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big)$$
+$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClSystem}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{CompositionPOO}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{AgentSysteme}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
 
 ### Axiome RECIPR-COMPOSANT-METIER
 
@@ -94,7 +178,7 @@ $$\forall cl \in \mathcal{C}_{\text{poo}} \; \Big( \text{Annote}(cl, \text{@ClSy
 $$\forall s \in \mathcal{S}_{\text{poo}} \; \Big( \text{SubsystemPOO}(s) \implies \exists! p, \exists A \; \big( \text{Partie}(p, A) \land \text{Realise}(s, p) \big) \Big)$$
 
 
-## Axiomes et théorèmes sur les interfaces 
+## IV. Axiomes et théorèmes sur les interfaces 
 
 ### Définitions
 
@@ -110,9 +194,9 @@ $$\text{MiroirDe}(f, c) \iff \big( \text{Famille}(f) \land \text{Implemente}(c, 
 
 ### Axiome 1 - Polarité stricte des familles
 
-$$\forall f \in F \; \Big( (\text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor (\neg \text{TargetMetier}(f) \land \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor (\neg \text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \text{TargetAgentSyst}(f)) \Big)$$
+$$\begin{aligned} \forall f \in F \; &\Big( (\text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor \\ &(\neg \text{TargetMetier}(f) \land \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor \\ &(\neg \text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \text{TargetAgentSyst}(f)) \Big) \end{aligned}$$
 
-### Axiome 2 - Présence de la famille implémentée, et interdiction des traits directs
+### Axiome 2 - Présence de la famille du composant, et interdiction des traits directs
 
 $$\forall c \in C, \forall t \in T \; \Big( \big( \exists! f \in F \; \text{Implemente}(c, f) \big) \land \neg \text{Implemente}(c, t) \Big)$$
 
@@ -122,7 +206,8 @@ $$\forall c \in C, \forall f \in F \quad \Big( \text{Famille}(f) \land \text{Imp
 
 ### Axiome 4 - Héritage d'un trait par une famille
 
-$$\forall f \in F, \forall t \in T \; \Big( \text{HeriteDirect}(f, t) \implies \big( (\text{TargetMetier}(f) \implies \text{TargetMetier}(t)) \land (\text{TargetTech}(f) \implies \text{TargetTech}(t)) \land (\text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t)) \big) \Big)$$
+$$\begin{aligned} \forall f \in F, &\forall t \in T \; \Big( \text{HeriteDirect}(f, t) \implies \big( (\text{TargetMetier}(f) \implies \text{TargetMetier}(t)) \land \\
+ &(\text{TargetTech}(f) \implies \text{TargetTech}(t)) \land (\text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t)) \big) \Big) \end{aligned}$$
 
 ### Axiome 5 — héritage des traits
 
@@ -132,7 +217,7 @@ $$\forall t \in T, \forall i \in I \; \Big( \text{HeriteDirect}(t, i) \implies \
 
 Par clôture réflexive et transitive de l'héritage direct des traits
 
-$$\forall f \in F, \forall t \in T \; \Big( \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big)$$
+$$\begin{aligned}  \forall f \in F, &\forall t \in T \; \Big( \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \\ &\big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big) \end{aligned} $$
 
 ### Axiome 7 - Invariance du domaine lors de l'héritage des familles entre elles
 
@@ -171,3 +256,55 @@ $$\forall o, \forall f \in F, \quad \text{TypeStatique}(o, f) \implies \exists! 
 $$\forall o, \forall t \in T, \quad \text{TypeStatique}(o, t) \implies \exists f, f' \in F, \exists! c \in C \; \Big( \text{InstanceDe}(o, c) \land \text{HeriteStar}(f, t) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big)$$
 
 ---
+
+### Lemme 1.0 — Isomorphisme de miroir et d'héritage entre composants et familles
+
+#### Énoncé
+
+Prenons deux composants qui ont une relation d'héritage transitive. Il existe deux familles miroirs à eux, et qui ont une relation d'héritage transitive. 
+
+$$\forall c_1, c_2 \in C, \forall f_1, f_2 \in F \; \Big[ \big( \text{HeriteStarComposant}(c_1, c_2) \land \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) \big) \implies \text{HeriteStar}(f_1, f_2) \Big]$$
+
+
+#### Démonstration déductive (*Forward Proof*)
+
+$$\begin{array}{rll} 1. & \text{HeriteStarComposant}(c_1, c_2) & \text{[Hypothèse : relation d'héritage transitive dans } C \text{]} \\ 2. & \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) & \text{[Axiomes 2 et 3 — Ancrage miroir (1:1)]} \\ 3. & \text{Cas de base } (k=0) : c_1 = c_2 \implies f_1 = f_2 \implies \text{HeriteStar}(f_1, f_1) & \text{[Réflexivité de l'héritage]} \\ 4. & \text{Pas récursif } (k+1) : \exists p \in C \; (\text{HeriteStarComposant}(c_1, p) \land \text{HeriteDirectComposant}(c_2, p)) & \text{[Décomposition de la chaîne d'héritage]} \\ 5. & \exists! f_p \in F \quad \text{MiroirDe}(f_p, p) & \text{[Axiomes 2 et 3 — Ancrage miroir]} \\ 6. & \text{HeriteStar}(f_1, f_p) & \text{[Hypothèse de récurrence]} \\ 7. & \text{HeriteDirect}(f_p, f_2) & \text{[Axiome 8 — Propagation de l'héritage direct]} \\ 8. & \text{HeriteStar}(f_1, f_2) & \text{[Transitivité de l'héritage dans } F \text{]} \\ \hline \therefore & \text{HeriteStar}(f_1, f_2) & \blacksquare \end{array}$$
+
+
+### 1. La situation de départ (Lignes 1 et 2)
+
+On prend un composant enfant $c_1$ qui hérite (directement ou sur plusieurs niveaux) d'un composant parent $c_2$. Par construction du système (Axiomes 2 et 3), le composant enfant a sa propre interface miroir $f_1$, et le composant parent a la sienne, $f_2$.
+
+On veut prouver que l'interface enfant $f_1$ hérite obligatoirement de l'interface parente $f_2$.
+
+---
+
+### 2. Le cas de base — $0$ niveau d'écart (Ligne 3)
+
+Si le composant enfant et le composant parent sont en fait le même ($c_1 = c_2$), leurs interfaces miroirs sont identiques ($f_1 = f_2$). La relation d'héritage est vraie par simple **réflexivité** (une interface « hérite » d'elle-même).
+
+---
+
+### 3. Le pas récursif — La chaîne d'héritage (Lignes 4 à 8)
+
+Si $c_1$ hérite de $c_2$ à travers une chaîne de plusieurs classes :
+
+* **Ligne 4 & 5 :** On isole le dernier parent juste au-dessus de $c_2$, qu'on appelle $p$. Ce composant intermédiaire $p$ possède lui aussi sa propre interface miroir, $f_p$.
+* **Ligne 6 (Hypothèse de récurrence) :** On admet que pour toute la première partie de la chaîne (de $c_1$ jusqu'à $p$), la règle fonctionne déjà : l'interface $f_1$ hérite de l'interface $f_p$.
+* **Ligne 7 (Axiome 8) :** Comme $p$ est le parent direct de $c_2$, l'Axiome 8 garantit que l'interface $f_p$ hérite directement de l'interface $f_2$.
+* **Ligne 8 (Transitivité) :** Si $f_1$ hérite de $f_p$, et que $f_p$ hérite de $f_2$, alors par simple enchaînement (**transitivité**), $f_1$ hérite de $f_2$.
+
+---
+
+### Démonstration au ralenti du Théorème 1 (mise à jour)
+
+#### Énoncé du Théorème 1
+
+$$\forall o, \forall f \in F, \quad \text{TypeStatique}(o, f) \implies \exists! c \in C, \exists! f' \in F \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big)$$
+
+#### Démonstration déductive (*Forward Proof*)
+
+$$\begin{array}{rll} 1. & \text{TypeStatique}(o, f) & \text{[Hypothèse : appel via la famille } f \text{]} \\ 2. & \exists c_f \in C \quad \text{MiroirDe}(f, c_f) & \text{[Axiome 3 — Ancrage miroir du type/contrat } f \text{]} \\ 3. & \exists! c \in C \quad \text{InstanceDe}(o, c) \land \text{HeriteStarComposant}(c, c_f) & \text{[Sécurité du typage POO : } o \text{ instancie } c \text{ qui dérive de } c_f \text{]} \\ 4. & \exists! f' \in F \quad \text{MiroirDe}(f', c) & \text{[Axiome 3 — Ancrage miroir sur le composant réel } c \text{]} \\ 5. & \text{HeriteStar}(f', f) & \text{[Application du Lemme 1.0 sur } \text{HeriteStarComposant}(c, c_f) \text{]} \\ \hline \therefore & \exists! c \in C, \exists! f' \in F \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array}$$
+
+---
+
