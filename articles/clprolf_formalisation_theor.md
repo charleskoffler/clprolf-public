@@ -1,11 +1,5 @@
 <!-- Clprolf formalisation v1.9 (20261029). -->
 
-RESUME DE TODO:
-
-* Composants métiers ne peuvent pas appeler d'agents systèmes , sauf agents systèmes natifs comme Thread
-* Les agents systèmes ne peuvent appeler que des agents systèmes de même domaine fonctionnel, ou des agents systèmes natifs.
-
-  -->
 
 # Formalisation axiomatique de Clprolf
 
@@ -175,6 +169,10 @@ $$\forall c \in \mathcal{C} \Big( \text{ComposantMetierAutonome}(c) \implies \ex
 5. **Composants techniques autonomes**
 
 $$\forall c \in \mathcal{C} \Big( \text{ComposantTechAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClWorker) \land \text{Realise}(classe, c) \big) \Big) $$
+
+6. **Composants systèmes autonomes**
+
+$$\forall c \in \mathcal{C} \Big( \text{ComposantSystemeAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClSystem) \land \text{Realise}(classe, c) \big) \Big) $$
 
 ### Axiome ATOMES-VERS-CLPROLF
 
