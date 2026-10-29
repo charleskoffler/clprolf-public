@@ -1,4 +1,10 @@
-<!-- Clprolf formalisation v1.8 (20261029). 
+<!-- Clprolf formalisation v1.9 (20261029). -->
+
+RESUME DE TODO:
+
+* Composants métiers ne peuvent pas appeler d'agents systèmes , sauf agents systèmes natifs comme Thread
+* Les agents systèmes ne peuvent appeler que des agents systèmes de même domaine fonctionnel, ou des agents systèmes natifs.
+
   -->
 
 # Formalisation axiomatique de Clprolf
@@ -125,9 +131,7 @@ $$\forall t, s \; \Big( \text{ComposantTech}(t) \land \text{DelegueA}(t, s) \imp
 
 ### Axiome 4 - Unicité de la qualification des composants
 
-$$\begin{aligned} \forall c \; &\Big( \text{Composant}(c) \implies \big(  \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \\
-&\big(  \neg \text{ComposantMetier}(c) \land \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \\
- &\big( \neg \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \text{AgentSysteme}(c) \big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall c \; &\Big( \text{Composant}(c) \implies \big(  \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \\ &\big(  \neg \text{ComposantMetier}(c) \land \text{ComposantTech}(c) \land \neg \text{AgentSysteme}(c) \big) \lor \\ &\big( \neg \text{ComposantMetier}(c) \land \neg \text{ComposantTech}(c) \land \text{AgentSysteme}(c) \big) \Big) \end{aligned}$$
 
 ### Axiome 5 - Invariance du domaine par héritage
 
@@ -135,13 +139,20 @@ La relation d'héritage entre deux composants implique l'appartenance au même d
 
 $$\forall c, p \; \Big( \big( \text{Composant}(c) \land \text{Composant}(p) \land \text{HeriteDirectComposant}(c, p) \big) \implies \text{MemeDomaine}(c, p) \Big)$$
 
-### Axiome 6 - Composants métiers autonomes
 
-$$\forall c \in \mathcal{C}, \quad \text{ComposantMetierAutonome}(c) \implies \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \forall t, \forall p \in \mathcal{P}, \; \big( \neg \text{Combine}(c, t) \;\;\land\;\; \neg \text{ContientDirect}(p, c) \big) \Big]$$
+### Définitions
 
-### Axiome 6b - Composants techniques autonomes
+#### Définition - Composants métiers autonomes
 
-$$\forall t \in \mathcal{C}, \quad \text{ComposantTechAutonome}(t) \implies \Big( \text{ComposantTech}(t) \;\;\land\;\; \forall c \; \big( \neg \text{Combine}(c, t) \big) \Big) $$
+$$\forall c \in \mathcal{C}, \quad \text{ComposantMetierAutonome}(c) \iff \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \forall t, \forall p \in \mathcal{P} \; \big( \neg \text{Combine}(c, t) \;\;\land\;\; \neg \text{ContientDirect}(p, c) \big) \Big]$$
+
+#### Définition - Composants techniques autonomes
+
+$$\forall t \in \mathcal{C}, \quad \text{ComposantTechAutonome}(t) \iff \Big( \text{ComposantTech}(t) \;\;\land\;\; \forall c \; \big( \neg \text{Combine}(c, t) \big) \Big) $$
+
+#### Définition - Agents systèmes autonomes
+
+$$\forall s \in \mathcal{C}, \quad \text{AgentSystemeAutonome}(s) \iff \Big( \text{AgentSysteme}(s) \;\;\land\;\; \forall t \in \mathcal{C} , \forall p \in \mathcal{P} \; \big( \neg \text{Combine}(s, t) \land \neg \text{ContientDirect}(p, s) \big) \Big)$$
 
 ### Axiome COMPS-VERS-CLPROLF
 
@@ -226,8 +237,7 @@ $$\forall c \in C, \forall f \in F \quad \Big( \text{Famille}(f) \land \text{Imp
 
 ### Axiome 4 - Héritage d'un trait par une famille
 
-$$\begin{aligned} \forall f \in F, &\forall t \in T \; \Big( \text{HeriteDirect}(f, t) \implies \big( (\text{TargetMetier}(f) \implies \text{TargetMetier}(t)) \land \\
- &(\text{TargetTech}(f) \implies \text{TargetTech}(t)) \land (\text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t)) \big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall f \in F, &\forall t \in T \; \Big( \text{HeriteDirect}(f, t) \implies \big( (\text{TargetMetier}(f) \implies \text{TargetMetier}(t)) \land \\ &(\text{TargetTech}(f) \implies \text{TargetTech}(t)) \land (\text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t)) \big) \Big) \end{aligned}$$
 
 ### Axiome 5 — héritage des traits
 
