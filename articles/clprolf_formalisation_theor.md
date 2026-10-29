@@ -1,4 +1,5 @@
-<!-- Clprolf formalisation v1.7 (20261026). UNE APPLICATION AUTOMATISE UN OU PLUSIEURS TRAVAILS HUMAINS. AJOUT DE THEOREME ET LA DEMONSTRATION DU THEOREME 1 + LEMME ET SA DEMONSTATION. Ajout des dictionnaires complets. Numérotation des chapitres. Découpage des lignes trop longues, avec des "aligned"  -->
+<!-- Clprolf formalisation v1.8 (20261029). 
+  -->
 
 # Formalisation axiomatique de Clprolf
 
@@ -50,9 +51,12 @@ Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications compl
 
 * $\text{Atome}(d)$ : $d \in \mathcal{D}$ est un atome architectural indivisible.
 * $\text{Contient}(p, d)$ : La partie $p$ contient l'atome $d$.
+* $\text{ContientDirect}(p, c)$ : La partie $p$ contient le composant $c$ directement, sans passer pas un atome $d$.
 * $\text{Combine}(d, c, t)$ : L'atome $d$ lie de manière univoque le composant métier $c$ et le composant technique $t$.
 * $\text{ComposantMetier}(c)$ : $c$ est un composant de logique métier pure (`@ClAgent`).
 * $\text{ComposantTech}(t)$ : $t$ est un service technique au service d'un agent (`@ClWorker`).
+* $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
+* $\text{ComposantTechniqueAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combinée à un atome. Il peut ou pas se trouver dans une partie $p$.
 * $\text{AgentSysteme}(s)$ : $s$ est une abstraction système orientée domaine (`@ClSystem`).
 * $\text{DelegueA}(t, s)$ : Le composant $t$ délègue son travail bas niveau à l'agent système $s$.
 
@@ -65,7 +69,7 @@ Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications compl
 * $\text{MemeDomaine}(c_1, c_2)$ : $c_1$ et $c_2$ appartiennent au même domaine conceptuel.
 * $\text{Annote}(elem, \alpha)$ : L'élément POO ($elem \in \mathcal{C}_{\text{poo}} \cup \mathcal{I}_{\text{poo}}$) porte l'annotation $\alpha$.
 * $\text{Realise}(elem_{\text{poo}}, comp_{\text{formel}})$ : Le code POO concrétise le composant ou l'interface formelle.
-* $\text{CompositionPOO}(cl_1, cl_2)$ : La classe $cl_1$ détient une référence de composition vers $cl_2$.
+* $\text{InjectDepend}(cl_1, cl_2)$ : La classe $cl_1$ injecte une dépendance $cl_2$.
 * $\text{SubsystemPOO}(s)$ : $s \in \mathcal{S}_{\text{poo}}$ est un module / package POO.
 
 ---
@@ -131,6 +135,14 @@ La relation d'héritage entre deux composants implique l'appartenance au même d
 
 $$\forall c, p \; \Big( \big( \text{Composant}(c) \land \text{Composant}(p) \land \text{HeriteDirectComposant}(c, p) \big) \implies \text{MemeDomaine}(c, p) \Big)$$
 
+### Axiome 6 - Composants métiers autonomes
+
+$$\forall c \in \mathcal{C}, \quad \text{ComposantMetierAutonome}(c) \implies \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \forall t, \forall p \in \mathcal{P}, \; \big( \neg \text{Combine}(c, t) \;\;\land\;\; \neg \text{ContientDirect}(p, c) \big) \Big]$$
+
+### Axiome 6b - Composants techniques autonomes
+
+$$\forall t \in \mathcal{C}, \quad \text{ComposantTechAutonome}(t) \implies \Big( \text{ComposantTech}(t) \;\;\land\;\; \forall c \; \big( \neg \text{Combine}(c, t) \big) \Big) $$
+
 ### Axiome COMPS-VERS-CLPROLF
 
 1. **Composant métier**
@@ -145,9 +157,17 @@ $$\forall d, c, t \; \Big(  \text{Atome}(d) \land \text{Combine}(d, c, t) \land 
 
 $$\forall d, c, t \; \Big(  \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{AgentSysteme}(c) \implies \exists! classe \in \mathcal{C}_{\text{poo}} \; \big( \text{Annote}(classe, @ClSystem) \land \text{Realise}( classe, c) \big) \Big)$$
 
+4. **Composants métiers autonomes**
+
+$$\forall c \in \mathcal{C} \Big( \text{ComposantMetierAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClAgent) \land \text{Realise}(classe, c) \big) \Big) $$
+
+5. **Composants techniques autonomes**
+
+$$\forall c \in \mathcal{C} \Big( \text{ComposantTechAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClWorker) \land \text{Realise}(classe, c) \big) \Big) $$
+
 ### Axiome ATOMES-VERS-CLPROLF
 
-$$\forall d, c, t, cl_c, cl_t \; \Big( \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \implies \text{CompositionPOO}(cl_c, cl_t) \Big)$$
+$$\forall d, c, t, cl_c, cl_t \; \Big( \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \implies \text{InjectDepend}(cl_c, cl_t) \Big)$$
 
 ### Axiome PARTIES-VERS-CLPROLF
 
@@ -155,11 +175,11 @@ $$\forall A, p \; \Big( \text{AppAutom}(A) \land \text{Partie}(p, A) \implies \e
 
 ### Axiome RECIPR-ATOME-METIER
 
-$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClAgent}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{CompositionPOO}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClAgent}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{InjectDepend}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
 
 ### Axiome RECIPR-ATOME-SYSTEME
 
-$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClSystem}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{CompositionPOO}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{AgentSysteme}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClSystem}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{InjectDepend}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{AgentSysteme}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
 
 ### Axiome RECIPR-COMPOSANT-METIER
 
