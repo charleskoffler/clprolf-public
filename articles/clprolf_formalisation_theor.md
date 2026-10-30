@@ -1,6 +1,3 @@
-<!-- Clprolf formalisation v2.0 (20261030). "Clprolf est un modèle formel qui modélise la topologie logicielle statique d'une application d'automatisation orientée objet ou des bibliothèques qui lui servent de support.". Ajout de la définition de AgentSystemeAutonome.  -->
-  -->
-
 # Formalisation axiomatique de Clprolf
 
 ## I. Introduction
@@ -140,15 +137,15 @@ $$\forall c, p \; \Big( \big( \text{Composant}(c) \land \text{Composant}(p) \lan
 
 #### Définition - Composants métiers autonomes
 
-$$\forall c \in \mathcal{C}, \quad \text{ComposantMetierAutonome}(c) \iff \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \forall t, \forall p \in \mathcal{P} \; \big( \neg \text{Combine}(c, t) \;\;\land\;\; \neg \text{ContientDirect}(p, c) \big) \Big]$$
+$$\forall c \in \mathcal{C}, \quad \text{ComposantMetierAutonome}(c) \iff \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, c, t) \big) \;\;\land\;\; \big( \forall p \in \mathcal{P}, \; \neg \text{ContientDirect}(p, c) \big) \Big]$$
 
 #### Définition - Composants techniques autonomes
 
-$$\forall t \in \mathcal{C}, \quad \text{ComposantTechAutonome}(t) \iff \Big( \text{ComposantTech}(t) \;\;\land\;\; \forall c \; \big( \neg \text{Combine}(c, t) \big) \Big) $$
+$$\forall t \in \mathcal{C}, \quad \text{ComposantTechAutonome}(t) \iff \Big( \text{ComposantTech}(t) \;\;\land\;\; \big( \forall c \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, c, t) \big) \Big) $$
 
 #### Définition - Agents systèmes autonomes
 
-$$\forall s \in \mathcal{C}, \quad \text{AgentSystemeAutonome}(s) \iff \Big( \text{AgentSysteme}(s) \;\;\land\;\; \forall t \in \mathcal{C} , \forall p \in \mathcal{P} \; \big( \neg \text{Combine}(s, t) \land \neg \text{ContientDirect}(p, s) \big) \Big)$$
+$$\forall a \in \mathcal{C}, \quad \text{AgentSystemeAutonome}(a) \iff \Big[ \text{AgentSysteme}(a) \;\;\land\;\; \big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, a, t) \big) \;\;\land\;\; \big( \forall p \in \mathcal{P}, \; \neg \text{ContientDirect}(p, a) \big) \Big]$$
 
 ### Axiome COMPS-VERS-CLPROLF
 
@@ -298,7 +295,7 @@ $$\forall c_1, c_2 \in C, \forall f_1, f_2 \in F \; \Big[ \big( \text{HeriteStar
 
 #### Démonstration déductive (*Forward Proof*)
 
-$$\begin{array}{rll} 1. & \text{HeriteStarComposant}(c_1, c_2) & \text{[Hypothèse : relation d'héritage transitive dans } C \text{]} \\ 2. & \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) & \text{[Axiomes 2 et 3 — Ancrage miroir (1:1)]} \\ 3. & \text{Cas de base } (k=0) : c_1 = c_2 \implies f_1 = f_2 \implies \text{HeriteStar}(f_1, f_1) & \text{[Réflexivité de l'héritage]} \\ 4. & \text{Pas récursif } (k+1) : \exists p \in C \; (\text{HeriteStarComposant}(c_1, p) \land \text{HeriteDirectComposant}(c_2, p)) & \text{[Décomposition de la chaîne d'héritage]} \\ 5. & \exists! f_p \in F \quad \text{MiroirDe}(f_p, p) & \text{[Axiomes 2 et 3 — Ancrage miroir]} \\ 6. & \text{HeriteStar}(f_1, f_p) & \text{[Hypothèse de récurrence]} \\ 7. & \text{HeriteDirect}(f_p, f_2) & \text{[Axiome 8 — Propagation de l'héritage direct]} \\ 8. & \text{HeriteStar}(f_1, f_2) & \text{[Transitivité de l'héritage dans } F \text{]} \\ \hline \therefore & \text{HeriteStar}(f_1, f_2) & \blacksquare \end{array}$$
+$$\begin{array}{rll} 1. & \text{HeriteStarComposant}(c_1, c_2) & \text{[Hypothèse : relation d'héritage transitive dans } C \text{]} \\ 2. & \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) & \text{[Axiomes 2 et 3 — Ancrage miroir (1:1)]} \\ 3. & \text{Cas de base } (k=0) : c_1 = c_2 \implies f_1 = f_2 \implies \text{HeriteStar}(f_1, f_1) & \text{[Réflexivité de l'héritage]} \\ 4. & \text{Pas récursif } (k+1) : \exists p \in C \; (\text{HeriteStarComposant}(c_1, p) \land \text{HeriteDirectComposant}(p, c_2)) & \text{[Décomposition de la chaîne d'héritage]} \\ 5. & \exists! f_p \in F \quad \text{MiroirDe}(f_p, p) & \text{[Axiomes 2 et 3 — Ancrage miroir]} \\ 6. & \text{HeriteStar}(f_1, f_p) & \text{[Hypothèse de récurrence]} \\ 7. & \text{HeriteDirect}(f_p, f_2) & \text{[Axiome 8 — Propagation de l'héritage direct]} \\ 8. & \text{HeriteStar}(f_1, f_2) & \text{[Transitivité de l'héritage dans } F \text{]} \\ \hline \therefore & \text{HeriteStar}(f_1, f_2) & \blacksquare \end{array}$$
 
 
 ### 1. La situation de départ (Lignes 1 et 2)
@@ -319,14 +316,13 @@ Si le composant enfant et le composant parent sont en fait le même ($c_1 = c_2$
 
 Si $c_1$ hérite de $c_2$ à travers une chaîne de plusieurs classes :
 
-* **Ligne 4 & 5 :** On isole le dernier parent juste au-dessus de $c_2$, qu'on appelle $p$. Ce composant intermédiaire $p$ possède lui aussi sa propre interface miroir, $f_p$.
-* **Ligne 6 (Hypothèse de récurrence) :** On admet que pour toute la première partie de la chaîne (de $c_1$ jusqu'à $p$), la règle fonctionne déjà : l'interface $f_1$ hérite de l'interface $f_p$.
-* **Ligne 7 (Axiome 8) :** Comme $p$ est le parent direct de $c_2$, l'Axiome 8 garantit que l'interface $f_p$ hérite directement de l'interface $f_2$.
-* **Ligne 8 (Transitivité) :** Si $f_1$ hérite de $f_p$, et que $f_p$ hérite de $f_2$, alors par simple enchaînement (**transitivité**), $f_1$ hérite de $f_2$.
+* **Lignes 4 & 5 :** On isole le composant intermédiaire $p$ situé juste en dessous de $c_2$ dans la chaîne ($p$ hérite directement de $c_2$). Ce composant $p$ possède de manière unique sa propre interface miroir $f_p$.
+* **Ligne 6 (Hypothèse de récurrence) :** On admet que la propriété est vraie pour le sous-trajet de $c_1$ à $p$ : l'interface miroir $f_1$ hérite de l'interface $f_p$ ($\text{HeriteStar}(f_1, f_p)$).
+* **Ligne 7 (Axiome 8) :** Puisque $p$ hérite directement de $c_2$, l'Axiome 8 propage cette liaison aux miroirs : l'interface $f_p$ hérite directement de $f_2$ ($\text{HeriteDirect}(f_p, f_2)$).
+* **Ligne 8 (Transitivité) :** Si $f_1$ hérite de $f_p$, et que $f_p$ hérite de $f_2$, alors par transitivité de l'héritage dans $\mathcal{F}$, $f_1$ hérite de $f_2$.
 
----
 
-### Démonstration au ralenti du Théorème 1 (mise à jour)
+### Démonstration du Théorème 1
 
 #### Énoncé du Théorème 1
 
