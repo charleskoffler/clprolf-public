@@ -1,11 +1,12 @@
-<!-- Clprolf formalisation v1.9 (20261029). -->
-
+<!-- Clprolf formalisation v2.0 (20261030). "Clprolf est un modèle formel qui modélise la topologie logicielle statique d'une application d'automatisation orientée objet ou des bibliothèques qui lui servent de support.". Ajout de la définition de AgentSystemeAutonome.  -->
+  -->
 
 # Formalisation axiomatique de Clprolf
 
 ## I. Introduction
 
 Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications complexes. Il se présente sous la forme d'annotations et d'un checker statique de conformité sémantique. Le langage hôte est Java ou C#.
+Le modèle formel Clprolf modélise la topologie logicielle statique d'une application d'automatisation orientée objet ou des bibliothèques qui lui servent de support. 
 
 ## II. Dictionnaires du système
 
@@ -58,6 +59,7 @@ Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications compl
 * $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
 * $\text{ComposantTechniqueAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combinée à un atome. Il peut ou pas se trouver dans une partie $p$.
 * $\text{AgentSysteme}(s)$ : $s$ est une abstraction système orientée domaine (`@ClSystem`).
+* $\text{AgentSystemeAutonome}(c)$ : $c$ est un AgentSysteme autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
 * $\text{DelegueA}(t, s)$ : Le composant $t$ délègue son travail bas niveau à l'agent système $s$.
 
 ---
