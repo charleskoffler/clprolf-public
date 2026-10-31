@@ -1,3 +1,6 @@
+<!-- Clprolf formalisation v2.2 (EN COURS). 
+  -->
+
 # Formalisation axiomatique de Clprolf
 
 ## I. Introduction
@@ -20,24 +23,26 @@ Le modèle formel Clprolf modélise la topologie logicielle statique d'une appli
 * **$\mathcal{D}$** : L'ensemble des atomes de domaine $d = (c, t)$.
 * **$\mathcal{C}$** : L'ensemble des composants abstraits ($\mathcal{C} = \mathcal{C}_{\text{metier}} \cup \mathcal{C}_{\text{tech}} \cup \mathcal{C}_{\text{syst}}$).
 * **$\mathcal{C}_{\text{poo}}$** : L'ensemble des classes concrètes (Java / C#).
-* **$\mathcal{I}_{\text{poo}}$** : L'ensemble des interfaces POO ($\mathcal{I}_{\text{poo}} = F \cup T$).
+* **$\mathcal{I}$** : L'ensemble des interfaces ($\mathcal{I} = F \cup T$).
+* **$\mathcal{I}_{\text{poo}}$** : L'ensemble des interfaces POO
 * **$\mathcal{S}_{\text{poo}}$** : L'ensemble des sous-systèmes / packages POO.
 
 ---
 
-### 2. Dictionnaire des Prédicats Primitifs
+### 2. Dictionnaire des Prédicats
 
-#### a. Prédicats Macro-Structurels et Téléologiques
+#### a. Prédicats Atomiques
 
 * $\text{AppAutom}(A)$ : $A \in \mathcal{A}_{\text{aut}}$ est une application d'automatisation.
 * $\text{TravailHumain}(h)$ : $h \in \mathcal{H}$ est un travail humain formalisé.
-* $\text{Automatise}(A, h)$ : L'application $A$ automatise le travail $h$.
+* $\text{ComposantMetier}(c)$ : $c$ est un composant de logique métier pure (`@ClAgent`).
+* $\text{ComposantTech}(t)$ : $t$ est un service technique au service d'un agent (`@ClWorker`).
+* $\text{AgentSysteme}(s)$ : $s$ est une abstraction système orientée domaine (`@ClSystem`).
+* $\text{Atome}(d)$ : $d \in \mathcal{D}$ est un atome architectural indivisible.
 * $\text{ButHumain}(G)$ : $G \in \mathcal{G}$ est un but fonctionnel.
 * $\text{DomaineMetier}(\mathcal{M})$ : $\mathcal{M} \in \mathcal{M}_{\text{global}}$ est un univers de règles et concepts métiers.
 * $\text{SupportExecution}(se)$ : $se \in \mathcal{SE}$ représente le support d'exécution du travail humain.
-* $\text{Poursuit}(h, G)$ : Le travail $h$ vise l'accomplissement du but $G$.
-* $\text{APourDomaine}(h, \mathcal{M}_h)$ : Le travail $h$ s'inscrit dans l'unique domaine métier $\mathcal{M}_h$.
-* $\text{SAppuieSur}(h, se)$ : Le travail $h$ repose sur le support d'exécution $se$.
+* $\text{SubsystemPOO}(s)$ : $s \in \mathcal{S}_{\text{poo}}$ est un module / package POO.
 * $\text{Partie}(p, A)$ : $p \in \mathcal{P}$ est un sous-système / module de l'application $A$.
 * $\text{Simule}(p, m)$ : La partie $p$ simule le sous-domaine métier $m \subseteq \mathcal{M}_h$ (avec $m \in \mathcal{P}(\mathcal{M}_h)$).
 * $\text{SupportTech}(t)$ : $t$ est un support technique d'infrastructure.
@@ -45,49 +50,47 @@ Le modèle formel Clprolf modélise la topologie logicielle statique d'une appli
 
 ---
 
-#### b. Prédicats Atomiques et Typage des Composants
+#### b. Prédicats de relations
 
-* $\text{Atome}(d)$ : $d \in \mathcal{D}$ est un atome architectural indivisible.
+* $\text{Automatise}(A, h)$ : L'application $A$ automatise le travail $h$.
 * $\text{Contient}(p, d)$ : La partie $p$ contient l'atome $d$.
 * $\text{ContientDirect}(p, c)$ : La partie $p$ contient le composant $c$ directement, sans passer pas un atome $d$.
 * $\text{Combine}(d, c, t)$ : L'atome $d$ lie de manière univoque le composant métier $c$ et le composant technique $t$.
-* $\text{ComposantMetier}(c)$ : $c$ est un composant de logique métier pure (`@ClAgent`).
-* $\text{ComposantTech}(t)$ : $t$ est un service technique au service d'un agent (`@ClWorker`).
+* $\text{Poursuit}(h, G)$ : Le travail $h$ vise l'accomplissement du but $G$.
+* $\text{APourDomaine}(h, \mathcal{M}_h)$ : Le travail $h$ s'inscrit dans l'unique domaine métier $\mathcal{M}_h$.
 * $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
 * $\text{ComposantTechniqueAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combinée à un atome. Il peut ou pas se trouver dans une partie $p$.
-* $\text{AgentSysteme}(s)$ : $s$ est une abstraction système orientée domaine (`@ClSystem`).
 * $\text{AgentSystemeAutonome}(c)$ : $c$ est un AgentSysteme autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
+* $\text{SAppuieSur}(h, se)$ : Le travail $h$ repose sur le support d'exécution $se$.
 * $\text{DelegueA}(t, s)$ : Le composant $t$ délègue son travail bas niveau à l'agent système $s$.
-
----
-
-#### c. Prédicats d'Héritage et Ancrage POO
-
 * $\text{HeriteDirectComposant}(c_1, c_2)$ : $c_1$ hérite directement de $c_2$.
 * $\text{HeriteStarComposant}(c_1, c_2)$ : Fermeture réflexive-transitive de l'héritage entre composants ($\ge 0$ niveau).
 * $\text{MemeDomaine}(c_1, c_2)$ : $c_1$ et $c_2$ appartiennent au même domaine conceptuel.
 * $\text{Annote}(elem, \alpha)$ : L'élément POO ($elem \in \mathcal{C}_{\text{poo}} \cup \mathcal{I}_{\text{poo}}$) porte l'annotation $\alpha$.
 * $\text{Realise}(elem_{\text{poo}}, comp_{\text{formel}})$ : Le code POO concrétise le composant ou l'interface formelle.
 * $\text{InjectDepend}(cl_1, cl_2)$ : La classe $cl_1$ injecte une dépendance $cl_2$.
-* $\text{SubsystemPOO}(s)$ : $s \in \mathcal{S}_{\text{poo}}$ est un module / package POO.
 
 ---
 
-#### d. Prédicats des Interfaces et Dualité Miroir (Section II)
+#### c. Prédicats atomiques des Interfaces
 
-* $\text{Famille}(f)$ : $f \in F$ est une interface de famille (`@ClFamily`).
-* $\text{Trait}(t)$ : $t \in T$ est une interface de trait/capacité (`@ClTrait`).
+* $\text{Famille}(i)$ : $i \in I$ est une interface de famille (`@ClFamily`).
+* $\text{Trait}(i)$ : $i \in I$ est une interface de trait/capacité (`@ClTrait`).
+
+---
+
+#### d. Prédicats de relations des interfaces
+
 * $\text{Implemente}(c, f)$ : Le composant/classe $c$ implémente l'interface $f$.
-* $\text{TargetMetier}(i)$ / $\text{TargetTech}(i)$ / $\text{TargetAgentSyst}(i)$ : Indique si l'interface $i$ cible/est compatible avec le rôle Métier, Technique ou Système.
-* $\text{MemePolarite}(f, c)$ : Équivalence exacte de polarité/rôle entre l'interface $f$ et le composant $c$.
+* $\text{TargetMetier}(i)$ / $\text{TargetTech}(i)$ / $\text{TargetAgentSyst}(i)$ : $i \in I$. Indique si l'interface $i$ cible/est compatible avec le rôle Métier, Technique ou Système.
+* $\text{MemePolarite}(f, c)$ : $f \in I$, $c \in C$. Équivalence exacte de polarité/rôle entre la famille $f$ et le composant $c$, et nécessité d'être une famille
 * $\text{MiroirDe}(f, c)$ : $f$ est l'interface miroir exacte du composant $c$.
 * $\text{HeriteDirect}(i_1, i_2)$ : L'interface $i_1$ étend directement $i_2$.
 * $\text{HeriteStar}(i_1, i_2)$ : Fermeture réflexive-transitive de l'héritage d'interfaces.
-* $\text{MemeDomaineFamille}(f_1, f_2)$ : Conservation du domaine entre deux interfaces de famille.
+* $\text{MemeDomaineFamille}(i_1, i_2)$ : Condition de famille, et conservation du domaine entre deux interfaces.
 * $\text{TypeStatique}(o, f)$ : Variable/objet $o$ manipulé sous le type statique de l'interface $f$.
 * $\text{InstanceDe}(o, c)$ : L'objet $o$ est une instance dynamique réelle de la classe $c$.
 
----
 
 ## III. Axiomes et théorèmes axés sur les composants
 
@@ -216,43 +219,43 @@ $$\text{TargetTech}(i) \triangleq \begin{cases} \text{PolariteTech}(i) & \text{s
 
 $$\text{TargetAgentSyst}(i) \triangleq \begin{cases} \text{PolariteAgentSyst}(i) & \text{si } i \in F \quad (\text{Famille : polarité exclusive}) \\ \text{EstCompatibleAgentSyst}(i) & \text{si } i \in T \quad (\text{Trait : compatibilité dépendante du contexte}) \end{cases}$$
 
-$$\begin{aligned} \text{MemePolarite}(f, c) \iff & \big( \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \big) \land \\ & \big( \text{ComposantTech}(c) \iff \text{TargetTech}(f) \big) \land \\ & \big( \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \big) \end{aligned}$$
+$$\begin{aligned} \text{MemePolarite}(f, c) \iff & \text{Famille}(f) \land \Big( \big( \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \big) \land \\ & \big( \text{ComposantTech}(c) \iff \text{TargetTech}(f) \big) \land \\ & \big( \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \big) \Big) \end{aligned}$$
 
 $$\text{MiroirDe}(f, c) \iff \big( \text{Famille}(f) \land \text{Implemente}(c, f) \land \text{MemePolarite}(f, c) \big)$$
 
 ### Axiome 1 - Polarité stricte des familles
 
-$$\begin{aligned} \forall f \in F \; &\Big( (\text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor \\ &(\neg \text{TargetMetier}(f) \land \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor \\ &(\neg \text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \text{TargetAgentSyst}(f)) \Big) \end{aligned}$$
+$$\begin{aligned} \forall f \in I \; &\Big( \text{Famille}(f) \implies \big( (\text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor \\ &(\neg \text{TargetMetier}(f) \land \text{TargetTech}(f) \land \neg \text{TargetAgentSyst}(f)) \lor \\ &(\neg \text{TargetMetier}(f) \land \neg \text{TargetTech}(f) \land \text{TargetAgentSyst}(f)) \big) \Big) \end{aligned}$$
 
 ### Axiome 2 - Présence de la famille du composant, et interdiction des traits directs
 
-$$\forall c \in C, \forall t \in T \; \Big( \big( \exists! f \in F \; \text{Implemente}(c, f) \big) \land \neg \text{Implemente}(c, t) \Big)$$
+$$\begin{aligned} \forall c \in \mathcal{C} \; &\Big( \Big( \exists! f \in \mathcal{I} \; \big( \text{Famille}(f) \land \text{Implemente}(c, f) \big) \Big) \land \\ &\Big( \forall t \in \mathcal{I} \; \big( \text{Trait}(t) \implies \neg \text{Implemente}(c, t) \big) \Big) \Big) \end{aligned}$$
 
 ### Axiome 3 - Miroir de la famille lors de l'implémentation
 
-$$\forall c \in C, \forall f \in F \quad \Big( \text{Famille}(f) \land \text{Implemente}(c, f) \implies \text{MiroirDe}(f, c) \Big)$$
+$$\forall c \in C, \forall f \in I \quad \Big( \text{Famille}(f) \land \text{Implemente}(c, f) \implies \text{MiroirDe}(f, c) \Big)$$
 
 ### Axiome 4 - Héritage d'un trait par une famille
 
-$$\begin{aligned} \forall f \in F, &\forall t \in T \; \Big( \text{HeriteDirect}(f, t) \implies \big( (\text{TargetMetier}(f) \implies \text{TargetMetier}(t)) \land \\ &(\text{TargetTech}(f) \implies \text{TargetTech}(t)) \land (\text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t)) \big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall f, &\forall t \; \Big( \text{Famille}(f) \land \text{Trait}(t) \land  \text{HeriteDirect}(f, t) \implies \big( (\text{TargetMetier}(f) \implies \text{TargetMetier}(t)) \land \\ &(\text{TargetTech}(f) \implies \text{TargetTech}(t)) \land (\text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t)) \big) \Big) \end{aligned}$$
 
 ### Axiome 5 — héritage des traits
 
-$$\forall t \in T, \forall i \in I \; \Big( \text{HeriteDirect}(t, i) \implies \text{Trait}(i) \Big)$$
+$$\forall t, i \in I \; \Big( \text{Trait}(t) \land \text{HeriteDirect}(t, i) \implies \text{Trait}(i) \Big)$$
 
-### Axiome 6 - Clôture réflexive et transitive de l'héritage des traits
+### Théorème - Clôture réflexive et transitive de l'héritage des traits
 
 Par clôture réflexive et transitive de l'héritage direct des traits
 
-$$\begin{aligned}  \forall f \in F, &\forall t \in T \; \Big( \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \\ &\big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big) \end{aligned} $$
+$$\begin{aligned}  \forall f, t \in I \; \Big( \text{Famille}(f) \land \text{Trait}(t) \land \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \\ &\big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big) \end{aligned} $$
 
 ### Axiome 7 - Invariance du domaine lors de l'héritage des familles entre elles
 
-$$\forall f_1, f_2 \in F \; \Big( \text{HeriteDirect}(f_1, f_2) \implies \text{MemeDomaineFamille}(f_1, f_2) \Big)$$
+$$\forall f_1, f_2 \in I \; \Big( \text{HeriteDirect}(f_1, f_2) \land \text{Famille}(f_1) \land \text{Famille}(f_2) \implies \text{MemeDomaineFamille}(f_1, f_2) \Big)$$
 
 ### Axiome 8 - Transmission de l'héritage direct à la famille miroir
 
-$$\forall c, p \in C, \forall f_c, f_p \in F \; \Big( \big( \text{HeriteDirectComposant}(c, p) \land \text{MiroirDe}(f_c, c) \land \text{MiroirDe}(f_p, p) \big) \implies \text{HeriteDirect}(f_c, f_p) \Big)$$
+$$\forall c, p \in C, \forall f_c, f_p \in I \; \Big( \big( \text{HeriteDirectComposant}(c, p) \land \text{Famille}(f_c) \land \text{Famille}(f_p) \land \text{MiroirDe}(f_c, c) \land \text{MiroirDe}(f_p, p) \big) \implies \text{HeriteDirect}(f_c, f_p) \Big)$$
 
 ### Axiome INTERFS-VERS-CLPROLF
 
@@ -274,13 +277,13 @@ $$\forall int \in \mathcal{I}_{\text{poo}} \; \Big( \text{Annote}(int, \text{@Cl
 
 ### Théorème 1 - Neutralité du polymorphisme des familles
 
-$$\forall o, \forall f \in F, \quad \text{TypeStatique}(o, f) \implies \exists! f' \in F, \exists! c \in C \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big)$$
+$$\forall o, f, \quad \text{TypeStatique}(o, f) \land \text{Famille}(f) \implies \exists! f' \in I, \exists! c \in C \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big)$$
 
 ---
 
 ### Corollaire 1.1 — Neutralité du polymorphisme des traits
 
-$$\forall o, \forall t \in T, \quad \text{TypeStatique}(o, t) \implies \exists f, f' \in F, \exists! c \in C \; \Big( \text{InstanceDe}(o, c) \land \text{HeriteStar}(f, t) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big)$$
+$$\forall o, \forall t, \quad \text{TypeStatique}(o, t) \land \text{Trait}(t) \implies \exists f, f' \in F, \exists! c \in C \; \Big( \text{InstanceDe}(o, c) \land \text{HeriteStar}(f, t) \land \text{Famille}(f) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big)$$
 
 ---
 
@@ -326,7 +329,7 @@ Si $c_1$ hérite de $c_2$ à travers une chaîne de plusieurs classes :
 
 #### Énoncé du Théorème 1
 
-$$\forall o, \forall f \in F, \quad \text{TypeStatique}(o, f) \implies \exists! c \in C, \exists! f' \in F \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big)$$
+$$\forall o, f, \quad \text{TypeStatique}(o, f) \land \text{Famille}(f) \implies \exists! f' \in I, \exists! c \in C \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big)$$
 
 #### Démonstration déductive (*Forward Proof*)
 
