@@ -1,3 +1,4 @@
+<!-- Clprolf formalisation v2.3 (20261101).  -->
 
 # Formalisation axiomatique de Clprolf
 
@@ -13,17 +14,21 @@ Le modèle formel Clprolf modélise la topologie logicielle statique d'une appli
 * **$\mathcal{A}_{\text{aut}}$** : L'ensemble des applications d'automatisation.
 * **$\mathcal{H}$** : L'ensemble des travaux humains à automatiser.
 * **$\mathcal{G}$** : L'ensemble des buts / objectifs fonctionnels humains.
-* **$\mathcal{M}_{\text{global}}$** : L'ensemble universel de tous les domaines métiers possibles (ensemble d'ensembles : $\mathcal{M}_{\text{global}} = \{ \mathcal{M}_1, \mathcal{M}_2, \dots \}$).
-* **$\mathcal{M}_h \in \mathcal{M}_{\text{global}}$** : Le domaine métier conceptuel spécifique, **unique** et invariant pour un travail humain $h$ donné.
-* **$\mathcal{P}(\mathcal{M}_h)$** : L'ensemble des parties de $\mathcal{M}_h$ (l'ensemble de tous les sous-domaines $m \subseteq \mathcal{M}_h$ possibles).
+
+* **$\mathcal{M}_{\text{global}}$** : L'ensemble universel de tous les domaines métiers possibles pour l'ensemble des travaux $h \in \mathcal{H}$ (ensemble d'ensembles) :
+
+$$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
+* **$\mathcal{M}_h \in \mathcal{M}_{\text{global}}$** : Le domaine métier transversal spécifique, **unique** et invariant pour un travail humain $h$ donné (il regroupe l'ensemble des règles métiers mobilisées, quel que soit le nombre de départements ou de métiers impliqués).
+
 * **$\mathcal{SE}$** : L'ensemble des supports d'exécution physiques ou organisationnels.
-* **$\mathcal{P}$** : L'ensemble des parties / sous-systèmes logiques de l'application $A$.
+* **$\mathcal{P}(\mathcal{M}_h)$** : L'ensemble des parties de $\mathcal{M}_h$. C'est l'ensemble de tous les sous-domaines $m \subseteq \mathcal{M}_h$ possibles.  $m \in \mathcal{P}(\mathcal{M}_h)$.
+* **$\mathcal{P}_{A}$** : L'ensemble des parties / sous-systèmes logiques de l'application $A$. Chaque partie $p \in \mathcal{P}_{A}$ simule $m \in \mathcal{P}(\mathcal{M}_h)$.
 * **$\mathcal{D}$** : L'ensemble des atomes de domaine $d = (c, t)$.
 * **$\mathcal{C}$** : L'ensemble des composants abstraits ($\mathcal{C} = \mathcal{C}_{\text{metier}} \cup \mathcal{C}_{\text{tech}} \cup \mathcal{C}_{\text{syst}}$).
-* **$\mathcal{C}_{\text{poo}}$** : L'ensemble des classes concrètes (Java / C#).
 * **$\mathcal{I}$** : L'ensemble des interfaces ($\mathcal{I} = F \cup T$).
+* **$\mathcal{C}_{\text{poo}}$** : L'ensemble des classes concrètes (Java / C#).
 * **$\mathcal{I}_{\text{poo}}$** : L'ensemble des interfaces POO
-* **$\mathcal{S}_{\text{poo}}$** : L'ensemble des sous-systèmes / packages POO.
+* **$\mathcal{S}_{\text{poo}}$** : L'ensemble des sous-systèmes du framework
 
 ---
 
@@ -42,23 +47,22 @@ Le modèle formel Clprolf modélise la topologie logicielle statique d'une appli
 * $\text{SupportExecution}(se)$ : $se \in \mathcal{SE}$ représente le support d'exécution du travail humain.
 * $\text{SubsystemPOO}(s)$ : $s \in \mathcal{S}_{\text{poo}}$ est un module / package POO.
 * $\text{Partie}(p, A)$ : $p \in \mathcal{P}$ est un sous-système / module de l'application $A$.
-* $\text{Simule}(p, m)$ : La partie $p$ simule le sous-domaine métier $m \subseteq \mathcal{M}_h$ (avec $m \in \mathcal{P}(\mathcal{M}_h)$).
 * $\text{SupportTech}(t)$ : $t$ est un support technique d'infrastructure.
-* $\text{Associe}(t, p)$ : Le support $t$ soutient la partie $p$.
-
+* $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
+* $\text{ComposantTechniqueAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combinée à un atome. Il peut ou pas se trouver dans une partie $p$.
+* $\text{AgentSystemeAutonome}(c)$ : $c$ est un AgentSysteme autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
 ---
 
 #### b. Prédicats de relations
 
 * $\text{Automatise}(A, h)$ : L'application $A$ automatise le travail $h$.
+* $\text{Associe}(t, p)$ : Le support $t$ soutient la partie $p$.
+* $\text{Simule}(p, m)$ : La partie $p$ simule le sous-domaine métier $m \subseteq \mathcal{M}_h$ (avec $m \in \mathcal{P}(\mathcal{M}_h)$).
 * $\text{Contient}(p, d)$ : La partie $p$ contient l'atome $d$.
 * $\text{ContientDirect}(p, c)$ : La partie $p$ contient le composant $c$ directement, sans passer pas un atome $d$.
 * $\text{Combine}(d, c, t)$ : L'atome $d$ lie de manière univoque le composant métier $c$ et le composant technique $t$.
 * $\text{Poursuit}(h, G)$ : Le travail $h$ vise l'accomplissement du but $G$.
 * $\text{APourDomaine}(h, \mathcal{M}_h)$ : Le travail $h$ s'inscrit dans l'unique domaine métier $\mathcal{M}_h$.
-* $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
-* $\text{ComposantTechniqueAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combinée à un atome. Il peut ou pas se trouver dans une partie $p$.
-* $\text{AgentSystemeAutonome}(c)$ : $c$ est un AgentSysteme autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
 * $\text{SAppuieSur}(h, se)$ : Le travail $h$ repose sur le support d'exécution $se$.
 * $\text{DelegueA}(t, s)$ : Le composant $t$ délègue son travail bas niveau à l'agent système $s$.
 * $\text{HeriteDirectComposant}(c_1, c_2)$ : $c_1$ hérite directement de $c_2$.
@@ -172,7 +176,7 @@ $$\forall c \in \mathcal{C} \Big( \text{ComposantTechAutonome}(c) \implies \exis
 
 6. **Composants systèmes autonomes**
 
-$$\forall c \in \mathcal{C} \Big( \text{ComposantSystemeAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClSystem) \land \text{Realise}(classe, c) \big) \Big) $$
+$$\forall c \in \mathcal{C} \Big( \text{AgentSystemeAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClSystem) \land \text{Realise}(classe, c) \big) \Big) $$
 
 ### Axiome ATOMES-VERS-CLPROLF
 
