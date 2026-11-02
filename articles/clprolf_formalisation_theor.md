@@ -1,11 +1,33 @@
-<!-- Clprolf formalisation v2.3 (20261101).  -->
-
+<!-- Clprolf formalisation v2.4 (20261102). -->
 # Formalisation axiomatique de Clprolf
 
 ## I. Introduction
 
 Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications complexes. Il se présente sous la forme d'annotations et d'un checker statique de conformité sémantique. Le langage hôte est Java ou C#.
 Le modèle formel Clprolf modélise la topologie logicielle statique d'une application d'automatisation orientée objet ou des bibliothèques qui lui servent de support. 
+
+
+## I.b Portée du Framework et Articulation avec le Modèle Formel
+ 
+
+ Le modèle formel de Clprolf définit une topologie théorique complète (incluant les **Parties de l'application $\mathcal{P}_A$**, les **Atomes architecturaux $\mathcal{D}$**, ou la catégorisation fine des **Composants Autonomes**). La mise en œuvre pratique dans le framework repose sur la philosophie suivante :
+ 
+
+ * **Contrôles focalisés sur le décidable et la valeur ajoutée :** Le checker statique (ArchUnit / ArchUnitNET) vérifie les contraintes fondamentales et décidables du modèle (séparation métier/technique, invariance du domaine par héritage, polarité des interfaces). Il ne cherche pas l'exhaustivité là où elle n'apporte aucun gain de qualité ou d'ingénierie.
+
+
+ * **Absence de sur-contrainte et de bruit visuel :**
+ * Aucun contrôle n'est effectué par le checker sur d'éventuels composants métiers situés dans une partie mais hors d'un atome.
+ 
+
+ * Le modèle formel caractérise les composants métiers autonomes comme résidant hors de toute partie, mais n'interdit pas les formes hybrides.
+ 
+ 
+ * Aucun artefact ou annotation supplémentaire (`@ClAtom`, `@ClPart`) n'est imposé dans le code. Les atomes et sous-systèmes émergent naturellement de la structuration standard du projet (injection `@ClAgent` / `@ClWorker`, packages/namespaces).
+
+ Cette frontière garantit une adoption fluide en entreprise et préserve la liberté du développeur, tout en verrouillant 100 % des règles d'architecture indispensables.
+
+---
 
 ## II. Dictionnaires du système
 
@@ -46,7 +68,6 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * $\text{DomaineMetier}(\mathcal{M})$ : $\mathcal{M} \in \mathcal{M}_{\text{global}}$ est un univers de règles et concepts métiers.
 * $\text{SupportExecution}(se)$ : $se \in \mathcal{SE}$ représente le support d'exécution du travail humain.
 * $\text{SubsystemPOO}(s)$ : $s \in \mathcal{S}_{\text{poo}}$ est un module / package POO.
-* $\text{Partie}(p, A)$ : $p \in \mathcal{P}$ est un sous-système / module de l'application $A$.
 * $\text{SupportTech}(t)$ : $t$ est un support technique d'infrastructure.
 * $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
 * $\text{ComposantTechniqueAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combinée à un atome. Il peut ou pas se trouver dans une partie $p$.
@@ -55,6 +76,7 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 
 #### b. Prédicats de relations
 
+* $\text{Partie}(p, A)$ : $p \in \mathcal{P}$ est un sous-système / module de l'application $A$.
 * $\text{Automatise}(A, h)$ : L'application $A$ automatise le travail $h$.
 * $\text{Associe}(t, p)$ : Le support $t$ soutient la partie $p$.
 * $\text{Simule}(p, m)$ : La partie $p$ simule le sous-domaine métier $m \subseteq \mathcal{M}_h$ (avec $m \in \mathcal{P}(\mathcal{M}_h)$).
@@ -119,7 +141,7 @@ $$\begin{aligned} \forall A, p, d \; \Big( &\text{AppAutom}(A) \land \text{Parti
 
 ### Axiome 3b — Exclusivité du composant métier
 
-$$\forall d_1, d_2, c, t_1, t_2 \; \Big( \big( \text{Combine}(d_1, c, t_1) \land \text{Combine}(d_2, c, t_2) \big) \implies d_1 = d_2 \Big)$$
+$$\begin{aligned} \forall d_1, d_2, c, t_1, t_2 \; &\Big( \big( \text{Atome}(d_1) \land \text{Atome}(d_2) \land \text{ComposantMetier}(c)  \land \text{ComposantTech}(t_1) \land \text{ComposantTech}(t_2) \land \\ &\text{Combine}(d_2, c, t_2) \land \text{Combine}(d_1, c, t_1) \big) \implies d_1 = d_2 \Big)\end{aligned}$$
 
 ### Axiome 3c — Principe de délégation récursive
 
