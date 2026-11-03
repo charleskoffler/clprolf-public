@@ -1,4 +1,4 @@
-<!-- Clprolf formalisation v2.6 (20261102). -->
+<!-- Clprolf formalisation v2.7 (20261103).  -->
 
 # Formalisation axiomatique de Clprolf
 
@@ -106,7 +106,7 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 
 #### d. Prédicats de relations des interfaces
 
-* $\text{Implemente}(c, f)$ : Le composant/classe $c$ implémente l'interface $f$.
+* $\text{ImplementeDirect}(c, f)$ : Le composant/classe $c$ implémente l'interface $f$.
 * $\text{TargetMetier}(i)$ / $\text{TargetTech}(i)$ / $\text{TargetAgentSyst}(i)$ : $i \in \mathcal{I}$. Indique si l'interface $i$ cible/est compatible avec le rôle Métier, Technique ou Système.
 * $\text{MemePolarite}(f, c)$ : $f \in \mathcal{I}$, $c \in \mathcal{C}$. Équivalence exacte de polarité/rôle entre la famille $f$ et le composant $c$, et nécessité d'être une famille
 * $\text{MiroirDe}(f, c)$ : $f$ est l'interface miroir exacte du composant $c$.
@@ -246,7 +246,7 @@ $$\text{TargetAgentSyst}(i) \triangleq \begin{cases} \text{PolariteAgentSyst}(i)
 
 $$\begin{aligned} \text{MemePolarite}(f, c) \iff & \text{Famille}(f) \land \Big( \big( \text{ComposantMetier}(c) \iff \text{TargetMetier}(f) \big) \land \\ & \big( \text{ComposantTech}(c) \iff \text{TargetTech}(f) \big) \land \\ & \big( \text{AgentSysteme}(c) \iff \text{TargetAgentSyst}(f) \big) \Big) \end{aligned}$$
 
-$$\text{MiroirDe}(f, c) \iff \big( \text{Famille}(f) \land \text{Implemente}(c, f) \land \text{MemePolarite}(f, c) \big)$$
+$$\text{MiroirDe}(f, c) \iff \big( \text{Famille}(f) \land \text{ImplementeDirect}(c, f) \land \text{MemePolarite}(f, c) \big)$$
 
 ### Axiome 1 - Polarité stricte des familles
 
@@ -254,11 +254,11 @@ $$\begin{aligned} \forall f \in \mathcal{I} \; &\Big( \text{Famille}(f) \implies
 
 ### Axiome 2 - Présence de la famille du composant, et interdiction des traits directs
 
-$$\begin{aligned} \forall c \in \mathcal{C} \; &\Big( \Big( \exists! f \in \mathcal{I} \; \big( \text{Famille}(f) \land \text{Implemente}(c, f) \big) \Big) \land \\ &\Big( \forall t \in \mathcal{I} \; \big( \text{Trait}(t) \implies \neg \text{Implemente}(c, t) \big) \Big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall c \in \mathcal{C} \; &\Big( \Big( \exists! f \in \mathcal{I} \; \big( \text{Famille}(f) \land \text{ImplementeDirect}(c, f) \big) \Big) \land \\ &\Big( \forall t \in \mathcal{I} \; \big( \text{Trait}(t) \implies \neg \text{ImplementeDirect}(c, t) \big) \Big) \Big) \end{aligned}$$
 
 ### Axiome 3 - Miroir de la famille lors de l'implémentation
 
-$$\forall c \in \mathcal{C}, \forall f \in \mathcal{I} \quad \Big( \text{Famille}(f) \land \text{Implemente}(c, f) \implies \text{MiroirDe}(f, c) \Big)$$
+$$\forall c \in \mathcal{C}, \forall f \in \mathcal{I} \quad \Big( \text{Famille}(f) \land \text{ImplementeDirect}(c, f) \implies \text{MiroirDe}(f, c) \Big)$$
 
 ### Axiome 4 - Héritage d'un trait par une famille
 
@@ -268,17 +268,11 @@ $$\begin{aligned} \forall f, t \in \mathcal{I} \; &\Big( \text{Famille}(f) \land
 
 $$\forall t, i \in \mathcal{I} \; \Big( \text{Trait}(t) \land \text{HeriteDirect}(t, i) \implies \text{Trait}(i) \Big)$$
 
-### Théorème - Clôture réflexive et transitive de l'héritage des traits
-
-Par clôture réflexive et transitive de l'héritage direct des traits
-
-$$\begin{aligned}  \forall f, t \in \mathcal{I} \; &\Big( \text{Famille}(f) \land \text{Trait}(t) \land \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \\ &\big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big) \end{aligned} $$
-
-### Axiome 7 - Invariance du domaine lors de l'héritage des familles entre elles
+### Axiome 6 - Invariance du domaine lors de l'héritage des familles entre elles
 
 $$\forall f_1, f_2 \in \mathcal{I} \; \Big( \text{HeriteDirect}(f_1, f_2) \land \text{Famille}(f_1) \land \text{Famille}(f_2) \implies \text{MemeDomaineFamille}(f_1, f_2) \Big)$$
 
-### Axiome 8 - Transmission de l'héritage direct à la famille miroir
+### Axiome 7 - Transmission de l'héritage direct à la famille miroir
 
 $$\forall c, p \in \mathcal{C}, \forall f_c, f_p \in \mathcal{I} \; \Big( \big( \text{HeriteDirectComposant}(c, p) \land \text{Famille}(f_c) \land \text{Famille}(f_p) \land \text{MiroirDe}(f_c, c) \land \text{MiroirDe}(f_p, p) \big) \implies \text{HeriteDirect}(f_c, f_p) \Big)$$
 
@@ -300,76 +294,84 @@ $$\forall int \in \mathcal{I}_{\text{poo}} \; \Big( \text{Annote}(int, \text{@Cl
 
 $$\forall int \in \mathcal{I}_{\text{poo}} \; \Big( \text{Annote}(int, \text{@ClTrait}) \implies \exists! t \in \mathcal{I} \; \big( \text{Trait}(t) \land \text{Realise}(int, t) \big) \Big)$$
 
-### Lemme 1.0 — Isomorphisme de miroir et d'héritage entre composants et familles
 
-#### Énoncé
-
-Pour tous composants en relation d'héritage transitive, il existe de façon unique leurs interfaces de famille miroirs, et ces dernières conservent exactement la même relation d'héritage transitive. 
-
-$$\begin{aligned} \forall c_1, c_2 \in \mathcal{C} \; &\Big( \text{HeriteStarComposant}(c_1, c_2) \implies \exists! f_1, \exists! f_2 \in \mathcal{I} \; \big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \\ &\text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) \land \text{HeriteStar}(f_1, f_2) \big) \Big) \end{aligned} $$
-
-#### Démonstration déductive (*Forward Proof*)
-
-$$\begin{array}{rll} 1. & \text{HeriteStarComposant}(c_1, c_2) & \text{[Hypothèse : relation d'héritage transitive dans } \mathcal{C} \text{]} \\ 2. & \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) & \text{[Axiomes 2 et 3 — Ancrage miroir (1:1)]} \\ 3. & \text{Cas de base } (k=0) : c_1 = c_2 \implies f_1 = f_2 \implies \text{HeriteStar}(f_1, f_1) & \text{[Réflexivité de l'héritage]} \\ 4. & \text{Pas récursif } (k+1) : \exists p \in \mathcal{C} \; (\text{HeriteStarComposant}(c_1, p) \land \\ &\text{HeriteDirectComposant}(p, c_2)) & \text{[Décomposition de la chaîne d'héritage]} \\ 5. & \exists! f_p \in \mathcal{I} \quad \text{Famille}(f_p) \land \text{MiroirDe}(f_p, p) & \text{[Axiomes 2 et 3 — Ancrage miroir]} \\ 6. & \text{HeriteStar}(f_1, f_p) & \text{[Hypothèse de récurrence]} \\ 7. & \text{HeriteDirect}(f_p, f_2) & \text{[Axiome 8 — Propagation de l'héritage direct]} \\ 8. & \text{HeriteStar}(f_1, f_2) & \text{[Transitivité de l'héritage dans } \mathcal{F} \text{]} \\ \hline \therefore & \text{HeriteStar}(f_1, f_2) & \blacksquare \end{array}$$
+### Lemmes de structuration et isomorphismes
 
 
-### 1. La situation de départ (Lignes 1 et 2)
+#### Lemme 1 — Clôture et propagation des traits
 
-On prend un composant enfant $c_1$ qui hérite (directement ou sur plusieurs niveaux) d'un composant parent $c_2$. Par construction du système (Axiomes 2 et 3), le composant enfant a sa propre interface miroir $f_1$, et le composant parent a la sienne, $f_2$.
+Pour toute famille $f$ et tout trait $t$, si $f$ hérite de $t$ (directement ou par transitivité), alors la polarité / cible du trait $t$ est nécessairement compatible avec la polarité de la famille $f$.
 
-On veut prouver que l'interface enfant $f_1$ hérite obligatoirement de l'interface parente $f_2$.
+$$\begin{aligned} \forall f, t \in \mathcal{I} \; &\Big( \text{Famille}(f) \land \text{Trait}(t) \land \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \\  &\big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big) \end{aligned}$$
+
+*Démonstration déductive (Récurrence structurelle) :*
+
+$$\begin{array}{rll} 1. & \text{Famille}(f) \land \text{Trait}(t) \land \text{HeriteStar}(f, t) & \text{[Hypothèse]} \\ 2. & \text{Cas de base } (k=1) : \text{HeriteDirect}(f, t) \implies \text{Target}(f) \implies \text{Target}(t) & \text{[Application directe de l'Axiome 4]} \\ 3. & \text{Pas récursif } (k+1) : \exists i \in \mathcal{I} \; (\text{HeriteStar}(f, i) \land \text{HeriteDirect}(i, t)) & \text{[Décomposition de la chaîne d'interfaces]} \\ 4. & \text{Trait}(i) \land \text{Trait}(t) & \text{[Axiome 5 — Propagation du statut de trait]} \\ 5. & \text{HeriteStar}(f, i) \implies \text{Target}(f) \implies \text{Target}(i) & \text{[Hypothèse de récurrence]} \\ 6. & \text{HeriteDirect}(i, t) \implies \text{Target}(i) \implies \text{Target}(t) & \text{[Axiome 4 appliqué sur } i \to t \text{]} \\ 7. & \text{Target}(f) \implies \text{Target}(t) & \text{[Transitivité de l'implication]} \\ \hline \therefore & \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \dots & \blacksquare \end{array}$$
 
 ---
 
-### 2. Le cas de base — $0$ niveau d'écart (Ligne 3)
+#### Lemme 2 — Isomorphisme de miroir et d'héritage entre composants et familles
 
-Si le composant enfant et le composant parent sont en fait le même ($c_1 = c_2$), leurs interfaces miroirs sont identiques ($f_1 = f_2$). La relation d'héritage est vraie par simple **réflexivité** (une interface « hérite » d'elle-même).
+Pour tous composants en relation d'héritage transitive, il existe de façon unique leurs interfaces de famille miroirs, et ces dernières conservent exactement la même relation d'héritage transitive.
+
+$$\begin{aligned} \forall c_1, c_2 \in \mathcal{C} \; &\Big( \text{HeriteStarComposant}(c_1, c_2) \implies \exists! f_1, \exists! f_2 \in \mathcal{I} \; \big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \\ &\text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) \land \text{HeriteStar}(f_1, f_2) \big) \Big) \end{aligned}$$
+
+*Démonstration déductive :*
+
+$$\begin{array}{rll} 1. & \text{HeriteStarComposant}(c_1, c_2) & \text{[Hypothèse : relation d'héritage transitive dans } \mathcal{C} \text{]} \\  2. & \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) & \text{[Axiomes 2 et 3 — Ancrage miroir (1:1)]} \\  3. & \text{Cas de base } (k=0) : c_1 = c_2 \implies f_1 = f_2 \implies \text{HeriteStar}(f_1, f_1) & \text{[Réflexivité de l'héritage]} \\  4. & \text{Pas récursif } (k+1) : \exists p \in \mathcal{C} \; (\text{HeriteStarComposant}(c_1, p) \land \text{HeriteDirectComposant}(p, c_2)) & \text{[Décomposition de la chaîne]} \\  5. & \exists! f_p \in \mathcal{I} \quad \text{Famille}(f_p) \land \text{MiroirDe}(f_p, p) & \text{[Axiomes 2 et 3 — Ancrage miroir]} \\  6. & \text{HeriteStar}(f_1, f_p) & \text{[Hypothèse de récurrence]} \\  7. & \text{HeriteDirect}(f_p, f_2) & \text{[Axiome 7 — Propagation de l'héritage direct]} \\  8. & \text{HeriteStar}(f_1, f_2) & \text{[Transitivité de l'héritage dans } \mathcal{F} \text{]} \\  \hline \therefore & \text{HeriteStar}(f_1, f_2) & \blacksquare \end{array}$$
 
 ---
 
-### 3. Le pas récursif — La chaîne d'héritage (Lignes 4 à 8)
+#### Lemme 3 — Filiation fermée des familles d'accès
 
-Si $c_1$ hérite de $c_2$ à travers une chaîne de plusieurs classes :
+Pour tout objet $o$ manipulé sous un type statique de famille $f$, la famille $f$ appartient nécessairement au cône ascendant d'héritage ($\text{HeriteStar}$) de la famille miroir unique $f'$ associée à la classe concrète $c$ de $o$.
 
-* **Lignes 4 & 5 :** On isole le composant intermédiaire $p$ situé juste en dessous de $c_2$ dans la chaîne ($p$ hérite directement de $c_2$). Ce composant $p$ possède de manière unique sa propre interface miroir $f_p$.
-* **Ligne 6 (Hypothèse de récurrence) :** On admet que la propriété est vraie pour le sous-trajet de $c_1$ à $p$ : l'interface miroir $f_1$ hérite de l'interface $f_p$ ($\text{HeriteStar}(f_1, f_p)$).
-* **Ligne 7 (Axiome 8) :** Puisque $p$ hérite directement de $c_2$, l'Axiome 8 propage cette liaison aux miroirs : l'interface $f_p$ hérite directement de $f_2$ ($\text{HeriteDirect}(f_p, f_2)$).
-* **Ligne 8 (Transitivité) :** Si $f_1$ hérite de $f_p$, et que $f_p$ hérite de $f_2$, alors par transitivité de l'héritage dans $\mathcal{F}$, $f_1$ hérite de $f_2$.
+$$\begin{aligned} \forall o \in \mathcal{O}, \forall f \in \mathcal{I} \; \Big( \text{TypeStatique}(o, f) \land \text{Famille}(f) \implies \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( & \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \\ & \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) \end{aligned}$$
 
-### Théorème 1 - Neutralité du polymorphisme des familles
+*Démonstration déductive :*
 
-#### Énoncé du Théorème 1
+$$\begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Instance POO dynamique unique]} \\  3. & \exists! f' \in \mathcal{I} \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) & \text{[Axiomes 2 \& 3 — Unicité de la famille miroir]} \\  4. & \forall f'' \in \mathcal{I} \quad (\text{Famille}(f'') \land \text{ImplementeDirect}(c, f'') \implies f'' = f') & \text{[Axiome 2 — Ancrage unique du composant]} \\  5. & \text{HeriteStar}(f', f) & \text{[Résolution POO : } f \text{ est nécessairement satisfait via } f' \text{]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array}$$
+
+---
+
+#### Lemme 4 — Confinement hiérarchique des traits
+
+Pour tout objet $o$ manipulé sous un type statique de trait $t$, le trait $t$ se retrouve nécessairement dans la relation d'héritage d'une famille pivot $f$ ($\text{HeriteStar}(f, t)$) située dans le cône ascendant de la hiérarchie miroir $f'$ de la classe concrète $c$ de $o$.
+
+$$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I} \; \Big( \text{TypeStatique}(o, t) \land \text{Trait}(t) \implies \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( & \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ & \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) \Big) \end{aligned}$$
+
+*Démonstration déductive :*
+
+$$\begin{array}{rll} 
+1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\ 
+2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Instance POO dynamique unique]} \\ 
+3. & \exists! f' \in \mathcal{I} \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) & \text{[Axiomes 2 \& 3 — Unicité de la famille miroir]} \\ 
+4. & \forall t' \in \mathcal{I} \quad (\text{Trait}(t') \implies \neg \text{ImplementeDirect}(c, t')) & \text{[Axiome 2 — Interdiction des traits directs sur les composants]} \\ 
+5. & \exists f \in \mathcal{I} \quad \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Résolution POO \& Lemme 1 — } t \text{ est nécessairement porté via la clôture des traits de } f \text{]} \\ 
+\hline 
+\therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare 
+\end{array}$$
+
+---
+
+### Théorèmes de polymorphisme et d'ancrage
+
+#### Théorème 1 — Neutralité du polymorphisme des familles
 
 $$\begin{aligned} \forall o\in \mathcal{O}, f \in \mathcal{I}, \quad \text{TypeStatique}(o, f) \land \text{Famille}(f) \implies \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( & \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ & \text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \\ & \text{HeriteStar}(f', f) \Big) \end{aligned}$$
 
+*Démonstration déductive :*
 
-#### Démonstration déductive (*Forward Proof*)
-
-$$\begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse : appel via la famille } f \text{]} \\ 2. & \exists c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) & \text{[Axiome 3 — Ancrage miroir du type/contrat } f \text{]} \\ 3. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) \land \text{HeriteStarComposant}(c, c_f) & \text{[Sécurité du typage POO : } o \text{ instancie } c \text{ qui dérive de } c_f \text{]} \\ 4. & \exists! f' \in \mathcal{I} \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) & \text{[Axiome 3 — Ancrage miroir sur le composant réel } c \text{]} \\ 5. & \text{HeriteStar}(f', f) & \text{[Application du Lemme 1.0 sur } \text{HeriteStarComposant}(c, c_f) \text{]} \\ \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \\ &\text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array}$$
-
----
-
-### Lemme 2.0
-
-#### Énoncé
-
-Pour tout objet manipulé sous le type statique d'un trait, il existe de façon unique une interface de famille intermédiaire dont dérive ce trait.
-
-$$\forall o \in \mathcal{O}, \forall t \in \mathcal{I} \; \Big( \text{TypeStatique}(o, t) \land \text{Trait}(t) \implies \exists! f \in \mathcal{I} \; \big( \text{Famille}(f) \land \text{HeriteStar}(f, t) \big) \Big)$$
-
-#### Démonstration déductive (*Forward Proof*)
-
-$$\begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\ 2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Typage POO — Existence de l'instance dynamique]} \\ 3. & \exists! f \in \mathcal{I} \quad \text{Famille}(f) \land \text{Implemente}(c, f) & \text{[Axiome 2 des interfaces — Unicité de la famille sur } c \text{]} \\ 4. & \forall t' \in \mathcal{I} \quad (\text{Trait}(t') \implies \neg \text{Implemente}(c, t')) & \text{[Axiome 2 des interfaces — Interdiction d'implémentation directe d'un trait]} \\ 5. & \text{HeriteStar}(f, t) & \text{[Déduction : la satisfaction de } t \text{ par } c \text{ passe obligatoirement par } f \text{]} \\ \hline \therefore & \exists! f \in \mathcal{I} \quad \big( \text{Famille}(f) \land \text{HeriteStar}(f, t) \big) & \blacksquare \end{array}$$
+$$\begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) & \text{[Application directe du Lemme 3]} \\  3. & \exists! c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) & \text{[Axiome 3 — Unicité du composant miroir du contrat } f \text{]} \\  4. & \text{HeriteStarComposant}(c, c_f) & \text{[Application du Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array}$$
 
 ---
 
+#### Corollaire 1.1 — Neutralité du polymorphisme des traits
 
-### Corollaire 1.1 — Neutralité du polymorphisme des traits
+$$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad \text{TypeStatique}(o, t) \land \text{Trait}(t) \implies \exists c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( & \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ & \text{Famille}(f) \land \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) \land \\ & \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) \end{aligned}$$
 
-$$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad \text{TypeStatique}(o, t) \land \text{Trait}(t) \implies \exists! c_f, \exists! c \in \mathcal{C}, \exists! f, \exists! f' \in \mathcal{I} \; \Big( & \text{InstanceDe}(o, c) \land \text{Famille}(f) \land \text{MiroirDe}(f, c_f) \land \\ & \text{HeriteStarComposant}(c, c_f) \land \text{HeriteStar}(f, t) \land \\ & \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) \end{aligned}$$
+*Démonstration déductive :*
 
-##### Démonstration déductive (*Forward Proof*)
-
-$$\begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse : appel via le trait } t \text{]} \\ 2. & \exists! f \in \mathcal{I} \quad \text{Famille}(f) \land \text{HeriteStar}(f, t) & \text{[Application du Lemme 2.0]} \\ 3. & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ &\text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \big) & \text{[Application du Théorème 1 sur la famille } f \text{]} \\ 4. & \text{HeriteStar}(f', t) & \text{[Transitivité dans } \mathcal{I} \text{ : } \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \text{]} \\ \hline \therefore & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f, \exists! f' \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f) \land \text{MiroirDe}(f, c_f) \land \\ &\text{HeriteStarComposant}(c, c_f) \land \text{HeriteStar}(f, t) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ &\text{HeriteStar}(f', f) \Big) & \blacksquare \end{array}$$
+$$\begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  3. & \exists c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) & \text{[Application du Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array}$$
 
 ---
