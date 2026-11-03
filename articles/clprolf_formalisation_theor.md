@@ -1,4 +1,4 @@
-<!-- Clprolf formalisation v2.7 (20261103).  -->
+<!-- Clprolf formalisation v2.8 (20261103).  -->
 
 # Formalisation axiomatique de Clprolf
 
@@ -165,7 +165,7 @@ $$\forall c, p \; \Big( \big( \text{Composant}(c) \land \text{Composant}(p) \lan
 
 #### Définition - Composants métiers autonomes
 
-$$\forall c \in \mathcal{C}, \quad \text{ComposantMetierAutonome}(c) \iff \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, c, t) \big) \;\;\land\;\; \big( \forall p \in \mathcal{P}, \; \neg \text{ContientDirect}(p, c) \big) \Big]$$
+$$\begin{aligned} \forall c \in \mathcal{C}, \quad &\text{ComposantMetierAutonome}(c) \iff \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, c, t) \big) \;\;\land \\ &\big( \forall p \in \mathcal{P}, \; \neg \text{ContientDirect}(p, c) \big) \Big] \end{aligned}$$
 
 #### Définition - Composants techniques autonomes
 
@@ -173,7 +173,7 @@ $$\forall t \in \mathcal{C}, \quad \text{ComposantTechAutonome}(t) \iff \Big( \t
 
 #### Définition - Agents systèmes autonomes
 
-$$\forall a \in \mathcal{C}, \quad \text{AgentSystemeAutonome}(a) \iff \Big[ \text{AgentSysteme}(a) \;\;\land\;\; \big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, a, t) \big) \;\;\land\;\; \big( \forall p \in \mathcal{P}, \; \neg \text{ContientDirect}(p, a) \big) \Big]$$
+$$\begin{aligned} \forall a \in \mathcal{C}, \quad &\text{AgentSystemeAutonome}(a) \iff \Big[ \text{AgentSysteme}(a) \;\;\land\;\; \big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, a, t) \big) \;\;\land \\ &\big( \forall p \in \mathcal{P}, \; \neg \text{ContientDirect}(p, a) \big) \Big] \end{aligned}$$
 
 ### Axiome COMPS-VERS-CLPROLF
 
@@ -211,11 +211,11 @@ $$\forall A, p \; \Big( \text{AppAutom}(A) \land \text{Partie}(p, A) \implies \e
 
 ### Axiome RECIPR-ATOME-METIER
 
-$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClAgent}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{InjectDepend}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClAgent}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{InjectDepend}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \\ &\text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
 
 ### Axiome RECIPR-ATOME-SYSTEME
 
-$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClSystem}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{InjectDepend}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{AgentSysteme}(c) \land \text{ComposantTech}(t) \land \text{Realise}(cl_c, c) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClSystem}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{InjectDepend}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! a, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, a, t) \land \text{AgentSysteme}(a) \land \text{ComposantTech}(t) \land \\ &\text{Realise}(cl_c, a) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
 
 ### Axiome RECIPR-COMPOSANT-METIER
 
@@ -274,7 +274,7 @@ $$\forall f_1, f_2 \in \mathcal{I} \; \Big( \text{HeriteDirect}(f_1, f_2) \land 
 
 ### Axiome 7 - Transmission de l'héritage direct à la famille miroir
 
-$$\forall c, p \in \mathcal{C}, \forall f_c, f_p \in \mathcal{I} \; \Big( \big( \text{HeriteDirectComposant}(c, p) \land \text{Famille}(f_c) \land \text{Famille}(f_p) \land \text{MiroirDe}(f_c, c) \land \text{MiroirDe}(f_p, p) \big) \implies \text{HeriteDirect}(f_c, f_p) \Big)$$
+$$\begin{aligned} \forall c, p \in \mathcal{C}, &\forall f_c, f_p \in \mathcal{I} \; \Big( \big( \text{HeriteDirectComposant}(c, p) \land \text{Famille}(f_c) \land \text{Famille}(f_p) \land \text{MiroirDe}(f_c, c) \land \\&\text{MiroirDe}(f_p, p) \big) \implies \text{HeriteDirect}(f_c, f_p) \Big) \end{aligned}$$
 
 ### Axiome INTERFS-VERS-CLPROLF
 
@@ -318,7 +318,7 @@ $$\begin{aligned} \forall c_1, c_2 \in \mathcal{C} \; &\Big( \text{HeriteStarCom
 
 *Démonstration déductive :*
 
-$$\begin{array}{rll} 1. & \text{HeriteStarComposant}(c_1, c_2) & \text{[Hypothèse : relation d'héritage transitive dans } \mathcal{C} \text{]} \\  2. & \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) & \text{[Axiomes 2 et 3 — Ancrage miroir (1:1)]} \\  3. & \text{Cas de base } (k=0) : c_1 = c_2 \implies f_1 = f_2 \implies \text{HeriteStar}(f_1, f_1) & \text{[Réflexivité de l'héritage]} \\  4. & \text{Pas récursif } (k+1) : \exists p \in \mathcal{C} \; (\text{HeriteStarComposant}(c_1, p) \land \text{HeriteDirectComposant}(p, c_2)) & \text{[Décomposition de la chaîne]} \\  5. & \exists! f_p \in \mathcal{I} \quad \text{Famille}(f_p) \land \text{MiroirDe}(f_p, p) & \text{[Axiomes 2 et 3 — Ancrage miroir]} \\  6. & \text{HeriteStar}(f_1, f_p) & \text{[Hypothèse de récurrence]} \\  7. & \text{HeriteDirect}(f_p, f_2) & \text{[Axiome 7 — Propagation de l'héritage direct]} \\  8. & \text{HeriteStar}(f_1, f_2) & \text{[Transitivité de l'héritage dans } \mathcal{F} \text{]} \\  \hline \therefore & \text{HeriteStar}(f_1, f_2) & \blacksquare \end{array}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{HeriteStarComposant}(c_1, c_2) & \text{[Hypothèse : relation d'héritage transitive dans } \mathcal{C} \text{]} \\  2. & \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) & \text{[Axiomes 2 et 3 — Ancrage miroir (1:1)]} \\  3. & \text{Cas de base } (k=0) : c_1 = c_2 \implies f_1 = f_2 \implies \text{HeriteStar}(f_1, f_1) & \text{[Réflexivité de l'héritage]} \\  4. & \text{Pas récursif } (k+1) : \exists p \in \mathcal{C} \; (\text{HeriteStarComposant}(c_1, p) \land \\&\text{HeriteDirectComposant}(p, c_2)) & \text{[Décomposition de la chaîne]} \\  5. & \exists! f_p \in \mathcal{I} \quad \text{Famille}(f_p) \land \text{MiroirDe}(f_p, p) & \text{[Axiomes 2 et 3 — Ancrage miroir]} \\  6. & \text{HeriteStar}(f_1, f_p) & \text{[Hypothèse de récurrence]} \\  7. & \text{HeriteDirect}(f_p, f_2) & \text{[Axiome 7 — Propagation de l'héritage direct]} \\  8. & \text{HeriteStar}(f_1, f_2) & \text{[Transitivité de l'héritage dans } \mathcal{F} \text{]} \\  \hline \therefore & \text{HeriteStar}(f_1, f_2) & \blacksquare \end{array} \end{aligned} $$
 
 ---
 
@@ -330,7 +330,7 @@ $$\begin{aligned} \forall o \in \mathcal{O}, \forall f \in \mathcal{I} \; \Big( 
 
 *Démonstration déductive :*
 
-$$\begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Instance POO dynamique unique]} \\  3. & \exists! f' \in \mathcal{I} \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) & \text{[Axiomes 2 \& 3 — Unicité de la famille miroir]} \\  4. & \forall f'' \in \mathcal{I} \quad (\text{Famille}(f'') \land \text{ImplementeDirect}(c, f'') \implies f'' = f') & \text{[Axiome 2 — Ancrage unique du composant]} \\  5. & \text{HeriteStar}(f', f) & \text{[Résolution POO : } f \text{ est nécessairement satisfait via } f' \text{]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Instance POO dynamique unique]} \\  3. & \exists! f' \in \mathcal{I} \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) & \text{[Axiomes 2 \& 3 — Unicité de la famille miroir]} \\  4. & \forall f'' \in \mathcal{I} \quad (\text{Famille}(f'') \land \text{ImplementeDirect}(c, f'') \implies f'' = f') & \text{[Axiome 2 — Ancrage unique du composant]} \\  5. & \text{HeriteStar}(f', f) & \text{[Résolution POO : } f \text{ est nécessairement satisfait via } f' \text{]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\&\text{HeriteStar}(f', f) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
@@ -342,15 +342,15 @@ $$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I} \; \Big( 
 
 *Démonstration déductive :*
 
-$$\begin{array}{rll} 
+$$\begin{aligned} \begin{array}{rll} 
 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\ 
 2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Instance POO dynamique unique]} \\ 
 3. & \exists! f' \in \mathcal{I} \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) & \text{[Axiomes 2 \& 3 — Unicité de la famille miroir]} \\ 
-4. & \forall t' \in \mathcal{I} \quad (\text{Trait}(t') \implies \neg \text{ImplementeDirect}(c, t')) & \text{[Axiome 2 — Interdiction des traits directs sur les composants]} \\ 
-5. & \exists f \in \mathcal{I} \quad \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Résolution POO \& Lemme 1 — } t \text{ est nécessairement porté via la clôture des traits de } f \text{]} \\ 
+4. & \forall t' \in \mathcal{I} \quad (\text{Trait}(t') \implies \neg \text{ImplementeDirect}(c, t')) & \text{[Axiome 2 — Interdiction des traits directs]} \\ 
+5. & \exists f \in \mathcal{I} \quad \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Résolution POO \& Lemme 1 } \text{]} \\ 
 \hline 
-\therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare 
-\end{array}$$
+\therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ &\text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare 
+\end{array} \end{aligned}$$
 
 ---
 
@@ -362,16 +362,16 @@ $$\begin{aligned} \forall o\in \mathcal{O}, f \in \mathcal{I}, \quad \text{TypeS
 
 *Démonstration déductive :*
 
-$$\begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) & \text{[Application directe du Lemme 3]} \\  3. & \exists! c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) & \text{[Axiome 3 — Unicité du composant miroir du contrat } f \text{]} \\  4. & \text{HeriteStarComposant}(c, c_f) & \text{[Application du Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) & \text{[Application directe du Lemme 3]} \\  3. & \exists! c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) & \text{[Axiome 3 — Unicité du composant miroir du contrat } f \text{]} \\  4. & \text{HeriteStarComposant}(c, c_f) & \text{[Application du Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ &\text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
 #### Corollaire 1.1 — Neutralité du polymorphisme des traits
 
-$$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad \text{TypeStatique}(o, t) \land \text{Trait}(t) \implies \exists c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( & \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ & \text{Famille}(f) \land \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) \land \\ & \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) \end{aligned}$$
+$$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad \text{TypeStatique}(o, t) \land &\text{Trait}(t) \implies \\ &\exists c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ & \text{Famille}(f) \land \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) \land \\ & \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) \end{aligned}$$
 
 *Démonstration déductive :*
 
-$$\begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  3. & \exists c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) & \text{[Application du Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \\ &\text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  3. & \exists c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) & \text{[Application du Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ &\text{Famille}(f) \land \text{MiroirDe}(f, c_f) \land \text{HeriteStarComposant}(c, c_f) \land \\ &\text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
