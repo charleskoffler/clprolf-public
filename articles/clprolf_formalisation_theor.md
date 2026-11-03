@@ -1,4 +1,5 @@
-<!-- Clprolf formalisation v2.4 (20261102). -->
+<!-- Clprolf formalisation v2.5 (20261102).  -->
+
 # Formalisation axiomatique de Clprolf
 
 ## I. Introduction
@@ -315,10 +316,9 @@ $$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad &\
 
 #### Énoncé
 
-Prenons deux composants qui ont une relation d'héritage transitive. Il existe deux familles miroirs à eux, et qui ont une relation d'héritage transitive. 
+Pour tous composants en relation d'héritage transitive, il existe de façon unique leurs interfaces de famille miroirs, et ces dernières conservent exactement la même relation d'héritage transitive. 
 
-$$\forall c_1, c_2 \in \mathcal{C}, \forall f_1, f_2 \in \mathcal{I} \; \Big[ \big( \text{HeriteStarComposant}(c_1, c_2) \land \text{Famille}(f_1) \land \text{Famille}(f_2) \land \text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) \big) \implies \text{HeriteStar}(f_1, f_2) \Big]$$
-
+$$\begin{aligned} \forall c_1, c_2 \in \mathcal{C} \; &\Big( \text{HeriteStarComposant}(c_1, c_2) \implies \exists! f_1, \exists! f_2 \in \mathcal{I} \; \big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \\ &\text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) \land \text{HeriteStar}(f_1, f_2) \big) \Big) \end{aligned} $$
 
 #### Démonstration déductive (*Forward Proof*)
 
