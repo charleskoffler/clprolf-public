@@ -1,6 +1,7 @@
-<!-- Clprolf formalisation v2.9 (20261104). -->
+<!-- Clprolf formalisation v3.0 (20261104).  -->
 
 # Formalisation axiomatique de Clprolf
+
 
 ## I. Introduction
 
@@ -420,7 +421,7 @@ Le cas de base ($c_1 = c_2$) est réflexif. Pour tout pas d'héritage direct $\t
 
 De même, l'héritage étendu entre interfaces de familles garantit la conservation stricte du domaine de proche en proche.
 
-$$\forall f_1, f_2 \in \mathcal{I}, \quad \big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \text{HeriteStar}(f_1, f_2) \big) \implies \text{MemeDomaineFamille}(f_1, f_2)$$
+$$\begin{aligned} \forall f_1, f_2 \in \mathcal{I}, \quad \big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \text{HeriteStar}(f_1, f_2) \big) \implies \text{MemeDomaineFamille}(f_1, f_2) \end{aligned}$$
 
 *Démonstration :*
 Conséquence directe de l'Axiome 6 ($\text{HeriteDirect} \implies \text{MemeDomaineFamille}$) liftée par la fermeture transitive $\text{HeriteStar}$. $\blacksquare$
@@ -431,11 +432,11 @@ Conséquence directe de l'Axiome 6 ($\text{HeriteDirect} \implies \text{MemeDoma
 
 #### Théorème 1 — Neutralité du polymorphisme des familles
 
-$$\begin{aligned} \forall o\in \mathcal{O}, f \in \mathcal{I}, \quad \text{TypeStatique}(o, f) \land \text{Famille}(f) \implies \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( & \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ & \text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \\ & \text{HeriteStar}(f', f) \Big) \end{aligned}$$
+$$\begin{aligned} \forall o\in \mathcal{O}, f \in \mathcal{I}, \quad &\text{TypeStatique}(o, f) \land \text{Famille}(f) \implies \\ &\exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ & \text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \\ & \text{HeriteStar}(f', f) \Big) \end{aligned}$$
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) & \text{[Application directe du Lemme 3]} \\  3. & \exists! c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) & \text{[Axiome 3 — Unicité du composant miroir du contrat } f \text{]} \\  4. & \text{HeriteStarComposant}(c, c_f) & \text{[Application du Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ &\text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \\&\text{MiroirDe}(f', c) \land \\ &\text{HeriteStar}(f', f) & \text{[Application directe du Lemme 3]} \\  3. & \exists! c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) & \text{[Axiome 3 } \text{]} \\  4. & \text{HeriteStarComposant}(c, c_f) & \text{[Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \\ &\text{InstanceDe}(o, c) \land \text{HeriteStarComposant}(c, c_f) \land \\ &\text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
@@ -446,7 +447,7 @@ $$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad \t
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \land \\ &\text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\&\text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
@@ -459,7 +460,7 @@ $$\begin{aligned} \forall o \in \mathcal{O}, \forall f \in \mathcal{I}, \quad \t
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \text{[Application directe du Théorème 1]} \\  3. & \text{EquivSem}(c, f') \land \text{EquivSem}(c_f, f) & \text{[Par définition constitutive du prédicat } \text{MiroirDe} \text{ pour } f' \text{ et } f \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Par application du Lemme 6 sur la clôture } \text{HeriteStar}(f', f) \text{]} \\  5. & \text{MemeDomaine}(c, c_f) & \text{[Par application du Lemme 5 sur la clôture } \text{HeriteStarComposant}(c, c_f) \text{]} \\  \hline \therefore & \text{Fidélité sémantique et domaniale croisée établie} & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ &\text{HeriteStarComposant}(c, c_f) \land \\&\text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \text{[Application directe du Théorème 1]} \\  3. & \text{EquivSem}(c, f') \land \text{EquivSem}(c_f, f) & \text{[Par définition } \text{MiroirDe} \text{ pour } f' \text{ et } f \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 sur la clôture } \text{HeriteStar}(f', f) \text{]} \\  5. & \text{MemeDomaine}(c, c_f) & \text{[Lemme 5 sur } \text{HeriteStarComposant}(c, c_f) \text{]} \\  \hline \therefore & \text{Fidélité sémantique et domaniale croisée établie} & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
@@ -472,7 +473,7 @@ $$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad \t
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \text{[Application directe du Corollaire 1.1]} \\  3. & \text{EquivSem}(c, f') & \text{[Par définition constitutive du prédicat } \text{MiroirDe} \text{ pour } f' \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Par application du Lemme 6 sur la clôture } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \text{Fidélité sémantique et domaniale du trait établie} & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ &\text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \text{[Application directe du Corollaire 1.1]} \\  3. & \text{EquivSem}(c, f') & \text{MiroirDe} \text{ pour } f' \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \text{Fidélité sémantique et domaniale du trait établie} & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
