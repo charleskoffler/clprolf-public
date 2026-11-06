@@ -1,4 +1,4 @@
-<!-- Clprolf formalisation v3.0 (20261104).  -->
+<!-- Clprolf formalisation v3.1 (20261106).  -->
 
 # Formalisation axiomatique de Clprolf
 
@@ -64,12 +64,7 @@ $$\text{HeriteStar}(f_1, f_2) \implies \text{MemeDomaine}(f_1, f_2)$$
 
 * **Universalité :** Même en cas d'héritage multiple, tous les parents d'une famille doivent converger vers le même domaine, garantissant l'étanchéité totale du système.
 
-### 5. L'Autonomie du Monde Abstrait et la Résolution par Spécialisation
-
-* **Souveraineté abstraite :** Lorsqu'on manipule des pivots ou des familles $f$ (même sans miroir direct), **on reste dans le monde abstrait**. Le polymorphisme et la composition opèrent sans chercher à remonter ou inverser un miroir de force.
-* **Résolution ciblée :** Si une instanciation ou une exécution concrète est requise, le système sélectionne le composant le plus spécialisé (le plus bas dans la hiérarchie) dont le miroir $f''$ respecte le même domaine que le pivot demandé.
-
-### 6. L'Interdiction du Boilerplate
+### 5. L'Interdiction du Boilerplate
 
 Les composants concrets n'implémentent **jamais** directement d'interfaces techniques (pas d'interfaces parasites type `Serializable`). Tout contrat passe exclusivement par la hiérarchie des familles et le mécanisme de miroir.
 
@@ -356,9 +351,9 @@ $$\begin{array}{rll} 1. & \text{Famille}(f) \land \text{Trait}(t) \land \text{He
 
 ---
 
-#### Lemme 2 — Plongement de miroir et d'héritage entre composants et familles
+#### Lemme 2 — Plongement des graphes de même domaine conceptuel, des composants vers les familles
 
-Pour tous composants en relation d'héritage transitive, il existe de façon unique leurs interfaces de famille miroirs, et ces dernières conservent exactement la même relation d'héritage transitive.
+Pour tous composants en relation d'héritage transitive, il existe de façon unique leurs interfaces de famille miroirs, et ces dernières conservent exactement la même relation d'héritage transitive. Le graphe des composants de même domaine conceptuel, se trouve dans le graphe des familles miroirs de même domaine.
 
 $$\begin{aligned} \forall c_1, c_2 \in \mathcal{C} \; &\Big( \text{HeriteStarComposant}(c_1, c_2) \implies \exists! f_1, \exists! f_2 \in \mathcal{I} \; \big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \\ &\text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) \land \text{HeriteStar}(f_1, f_2) \big) \Big) \end{aligned}$$
 
@@ -400,12 +395,6 @@ $$\begin{aligned} \begin{array}{rll}
 
 ---
 
-C'est une excellente idée. Pour un article de recherche, formuler cela sous forme de **lemmes explicites et concis** (sans se lancer dans une récurrence interminable) donne exactement le niveau de rigueur académique attendu par les relecteurs, tout en restant très propre et direct.
-
-Voici comment tu peux formuler ces deux petits lemmes de propagation dans ton texte :
-
----
-
 #### Lemme 5 — Propagation du domaine par héritage de composants
 
 La fermeture réflexive-transitive de l'héritage entre composants préserve par transitivité l'appartenance au même domaine conceptuel.
@@ -417,9 +406,9 @@ Le cas de base ($c_1 = c_2$) est réflexif. Pour tout pas d'héritage direct $\t
 
 ---
 
-#### Lemme 6 — Propagation du domaine par héritage de familles
+#### Lemme 6 — Propagation du domaine par héritage de familles et structuration du graphe
 
-De même, l'héritage étendu entre interfaces de familles garantit la conservation stricte du domaine de proche en proche.
+De même, l'héritage étendu entre interfaces de familles garantit la conservation stricte du domaine de proche en proche. Il s'ensuit que l'ensemble des familles associées à un même domaine conceptuel forme un graphe orienté (DAG) hiérarchique et strictement étanche.
 
 $$\begin{aligned} \forall f_1, f_2 \in \mathcal{I}, \quad \big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \text{HeriteStar}(f_1, f_2) \big) \implies \text{MemeDomaineFamille}(f_1, f_2) \end{aligned}$$
 
@@ -430,60 +419,91 @@ Conséquence directe de l'Axiome 6 ($\text{HeriteDirect} \implies \text{MemeDoma
 
 ### Théorèmes de polymorphisme et d'ancrage
 
-#### Théorème 1 — Neutralité du polymorphisme des familles
 
-$$\begin{aligned} \forall o\in \mathcal{O}, f \in \mathcal{I}, \quad &\text{TypeStatique}(o, f) \land \text{Famille}(f) \implies \\ &\exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ & \text{HeriteStarComposant}(c, c_f) \land \text{MiroirDe}(f', c) \land \\ & \text{HeriteStar}(f', f) \Big) \end{aligned}$$
+#### Théorème 1 — Neutralité sur les composants du polymorphisme des familles
+
+Pour tout objet $o$ qualifié statiquement par une famille $f$, il existe une unique classe concrète $c$ dont $o$ est l'instance directe, et une unique famille miroir $f'$ ancrée à $c$, telle que $f'$ hérite de $f$, appartient au même domaine conceptuel que $f$, et garantit l'équivalence sémantique avec le composant concret $c$.
+
+$$\begin{aligned} \forall o \in \mathcal{O}, \, f \in \mathcal{F}, \quad & \Big( \text{TypeStatique}(o, f) \land \text{Famille}(f) \Big) \implies \\  & \exists! c \in \mathcal{C}, \, \exists! f' \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{EquivSem}(c, f') \land \\ & \quad \text{HeriteStar}(f', f) \land \text{MemeDomaineFamille}(f', f) \Big) \end{aligned}$$
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \\&\text{MiroirDe}(f', c) \land \\ &\text{HeriteStar}(f', f) & \text{[Application directe du Lemme 3]} \\  3. & \exists! c_f \in \mathcal{C} \quad \text{MiroirDe}(f, c_f) & \text{[Axiome 3 } \text{]} \\  4. & \text{HeriteStarComposant}(c, c_f) & \text{[Lemme 2 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \\ &\text{InstanceDe}(o, c) \land \text{HeriteStarComposant}(c, c_f) \land \\ &\text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse ]} \\  2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Axiome d'instanciation concrète dans } \mathcal{C} \text{]} \\  3. & \exists! f' \in \mathcal{F} \quad \text{MiroirDe}(f', c) & \text{[Axiomes 2 et 3 — Ancrage miroir strict 1:1]} \\  4. & \text{EquivSem}(c, f') & \text{[Axiome 4 — Ancrage sémantique miroir sur } f' \text{]} \\  5. & \text{HeriteStar}(f', f) & \text{[Lemme 3 — Compatibilité de typage dans } \mathcal{F} \text{]} \\  6. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 ]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \, \exists! f' \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land & \\  & \quad \text{EquivSem}(c, f') \land \text{HeriteStar}(f', f) \land \text{MemeDomaineFamille}(f', f) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
 
-#### Corollaire 1.1 — Neutralité du polymorphisme des traits
+#### Corollaire 1.1 — Neutralité sur les composants du polymorphisme des traits
 
-$$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad \text{TypeStatique}(o, t) \land &\text{Trait}(t) \implies \\ &\exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ & \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) \end{aligned}$$
+Pour tout objet $o$ qualifié statiquement par un trait $t$, il existe une unique classe concrète $c$ dont $o$ est l'instance directe, une unique famille miroir $f'$ ancrée à $c$, et une famille pivot $f$ dérivant de $t$, telles que $f'$ garantit l'équivalence sémantique avec $c$, dérive de $f$ et appartient au même domaine conceptuel que $f$.
+
+$$\begin{aligned} \forall o \in \mathcal{O}, \, t \in \mathcal{F}, \quad & \Big( \text{TypeStatique}(o, t) \land \text{Trait}(t) \Big) \implies \\  & \exists! c \in \mathcal{C}, \, \exists! f' \in \mathcal{F}, \, \exists f \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\  & \quad \text{EquivSem}(c, f') \land \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \\  & \quad \text{MemeDomaineFamille}(f', f) \land \text{HeriteStar}(f, t) \Big) \end{aligned}$$
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \quad \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \land \\ &\text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\&\text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse : qualification par une interface de trait]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{F}, \exists f \in \mathcal{F} \quad \text{InstanceDe}(o, c) \land & \\  & \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land & \\  & \quad \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  3. & \text{EquivSem}(c, f') & \text{[Axiome 4 — Ancrage sémantique miroir sur } f' \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{F}, \exists f \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land & \\  & \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{EquivSem}(c, f') \land & \\  & \quad \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{MemeDomaineFamille}(f', f) \land & \\  & \quad \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
 
-#### Corollaire 1.2 — Fidélité sémantique et domaniale induite du polymorphisme de familles
+### Théorème 2 — Structure et invariance du graphe des familles
 
-En s'appuyant sur les structures d'ancrage du Théorème 1, tout objet manipulé sous un type statique de famille garantit que le composant concret d'exécution $c$ et le composant pivot $c_f$ partagent respectivement l'équivalence sémantique avec leurs familles miroirs $f'$ et $f$, tout en préservant strictement l'invariance du domaine à la fois dans le monde abstrait ($\mathcal{F}$) et dans le monde concret ($\mathcal{C}$).
+Le Monde Abstrait $\mathcal{F}$ forme un graphe orienté d'interfaces de familles. Toute relation d'héritage étendu ($\text{HeriteStar}$) entre deux familles établit une dérivation hiérarchique directe tout en garantissant la stricte invariance du domaine conceptuel.
 
-$$\begin{aligned} \forall o \in \mathcal{O}, \forall f \in \mathcal{I}, \quad \text{TypeStatique}(o, f) \land \text{Famille}(f) \implies \exists c_f, c \in \mathcal{C}, \exists f' \in \mathcal{I} \; \Big( & \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \\ & \text{EquivSem}(c, f') \land \text{EquivSem}(c_f, f) \land \\ & \text{MemeDomaineFamille}(f', f) \land \text{MemeDomaine}(c, c_f) \Big) \end{aligned}$$
+$$\begin{aligned} \forall f_1, f_2 \in \mathcal{F}, \quad \Big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \text{HeriteStar}(f_1, f_2) \Big) \implies \text{MemeDomaineFamille}(f_1, f_2) \end{aligned}$$
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \exists! c_f, \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I} \; \Big( \text{MiroirDe}(f, c_f) \land \text{InstanceDe}(o, c) \land \\ &\text{HeriteStarComposant}(c, c_f) \land \\&\text{MiroirDe}(f', c) \land \text{HeriteStar}(f', f) \Big) & \text{[Application directe du Théorème 1]} \\  3. & \text{EquivSem}(c, f') \land \text{EquivSem}(c_f, f) & \text{[Par définition } \text{MiroirDe} \text{ pour } f' \text{ et } f \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 sur la clôture } \text{HeriteStar}(f', f) \text{]} \\  5. & \text{MemeDomaine}(c, c_f) & \text{[Lemme 5 sur } \text{HeriteStarComposant}(c, c_f) \text{]} \\  \hline \therefore & \text{Fidélité sémantique et domaniale croisée établie} & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f_1) \land \text{Famille}(f_2) \land \text{HeriteStar}(f_1, f_2) & \text{[Hypothèse : relation dans le graphe } \mathcal{F} \text{]} \\  2. & \text{MemeDomaineFamille}(f_1, f_2) & \text{[Application directe du Lemme 6]} \\  \hline \therefore & \text{MemeDomaineFamille}(f_1, f_2) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
 
-#### Corollaire 1.3 — Fidélité sémantique et domaniale du polymorphisme de traits
+### Synthèse — La neutralité des interfaces sur les composants
 
-En s'appuyant sur les structures d'ancrage du Corollaire 1.1, tout objet manipulé sous un type statique de trait $t$ garantit que le composant concret d'exécution $c$ possède une équivalence sémantique stricte avec sa famille miroir $f'$, et que cette dernière s'inscrit dans la continuité domaniale du pivot $f$ relié au trait.
-
-$$\begin{aligned} \forall o \in \mathcal{O}, \forall t \in \mathcal{I}, \quad \text{TypeStatique}(o, t) \land &\text{Trait}(t) \implies \\ &\exists c \in \mathcal{C}, \exists f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land \\ & \text{EquivSem}(c, f') \land \text{MemeDomaineFamille}(f', f) \land \\ & \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) \end{aligned}$$
-
-*Démonstration déductive :*
-
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{I}, \exists f \in \mathcal{I} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\ &\text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) \Big) & \text{[Application directe du Corollaire 1.1]} \\  3. & \text{EquivSem}(c, f') & \text{MiroirDe} \text{ pour } f' \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \text{Fidélité sémantique et domaniale du trait établie} & \blacksquare \end{array} \end{aligned}$$
+> Le théorème 1 et le corollaire 1.1 établissent la conclusion suivante : **le polymorphisme d'interfaces — qu'il s'exprime par des familles ou par des traits — ne constitue en aucun cas une trahison sémantique ou domaniale du code concret.** Le système formel des composants, atomes, parties s'en trouve ainsi préservé.
+> 
+> 1. **La fidélité sémantique entre les interfaces et les composants est inviolable :** Le lien d'ancrage (`MiroirDe`) couplé à l'équivalence (`EquivSem`) garantit que le composant d'exécution concrétise rigoureusement le sens qualifié par le contrat.
+> 2. **L'invariance du domaine est préservée :** La propagation transitive de proche en proche (`HeriteStar` et `HeriteStarComposant`) assure qu'aucune fuite conceptuelle ni hybridation illégitime ne vient corrompre le territoire métier initial.
 
 ---
 
-### Synthèse — La neutralité des interfaces et la garantie de non-trahison
 
-Les corollaires 1.2 et 1.3 établissent la conclusion maîtresse du modèle Clprolf : **le polymorphisme d'interfaces — qu'il s'exprime par des familles ou par des traits — ne constitue en aucun cas une trahison sémantique ou domaniale du code concret.**
+#### Théorème 2 — Concrétisation d'une famille (0 ou plusieurs composants)
 
-Qu'un objet soit manipulé sous un type statique abstrait de famille ou à travers le réseau croisé d'un DAG de traits :
+Pour toute interface de famille $f$, soit il n'existe aucun composant concret dont $f$ est la famille miroir (spécification pure), soit il existe un ou plusieurs composants concrets $c$ dont $f$ est la famille miroir.
 
-1. **La fidélité sémantique est inviolable :** Le lien d'ancrage (`MiroirDe`) couplé à l'équivalence (`EquivSem`) garantit que le composant d'exécution concrétise rigoureusement le sens qualifié par le contrat.
-2. **L'invariance du domaine est préservée :** La propagation transitive de proche en proche (`HeriteStar` et `HeriteStarComposant`) assure qu'aucune fuite conceptuelle ni hybridation illégitime ne vient corrompre le territoire métier initial.
+$$\begin{aligned} \forall f \in \mathcal{F}, \quad \text{Famille}(f) \implies & \Big( \neg \exists c \in \mathcal{C} \; \text{MiroirDe}(f, c) \Big) \;\lor\; \Big( \exists c \in \mathcal{C} \; \text{MiroirDe}(f, c) \Big) \end{aligned}$$
 
-L'architecture formelle de Clprolf démontre ainsi que l'abstraction et le polymorphisme offrent au développeur une liberté de composition totale, sous la garde invisible mais absolue d'un formalisme mathématique qui garantit que **le concret reste toujours strictement fidèle à l'intention architecturale**.
+*Démonstration déductive :*
+
+$$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \forall c \in \mathcal{C}, \quad \exists! f'_c \in \mathcal{F} \quad \text{MiroirDe}(f'_c, c) & \text{[Axiomes 2 et 3 — Injectivité à gauche du miroir]} \\  3. & \text{Soit } C_f = \{ c \in \mathcal{C} \mid \text{MiroirDe}(f, c) \} & \text{[Ensemble des composants miroirs de } f \text{]} \\  4. & \text{Cas } C_f = \emptyset \implies \neg \exists c \in \mathcal{C} \; \text{MiroirDe}(f, c) & \text{[Spécification pure : 0 composant]} \\  5. & \text{Cas } C_f \neq \emptyset \implies \exists c \in \mathcal{C} \; \text{MiroirDe}(f, c) & \text{[Concrétisation : 1 à } N \text{ composants]} \\  \hline \therefore & \text{Une famille correspond à 0 ou plusieurs composants miroirs} & \blacksquare \end{array} \end{aligned}$$
+
+---
+
+
+#### Théorème 3 — Structure en DAG et héritage multiple des familles
+
+Le Monde Abstrait $\mathcal{F}$ admet l'héritage multiple : une interface de famille $f \in \mathcal{F}$ peut dériver directement de plusieurs familles parentes distinctes $f_1, \dots, f_k \in \mathcal{F}$ ($k \ge 0$). Cette structure en graphe orienté acyclique (DAG) préserve l'invariance stricte du domaine métier sur chaque branche.
+
+$$\begin{aligned} \forall f \in \mathcal{F}, \quad \text{Famille}(f) \implies & \Big( \exists k \ge 0, \exists f_1, \dots, f_k \in \mathcal{F} \quad \big( \big(\bigwedge_{i=1}^k \text{Famille}(f_i) \land \text{HeriteDirect}(f, f_i)\big) \land \\ & \big(\bigwedge_{i=1}^k \text{MemeDomaineFamille}(f, f_i)\big) \big) \Big) \end{aligned}$$
+
+*Démonstration déductive :*
+
+$$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f) & \text{[Hypothèse]} \\  2. & \text{Soient } f_1, \dots, f_k \in \mathcal{F} \text{ telles que } \text{Famille}(f_i) \land \text{HeriteDirect}(f, f_i) & \text{[Parentes directes de } f \text{ dans } \mathcal{F} \text{]} \\  3. & \forall i \in \{1, \dots, k\}, \quad \text{MemeDomaineFamille}(f, f_i) & \text{[Application directe de l'Axiome 6 sur chaque arc]} \\  \hline \therefore & \text{L'héritage multiple dans } \mathcal{F} \text{ conserve le domaine métier sur } \\ &\text{toutes ses branches} & \blacksquare \end{array} \end{aligned}$$
+
+---
+
+#### Théorème 4 — Factorisation et requalification du polymorphisme POO
+
+Pour toute classe POO $cl$ homogène implémentant directement un ensemble d'interfaces POO $\{int_1, \dots, int_k\}$, il existe une fonction de requalification domaniale $\psi : \mathcal{I}_{\text{poo}} \to (\mathcal{F} \cup \mathcal{T})$, un unique composant formel $c \in \mathcal{C}$ et une unique famille miroir pivot $f_{\text{pivot}} \in \mathcal{F}$ tels que :
+
+1. $cl$ concrétise le composant $c \in \mathcal{C}$ ($\text{Realise}(cl, c)$).
+2. L'unique famille miroir directe du composant $c$ est $f_{\text{pivot}}$ ($\text{MiroirDe}(f_{\text{pivot}}, c)$).
+3. Chaque interface POO $int_j$ est requalifiée par $\psi$ soit en une **Famille** ($\psi(int_j) \in \mathcal{F}$), soit en un **Trait** ($\psi(int_j) \in \mathcal{T}$).
+4. $f_{\text{pivot}}$ réunit et hérite dans le Monde Abstrait $\mathcal{I}$ de l'ensemble des abstractions requalifiées $\psi(int_j)$.
+5. Pour toute interface requalifiée en famille ($\psi(int_j) \in \mathcal{F}$), l'invariance du domaine métier est strictement conservée ($\text{MemeDomaineFamille}(f_{\text{pivot}}, \psi(int_j))$).
+
+$$\begin{aligned} \forall cl \in \mathcal{C}_{\text{poo}}, \, \forall \{int_1, \dots, int_k\} \subseteq \mathcal{I}_{\text{poo}}, \quad & \Big( \big(\bigwedge_{j=1}^k \text{ImplémentePOO}(cl, int_j)\big) \Big) \implies \\  & \exists! c \in \mathcal{C}, \, \exists! f_{\text{pivot}} \in \mathcal{F} \; \Big( \text{Realise}(cl, c) \;\land\; \text{MiroirDe}(f_{\text{pivot}}, c) \;\land\; \\ & \big(\bigwedge_{j=1}^k \text{HeriteStar}(f_{\text{pivot}}, \psi(int_j))\big) \Big) \end{aligned}$$
+
+---
