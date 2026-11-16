@@ -1,32 +1,58 @@
-<!-- Clprolf formalisation v3.1 (20261106).  -->
+# Formalisation axiomatique d'une topologie logicielle orientée objet et vérification statique des domaines : le modèle Clprolf
 
-# Formalisation axiomatique de Clprolf
+Axiomatic Formalization of an Object-Oriented Software Topology and Static Domain Verification: The Clprolf Model
+
+**Version :** v1.0 (Novembre 2026)  
+**Domaine principal :** Computer Science — Software Engineering *(Informatique — Génie logiciel)*  
+**Domaines secondaires :** Programming Languages ; Logic in Computer Science *(Langages de programmation ; Logique en informatique et méthodes formelles)*  
+**Mots-clés :** Software Architecture, Formal Methods, First-Order Logic, Object-Oriented Programming, Static Analysis, ArchUnit, Domain-Driven Design, Embedded DSL, Polymorphism, Clprolf  
+
+---
+
+## Résumé
+
+Cet article présente la formalisation axiomatique en logique du premier ordre du cadre architectural **Clprolf** (*Clear PROgramming Language and Framework*), un DSL embarqué léger conçu pour les langages orientés objet (Java et C# .NET) et vérifié statiquement via ArchUnit et ArchUnitNET. Clprolf établit une séparation stricte entre les composants de logique métier/conceptuelle (`@ClAgent`, `@ClSystem`) et les services d'exécution technique (`@ClWorker`), tout en imposant la conservation du domaine conceptuel le long des hiérarchies d'héritage. Le modèle formel définit deux espaces duals : le Monde Concret des composants exécutables ($\mathcal{C}$) et le Monde Abstrait des contrats ($\mathcal{I}$), structuré sous forme de graphe orienté acyclique (DAG) distinguant les interfaces de famille (`@ClFamily`) des capacités transverses (`@ClTrait`). À travers une fonction d'ancrage asymétrique dite *Miroir*, nous démontrons plusieurs propriétés structurelles clés — notamment le plongement des graphes d'héritage, l'étanchéité des domaines métiers en présence d'héritage multiple et la neutralité sémantique du polymorphisme d'interfaces sur les composants d'exécution. Enfin, le papier explicite la frontière entre les invariants indécidables au sens de Turing (équivalence sémantique, appartenance domaniale) et leur approximation décidable par vérification statique en ingénierie logicielle.
+
+## Abstract
+
+This paper presents an axiomatic formalization in first-order logic of the **Clprolf** (*Clear PROgramming Language and Framework*) architectural framework, a lightweight embedded DSL designed for object-oriented languages (Java and C# .NET) and statically enforced via ArchUnit and ArchUnitNET. Clprolf establishes a strict separation between business/conceptual components (`@ClAgent`, `@ClSystem`) and technical execution services (`@ClWorker`), while enforcing conceptual domain preservation across inheritance hierarchies. The formal model defines two dual spaces: the Concrete World of executable components ($\mathcal{C}$) and the Abstract World of contracts ($\mathcal{I}$), structured as a Directed Acyclic Graph (DAG) distinguishing family interfaces (`@ClFamily`) from cross-cutting capabilities (`@ClTrait`). Using an asymmetric anchoring relation termed *Mirror*, we prove key structural properties—including inheritance graph embedding, domain confinement under multiple inheritance, and semantic neutrality of interface polymorphism over concrete components. Finally, the paper delineates the boundary between Turing-undecidable domain properties (semantic equivalence, domain membership) and their decidable static approximations in software engineering practice.
+
+---
 
 
 ## I. Introduction
 
-Clprolf est un DSL embarqué (EDSL) pour la pédagogie et les applications complexes. Il se présente sous la forme d'annotations et d'un checker statique de conformité sémantique. Le langage hôte est Java ou C#.
-Le modèle formel Clprolf modélise la topologie logicielle statique d'une application d'automatisation orientée objet ou des bibliothèques qui lui servent de support. 
+Clprolf (*Clear PROgramming Language and Framework*) est un DSL embarqué (EDSL) léger pour la pédagogie et les applications complexes. Il se présente sous la forme d'annotations (ou d'attributs) et d'un checker statique de conformité sémantique. Le langage hôte est Java ou C# .NET.
+Le modèle formel Clprolf modélise la topologie logicielle statique d'une application d'automatisation orientée objet ou des bibliothèques qui lui servent de support.
+
+**Domaines d'application et positionnement :** Clprolf agit comme une couche intermédiaire entre la programmation orientée objet classique et les architectures logicielles (Architecture Hexagonale, Domain-Driven Design, Clean Architecture). Il est particulièrement adapté aux systèmes complexes, aux applications scientifiques, aux simulations, aux grands chantiers de refactoring ainsi qu'à la pédagogie de la POO et des principes SOLID. L'application reste du pur Java ou C# : les annotations sont non intrusives et vérifiées statiquement lors de la phase de test.
+
+**Illustration minimale (Java) :**
+
+```java
+@ClAgent @ClTrait public interface Payable { void pay(); }
+@ClAgent @ClFamily public interface OrderService extends Payable { void process(Order order); }
+@ClWorker @ClFamily public interface OrderRepository { void save(Order order); }
+
+@ClAgent
+public class OrderServiceImpl implements OrderService {
+    private final OrderRepository repository; // Injection du miroir technique
+    // Logique métier...
+}
+```
 
 ## I.b Portée du Framework et Articulation avec le Modèle Formel
- 
 
- Le modèle formel de Clprolf définit une topologie théorique complète (incluant les **Parties de l'application $\mathcal{P}_A$**, les **Atomes architecturaux $\mathcal{D}$**, ou la catégorisation fine des **Composants Autonomes**). La mise en œuvre pratique dans le framework repose sur la philosophie suivante :
- 
+Le modèle formel de Clprolf définit une topologie théorique complète (incluant les **Parties de l'application $\mathcal{P}_A$**, les **Atomes architecturaux $\mathcal{D}$**, ou la catégorisation fine des **Composants Autonomes**). La mise en œuvre pratique dans le framework repose sur la philosophie suivante :
 
- * **Contrôles focalisés sur le décidable et la valeur ajoutée :** Le checker statique (ArchUnit / ArchUnitNET) vérifie les contraintes fondamentales et décidables du modèle (séparation métier/technique, invariance du domaine par héritage, polarité des interfaces). Il ne cherche pas l'exhaustivité là où elle n'apporte aucun gain de qualité ou d'ingénierie.
+* **Contrôles focalisés sur le décidable et la valeur ajoutée :** Le checker statique (ArchUnit / ArchUnitNET) vérifie les contraintes fondamentales et décidables du modèle (séparation métier/technique, invariance du domaine par héritage, polarité des interfaces). Il ne cherche pas l'exhaustivité là où elle n'apporte aucun gain de qualité ou d'ingénierie.
+* **Absence de sur-contrainte et de bruit visuel :**
+  * Aucun contrôle n'est effectué par le checker sur d'éventuels composants métiers situés dans une partie mais hors d'un atome.
+  * Le modèle formel caractérise les composants métiers autonomes comme résidant hors de toute partie, mais n'interdit pas les formes hybrides.
+  * Aucun artefact ou annotation supplémentaire (`@ClAtom`, `@ClPart`) n'est imposé dans le code. Les atomes et sous-systèmes émergent naturellement de la structuration standard du projet (injection `@ClAgent` / `@ClWorker`, packages/namespaces).
+* **Adoption progressive et intégration transparente :** Le checker permet une adoption en deux étapes (séparation des classes `@ClAgent`/`@ClWorker`/`@ClSystem` d'abord, puis activation optionnelle du mode strict sur les interfaces `@ClFamily`/`@ClTrait`). Il supporte également les alias de vocabulaire (ex. `@ClDomain`/`@ClInfrastructure`) ainsi que la détection automatique d'annotations natives d'écosystèmes tiers (ex. `@RestController` ou `[ApiController]` reconnus nativement comme `@ClSystem`).
 
-
- * **Absence de sur-contrainte et de bruit visuel :**
- * Aucun contrôle n'est effectué par le checker sur d'éventuels composants métiers situés dans une partie mais hors d'un atome.
- 
-
- * Le modèle formel caractérise les composants métiers autonomes comme résidant hors de toute partie, mais n'interdit pas les formes hybrides.
- 
- 
- * Aucun artefact ou annotation supplémentaire (`@ClAtom`, `@ClPart`) n'est imposé dans le code. Les atomes et sous-systèmes émergent naturellement de la structuration standard du projet (injection `@ClAgent` / `@ClWorker`, packages/namespaces).
-
- Cette frontière garantit une adoption fluide en entreprise et préserve la liberté du développeur, tout en verrouillant 100 % des règles d'architecture indispensables.
+Cette frontière garantit une adoption fluide en entreprise et préserve la liberté du développeur, tout en verrouillant 100 % des règles d'architecture indispensables.
 
 ---
 
@@ -92,6 +118,8 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * **$\mathcal{C}_{\text{poo}}$** : L'ensemble des classes concrètes (Java / C#).
 * **$\mathcal{I}_{\text{poo}}$** : L'ensemble des interfaces POO
 * **$\mathcal{S}_{\text{poo}}$** : L'ensemble des sous-systèmes du framework
+
+*Note de périmètre : Le modèle formel ci-dessous formalise le noyau strict de Clprolf. Les éléments de souplesse du framework — tels que les classes en cours de prototypage (`@ClDraft`), les interfaces libres ou natives du langage hôte (`@ClFree`), ainsi que les mécanismes explicites de dérogation (`@ClBypass`, `@ClInterfaceBypass`) — sont volontairement exclus du noyau axiomatique strict.*
 
 ---
 
@@ -469,7 +497,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f_1) \land \text{Famill
 ---
 
 
-#### Théorème 2 — Concrétisation d'une famille (0 ou plusieurs composants)
+#### Théorème 3 — Concrétisation d'une famille (0 ou plusieurs composants)
 
 Pour toute interface de famille $f$, soit il n'existe aucun composant concret dont $f$ est la famille miroir (spécification pure), soit il existe un ou plusieurs composants concrets $c$ dont $f$ est la famille miroir.
 
@@ -482,7 +510,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f) & \text{[Hypothèse]
 ---
 
 
-#### Théorème 3 — Structure en DAG et héritage multiple des familles
+#### Théorème 4 — Structure en DAG et héritage multiple des familles
 
 Le Monde Abstrait $\mathcal{F}$ admet l'héritage multiple : une interface de famille $f \in \mathcal{F}$ peut dériver directement de plusieurs familles parentes distinctes $f_1, \dots, f_k \in \mathcal{F}$ ($k \ge 0$). Cette structure en graphe orienté acyclique (DAG) préserve l'invariance stricte du domaine métier sur chaque branche.
 
@@ -494,7 +522,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f) & \text{[Hypothèse]
 
 ---
 
-#### Théorème 4 — Factorisation et requalification du polymorphisme POO
+#### Théorème 5 — Factorisation et requalification du polymorphisme POO
 
 Pour toute classe POO $cl$ homogène implémentant directement un ensemble d'interfaces POO $\{int_1, \dots, int_k\}$, il existe une fonction de requalification domaniale $\psi : \mathcal{I}_{\text{poo}} \to (\mathcal{F} \cup \mathcal{T})$, un unique composant formel $c \in \mathcal{C}$ et une unique famille miroir pivot $f_{\text{pivot}} \in \mathcal{F}$ tels que :
 
@@ -507,3 +535,10 @@ Pour toute classe POO $cl$ homogène implémentant directement un ensemble d'int
 $$\begin{aligned} \forall cl \in \mathcal{C}_{\text{poo}}, \, \forall \{int_1, \dots, int_k\} \subseteq \mathcal{I}_{\text{poo}}, \quad & \Big( \big(\bigwedge_{j=1}^k \text{ImplémentePOO}(cl, int_j)\big) \Big) \implies \\  & \exists! c \in \mathcal{C}, \, \exists! f_{\text{pivot}} \in \mathcal{F} \; \Big( \text{Realise}(cl, c) \;\land\; \text{MiroirDe}(f_{\text{pivot}}, c) \;\land\; \\ & \big(\bigwedge_{j=1}^k \text{HeriteStar}(f_{\text{pivot}}, \psi(int_j))\big) \Big) \end{aligned}$$
 
 ---
+
+
+## VI. Implémentation et Ressources
+
+* **Dépôt principal Clprolf (documentation, exemples et code source) :** [https://github.com/charleskoffler/clprolf-public](https://github.com/charleskoffler/clprolf-public)
+* **Checker statique Java (basé sur ArchUnit) :** [https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker](https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker)
+* **Checker statique C# .NET (basé sur ArchUnitNET) :** [https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
