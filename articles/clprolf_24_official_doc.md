@@ -1,43 +1,40 @@
-# Clprolf Framework — Official Documentation
+# Clprolf — Embedded DSL (EDSL) and Architectural Framework
 
 ## Target Uses and Prerequisites
 
-**Clprolf** ("Clear PROgramming Language and Framework") is an independent, lightweight architectural framework for Java or C# .NET.
-The source code (annotations + checker) can be copied under the M.I.T. license and is visible on GitHub within applications written by the author.
-However, the framework itself, along with its documentation and examples, is primarily obtained through paid training courses provided by its author.
+**Clprolf** (*"Clear PROgramming Language and Framework"*) is a lightweight, independent **architectural Embedded Domain-Specific Language (EDSL)** designed for Java or C# .NET.
+It directly extends the host language with a declarative vocabulary of annotations (or C# attributes) statically enforced at compile or test time. The source code (annotations + checker) can be copied under the M.I.T. license and is visible on GitHub within applications written by the author.
+However, the full tooling, along with its documentation and examples, is primarily obtained through paid training courses provided by its author.
 
-It is a specialized framework designed for the following scenarios:
+It is a specialized EDSL designed for the following scenarios:
 
-* pedagogical framework to learn OOP, interfaces, or even immutability.
+* pedagogical tool to learn OOP, interfaces, or even immutability.
 * scientific applications
 * simulations
-* enterprise applications interested in adding Clprolf as a complement to traditional architectures
+* enterprise applications looking to add Clprolf as a complement to traditional architectures
 * highly complex applications with a large number of classes or interfaces
 * major refactoring required on a large existing application
-* or simply for those who enjoy this style of programming guided by an architectural checker for classes and interfaces.
+* or simply for those who enjoy this style of programming guided by an architectural EDSL statically checked across classes and interfaces.
 
 Prerequisites include a basic knowledge of OOP. Familiarity with OO design principles can be helpful.
 
-The framework aims to assist with object-oriented design. It provides an interpretation of object-oriented design principles such as SOLID, and helps apply Hexagonal Architecture or DDD.
-Of course, Clprolf only offers its own way of achieving well-known object principles and other notable architectures.
-The resulting application can easily revert to pure Java or C# simply by removing or ignoring the annotations.
+This EDSL aims to assist with object-oriented design. It provides a concrete interpretation of SOLID principles and helps apply Hexagonal Architecture or DDD.
+Of course, Clprolf offers its own approach to achieving well-known object principles and established architectures.
+The resulting application remains pure Java or C# and can easily revert to standard code simply by removing or ignoring the annotations.
 
 ## Introduction
 
-Its goal is to make certain object-oriented programming best practices explicit, without introducing heavy architecture or a steep learning curve.
-Thus, the framework helps adhere to the well-known SOLID principles.
-
-Clprolf is based on a simple idea:
+Clprolf is an **Embedded DSL (EDSL)** built upon a simple idea:
 
 > A class should clearly express its primary role.
 
-The framework helps to:
+Acting as a domain-specific language embedded directly into the host code alongside a lightweight architectural framework, it helps to:
 
 * separate business logic from technical code,
 * limit architectural drift,
 * make inheritance more coherent,
 * improve system readability.
-
+  
 ---
 
 ### In Java (ArchUnit)
@@ -79,6 +76,16 @@ namespace MyApp.Agents {
 * **Syntax:** Java's `@Annotation` becomes `[Attribute]` in C#.
 
 ---
+
+
+### Theoretical Foundations
+
+Clprolf is supported by a formal study that provides a theoretical foundation for its architectural model and the structural principles underlying its use of components, families, and traits.
+
+For readers interested in the conceptual and formal foundations of the framework, see:
+
+* [**Axiomatic Formalization of an Object-Oriented Software Topology and Static Domain Verification: The Clprolf Model**](https://doi.org/10.5281/zenodo.24310061) *(Zenodo Preprint)*
+  
 
 # I) The Two Fundamental Principles
 

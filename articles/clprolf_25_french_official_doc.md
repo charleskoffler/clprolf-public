@@ -1,33 +1,33 @@
-# Framework Clprolf - Documentation officielle
+# Clprolf — DSL Embarqué (EDSL) et Cadre Architectural
 
 ## Utilisations cibles et prérequis
 
-**Clprolf**("Clear PROgramming Language and Framework") est un framework architectural indépendant, léger, pour Java ou C# .net.
-Le code source (annotations + checker) peut être copié sous licence M.I.T., et visible sur Github dans des applications écrites par l'auteur.
-Cependant, le framework est principalement obtenu, ainsi que sa documentation et exemples, par des formations payantes de son auteur.
+**Clprolf** (*"Clear PROgramming Language and Framework"*) est un **DSL embarqué (EDSL — *Embedded Domain-Specific Language*) architectural**, léger et indépendant, conçu pour Java ou C# .NET.
+Il étend directement le langage hôte grâce à un vocabulaire déclaratif d'annotations (ou d'attributs C#) vérifié statiquement lors de la compilation ou des tests. Le code source (annotations + checker) peut être copié sous licence M.I.T., et est visible sur GitHub dans des applications écrites par l'auteur.
+Cependant, l'outillage complet, ainsi que sa documentation et ses exemples, sont principalement obtenus par des formations payantes de son auteur.
 
-Il s'agit d'un framework spécialisé, pour les situations suivantes:
-* framework pédagogique pour apprendre la POO, et les interfaces, voire l'immuabilité.
+Il s'agit d'un EDSL spécialisé pour les situations suivantes :
+* support pédagogique pour apprendre la POO, les interfaces, voire l'immuabilité.
 * applications scientifiques
 * simulations
-* applications d'entreprises intéressées par ajouter Clprolf en complément des architectures classiques
-* applications très complexes, avec beaucoup de classes ou d'interfaces
-* gros refactoring nécessaire sur une grosse appli existante
-* ou tout simplement pour ceux qui aiment ce style de programmation encadrée par checker architectural pour classes et interfaces.
+* applications d'entreprise souhaitant intégrer Clprolf en complément des architectures classiques
+* applications très complexes, avec un grand nombre de classes ou d'interfaces
+* gros refactoring nécessaire sur une application existante volumineuse
+* ou tout simplement pour ceux qui apprécient ce style de programmation guidé par un DSL architectural vérifié statiquement sur les classes et les interfaces.
 
-Il a pour prérequis la connaissance des bases de la POO. Une connaissance des principes de conception OO peut être utile.
+Il a pour prérequis la connaissance des bases de la POO. Une familiarité avec les principes de conception OO peut être utile.
 
-Le framework a pour objectif d'aider à la conception objet. Il permet une interprétation des principes de conception objet comme SOLID, ou d'aider à appliquer l'architecture hexagonale/DDD.
-Bien entendu, Clprolf ne fournit que sa propre façon d'obtenir les principes objets connus, et autres architectures notoires.
-L'application obtenue pourra redevenir du pur Java ou C#, en retirant les annotations, ou en ne les interprétant pas.
+Cet EDSL a pour objectif d'assister la conception objet. Il offre une interprétation concrète des principes SOLID et facilite la mise en œuvre de l'architecture hexagonale ou du DDD.
+Bien entendu, Clprolf propose sa propre approche pour atteindre ces principes objets connus et ces architectures de référence.
+L'application obtenue reste du pur Java ou C# : elle peut redevenir totalement standard à tout moment en retirant les annotations ou en cessant de les interpréter.
 
 ## Introduction
 
-Clprolf repose sur une idée simple :
+Clprolf est un **DSL embarqué (EDSL)** qui repose sur une idée simple :
 
 > Une classe doit clairement exprimer son rôle principal.
 
-Le framework aide ainsi à :
+En tant que langage dédié intégré au code hôte et complété par un cadre architectural léger, il aide ainsi à :
 
 * séparer la logique métier du code technique,
 * limiter la dérive architecturale,
@@ -73,6 +73,16 @@ namespace MyApp.Agents {
 ### 💡 Note pour les utilisateurs du Framework (.NET vs Java)
 
 * **Syntaxe :** Le `@Annotation` de Java devient `[Attribute]` en C#.
+
+---
+
+### Fondements théoriques
+
+Clprolf s'appuie sur une étude théorique qui apporte une assise formelle à son modèle architectural et aux principes structurels qui organisent l'utilisation des composants, des familles et des traits.
+
+Les utilisateurs qui souhaitent approfondir les fondements conceptuels et formels du framework peuvent consulter l'article :
+
+* [**Formalisation axiomatique d'une topologie logicielle orientée objet et vérification statique des domaines : le modèle Clprolf**](https://doi.org/10.5281/zenodo.24310061) *(Preprint Zenodo)*
 
 ---
 
