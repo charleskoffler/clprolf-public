@@ -2,24 +2,21 @@
 
 ## Utilisations cibles et prérequis
 
-**Clprolf** (*"Clear PROgramming Language and Framework"*) est un **DSL embarqué (EDSL — *Embedded Domain-Specific Language*) architectural**, léger et indépendant, conçu pour Java ou C# .NET.
-Il étend directement le langage hôte grâce à un vocabulaire déclaratif d'annotations (ou d'attributs C#) vérifié statiquement lors de la compilation ou des tests. Le code source (annotations + checker) peut être copié sous licence M.I.T., et est visible sur GitHub dans des applications écrites par l'auteur.
-Cependant, l'outillage complet, ainsi que sa documentation et ses exemples, sont principalement obtenus par des formations payantes de son auteur.
+**Clprolf** (*"Clear PROgramming Language and Framework"*) est un **DSL embarqué (EDSL — *Embedded Domain-Specific Language*) architectural**, léger et indépendant, conçu pour Java et C# .NET. Il agit comme une couche intermédiaire entre la programmation orientée objet (POO) classique et les macro-architectures existantes.
 
-Il s'agit d'un EDSL spécialisé pour les situations suivantes :
-* support pédagogique pour apprendre la POO, les interfaces, voire l'immuabilité.
-* applications scientifiques
-* simulations
-* applications d'entreprise souhaitant intégrer Clprolf en complément des architectures classiques
-* applications très complexes, avec un grand nombre de classes ou d'interfaces
-* gros refactoring nécessaire sur une application existante volumineuse
-* ou tout simplement pour ceux qui apprécient ce style de programmation guidé par un DSL architectural vérifié statiquement sur les classes et les interfaces.
+Il étend directement le langage hôte grâce à un vocabulaire déclaratif d'annotations (ou d'attributs C#) vérifié statiquement lors de la compilation ou des tests. Le code source (annotations et vérificateur statique), la documentation et les exemples sont librement disponibles sur GitHub sous licence MIT.
 
-Il a pour prérequis la connaissance des bases de la POO. Une familiarité avec les principes de conception OO peut être utile.
+Ce DSL architectural s'adresse particulièrement aux contextes suivants :
+- **Support pédagogique** : apprendre la POO, le rôle des interfaces ou l'immuabilité à travers des règles explicites.
+- **Applications scientifiques et simulations** : structurer des modèles riches en distinguant clairement les entités de leurs capacités.
+- **Applications d'entreprise** : compléter les architectures existantes par un contrôle structurel fin.
+- **Systèmes complexes** : maîtriser des bases de code comportant un grand nombre de classes et d'interfaces.
+- **Refactoring d'envergure** : réorganiser progressivement une application existante volumineuse sous contrôle statique.
+- **Conception guidée par le contrat** : bénéficier d'un style de programmation déclaratif vérifié directement sur les types.
 
-Cet EDSL a pour objectif d'assister la conception objet. Il offre une interprétation concrète des principes SOLID et facilite la mise en œuvre de l'architecture hexagonale ou du DDD.
-Bien entendu, Clprolf propose sa propre approche pour atteindre ces principes objets connus et ces architectures de référence.
-L'application obtenue reste du pur Java ou C# : elle peut redevenir totalement standard à tout moment en retirant les annotations ou en cessant de les interpréter.
+**Prérequis :** Une connaissance des bases de la POO suffit pour démarrer ; une familiarité avec les principes de conception orientée objet est un plus.
+
+Cet EDSL assiste la conception objet en offrant une interprétation concrète et vérifiable des principes SOLID, et facilite la mise en œuvre de l'architecture hexagonale ou du DDD à travers sa propre approche structurelle. L'application obtenue reste du **pur Java ou C#** : elle peut redevenir totalement standard à tout moment en retirant les annotations ou en cessant de les vérifier.
 
 ## Introduction
 
@@ -1169,8 +1166,8 @@ Le framework Clprolf permet de n'utiliser l'héritage qu'avec parcimonie et pré
 
 # XIV) Clprolf et les architectures existantes
 
-Clprolf est compatible avec les architectures DDD, MVC, Clean architecture, architecture hexagonale, etc. C'est une couche entre la POO et les architectures, qui vient compléter et sécuriser les architectures connues.
-Et Clprolf ne sert pas que pour l'informatique d'entreprise, mais pour tout type d'applications, y compris simulations, et applications scientifiques.
+Clprolf est compatible avec les architectures DDD, MVC, Clean architecture, architecture hexagonale, etc. C'est une couche intermédiaire entre la POO et les architectures, qui vient compléter et sécuriser les architectures connues.
+Et Clprolf ne sert pas uniquement pour l'informatique d'entreprise, mais pour tout type d'applications, y compris simulations, et applications scientifiques.
 
 # XV) Résumé
 
@@ -1203,3 +1200,4 @@ Clprolf ajoute très peu de concepts.
 2. Hériter seulement dans le même domaine.
 ```
 ---
+

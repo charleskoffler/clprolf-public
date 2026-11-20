@@ -15,17 +15,23 @@ With the ArchUnit checker(for Java or C#), Clprolf rules can be verified automat
 
 ## Target Uses and Prerequisites
 
-It is a specialized framework designed for the following scenarios:
+**Clprolf** (*"Clear PROgramming Language and Framework"*) is a lightweight, standalone **architectural Embedded Domain-Specific Language (EDSL)** designed for Java and C# .NET. It acts as a middle layer between standard Object-Oriented Programming (OOP) and existing macro-architectures.
 
-* A pedagogical framework designed to teach Object-Oriented Programming (OOP), interfaces, and even immutability.
-* scientific applications
-* simulations
-* Enterprise applications looking to adopt Clprolf alongside standard architectures
-* highly complex applications with a large number of classes or interfaces
-* major refactoring required on a large existing application
-* or simply for those who enjoy this style of programming guided by an architectural checker for classes and interfaces.
+It extends the host language directly through a declarative vocabulary of annotations (or C# attributes) that is statically checked at compile time or during testing. The source code (annotations and static checker), documentation, and examples are freely available on GitHub under the MIT license.
 
-It requires a basic knowledge of OOP and object-oriented design principles. The framework does not claim to be indispensable, and naturally, alternative solutions exist. The resulting code can easily revert to pure Java or C# simply by removing or ignoring the annotations.
+This architectural DSL is particularly suited for the following contexts:
+- **Educational tool**: learning OOP, the role of interfaces, or immutability through explicit rules.
+- **Scientific applications and simulations**: structuring rich models by clearly separating entities from their capabilities.
+- **Enterprise applications**: complementing existing architectures with fine-grained structural enforcement.
+- **Complex systems**: keeping large codebases with numerous classes and interfaces manageable.
+- **Large-scale refactoring**: progressively reorganizing a massive legacy codebase under static verification.
+- **Contract-driven design**: adopting a declarative programming style checked directly on types.
+
+**Prerequisites:** A basic understanding of OOP is enough to get started; familiarity with object-oriented design principles is a plus.
+
+This EDSL assists object-oriented design by providing a concrete, verifiable interpretation of SOLID principles, while facilitating the implementation of Hexagonal Architecture or DDD through its own structural approach. The resulting application remains **pure Java or C#**: it can revert to completely standard code at any time simply by removing the annotations or disabling the checker.
+
+---
 
 ## Information
 
