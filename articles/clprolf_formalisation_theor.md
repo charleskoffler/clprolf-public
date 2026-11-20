@@ -3,9 +3,9 @@
 Axiomatic Formalization of an Object-Oriented Software Topology and Static Domain Verification: The Clprolf Model
 
 **Version :** v1.0 (Novembre 2026)  
-**Domaine principal :** Computer Science — Software Engineering *(Informatique — Génie logiciel)*  
-**Domaines secondaires :** Programming Languages ; Logic in Computer Science *(Langages de programmation ; Logique en informatique et méthodes formelles)*  
-**Mots-clés :** Software Architecture, Formal Methods, First-Order Logic, Object-Oriented Programming, Static Analysis, ArchUnit, Domain-Driven Design, Embedded DSL, Polymorphism, Clprolf  
+**Domaine principal :** Software Design  
+**Domaines secondaires :** Theory of computation — Logic and verification *(Logique et vérification formelle)* ; Software notations and tools — Domain-specific languages *(Langages dédiés / EDSL)*  
+**Mots-clés :** Software Topology, Architectural Verification, Domain Invariance, First-Order Logic, Axiomatic Formalization, Static Analysis, Embedded DSL (EDSL), Domain-Driven Design (DDD), ArchUnit, Clprolf
 
 ---
 
