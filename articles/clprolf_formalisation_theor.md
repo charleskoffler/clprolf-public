@@ -2,7 +2,7 @@
 
 Axiomatic Formalization of an Object-Oriented Software Topology and Static Domain Verification: The Clprolf Model
 
-**Version :** v1.0 (Novembre 2026)  
+**Version :** v1.1 (Novembre 2026)  
 **Domaine principal :** Software Design  
 **Domaines secondaires :** Theory of computation — Logic and verification *(Logique et vérification formelle)* ; Software notations and tools — Domain-specific languages *(Langages dédiés / EDSL)*  
 **Mots-clés :** Software Topology, Architectural Verification, Domain Invariance, First-Order Logic, Axiomatic Formalization, Static Analysis, Embedded DSL (EDSL), Domain-Driven Design (DDD), ArchUnit, Clprolf
@@ -138,9 +138,9 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * $\text{SupportExecution}(se)$ : $se \in \mathcal{SE}$ représente le support d'exécution du travail humain.
 * $\text{SubsystemPOO}(s)$ : $s \in \mathcal{S}_{\text{poo}}$ est un module / package POO.
 * $\text{SupportTech}(t)$ : $t$ est un support technique d'infrastructure.
-* $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
-* $\text{ComposantTechniqueAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combinée à un atome. Il peut ou pas se trouver dans une partie $p$.
-* $\text{AgentSystemeAutonome}(c)$ : $c$ est un AgentSysteme autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combinée dans un atome.
+* $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combiné dans un atome.
+* $\text{ComposantTechAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combiné à un atome. Il peut ou pas se trouver dans une partie $p$.
+* $\text{AgentSystemeAutonome}(c)$ : $c$ est un AgentSysteme autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combiné dans un atome.
 ---
 
 #### b. Prédicats de relations
@@ -150,7 +150,7 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * $\text{Associe}(t, p)$ : Le support $t$ soutient la partie $p$.
 * $\text{Simule}(p, m)$ : La partie $p$ simule le sous-domaine métier $m \subseteq \mathcal{M}_h$ (avec $m \in \mathcal{P}(\mathcal{M}_h)$).
 * $\text{Contient}(p, d)$ : La partie $p$ contient l'atome $d$.
-* $\text{ContientDirect}(p, c)$ : La partie $p$ contient le composant $c$ directement, sans passer pas un atome $d$.
+* $\text{ContientDirect}(p, c)$ : La partie $p$ contient le composant $c$ directement, sans passer par un atome $d$.
 * $\text{Combine}(d, c, t)$ : L'atome $d$ lie de manière univoque le composant métier $c$ et le composant technique $t$.
 * $\text{Poursuit}(h, G)$ : Le travail $h$ vise l'accomplissement du but $G$.
 * $\text{APourDomaine}(h, \mathcal{M}_h)$ : Le travail $h$ s'inscrit dans l'unique domaine métier $\mathcal{M}_h$.
@@ -158,7 +158,7 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * $\text{DelegueA}(t, s)$ : Le composant $t$ délègue son travail bas niveau à l'agent système $s$.
 * $\text{HeriteDirectComposant}(c_1, c_2)$ : $c_1$ hérite directement de $c_2$.
 * $\text{HeriteStarComposant}(c_1, c_2)$ : Fermeture réflexive-transitive de l'héritage entre composants ($\ge 0$ niveau). On peut donc conserver le MemeDomaine(c_1, c_2), qui est vrai à chaque niveau.
-* $\text{MemeDomaine}(c_1, c_2)$ : $c_1$ et $c_2$ appartiennent au même domaine conceptuel. Prédicat non décidable au sens de Türing, et pouvant être remplacé par le test que les composants sont avec la même polarité.
+* $\text{MemeDomaine}(c_1, c_2)$ : $c_1$ et $c_2$ appartiennent au même domaine conceptuel. Prédicat non décidable au sens de Turing, et pouvant être remplacé par le test que les composants sont avec la même polarité.
 * $\text{Annote}(elem, \alpha)$ : L'élément POO ($elem \in \mathcal{C}_{\text{poo}} \cup \mathcal{I}_{\text{poo}}$) porte l'annotation $\alpha$.
 * $\text{Realise}(elem_{\text{poo}}, comp_{\text{formel}})$ : Le code POO concrétise le composant ou l'interface formelle.
 * $\text{InjectDepend}(cl_1, cl_2)$ : La classe $cl_1$ injecte une dépendance $cl_2$.
@@ -176,7 +176,7 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 
 * $\text{ImplementeDirect}(c, f)$ : Le composant/classe $c$ implémente l'interface $f$.
 * $\text{TargetMetier}(i)$ / $\text{TargetTech}(i)$ / $\text{TargetAgentSyst}(i)$ : $i \in \mathcal{I}$. Indique si l'interface $i$ cible/est compatible avec le rôle Métier, Technique ou Système.
-* $\text{MemePolarite}(f, c)$ : $f \in \mathcal{I}$, $c \in \mathcal{C}$. Équivalence exacte de polarité/rôle entre la famille $f$ et le composant $c$, et nécessité d'être une famille
+* $\text{MemePolarite}(f, c)$ : $f \in \mathcal{I}$, $c \in \mathcal{C}$. Équivalence exacte de polarité/rôle entre la famille $f$ et le composant $c$, et nécessité d'être une famille.
 * $\text{EquivSem}(c, f)$ : $c \in \mathcal{C}, f \in \mathcal{I}$. Prédicat booléen primitif (indécidable au sens de Turing) exprimant l'équivalence sémantique entre le composant concret et la famille, tranché par convention ou outillage d'architecture.
 * $\text{MiroirDe}(f, c)$ : $f$ est l'interface miroir exacte du composant $c$.
 * $\text{HeriteDirect}(i_1, i_2)$ : L'interface $i_1$ étend directement $i_2$.
@@ -215,7 +215,7 @@ $$\begin{aligned} \forall d_1, d_2, c, t_1, t_2 \; &\Big( \big( \text{Atome}(d_1
 
 ### Axiome 3c — Principe de délégation récursive
 
-Un composant technique peut déléguer à un atome système, les tâches de complexité lourde. L'atome système est lui-même défini comme un atome de domaine
+Un composant technique peut déléguer à un atome système les tâches de complexité lourde. L'atome système est lui-même défini comme un atome de domaine.
 
 $$\forall t, s \; \Big( \text{ComposantTech}(t) \land \text{DelegueA}(t, s) \implies \exists a, w \; \big( \text{Atome}(s) \land \text{AgentSysteme}(a) \land \text{ComposantTech}(w) \land \text{Combine}(s, a, w) \big) \Big)$$
 
@@ -225,7 +225,7 @@ $$\begin{aligned} \forall c \; &\Big( \text{Composant}(c) \implies \big(  \text{
 
 ### Axiome 5 - Invariance du domaine par héritage
 
-La relation d'héritage entre deux composants implique l'appartenance au même domaine conceptuel
+La relation d'héritage entre deux composants implique l'appartenance au même domaine conceptuel.
 
 $$\forall c, p \; \Big( \big( \text{Composant}(c) \land \text{Composant}(p) \land \text{HeriteDirectComposant}(c, p) \big) \implies \text{MemeDomaine}(c, p) \Big)$$
 
@@ -329,11 +329,11 @@ $$\begin{aligned} \forall c \in \mathcal{C} \; &\Big( \Big( \exists! f \in \math
 
 $$\forall c \in \mathcal{C}, \forall f \in \mathcal{I} \quad \Big( \text{Famille}(f) \land \text{ImplementeDirect}(c, f) \implies \text{MiroirDe}(f, c) \Big)$$
 
-### Axiome 4 - Héritage d'un trait par une famille
+### Axiome 4 - Héritage d'un trait par une interface
 
-$$\begin{aligned} \forall f, t \in \mathcal{I} \; &\Big( \text{Famille}(f) \land \text{Trait}(t) \land  \text{HeriteDirect}(f, t) \implies \big( (\text{TargetMetier}(f) \implies \text{TargetMetier}(t)) \land \\ &(\text{TargetTech}(f) \implies \text{TargetTech}(t)) \land (\text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t)) \big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall i, t \in \mathcal{I} \; &\Big( \text{Trait}(t) \land \text{HeriteDirect}(i, t) \implies \big( (\text{TargetMetier}(i) \implies \text{TargetMetier}(t)) \land \\ &(\text{TargetTech}(i) \implies \text{TargetTech}(t)) \land (\text{TargetAgentSyst}(i) \implies \text{TargetAgentSyst}(t)) \big) \Big) \end{aligned}$$
 
-### Axiome 5 — héritage des traits
+### Axiome 5 — Héritage des traits
 
 $$\forall t, i \in \mathcal{I} \; \Big( \text{Trait}(t) \land \text{HeriteDirect}(t, i) \implies \text{Trait}(i) \Big)$$
 
@@ -381,7 +381,7 @@ $$\begin{array}{rll} 1. & \text{Famille}(f) \land \text{Trait}(t) \land \text{He
 
 #### Lemme 2 — Plongement des graphes de même domaine conceptuel, des composants vers les familles
 
-Pour tous composants en relation d'héritage transitive, il existe de façon unique leurs interfaces de famille miroirs, et ces dernières conservent exactement la même relation d'héritage transitive. Le graphe des composants de même domaine conceptuel, se trouve dans le graphe des familles miroirs de même domaine.
+Pour tous composants en relation d'héritage transitive, il existe de façon unique leurs interfaces de famille miroirs, et ces dernières conservent exactement la même relation d'héritage transitive. Le graphe des composants de même domaine conceptuel se trouve dans le graphe des familles miroirs de même domaine.
 
 $$\begin{aligned} \forall c_1, c_2 \in \mathcal{C} \; &\Big( \text{HeriteStarComposant}(c_1, c_2) \implies \exists! f_1, \exists! f_2 \in \mathcal{I} \; \big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \\ &\text{MiroirDe}(f_1, c_1) \land \text{MiroirDe}(f_2, c_2) \land \text{HeriteStar}(f_1, f_2) \big) \Big) \end{aligned}$$
 
@@ -456,7 +456,7 @@ $$\begin{aligned} \forall o \in \mathcal{O}, \, f \in \mathcal{F}, \quad & \Big(
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse ]} \\  2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Axiome d'instanciation concrète dans } \mathcal{C} \text{]} \\  3. & \exists! f' \in \mathcal{F} \quad \text{MiroirDe}(f', c) & \text{[Axiomes 2 et 3 — Ancrage miroir strict 1:1]} \\  4. & \text{EquivSem}(c, f') & \text{[Axiome 4 — Ancrage sémantique miroir sur } f' \text{]} \\  5. & \text{HeriteStar}(f', f) & \text{[Lemme 3 — Compatibilité de typage dans } \mathcal{F} \text{]} \\  6. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 ]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \, \exists! f' \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land & \\  & \quad \text{EquivSem}(c, f') \land \text{HeriteStar}(f', f) \land \text{MemeDomaineFamille}(f', f) \Big) & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{Famille}(f) & \text{[Hypothèse ]} \\  2. & \exists! c \in \mathcal{C} \quad \text{InstanceDe}(o, c) & \text{[Axiome d'instanciation concrète dans } \mathcal{C} \text{]} \\  3. & \exists! f' \in \mathcal{F} \quad \text{MiroirDe}(f', c) & \text{[Axiomes 2 et 3 — Ancrage miroir strict 1:1]} \\  4. & \text{EquivSem}(c, f') & \text{[Définition de MiroirDe sur } f' \text{]} \\  5. & \text{HeriteStar}(f', f) & \text{[Lemme 3 — Compatibilité de typage dans } \mathcal{F} \text{]} \\  6. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 ]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \, \exists! f' \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land \text{MiroirDe}(f', c) \land & \\  & \quad \text{EquivSem}(c, f') \land \text{HeriteStar}(f', f) \land \text{MemeDomaineFamille}(f', f) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
@@ -465,11 +465,11 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, f) \land \text{
 
 Pour tout objet $o$ qualifié statiquement par un trait $t$, il existe une unique classe concrète $c$ dont $o$ est l'instance directe, une unique famille miroir $f'$ ancrée à $c$, et une famille pivot $f$ dérivant de $t$, telles que $f'$ garantit l'équivalence sémantique avec $c$, dérive de $f$ et appartient au même domaine conceptuel que $f$.
 
-$$\begin{aligned} \forall o \in \mathcal{O}, \, t \in \mathcal{F}, \quad & \Big( \text{TypeStatique}(o, t) \land \text{Trait}(t) \Big) \implies \\  & \exists! c \in \mathcal{C}, \, \exists! f' \in \mathcal{F}, \, \exists f \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\  & \quad \text{EquivSem}(c, f') \land \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \\  & \quad \text{MemeDomaineFamille}(f', f) \land \text{HeriteStar}(f, t) \Big) \end{aligned}$$
+$$\begin{aligned} \forall o \in \mathcal{O}, \, t \in \mathcal{I}, \quad & \Big( \text{TypeStatique}(o, t) \land \text{Trait}(t) \Big) \implies \\  & \exists! c \in \mathcal{C}, \, \exists! f' \in \mathcal{F}, \, \exists f \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \\  & \quad \text{EquivSem}(c, f') \land \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \\  & \quad \text{MemeDomaineFamille}(f', f) \land \text{HeriteStar}(f, t) \Big) \end{aligned}$$
 
 *Démonstration déductive :*
 
-$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse : qualification par une interface de trait]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{F}, \exists f \in \mathcal{F} \quad \text{InstanceDe}(o, c) \land & \\  & \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land & \\  & \quad \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  3. & \text{EquivSem}(c, f') & \text{[Axiome 4 — Ancrage sémantique miroir sur } f' \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{F}, \exists f \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land & \\  & \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{EquivSem}(c, f') \land & \\  & \quad \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{MemeDomaineFamille}(f', f) \land & \\  & \quad \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array} \end{aligned}$$
+$$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{Trait}(t) & \text{[Hypothèse : qualification par une interface de trait]} \\  2. & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{F}, \exists f \in \mathcal{F} \quad \text{InstanceDe}(o, c) \land & \\  & \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{Famille}(f) \land & \\  & \quad \text{HeriteStar}(f', f) \land \text{HeriteStar}(f, t) & \text{[Application directe du Lemme 4]} \\  3. & \text{EquivSem}(c, f') & \text{[Définition de MiroirDe sur } f' \text{]} \\  4. & \text{MemeDomaineFamille}(f', f) & \text{[Lemme 6 sur } \text{HeriteStar}(f', f) \text{]} \\  \hline \therefore & \exists! c \in \mathcal{C}, \exists! f' \in \mathcal{F}, \exists f \in \mathcal{F} \; \Big( \text{InstanceDe}(o, c) \land & \\  & \quad \text{Famille}(f') \land \text{MiroirDe}(f', c) \land \text{EquivSem}(c, f') \land & \\  & \quad \text{Famille}(f) \land \text{HeriteStar}(f', f) \land \text{MemeDomaineFamille}(f', f) \land & \\  & \quad \text{HeriteStar}(f, t) \Big) & \blacksquare \end{array} \end{aligned}$$
 
 ---
 
@@ -532,7 +532,7 @@ Pour toute classe POO $cl$ homogène implémentant directement un ensemble d'int
 4. $f_{\text{pivot}}$ réunit et hérite dans le Monde Abstrait $\mathcal{I}$ de l'ensemble des abstractions requalifiées $\psi(int_j)$.
 5. Pour toute interface requalifiée en famille ($\psi(int_j) \in \mathcal{F}$), l'invariance du domaine métier est strictement conservée ($\text{MemeDomaineFamille}(f_{\text{pivot}}, \psi(int_j))$).
 
-$$\begin{aligned} \forall cl \in \mathcal{C}_{\text{poo}}, \, \forall \{int_1, \dots, int_k\} \subseteq \mathcal{I}_{\text{poo}}, \quad & \Big( \big(\bigwedge_{j=1}^k \text{ImplémentePOO}(cl, int_j)\big) \Big) \implies \\  & \exists! c \in \mathcal{C}, \, \exists! f_{\text{pivot}} \in \mathcal{F} \; \Big( \text{Realise}(cl, c) \;\land\; \text{MiroirDe}(f_{\text{pivot}}, c) \;\land\; \\ & \big(\bigwedge_{j=1}^k \text{HeriteStar}(f_{\text{pivot}}, \psi(int_j))\big) \Big) \end{aligned}$$
+$$\begin{aligned} \forall cl \in \mathcal{C}_{\text{poo}}, \, \forall \{int_1, \dots, int_k\} \subseteq \mathcal{I}_{\text{poo}}, \quad & \Big( \big(\bigwedge_{j=1}^k \text{ImplementePOO}(cl, int_j)\big) \Big) \implies \\  & \exists! c \in \mathcal{C}, \, \exists! f_{\text{pivot}} \in \mathcal{F} \; \Big( \text{Realise}(cl, c) \;\land\; \text{MiroirDe}(f_{\text{pivot}}, c) \;\land\; \\ & \big(\bigwedge_{j=1}^k \text{HeriteStar}(f_{\text{pivot}}, \psi(int_j))\big) \Big) \end{aligned}$$
 
 ---
 
