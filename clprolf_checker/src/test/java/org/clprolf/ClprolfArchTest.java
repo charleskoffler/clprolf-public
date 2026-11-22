@@ -242,6 +242,10 @@ public class ClprolfArchTest {
                         @Override
                         public void check(JavaClass interf, ConditionEvents events) {
 
+                            if (!interf.isInterface()) {
+                                return;
+                            }
+
                             boolean inheritorIsAgent = isAgent(interf);
                             boolean inheritorIsWorker = isWorker(interf);
                             boolean inheritorIsSystem = isSystem(interf);
@@ -256,12 +260,12 @@ public class ClprolfArchTest {
                                 boolean parentIsWorker = isWorker(parent);
                                 boolean parentIsSystem = isSystem(parent);
 
-                                // Compatibility check: roles must align between the inheritor and the parent trait
+                                // Every target role declared on the inheriting interface must be supported by the parent trait
                                 boolean compatible =
                                         interf.isAnnotatedWith(ClBypass.class)
-                                                || (inheritorIsAgent && parentIsAgent)
-                                                || (inheritorIsWorker && parentIsWorker)
-                                                || (inheritorIsSystem && parentIsSystem); // System components can inherit System traits
+                                                || ((!inheritorIsAgent || parentIsAgent)
+                                                && (!inheritorIsWorker || parentIsWorker)
+                                                && (!inheritorIsSystem || parentIsSystem));
 
                                 events.add(new SimpleConditionEvent(
                                         interf,

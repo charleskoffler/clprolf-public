@@ -38,21 +38,15 @@ internal sealed class InheritingInterfaceRoleMustMatchTraitInterfaceTargetRoleCo
                 continue;
             }
 
-            // 3. Global validation: ALL parent interfaces of type Trait must be compatible
-            bool allTraitsAreCompatible = parentTraitInterfaces.All(parent =>
+            // 3. Global validation: ALL parent interfaces of type Trait must support all target roles of the inheriting interface
+            bool IsCompatibleWith(Interface parent) =>
                 interf.HasBypass()
-                || (interf.IsAgent() && parent.IsAgent())
-                || (interf.IsWorker() && parent.IsWorker())
-                || (interf.IsSystem() && parent.IsSystem())
-            );
+                || ((!interf.IsAgent() || parent.IsAgent())
+                    && (!interf.IsWorker() || parent.IsWorker())
+                    && (!interf.IsSystem() || parent.IsSystem()));
 
-            // We target the first parent responsible for the error report
-            var faultyTrait = parentTraitInterfaces.FirstOrDefault(parent => !(
-                interf.HasBypass()
-                || (interf.IsAgent() && parent.IsAgent())
-                || (interf.IsWorker() && parent.IsWorker())
-                || (interf.IsSystem() && parent.IsSystem())
-            ));
+            var faultyTrait = parentTraitInterfaces.FirstOrDefault(parent => !IsCompatibleWith(parent));
+            bool allTraitsAreCompatible = faultyTrait is null;
 
             yield return new ConditionResult(
                 interf,
