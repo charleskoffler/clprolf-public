@@ -14,6 +14,7 @@ Ce DSL architectural s'adresse particulièrement aux contextes suivants :
 - **Refactoring d'envergure** : réorganiser progressivement une application existante volumineuse sous contrôle statique.
 - **Conception guidée par le contrat** : bénéficier d'un style de programmation déclaratif vérifié directement sur les types.
 
+
 **Prérequis :** Une connaissance des bases de la POO suffit pour démarrer ; une familiarité avec les principes de conception orientée objet est un plus.
 
 Cet EDSL assiste la conception objet en offrant une interprétation concrète et vérifiable des principes SOLID, et facilite la mise en œuvre de l'architecture hexagonale ou du DDD à travers sa propre approche structurelle. L'application obtenue reste du **pur Java ou C#** : elle peut redevenir totalement standard à tout moment en retirant les annotations ou en cessant de les vérifier.
@@ -246,12 +247,6 @@ Il fournit une vision de ces architectures, mais ce n'est pas la seule possible.
 
 ```
 
-## 3. Les 3 règles d'or de Clprolf
-
-1. **Les dépendances vont vers l'intérieur :** `@ClSystem` dépend de `@ClAgent`. `@ClAgent` ne dépend JAMAIS de `@ClWorker` directement, mais uniquement de son contrat `@ClWorker @ClFamily`.
-2. **Tout le Domaine est `@ClAgent` :** Que ce soit le Use Case (l'orchestrateur du scénario) ou l'Agrégat (le cœur de l'état et des règles métier), tous deux sont des **`@ClAgent`**.
-3. **Isolation totale du domaine :** Les Agents manipulent de la logique métier pure, complètement affranchie des frameworks d'infrastructure (JPA, HTTP, Messaging).
-
 ---
 
 # IV) Les Types de Classes
@@ -398,7 +393,14 @@ public class TemporaryManager {
 
 ---
 
-## IV.5) Domaine principal et code technique
+## IV.5) L'atome architectural (`@ClAgent` / `@ClSystem` + `@ClWorker`)
+
+Dans Clprolf, une application d'automatisation orientée objet s'organise autour d'**atomes architecturaux**, dont l'assemblage forme les différentes parties (ou sous-systèmes) du logiciel. 
+
+* **Sur le plan conceptuel et formel :** L'atome désigne le binôme canonique associant un composant pilote — un décideur métier (`@ClAgent`) ou un composant système (`@ClSystem`) — à son exécutant technique attitré (`@ClWorker`).
+* **En pratique (souplesse du checker) :** Clprolf ne verrouille pas la composition interne de l'atome. Un `@ClAgent` ou un `@ClSystem` peut tout à fait utiliser plusieurs `@ClWorker` (par exemple un *Service* et ses différents *DAOs* ou adaptateurs) sans générer d'erreur, s'intégrant ainsi naturellement aux architectures logicielles existantes.
+
+## IV.6) Domaine principal et code technique
 
 Clprolf encourage à déplacer autant que possible le code technique des classes agent vers des classes worker.
 
@@ -460,22 +462,34 @@ Le framework agit surtout comme :
 > un guide structurel.
 ---
 
-# VII) Les Sous-systèmes (*Subsystems*) — Découpage et Organisation
 
-Dans **Clprolf**, la notion de **sous-système** est l'unité d'organisation logique qui donne son sens au modèle métier. Un sous-système regroupe un ensemble cohérent de `@ClAgent` (et leurs `@ClWorker` associés) pour simuler un domaine fonctionnel précis. En Java, il est implémenté par un package, ou un module. L'équivalent en .NET C# est un namespace ou une assembly.
+### VII) Les Sous-systèmes (Subsystems) — Découpage et Organisation
 
-### 1. La règle du sous-système par défaut
+Dans Clprolf, la notion de sous-système (correspondant formellement à une **partie** $p$ de l'application) est l'unité d'organisation logique qui structure le modèle applicatif. Un sous-système regroupe un ensemble cohérent de composants pilotes (`@ClAgent` et `@ClSystem`) et de `@ClWorker` — organisés de manière canonique en **atomes architecturaux**, et complétés le cas échéant par des composants pilotes isolés sans worker dédié — afin de simuler un sous-domaine fonctionnel précis.
 
-Par construction, **toute application Clprolf possède au moins un sous-système**.
+En Java, un sous-système est matérialisé par un `package` ou un module ; son équivalent en .NET C# est un `namespace` ou une `assembly`.
 
-Dans sa forme la plus simple, ce sous-système racine regroupe l'intégralité des `@ClAgent` de l'application au sein du package principal. Cette structure minimale suffit pour couvrir 100 % des besoins des applications de petite à moyenne taille.
+#### 1. La règle du sous-système par défaut
 
-### 2. Spécialisation et découpage fin
+Par construction (Axiome 1), toute application Clprolf possède au moins un sous-système.
 
-Lorsque la complexité de l'application augmente, il devient nécessaire de regrouper les agents de manière plus fine. Vous pouvez alors définir des **sous-systèmes supplémentaires** afin d'isoler des responsabilités distinctes :
+Dans sa forme la plus simple, ce sous-système racine regroupe l'intégralité des composants applicatifs au sein du package (ou namespace) principal. Cette structure minimale suffit souvent pour couvrir les besoins des applications de petite à moyenne taille.
 
-* **Par intention fonctionnelle :** Découpage de l'application selon les grands cas d'usage métiers (ex. sous-système `Facturation`, sous-système `GestionStock`, sous-système `Authentification`).
-* **Par frontière d'isolation :** Regroupement des agents partageant les mêmes contraintes de sécurité, de déploiement ou de données.
+#### 2. Spécialisation et découpage fin
+
+Lorsque la complexité de l'application augmente, il devient pertinent de répartir les responsabilités entre plusieurs sous-systèmes selon les grands domaines ou cas d'usage issus du travail humain modélisé (ex. sous-systèmes *Facturation*, *GestionStock*, *RégulationThermique*). Chaque sous-système est porté principalement par des atomes métiers (`@ClAgent` + `@ClWorker`), complétés par les atomes systèmes (`@ClSystem` + `@ClWorker`) et composants pilotes isolés nécessaires à son fonctionnement.
+
+> *Note : Dans le cas d'une bibliothèque réutilisable (collections, composants génériques ou agents systèmes), un sous-système peut exister sans domaine métier propre, en attente d'être exploité par les sous-systèmes d'une future application.*
+>
+> *Note : Un atome peut également être réutilisé dans une autre application ; dans ce cas, son package (ou namespace) reste simplement son sous-système d'origine, sans rattacher l'ensemble des utilisations extérieures à cette partie.*
+
+#### 3. Compatibilité avec les architectures modulaires existantes (DDD, Bounded Contexts, Microservices)
+
+Les sous-systèmes de Clprolf ne remplacent pas les paradigmes de découpage macroscopique reconnus : ils s'y superposent naturellement.
+
+* **Bounded Contexts (Domain-Driven Design) :** Un sous-système Clprolf peut épouser directement le périmètre d'un *Bounded Context*. Là où le DDD définit la frontière sémantique du modèle métier et l'ubiquitous language, Clprolf structure et vérifie statiquement l'intérieur de ce contexte en atomes cohérents (`@ClAgent` / `@ClSystem` + `@ClWorker`).
+* **Monolithes modulaires et Microservices :** Chaque module d'un monolithe modulaire — ou le cœur applicatif interne d'un microservice — peut être organisé comme un ou plusieurs sous-systèmes Clprolf, sans imposer de contrainte sur les protocoles de communication externe (REST, gRPC, événements).
+
 
 # VIII) Interfaces
 
@@ -507,14 +521,15 @@ Interface représentant une famille abstraite, et apportant un contrat miroir po
 
 Utilisée pour :
 
-* le polymorphisme,
-* le découplage,
-* les variantes d’implémentation.
+- le polymorphisme,
+- le découplage,
+- les variantes d’implémentation.
 
 Les interfaces de famille possèdent également un rôle cible :
 
-* `@ClAgent`
-* ou `@ClWorker`
+- `@ClAgent`,
+- `@ClWorker`,
+- ou `@ClSystem`.
 ---
 
 ## Exemple
@@ -1089,7 +1104,7 @@ Pour simplifier la documentation, l'annotation `ClSystem` ne figure pas dans la 
 ## 2. Version C# .NET (ArchUnitNET)
 
 La solution Visual Studio (2022 à ce jour), contient un projet contenant le framework et les règles ArchUnit, et un projet xUnit pour les tests.
-Un troisième projet d'exemple est ajouté. Il y 8 tests obligatoires, et 4 tests stricts, actuellement.
+Un troisième projet d'exemple est ajouté. Il y a 8 tests obligatoires, et 4 tests stricts, actuellement.
 
 ## Les règles à respecter
 
@@ -1169,7 +1184,15 @@ Le framework Clprolf permet de n'utiliser l'héritage qu'avec parcimonie et pré
 Clprolf est compatible avec les architectures DDD, MVC, Clean architecture, architecture hexagonale, etc. C'est une couche intermédiaire entre la POO et les architectures, qui vient compléter et sécuriser les architectures connues.
 Et Clprolf ne sert pas uniquement pour l'informatique d'entreprise, mais pour tout type d'applications, y compris simulations, et applications scientifiques.
 
-# XV) Résumé
+# XV) Clprolf et l'IA : garder la maîtrise conceptuelle et la pérennité du code
+
+À l'ère du développement assisté par IA, le risque n'est pas seulement la dérive métier : même au cœur d'un algorithme ou d'un module purement technique, une IA tend à produire du code plat et purement opérationnel, peinant à découper les responsabilités de manière conceptuelle.
+
+Clprolf redonne à l'architecte humain ce rôle irremplaçable de structuration, à tous les niveaux :
+* **Penser l'abstraction avant l'exécution :** C'est à l'humain de discerner quand un algorithme ou un flux technique gagne à introduire un `@ClAgent` conceptuel intermédiaire pour orchestrer la logique, un `@ClSystem` pour gouverner le substrat technique, et des `@ClWorker` pour la réalisation concrète.
+* **Construire une architecture qui dure dans le temps :** Une fois cette ossature posée par l'humain (via les rôles, les `@ClFamily` et le **Miroir**), l'IA peut remplir les implémentations sous le contrôle strict du vérificateur statique. Le code obtenu reste clair, maîtrisable et maintenable sur le long terme au lieu de devenir une boîte noire opaque.
+
+# XVI) Résumé
 
 Clprolf ajoute très peu de concepts.
 ---
@@ -1200,4 +1223,3 @@ Clprolf ajoute très peu de concepts.
 2. Hériter seulement dans le même domaine.
 ```
 ---
-

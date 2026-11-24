@@ -250,12 +250,6 @@ It provides one vision of these architectures, but it is not the only one possib
 
 ```
 
-## 3. The 3 Golden Rules of Clprolf
-
-1. **Dependencies point inward:** `@ClSystem` depends on `@ClAgent`. `@ClAgent` NEVER depends directly on `@ClWorker`, but solely on its contract `@ClWorker @ClFamily`.
-2. **The entire Domain is `@ClAgent`:** Whether it is the Use Case (the scenario orchestrator) or the Aggregate (the core state and business rules), both are **`@ClAgent`**.
-3. **Total domain isolation:** Agents handle pure business logic, completely decoupled from infrastructure frameworks (JPA, HTTP, Messaging).
-
 # IV) Class Types
 
 Clprolf contains only four class types. Classes without methods (entities, DTOs, etc.) are not annotated.
@@ -403,7 +397,14 @@ public class TemporaryManager {
 
 ---
 
-## IV.5) Primary Domain and Technical Code
+## IV.5) The Architectural Atom (`@ClAgent` / `@ClSystem` + `@ClWorker`)
+
+In Clprolf, object-oriented automation applications are organized around **architectural atoms**, which compose together to form the different parts (or subsystems) of the software.
+
+* **Conceptually and formally:** An atom is defined as the canonical pair associating a primary component—either a domain decision-maker (`@ClAgent`) or a system component (`@ClSystem`)—with its dedicated technical worker (`@ClWorker`).
+* **In practice (non-restrictive checker):** Clprolf does not enforce structural cardinality rules on the internal composition of an atom. A `@ClAgent` or `@ClSystem` may freely collaborate with multiple `@ClWorker` instances (e.g., a *Service* paired with multiple *DAOs* or adapters), ensuring seamless compatibility with existing macro-architectures.
+
+## IV.6) Primary Domain and Technical Code
 
 Clprolf encourages moving as much technical code as possible from `agent` classes into `worker` classes.
 
@@ -417,7 +418,7 @@ Secondary responsibilities may exist as long as they remain consistent with that
 
 # V) Inheritance
 
-> Class inheritance can be forced using `@ClBypass` above the class, but this should be rare.
+> A class must only inherit from a class belonging to the same conceptual domain.
 
 ---
 
@@ -472,24 +473,33 @@ The framework mainly acts as:
 
 ---
 
-## VII) Subsystems — Decomposition and Organization
+### VII) Subsystems — Partitioning and Organization
 
-In **Clprolf**, the concept of a **subsystem** is the logical organizational unit that gives meaning to the business model. A subsystem groups a coherent set of `@ClAgent` components (and their associated `@ClWorker` components) to simulate a specific functional domain. In Java, it is implemented by a package or a module. The equivalent in .NET (C#) is a namespace or an assembly.
+In Clprolf, the concept of a subsystem (formally corresponding to a **part** $p$ of the application) is the logical organizational unit that structures the application model. A subsystem groups a coherent set of pilot components (`@ClAgent` and `@ClSystem`) and `@ClWorker` components—canonically organized into **architectural atoms**, and complemented where appropriate by standalone pilot components without a dedicated worker—to simulate a specific functional subdomain.
 
-### 1. The Default Subsystem Rule
+In Java, a subsystem is materialized by a `package` or a module; its equivalent in .NET C# is a `namespace` or an `assembly`.
 
-By design, **every Clprolf application contains at least one subsystem**.
+#### 1. The Default Subsystem Rule
 
-In its simplest form, this root subsystem holds all of the application's `@ClAgent` components within the primary package. This minimal structure easily covers 100% of the needs for small to medium-sized applications.
+By construction (Axiom 1), every Clprolf application possesses at least one subsystem.
 
-### 2. Specialization and Fine-Grained Decomposition
+In its simplest form, this root subsystem groups all application components within the main package (or namespace). This minimal structure is often sufficient to cover the needs of small- to medium-sized applications.
 
-As application complexity grows, grouping agents more granularly becomes essential. You can then define **additional subsystems** to isolate distinct responsibilities:
+#### 2. Specialization and Fine-Grained Partitioning
 
-* **By functional intent:** Breaking down the application according to major business use cases (e.g., `Billing` subsystem, `InventoryManagement` subsystem, `Authentication` subsystem).
-* **By isolation boundary:** Grouping agents that share common security, deployment, or data constraints.
+As application complexity grows, it becomes appropriate to distribute responsibilities across multiple subsystems according to the major domains or use cases derived from the modeled human work (e.g., *Billing*, *InventoryManagement*, *ThermalRegulation* subsystems). Each subsystem is primarily driven by business atoms (`@ClAgent` + `@ClWorker`), supported by the system atoms (`@ClSystem` + `@ClWorker`) and standalone pilot components required for its operation.
 
-Here is the English translation of your updated chapter:
+> *Note: In the case of a reusable library (such as collections, generic components, or system agents), a subsystem may exist without its own business domain, awaiting integration by the subsystems of a future application.*
+
+> *Note: An atom may also be reused in another application; in that case, its package (or namespace) simply indicates its original subsystem, without binding all external usages to that part.*
+
+
+#### 3. Compatibility with Existing Modular Architectures (DDD, Bounded Contexts, Microservices)
+
+Clprolf subsystems do not replace established macroscopic partitioning paradigms; rather, they overlay them naturally.
+
+* **Bounded Contexts (Domain-Driven Design):** A Clprolf subsystem can directly align with the boundary of a *Bounded Context*. Where DDD defines the semantic boundary of the domain model and its ubiquitous language, Clprolf structures and statically verifies the interior of that context into coherent atoms (`@ClAgent` / `@ClSystem` + `@ClWorker`).
+* **Modular Monoliths and Microservices:** Each module of a modular monolith—or the internal application core of a microservice—can be organized as one or more Clprolf subsystems, without imposing constraints on external communication protocols (REST, gRPC, events).
 
 # VIII) Interfaces
 
@@ -519,14 +529,15 @@ An interface representing an abstract family, providing a mirror contract for fu
 
 Used for:
 
-* polymorphism,
-* decoupling,
-* implementation variants.
+- polymorphism,
+- decoupling,
+- implementation variants.
 
 Family interfaces also possess a target role:
 
-* `@ClAgent`
-* or `@ClWorker`
+- `@ClAgent`
+- `@ClWorker`
+- or `@ClSystem`
 
 ---
 
@@ -562,15 +573,18 @@ Which yields:
 @ClAgent
 public class AnimalImpl implements Animal { (...) }
 
+
 ```
 
 ```java
 @ClAgent
 public class HorseImpl extends AnimalImpl implements Horse { (...) }
 
+
 ```
 
 ---
+
 
 ## VIII.2) `ClTrait`
 
@@ -1199,7 +1213,15 @@ Rather than replacing these architectures, Clprolf acts as an additional layer b
 In this way, Clprolf helps improve architectural consistency while remaining fully compatible with established design practices.
 Furthermore, Clprolf is not just meant for enterprise software, but for all types of applications, including simulations and scientific applications.
 
-# XV) Summary
+# XV) Clprolf and AI: Preserving Conceptual Mastery and Code Longevity
+
+In the era of AI-assisted development, the risk goes beyond business logic drift: even at the heart of an algorithm or a purely technical module, an AI tends to generate flat, purely operational code, struggling to partition responsibilities conceptually.
+
+Clprolf restores this irreplaceable structuring role to the human architect at every level:
+- **Thinking in abstractions before execution:** It is up to the human architect to discern when an algorithm or technical flow benefits from introducing an intermediate conceptual `@ClAgent` to orchestrate logic, a `@ClSystem` to govern the technical substrate, and `@ClWorker` components for concrete execution.
+- **Building an architecture that endures over time:** Once this skeleton is laid down by the human (via roles, `@ClFamily` interfaces, and the **Mirror** contract), AI can fill in the implementations under the strict supervision of the static checker. The resulting code remains clear, controllable, and maintainable over the long term instead of becoming an opaque black box.
+
+# XVI) Summary
 
 Clprolf introduces very few concepts.
 
