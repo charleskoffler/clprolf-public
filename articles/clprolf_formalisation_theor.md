@@ -2,7 +2,7 @@
 
 Axiomatic Formalization of an Object-Oriented Software Topology and Static Domain Verification: The Clprolf Model
 
-**Version :** v1.1 (Novembre 2026)  
+**Version :** v1.2 (Novembre 2026)  
 **Domaine principal :** Software Design  
 **Domaines secondaires :** Theory of computation — Logic and verification *(Logique et vérification formelle)* ; Software notations and tools — Domain-specific languages *(Langages dédiés / EDSL)*  
 **Mots-clés :** Software Topology, Architectural Verification, Domain Invariance, First-Order Logic, Axiomatic Formalization, Static Analysis, Embedded DSL (EDSL), Domain-Driven Design (DDD), ArchUnit, Clprolf
@@ -23,7 +23,7 @@ This paper presents an axiomatic formalization in first-order logic of the **Clp
 ## I. Introduction
 
 Clprolf (*Clear PROgramming Language and Framework*) est un DSL embarqué (EDSL) léger pour la pédagogie et les applications complexes. Il se présente sous la forme d'annotations (ou d'attributs) et d'un checker statique de conformité sémantique. Le langage hôte est Java ou C# .NET.
-Le modèle formel Clprolf modélise la topologie logicielle statique d'une application d'automatisation orientée objet ou des bibliothèques qui lui servent de support.
+Le modèle formel Clprolf modélise la topologie logicielle statique d'une application d'automatisation orientée objet.
 
 **Domaines d'application et positionnement :** Clprolf agit comme une couche intermédiaire entre la programmation orientée objet classique et les architectures logicielles (Architecture Hexagonale, Domain-Driven Design, Clean Architecture). Il est particulièrement adapté aux systèmes complexes, aux applications scientifiques, aux simulations, aux grands chantiers de refactoring ainsi qu'à la pédagogie de la POO et des principes SOLID. L'application reste du pur Java ou C# : les annotations sont non intrusives et vérifiées statiquement lors de la phase de test.
 
@@ -43,18 +43,176 @@ public class OrderServiceImpl implements OrderService {
 
 ## I.b Portée du Framework et Articulation avec le Modèle Formel
 
-Le modèle formel de Clprolf définit une topologie théorique complète (incluant les **Parties de l'application $\mathcal{P}_A$**, les **Atomes architecturaux $\mathcal{D}$**, ou la catégorisation fine des **Composants Autonomes**). La mise en œuvre pratique dans le framework repose sur la philosophie suivante :
-
-* **Contrôles focalisés sur le décidable et la valeur ajoutée :** Le checker statique (ArchUnit / ArchUnitNET) vérifie les contraintes fondamentales et décidables du modèle (séparation métier/technique, invariance du domaine par héritage, polarité des interfaces). Il ne cherche pas l'exhaustivité là où elle n'apporte aucun gain de qualité ou d'ingénierie.
-* **Absence de sur-contrainte et de bruit visuel :**
-  * Aucun contrôle n'est effectué par le checker sur d'éventuels composants métiers situés dans une partie mais hors d'un atome.
-  * Le modèle formel caractérise les composants métiers autonomes comme résidant hors de toute partie, mais n'interdit pas les formes hybrides.
-  * Aucun artefact ou annotation supplémentaire (`@ClAtom`, `@ClPart`) n'est imposé dans le code. Les atomes et sous-systèmes émergent naturellement de la structuration standard du projet (injection `@ClAgent` / `@ClWorker`, packages/namespaces).
-* **Adoption progressive et intégration transparente :** Le checker permet une adoption en deux étapes (séparation des classes `@ClAgent`/`@ClWorker`/`@ClSystem` d'abord, puis activation optionnelle du mode strict sur les interfaces `@ClFamily`/`@ClTrait`). Il supporte également les alias de vocabulaire (ex. `@ClDomain`/`@ClInfrastructure`) ainsi que la détection automatique d'annotations natives d'écosystèmes tiers (ex. `@RestController` ou `[ApiController]` reconnus nativement comme `@ClSystem`).
+> Le modèle formel de Clprolf définit une topologie théorique complète (incluant les **Parties de l'application $\mathcal{P}_A$**, les **Atomes architecturaux $\mathcal{D}$** et la catégorisation des **Composants Autonomes**). La mise en œuvre pratique dans le framework repose sur la philosophie suivante :
+> * **Contrôles focalisés sur le décidable et la valeur ajoutée :** Le checker statique (ArchUnit / ArchUnitNET) vérifie les contraintes fondamentales et décidables du modèle (séparation métier/technique, invariance du domaine par héritage, polarité des interfaces). Il ne cherche pas l'exhaustivité là où elle n'apporte aucun gain de qualité ou d'ingénierie.
+> * **Absence de sur-contrainte et de bruit visuel :** Aucun artefact ou annotation supplémentaire (`@ClAtom`, `@ClPart`) n'est imposé dans le code. Les atomes, les composants autonomes au sein des parties et les sous-systèmes émergent naturellement de la structuration standard du projet (injection `@ClAgent` / `@ClWorker` / `@ClSystem`, packages/namespaces).
+> * **Adoption progressive et intégration transparente :** Le checker permet une adoption en deux étapes (séparation des classes `@ClAgent`/`@ClWorker`/`@ClSystem` d'abord, puis activation optionnelle du mode strict sur les interfaces `@ClFamily`/`@ClTrait`). Il supporte également les alias de vocabulaire (ex. `@ClDomain`/`@ClInfrastructure`) ainsi que la détection automatique d'annotations natives d'écosystèmes tiers (ex. `@RestController` ou `[ApiController]` reconnus nativement comme `@ClSystem`).
 
 Cette frontière garantit une adoption fluide en entreprise et préserve la liberté du développeur, tout en verrouillant 100 % des règles d'architecture indispensables.
 
 ---
+
+## I.c Exemple illustratif : régulation thermique domotique
+
+Pour illustrer concrètement la topologie ternaire (`@ClAgent`, `@ClSystem`, `@ClWorker`), la direction des dépendances entre couches et le mécanisme d'ancrage Miroir avant d'en formaliser les axiomes, considérons un sous-système (package) d'automatisation domestique dédié au contrôle du chauffage.
+
+### 1. Le Monde Abstrait ($\mathcal{I}$) : Familles miroirs et « interfaces d'interfaces »
+
+Dans le Monde Abstrait, les contrats sont strictement partitionnés entre identités architecturales (`@ClFamily`) et capacités transverses (`@ClTrait`), qualifiés directement par les annotations de rôle cibles (`@ClAgent`, `@ClSystem`, `@ClWorker`). Un trait ne s'adresse jamais directement aux classes concrètes : il est greffé sur une famille miroir compatible.
+
+```java
+// Capacité transverse autorisée uniquement pour les rôles @ClAgent et @ClSystem
+@ClTrait @ClAgent @ClSystem
+public interface MonitorableTrait {
+    String getDiagnosticStatus();
+}
+
+// Famille miroir de l'agent métier de régulation (cible @ClAgent)
+@ClFamily @ClAgent
+public interface ThermostatFamily extends MonitorableTrait {
+    void evaluateTargetTemperature(double currentTemp);
+}
+
+// Famille miroir de l'actionneur technique de l'agent (cible @ClWorker)
+@ClFamily @ClWorker
+public interface HeaterActuatorFamily {
+    void sendPowerCommand(boolean activate);
+}
+
+// Famille miroir de l'agent système de bus matériel (cible @ClSystem)
+@ClFamily @ClSystem
+public interface HardwareBusSystemFamily extends MonitorableTrait {
+    void publishFrame(String topic, String payload);
+}
+
+// Famille miroir du worker bas niveau associé à l'atome système (cible @ClWorker)
+@ClFamily @ClWorker
+public interface SocketDriverFamily {
+    void writeRawBytes(byte[] frame);
+}
+
+```
+
+### 2. Le Monde Concret ($\mathcal{C}$) : Atome métier et Atome système
+
+Dans le Monde Concret, chaque atome associe un pilote (`@ClAgent` ou `@ClSystem`) à son `@ClWorker` technique associé. Conformément à la hiérarchie topologique de Clprolf, un `@ClSystem` n'appelle jamais un `@ClAgent` métier : ce sont les `@ClWorker` (et d'autres `@ClSystem`) qui sollicitent les `@ClSystem` comme substrat technique.
+
+```java
+// --- ATOME SYSTÈME : HardwareBusSystem (@ClSystem) + SocketDriverWorker (@ClWorker) ---
+
+// Worker bas niveau associé à l'atome système (purement opérationnel, sans état fonctionnel)
+@ClWorker
+public class SocketDriverWorker implements SocketDriverFamily {
+    @Override
+    public void writeRawBytes(byte[] frame) {
+        System.out.println("[SOCKET] Envoi brut de " + frame.length + " octets.");
+    }
+}
+
+// Agent système gouvernant l'accès au bus matériel (utilisé uniquement par des @ClWorker ou @ClSystem)
+@ClSystem
+public class HardwareBusSystem implements HardwareBusSystemFamily {
+    private final SocketDriverFamily socketDriver; // Délégation vers son worker associé
+    private boolean busReady = true;
+
+    public HardwareBusSystem(SocketDriverFamily socketDriver) {
+        this.socketDriver = socketDriver;
+    }
+
+    @Override
+    public void publishFrame(String topic, String payload) {
+        if (busReady) {
+            socketDriver.writeRawBytes((topic + ":" + payload).getBytes());
+        }
+    }
+
+    @Override
+    public String getDiagnosticStatus() {
+        return busReady ? "BUS_READY" : "BUS_DOWN";
+    }
+}
+
+// --- ATOME MÉTIER : ThermostatAgent (@ClAgent) + MqttHeaterWorker (@ClWorker) ---
+
+// Exécutant technique de l'atome métier : traduit l'ordre métier et s'appuie sur le @ClSystem
+@ClWorker
+public class MqttHeaterWorker implements HeaterActuatorFamily {
+    private final HardwareBusSystemFamily hardwareBus; // Un @ClWorker peut utiliser un @ClSystem
+
+    public MqttHeaterWorker(HardwareBusSystemFamily hardwareBus) {
+        this.hardwareBus = hardwareBus;
+    }
+
+    @Override
+    public void sendPowerCommand(boolean activate) {
+        hardwareBus.publishFrame("home/heater/cmd", activate ? "ON" : "OFF");
+    }
+}
+
+// Agent métier de régulation (porte la décision et l'état fonctionnel du domaine)
+@ClAgent
+public class ThermostatAgent implements ThermostatFamily {
+    private final HeaterActuatorFamily actuator; // Délégation vers son worker miroir
+    private final double targetTemp = 20.5;
+    private double lastMeasuredTemp = 20.5;
+
+    public ThermostatAgent(HeaterActuatorFamily actuator) {
+        this.actuator = actuator;
+    }
+
+    @Override
+    public void evaluateTargetTemperature(double currentTemp) {
+        this.lastMeasuredTemp = currentTemp;
+        actuator.sendPowerCommand(currentTemp < targetTemp);
+    }
+
+    @Override
+    public String getDiagnosticStatus() {
+        return "THERMOSTAT_ACTIVE (T=" + lastMeasuredTemp + "°C)";
+    }
+}
+
+```
+
+### 3. Ce que le checker statique bloque (garantie d'invariance)
+
+Sans aucune règle ad hoc sur les noms de packages, le vérificateur sémantique rejette immédiatement toute violation des invariants topologiques :
+
+* **Erreur 1 (`IllegalSystem`) :** Viole l'**Axiome 2 (section V)**, qui interdit à un composant d'implémenter directement un `@ClTrait` ($\neg \text{ImplementeDirect}(c, t)$) et exige l'ancrage sur une interface `@ClFamily` miroir.
+
+
+* **Erreur 2 (`IllegalWorker`) :** Viole la définition de `MemePolarite` et l'**Axiome 3 (section V)** (*Miroir de la famille lors de l'implémentation*), car le rôle technique (`@ClWorker`) de la classe ne correspond pas au rôle cible (`@ClAgent`) de la famille `ThermostatFamily`.
+
+
+* **Erreur 3 (`IllegalWorkerFamily`) :** Viole l'**Axiome 4 (section V)** (*Héritage d'un trait par une interface*), car la famille `IllegalWorkerFamily` de polarité technique (`TargetTech`) étend le trait `MonitorableTrait` qui n'est pas compatible avec le rôle technique ($\neg \text{TargetTech}(t)$).
+
+
+
+```java
+// ERREUR 1 (Axiome 2 - section V) : Implémentation directe d'un @ClTrait sans passer par une @ClFamily miroir
+@ClSystem
+public class IllegalSystem implements MonitorableTrait {
+    @Override
+    public String getDiagnosticStatus() { return "ILLEGAL"; }
+}
+
+// ERREUR 2 (MemePolarite & Axiome 3 - section V) : Rupture de polarité (un @ClWorker adopte une famille ciblant @ClAgent)
+@ClWorker
+public class IllegalWorker implements ThermostatFamily {
+    @Override
+    public void evaluateTargetTemperature(double currentTemp) { }
+
+    @Override
+    public String getDiagnosticStatus() { return "ILLEGAL"; }
+}
+
+// ERREUR 3 (Axiome 4 - section V) : Greffe d'un @ClTrait sur une @ClFamily dont le rôle cible est incompatible
+@ClFamily @ClWorker
+public interface IllegalWorkerFamily extends MonitorableTrait { // MonitorableTrait n'autorise que @ClAgent et @ClSystem
+    void executeRawTask();
+}
+
+```
 
 ## II. Synthèse du Modèle Formel : Clprolf
 
@@ -112,6 +270,7 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * **$\mathcal{SE}$** : L'ensemble des supports d'exécution physiques ou organisationnels.
 * **$\mathcal{P}(\mathcal{M}_h)$** : L'ensemble des parties de $\mathcal{M}_h$. C'est l'ensemble de tous les sous-domaines $m \subseteq \mathcal{M}_h$ possibles.  $m \in \mathcal{P}(\mathcal{M}_h)$.
 * **$\mathcal{P}_{A}$** : L'ensemble des parties / sous-systèmes logiques de l'application $A$. Chaque partie $p \in \mathcal{P}_{A}$ simule $m \in \mathcal{P}(\mathcal{M}_h)$.
+* **$\mathcal{P}$** : L'ensemble de toutes les parties / sous-systèmes logiques, toutes applications confondues.
 * **$\mathcal{D}$** : L'ensemble des atomes de domaine $d = (c, t)$.
 * **$\mathcal{C}$** : L'ensemble des composants abstraits ($\mathcal{C} = \mathcal{C}_{\text{metier}} \cup \mathcal{C}_{\text{tech}} \cup \mathcal{C}_{\text{syst}}$).
 * **$\mathcal{I}$** : L'ensemble des interfaces ($\mathcal{I} = F \cup T$).
@@ -138,9 +297,10 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * $\text{SupportExecution}(se)$ : $se \in \mathcal{SE}$ représente le support d'exécution du travail humain.
 * $\text{SubsystemPOO}(s)$ : $s \in \mathcal{S}_{\text{poo}}$ est un module / package POO.
 * $\text{SupportTech}(t)$ : $t$ est un support technique d'infrastructure.
-* $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combiné dans un atome.
-* $\text{ComposantTechAutonome}(c)$ : $c$ est un ComposantTechnique autonome, qui n'est pas combiné à un atome. Il peut ou pas se trouver dans une partie $p$.
-* $\text{AgentSystemeAutonome}(c)$ : $c$ est un AgentSysteme autonome, qui ne se trouve pas dans une partie p, et qui n'a pas de ComposantTech combiné dans un atome.
+* $\text{ComposantMetierAutonome}(c)$ : $c$ est un ComposantMetier autonome, qui se trouve dans une partie $p$, et qui n'a pas de ComposantTech combinée dans un atome.
+* $\text{ComposantTechAutonome}(c)$ : $c$ est un ComposantTech autonome, qui se trouve dans une partie $p$, et qui n'est pas combiné à un atome.
+* $\text{AgentSystemeAutonome}(c)$ : $c$ est un AgentSysteme autonome, qui se trouve dans une partie $p$, et qui n'a pas de ComposantTech combinée dans un atome.
+
 ---
 
 #### b. Prédicats de relations
@@ -150,8 +310,8 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * $\text{Associe}(t, p)$ : Le support $t$ soutient la partie $p$.
 * $\text{Simule}(p, m)$ : La partie $p$ simule le sous-domaine métier $m \subseteq \mathcal{M}_h$ (avec $m \in \mathcal{P}(\mathcal{M}_h)$).
 * $\text{Contient}(p, d)$ : La partie $p$ contient l'atome $d$.
-* $\text{ContientDirect}(p, c)$ : La partie $p$ contient le composant $c$ directement, sans passer par un atome $d$.
-* $\text{Combine}(d, c, t)$ : L'atome $d$ lie de manière univoque le composant métier $c$ et le composant technique $t$.
+* $\text{ContientDirect}(p, c)$ : La partie $p$ contient directement le composant $c$ (sans passer par un atome $d$).
+* $\text{Combine}(d, c, t)$ : L'atome $d$ lie de manière univoque le composant pilote (métier ou système) $c$ et le composant technique $t$.
 * $\text{Poursuit}(h, G)$ : Le travail $h$ vise l'accomplissement du but $G$.
 * $\text{APourDomaine}(h, \mathcal{M}_h)$ : Le travail $h$ s'inscrit dans l'unique domaine métier $\mathcal{M}_h$.
 * $\text{SAppuieSur}(h, se)$ : Le travail $h$ repose sur le support d'exécution $se$.
@@ -205,13 +365,17 @@ $$\begin{aligned} \forall h, G, \mathcal{M}, se_h \; \Big( \big( &\text{ButHumai
 
 $$\begin{aligned} \forall A, p, h, \mathcal{M} \; \Big( \big( &\text{AppAutom}(A) \land \text{Automatise}(A, h) \land \text{APourDomaine}(h, \mathcal{M}) \land \text{Partie}(p, A) \big) \implies \\ &\exists! m, \exists! t \; \big( m \subseteq \mathcal{M} \land \text{SupportTech}(t) \land \text{Simule}(p, m) \land \text{Associe}(t, p) \big) \Big) \end{aligned}$$
 
+> **Cas des bibliothèques réutilisables :** Une bibliothèque logicielle (fournissant par exemple des structures génériques comme des collections, des agents systèmes ou composants techniques) peut définir des parties dont le sous-domaine métier propre est vide ($m = \emptyset \subseteq \mathcal{M}$), en attente d'être utilisées par les parties métiers d'une future application.
+
 ### Axiome 3 - Décomposition atomique des parties et auto-similarité structurelle
 
-$$\begin{aligned} \forall A, p, d \; \Big( &\text{AppAutom}(A) \land \text{Partie}(p, A) \land \text{Atome}(d) \land \text{Contient}(p, d) \implies \\  &\exists! c, \exists! t \; (\text{ComposantMetier}(c) \land \text{ComposantTech}(t) \land \text{Combine}(d, c, t)) \Big) \end{aligned}$$
+$$\begin{aligned} \forall A, p, d \; \Big( &\text{AppAutom}(A) \land \text{Partie}(p, A) \land \text{Atome}(d) \land \text{Contient}(p, d) \implies \\  &\exists! c, \exists! t \; ((\text{ComposantMetier}(c) \lor \text{AgentSysteme}(c)) \land \text{ComposantTech}(t) \land \text{Combine}(d, c, t)) \Big) \end{aligned}$$
 
-### Axiome 3b — Exclusivité du composant métier
+### Axiome 3b — Exclusivité du composant pilote par application
 
-$$\begin{aligned} \forall d_1, d_2, c, t_1, t_2 \; &\Big( \big( \text{Atome}(d_1) \land \text{Atome}(d_2) \land \text{ComposantMetier}(c)  \land \text{ComposantTech}(t_1) \land \text{ComposantTech}(t_2) \land \\ &\text{Combine}(d_2, c, t_2) \land \text{Combine}(d_1, c, t_1) \big) \implies d_1 = d_2 \Big)\end{aligned}$$
+Au sein d'une même application $A$, un composant pilote (`ComposantMetier` ou `AgentSysteme`) ne peut définir qu'un seul atome architectural (tout en restant réutilisable dans d'autres applications) :
+
+$$\begin{aligned} \forall A, p_1, p_2, d_1, d_2, c, t_1, t_2 \; &\Big( \big( \text{AppAutom}(A) \land \text{Partie}(p_1, A) \land \text{Partie}(p_2, A) \land \text{Atome}(d_1) \land \text{Atome}(d_2) \land \\ &\text{Contient}(p_1, d_1) \land \text{Contient}(p_2, d_2) \land (\text{ComposantMetier}(c) \lor \text{AgentSysteme}(c)) \land \\ &\text{ComposantTech}(t_1) \land \text{ComposantTech}(t_2) \land \text{Combine}(d_1, c, t_1) \land \text{Combine}(d_2, c, t_2) \big) \implies d_1 = d_2 \Big)\end{aligned}$$
 
 ### Axiome 3c — Principe de délégation récursive
 
@@ -229,46 +393,43 @@ La relation d'héritage entre deux composants implique l'appartenance au même d
 
 $$\forall c, p \; \Big( \big( \text{Composant}(c) \land \text{Composant}(p) \land \text{HeriteDirectComposant}(c, p) \big) \implies \text{MemeDomaine}(c, p) \Big)$$
 
-
-### Définitions
-
 #### Définition - Composants métiers autonomes
 
-$$\begin{aligned} \forall c \in \mathcal{C}, \quad &\text{ComposantMetierAutonome}(c) \iff \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, c, t) \big) \;\;\land \\ &\big( \forall p \in \mathcal{P}, \; \neg \text{ContientDirect}(p, c) \big) \Big] \end{aligned}$$
+$$\begin{aligned} \forall c \in \mathcal{C}, \quad &\text{ComposantMetierAutonome}(c) \iff \Big[ \text{ComposantMetier}(c) \;\;\land\;\; \big( \exists p \in \mathcal{P}, \; \text{ContientDirect}(p, c) \big) \;\;\land \\ &\big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, c, t) \big) \Big] \end{aligned}$$
 
 #### Définition - Composants techniques autonomes
 
-$$\forall t \in \mathcal{C}, \quad \text{ComposantTechAutonome}(t) \iff \Big( \text{ComposantTech}(t) \;\;\land\;\; \big( \forall c \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, c, t) \big) \Big) $$
+$$\begin{aligned} \forall t \in \mathcal{C}, \quad &\text{ComposantTechAutonome}(t) \iff \Big[ \text{ComposantTech}(t) \;\;\land\;\; \big( \exists p \in \mathcal{P}, \; \text{ContientDirect}(p, t) \big) \;\;\land \\ &\big( \forall c \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, c, t) \big) \Big] \end{aligned}$$
 
 #### Définition - Agents systèmes autonomes
 
-$$\begin{aligned} \forall a \in \mathcal{C}, \quad &\text{AgentSystemeAutonome}(a) \iff \Big[ \text{AgentSysteme}(a) \;\;\land\;\; \big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, a, t) \big) \;\;\land \\ &\big( \forall p \in \mathcal{P}, \; \neg \text{ContientDirect}(p, a) \big) \Big] \end{aligned}$$
+$$\begin{aligned} \forall a \in \mathcal{C}, \quad &\text{AgentSystemeAutonome}(a) \iff \Big[ \text{AgentSysteme}(a) \;\;\land\;\; \big( \exists p \in \mathcal{P}, \; \text{ContientDirect}(p, a) \big) \;\;\land \\ &\big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combine}(d, a, t) \big) \Big] \end{aligned}$$
 
 ### Axiome COMPS-VERS-CLPROLF
 
-1. **Composant métier**
+1. **Composant métier (dans un atome)**
 
 $$\forall d, c, t \; \Big( \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{ComposantMetier}(c) \implies \exists! classe \in \mathcal{C}_{\text{poo}} \; \big( \text{Annote}(classe, @ClAgent) \land \text{Realise}(classe, c) \big) \Big)$$
 
-2. **Composant technique**
+2. **Composant technique (dans un atome)**
 
 $$\forall d, c, t \; \Big(  \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{ComposantTech}(t) \implies \exists! classe \in \mathcal{C}_{\text{poo}} \; \big( \text{Annote}(classe, @ClWorker) \land \text{Realise}( classe, t) \big) \Big)$$
 
-3. **Composant système**
+3. **Composant système (dans un atome)**
 
 $$\forall d, c, t \; \Big(  \text{Atome}(d) \land \text{Combine}(d, c, t) \land \text{AgentSysteme}(c) \implies \exists! classe \in \mathcal{C}_{\text{poo}} \; \big( \text{Annote}(classe, @ClSystem) \land \text{Realise}( classe, c) \big) \Big)$$
 
 4. **Composants métiers autonomes**
 
-$$\forall c \in \mathcal{C} \Big( \text{ComposantMetierAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClAgent) \land \text{Realise}(classe, c) \big) \Big) $$
+$$\forall c \in \mathcal{C} \Big( \text{ComposantMetierAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClAgent) \land \text{Realise}(classe, c) \big) \Big)$$
 
 5. **Composants techniques autonomes**
 
-$$\forall c \in \mathcal{C} \Big( \text{ComposantTechAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClWorker) \land \text{Realise}(classe, c) \big) \Big) $$
+$$\forall c \in \mathcal{C} \Big( \text{ComposantTechAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClWorker) \land \text{Realise}(classe, c) \big) \Big)$$
 
 6. **Composants systèmes autonomes**
 
-$$\forall c \in \mathcal{C} \Big( \text{AgentSystemeAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClSystem) \land \text{Realise}(classe, c) \big) \Big) $$
+$$\forall c \in \mathcal{C} \Big( \text{AgentSystemeAutonome}(c) \implies \exists! classe \in \mathcal{C}_{poo} \big( \text{Annote}(classe, @ClSystem) \land \text{Realise}(classe, c) \big) \Big)$$
 
 ### Axiome ATOMES-VERS-CLPROLF
 
@@ -286,6 +447,9 @@ $$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big
 
 $$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{poo}} \; &\Big( \big( \text{Annote}(cl_c, \text{@ClSystem}) \land \text{Annote}(cl_t, \text{@ClWorker}) \land \text{InjectDepend}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! a, \exists! t \; \big( \text{Atome}(d) \land \text{Combine}(d, a, t) \land \text{AgentSysteme}(a) \land \text{ComposantTech}(t) \land \\ &\text{Realise}(cl_c, a) \land \text{Realise}(cl_t, t) \big) \Big) \end{aligned}$$
 
+> **Note sur `RECIPR-ATOME-METIER` et `RECIPR-ATOME-SYSTEME` :** Ces deux axiomes poussent la formalisation jusqu'à son terme pour montrer qu'une reconstruction univoque de l'atome formel à partir de l'observation du code (`@ClAgent` / `@ClSystem`, `@ClWorker` et injection de dépendance) est théoriquement possible dans un modèle cohérent. Ils relèvent de la complétude de la formalisation et ne correspondent pas à une vérification effectuée par le *checker* statique sur les atomes.
+> 
+
 ### Axiome RECIPR-COMPOSANT-METIER
 
 $$\forall cl \in \mathcal{C}_{\text{poo}} \; \Big( \text{Annote}(cl, \text{@ClAgent}) \implies \exists! c \; \big( \text{ComposantMetier}(c) \land \text{Realise}(cl, c) \big) \Big)$$
@@ -296,7 +460,7 @@ $$\forall cl \in \mathcal{C}_{\text{poo}} \; \Big( \text{Annote}(cl, \text{@ClWo
 
 ### Axiome RECIPR-COMPOSANT-SYST
 
-$$\forall cl \in \mathcal{C}_{\text{poo}} \; \Big( \text{Annote}(cl, \text{@ClSystem}) \implies \exists! s \; \big( \text{AgentSysteme}(s) \land \text{Realise}(cl, s) \big) \Big)$$
+$$\forall cl \in \mathcal{C}_{\text{poo}} \; \Big( \text{Annote}(cl, \text{@ClSystem}) \implies \exists! a \; \big( \text{AgentSysteme}(a) \land \text{Realise}(cl, a) \big) \Big)$$
 
 ### Axiome RECIPR-SOUS-SYST
 
@@ -536,8 +700,82 @@ $$\begin{aligned} \forall cl \in \mathcal{C}_{\text{poo}}, \, \forall \{int_1, \
 
 ---
 
+## VI. État de l'art et positionnement
 
-## VI. Implémentation et Ressources
+Le modèle Clprolf se situe à la convergence de trois courants de recherche et d'ingénierie logicielle : la vérification architecturale statique, les langages et systèmes de types orientés composants ou traits, et la structuration topologique des architectures centrées sur le domaine et l'automatisation.
+
+### 1. Vérification architecturale statique et analyse de dépendances
+
+De nombreux outils et travaux académiques visent à prévenir l'érosion architecturale en vérifiant la conformité du code source vis-à-vis d'une architecture cible. Des approches telles que les matrices de structure de dépendance (DSM) [Sangal et al., 2005], Sonargraph, Lattix, ou plus récemment les bibliothèques de tests architecturaux comme **ArchUnit** (Java) et **ArchUnitNET** (C#) [Gafert, 2017] permettent de formuler des règles sur la structure du code.
+
+Toutefois, l'usage classique de ces outils repose essentiellement sur des **contrôles topologiques de graphes d'appels ou de dépendances entre espaces de noms** (par exemple, interdire à un package `domain` d'importer un package `infrastructure`). Ces vérifications s'appuient sur des conventions de nommage ou de découpage en dossiers ad hoc, dépourvues de sémantique intrinsèque au niveau des types. Clprolf adopte une approche radicalement différente : il n'impose aucun contrôle rigide sur les graphes d'appels entre couches, mais utilise ArchUnit et ArchUnitNET comme de simples moteurs d'exécution pour vérifier un **système de types sémantiques** (au sens des *pluggable type systems* [Bracha, 2004]). L'accent est mis sur la qualification intrinsèque des entités et la conservation de leur domaine le long des hiérarchies d'héritage, laissant aux architectures logicielles de niveau supérieur le soin d'organiser les flux d'exécution.
+
+### 2. Langages architecturaux, traits et rôles en programmation orientée objet
+
+L'intégration de concepts architecturaux directement dans les langages orientés objet a été explorée notamment par **ArchJava** [Aldrich et al., 2002], qui étend Java avec des constructions dédiées (`component`, `port`, `connect`) afin de garantir statiquement l'intégrité des connexions à la compilation. Néanmoins, ArchJava présente deux limites majeures par rapport à Clprolf : d'une part, son concept de `component` reste **purement structurel et agnostique du rôle sémantique** (il ne distingue pas la logique métier pure du support technique ou système) ; d'autre part, il nécessite un compilateur modifié et une syntaxe propriétaire, freinant son adoption industrielle. À l'inverse, Clprolf demeure un EDSL non intrusif fondé sur des annotations standards du langage hôte.
+
+Sur le plan de la structuration des interfaces, Clprolf s'inspire des travaux fondateurs sur les **traits** [Schärli et al., 2003 ; Ducasse et al., 2006] et sur la modélisation des **rôles** en POO [Steimann, 2000], qui permettent une composition horizontale fine des comportements sans les écueils de l'héritage multiple d'état. Clprolf transpose toutefois cette dualité au niveau architectural : il sépare strictement les **familles** (`@ClFamily`, porteuses d'une polarité exclusive et d'une identité domaniale) des **traits** (`@ClTrait`, véritables « interfaces d'interfaces » exprimant des capacités transverses soumises à compatibilité de rôle), tout en interdisant aux composants concrets d'implémenter directement des traits sans transiter par une famille miroir.
+
+### 3. Architectures centrées sur le domaine et topologie atomique de l'automatisation
+
+Sur le plan méthodologique, le *Domain-Driven Design* (DDD) [Evans, 2003], l'*Architecture Hexagonale* [Cockburn, 2005] et la *Clean Architecture* [Martin, 2017] posent le principe fondamental d'isolation du cœur métier vis-à-vis des détails techniques d'infrastructure. Cependant, ces approches demeurent des cadres conceptuels informels : elles ne fournissent ni langage d'annotation unifié entre classes et interfaces, ni preuve formelle que le polymorphisme objet ne compromet pas l'étanchéité des domaines.
+
+Plus fondamentalement, là où ces architectures découpent le logiciel en strates horizontales ou cercles concentriques génériques, Clprolf introduit une **organisation topologique originale** pensée pour les applications d'automatisation orientées objet. Il structure l'application autour de l'**atome architectural** : une unité cohérente associant un pilote (`@ClAgent` pour le domaine métier, ou `@ClSystem` pour les atomes systèmes d'infrastructure) à ses exécutants techniques (`@ClWorker`), l'ensemble s'organisant au sein des parties (sous-systèmes) de l'application.
+
+De même, au niveau macroscopique, les sous-systèmes de Clprolf (incarnés par des packages Java ou namespaces C#) s'alignent naturellement avec la notion de Bounded Context du Domain-Driven Design (DDD), les modules d'un monolithe modulaire ou le périmètre interne d'un microservice. Toutefois, là où ces approches gouvernent le découpage externe des frontières de domaine et des flux entre contextes, Clprolf opère en couche intermédiaire interne : il garantit par vérification statique que l'intérieur même de chaque sous-système demeure structuré en atomes sémantiquement étanches, sans dépendre de simples conventions de nommage.
+
+En agissant comme une **couche intermédiaire** entre la programmation orientée objet classique et les styles architecturaux macroscopiques, Clprolf unifie cette topologie ternaire avec une formalisation rigoureuse : sa relation asymétrique **Miroir** entre le Monde Concret ($\mathcal{C}$) et le Monde Abstrait ($\mathcal{I}$) permet de démontrer déductivement en logique du premier ordre que l'héritage multiple de familles et la composition de traits préservent invariablement la pureté sémantique et domaniale des atomes exécutables.
+
+### Synthèse comparative
+
+| Approche / Outil | Niveau d'abstraction | Typage sémantique des rôles | Vérification de l'héritage & du polymorphisme | Intrusivité dans le langage hôte | Fondement formel |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **ArchUnit / ArchUnitNET** | Graphes de dépendances (packages/couches) | Non (conventions de nommage) | Règles ad hoc manuelles | Nulle (tests unitaires) | Aucun (analyse de bytecode) |
+| **ArchJava** | Composants, ports et connecteurs | Non (composant structurel unique) | Contrôle des connexions de ports | Élevée (extension de syntaxe & compilateur) | Système de types dédié |
+| **Traits (Schärli et al.)** | Réutilisation comportementale fine | Non (agnostique du domaine) | Composition horizontale d'opérations | Intégré au langage (Smalltalk, Scala, Rust...) | Calcul opérationnel / algèbre de traits |
+| **DDD / Clean Architecture** | Strates macroscopiques centrées domaine | Conceptuel (informel) | Non formalisé | Nulle (méthodologie) | Informel |
+| **Clprolf (ce travail)** | **Couche intermédiaire & topologie atomique (`Agent`–`Worker`–`System`)** | **Oui (`@ClAgent`, `@ClWorker`, `@ClSystem`)** | **Oui (invariance domaniale & ancrage Miroir)** | **Nulle (annotations Java / C# standards)** | **Axiomatique en logique du 1er ordre** |
+
+---
+
+## VII. Discussion et perspectives
+
+### 1. Frontière entre structuration conceptuelle et génération de code par LLM
+
+Clprolf permet de distinguer la structuration conceptuelle de l'implémentation opérationnelle, un enjeu accru par l'usage de grands modèles de langage (LLM) dans le développement logiciel. Même sur des tâches algorithmiques ou techniques, un modèle génératif produit souvent un code peu hiérarchisé et n'introduit pas spontanément de découpage tel qu'un `@ClAgent` intermédiaire ou un `@ClSystem` distinct pour isoler des responsabilités.
+
+En formalisant la structure attendue via des rôles explicites (`@ClAgent`, `@ClSystem`, `@ClWorker`, `@ClFamily` et relations *Miroir*) soumis à vérification statique, le cadre offre un point d'ancrage pour encadrer le code généré automatiquement. La génération peut ainsi se concentrer sur l'implémentation locale — comme le corps de méthodes ou certains `@ClWorker` — tandis que le vérificateur signale les écarts aux contraintes structurelles et d'invariance domaniale définies par le modèle.
+
+---
+
+### 2. Perspectives d'évolution du modèle formel
+
+En cohérence avec son positionnement de **couche intermédiaire** entre la programmation orientée objet et les macro-architectures (DDD, Architecture Hexagonale, Clean Architecture), Clprolf n'a pas vocation à contraindre les graphes d'appels ou les dépendances directionnelles entre rôles (par exemple interdire à un `@ClAgent` de solliciter un `@ClSystem`), ces politiques relevant des architectures logicielles de niveau supérieur. Trois axes d'extension se dégagent néanmoins de cette formalisation :
+
+* **Complémentarité avec les règles de macro-architecture :** Bien que hors du noyau intermédiaire de Clprolf, les qualifications sémantiques (`@ClAgent`, `@ClWorker`, `@ClSystem`) et le découpage en parties ($\mathcal{P}_A$) fournissent un socle naturel sur lequel une macro-architecture peut s'appuyer pour exprimer ses propres règles d'isolation ou de sens des appels.
+
+
+* **Outillage de diagnostic et lecture topologique :** L'exploitation de la structure en atomes ($\mathcal{D}$), en parties ($\mathcal{P}_A$) et en hiérarchies d'héritage/familles ouvre la voie à des outils d'analyse statique capables de dresser la cartographie d'une application — recenser les agents, workers et systèmes, visualiser les héritages et repérer les atomes complets ou composants isolés.
+
+
+* **Extension à d'autres langages orientés objet :** Bien qu'ancré aujourd'hui dans Java et C# .NET, le noyau axiomatique de Clprolf est agnostique du langage hôte et peut être transposé à d'autres écosystèmes orientés objet typés statiquement (tels que TypeScript, Kotlin ou Scala).
+
+---
+
+## Références bibliographiques
+
+* **[Aldrich et al., 2002]** Aldrich, J., Chambers, C., & Notkin, D. (2002). *ArchJava: Connecting software architecture to implementation*. In Proceedings of the 24th International Conference on Software Engineering (ICSE '02), 187–197. ACM.
+* **[Bracha, 2004]** Bracha, G. (2004). *Pluggable Type Systems*. In OOPSLA'04 Workshop on Revival of Dynamic Languages.
+* **[Cockburn, 2005]** Cockburn, A. (2005). *Hexagonal architecture (Ports and Adapters)*. Alistair in the Hexagone. https://cockburn.us
+* **[Ducasse et al., 2006]** Ducasse, S., Nierstrasz, O., Schärli, N., Wuyts, R., & Black, A. P. (2006). *Traits: A mechanism for fine-grained reuse*. ACM Transactions on Programming Languages and Systems (TOPLAS), 28(2), 331–388.
+* **[Evans, 2003]** Evans, E. (2003). *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley Professional.
+* **[Gafert, 2017]** Gafert, P. (2017). *ArchUnit: Unit test your Java architecture* [Logiciel]. TNG Technology Consulting. https://archunit.org
+* **[Martin, 2017]** Martin, R. C. (2017). *Clean Architecture: A Craftsman's Guide to Software Structure and Design*. Prentice Hall.
+* **[Sangal et al., 2005]** Sangal, N., Jordan, E., Sinha, V., & Jackson, D. (2005). *Using dependency models to manage complex software architecture*. In Proceedings of the 20th Annual ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '05), 167–176.
+* **[Schärli et al., 2003]** Schärli, N., Ducasse, S., Nierstrasz, O., & Black, A. P. (2003). *Traits: Composable units of behaviour*. In European Conference on Object-Oriented Programming (ECOOP 2003), LNCS 2743, 248–274. Springer.
+* **[Steimann, 2000]** Steimann, F. (2000). *On the representation of roles in object-oriented and conceptual modelling*. Data & Knowledge Engineering, 35(1), 83–106.
+
+## VIII. Implémentation et Ressources
 
 * **Dépôt principal Clprolf (documentation, exemples et code source) :** [https://github.com/charleskoffler/clprolf-public](https://github.com/charleskoffler/clprolf-public)
 * **Checker statique Java (basé sur ArchUnit) :** [https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker](https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker)
