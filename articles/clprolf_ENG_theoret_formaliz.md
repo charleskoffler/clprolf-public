@@ -386,63 +386,63 @@ $$\begin{aligned} \forall t \in \mathcal{C}, \quad &\text{StandaloneTechComponen
 
 $$\begin{aligned} \forall a \in \mathcal{C}, \quad &\text{StandaloneSystemAgent}(a) \iff \Big[ \text{SystemAgent}(a) \;\;\land\;\; \big( \exists p \in \mathcal{P}, \; \text{DirectlyContains}(p, a) \big) \;\;\land \\ &\big( \forall t \in \mathcal{C}, \forall d \in \mathcal{D}, \; \neg \text{Combines}(d, a, t) \big) \Big] \end{aligned}$$
 
-### Axiom COMPS-VERS-CLPROLF
+### Axiom COMPS-TO-CLPROLF
 
 1. **Business component (within an atom)**
 
-$$\forall d, c, t \; \Big( \text{Atom}(d) \land \text{Combines}(d, c, t) \land \text{BusinessComponent}(c) \implies \exists! classe \in \mathcal{C}_{\text{oop}} \; \big( \text{Annotates}(classe, @ClAgent) \land \text{Realizes}(classe, c) \big) \Big)$$
+$$\forall d, c, t \; \Big( \text{Atom}(d) \land \text{Combines}(d, c, t) \land \text{BusinessComponent}(c) \implies \exists! class \in \mathcal{C}_{\text{oop}} \; \big( \text{Annotates}(class, @ClAgent) \land \text{Realizes}(class, c) \big) \Big)$$
 
 2. **Technical component (within an atom)**
 
-$$\forall d, c, t \; \Big(  \text{Atom}(d) \land \text{Combines}(d, c, t) \land \text{TechComponent}(t) \implies \exists! classe \in \mathcal{C}_{\text{oop}} \; \big( \text{Annotates}(classe, @ClWorker) \land \text{Realizes}( classe, t) \big) \Big)$$
+$$\forall d, c, t \; \Big(  \text{Atom}(d) \land \text{Combines}(d, c, t) \land \text{TechComponent}(t) \implies \exists! class \in \mathcal{C}_{\text{oop}} \; \big( \text{Annotates}(class, @ClWorker) \land \text{Realizes}( class, t) \big) \Big)$$
 
 3. **System component (within an atom)**
 
-$$\forall d, c, t \; \Big(  \text{Atom}(d) \land \text{Combines}(d, c, t) \land \text{SystemAgent}(c) \implies \exists! classe \in \mathcal{C}_{\text{oop}} \; \big( \text{Annotates}(classe, @ClSystem) \land \text{Realizes}( classe, c) \big) \Big)$$
+$$\forall d, c, t \; \Big(  \text{Atom}(d) \land \text{Combines}(d, c, t) \land \text{SystemAgent}(c) \implies \exists! class \in \mathcal{C}_{\text{oop}} \; \big( \text{Annotates}(class, @ClSystem) \land \text{Realizes}( class, c) \big) \Big)$$
 
 4. **Standalone business components**
 
-$$\forall c \in \mathcal{C} \Big( \text{StandaloneBusinessComponent}(c) \implies \exists! classe \in \mathcal{C}_{oop} \big( \text{Annotates}(classe, @ClAgent) \land \text{Realizes}(classe, c) \big) \Big)$$
+$$\forall c \in \mathcal{C} \Big( \text{StandaloneBusinessComponent}(c) \implies \exists! class \in \mathcal{C}_{oop} \big( \text{Annotates}(class, @ClAgent) \land \text{Realizes}(class, c) \big) \Big)$$
 
 5. **Standalone technical components**
 
-$$\forall c \in \mathcal{C} \Big( \text{StandaloneTechComponent}(c) \implies \exists! classe \in \mathcal{C}_{oop} \big( \text{Annotates}(classe, @ClWorker) \land \text{Realizes}(classe, c) \big) \Big)$$
+$$\forall c \in \mathcal{C} \Big( \text{StandaloneTechComponent}(c) \implies \exists! class \in \mathcal{C}_{oop} \big( \text{Annotates}(class, @ClWorker) \land \text{Realizes}(class, c) \big) \Big)$$
 
 6. **Standalone system agents**
 
-$$\forall c \in \mathcal{C} \Big( \text{StandaloneSystemAgent}(c) \implies \exists! classe \in \mathcal{C}_{oop} \big( \text{Annotates}(classe, @ClSystem) \land \text{Realizes}(classe, c) \big) \Big)$$
+$$\forall c \in \mathcal{C} \Big( \text{StandaloneSystemAgent}(c) \implies \exists! class \in \mathcal{C}_{oop} \big( \text{Annotates}(class, @ClSystem) \land \text{Realizes}(class, c) \big) \Big)$$
 
-### Axiom ATOMES-VERS-CLPROLF
+### Axiom ATOMS-TO-CLPROLF
 
 $$\forall d, c, t, cl_c, cl_t \; \Big( \big( \text{Atom}(d) \land \text{Combines}(d, c, t) \land \text{Realizes}(cl_c, c) \land \text{Realizes}(cl_t, t) \big) \implies \text{InjectsDep}(cl_c, cl_t) \Big)$$
 
-### Axiom PARTIES-VERS-CLPROLF
+### Axiom PARTS-TO-CLPROLF
 
 $$\forall A, p \; \Big( \text{AutomApp}(A) \land \text{Part}(p, A) \implies \exists! s \in \mathcal{S}_{\text{oop}} \; \big( \text{OOPSubsystem}(s) \land \text{Realizes}(s, p) \big) \Big)$$
 
-### Axiom RECIPR-ATOME-METIER
+### Axiom CONVERSE-BUSINESS-ATOM
 
 $$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{oop}} \; &\Big( \big( \text{Annotates}(cl_c, \text{@ClAgent}) \land \text{Annotates}(cl_t, \text{@ClWorker}) \land \text{InjectsDep}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! c, \exists! t \; \big( \text{Atom}(d) \land \text{Combines}(d, c, t) \land \text{BusinessComponent}(c) \land \text{TechComponent}(t) \land \\ &\text{Realizes}(cl_c, c) \land \text{Realizes}(cl_t, t) \big) \Big) \end{aligned}$$
 
-### Axiom RECIPR-ATOME-SYSTEME
+### Axiom CONVERSE-SYSTEM-ATOM
 
 $$\begin{aligned} \forall cl_c, cl_t \in \mathcal{C}_{\text{oop}} \; &\Big( \big( \text{Annotates}(cl_c, \text{@ClSystem}) \land \text{Annotates}(cl_t, \text{@ClWorker}) \land \text{InjectsDep}(cl_c, cl_t) \big) \implies \\ &\exists! d, \exists! a, \exists! t \; \big( \text{Atom}(d) \land \text{Combines}(d, a, t) \land \text{SystemAgent}(a) \land \text{TechComponent}(t) \land \\ &\text{Realizes}(cl_c, a) \land \text{Realizes}(cl_t, t) \big) \Big) \end{aligned}$$
 
-> **Note on `RECIPR-ATOME-METIER` and `RECIPR-ATOME-SYSTEME`:** These two axioms push the formalization to its completion to show that an unambiguous reconstruction of the formal atom from code observation (`@ClAgent` / `@ClSystem`, `@ClWorker`, and dependency injection) is theoretically possible in a consistent model. They pertain to the completeness of the formalization and do not correspond to a check performed by the static *checker* on atoms.
+> **Note on `CONVERSE-BUSINESS-ATOM` and `CONVERSE-SYSTEM-ATOM`:** These two axioms push the formalization to its completion to show that an unambiguous reconstruction of the formal atom from code observation (`@ClAgent` / `@ClSystem`, `@ClWorker`, and dependency injection) is theoretically possible in a consistent model. They pertain to the completeness of the formalization and do not correspond to a check performed by the static *checker* on atoms.
 
-### Axiom RECIPR-COMPOSANT-METIER
+### Axiom CONVERSE-BUSINESS-COMPONENT
 
 $$\forall cl \in \mathcal{C}_{\text{oop}} \; \Big( \text{Annotates}(cl, \text{@ClAgent}) \implies \exists! c \; \big( \text{BusinessComponent}(c) \land \text{Realizes}(cl, c) \big) \Big)$$
 
-### Axiom RECIPR-COMPOSANT-TECHN
+### Axiom CONVERSE-TECH-COMPONENT
 
 $$\forall cl \in \mathcal{C}_{\text{oop}} \; \Big( \text{Annotates}(cl, \text{@ClWorker}) \implies \exists! t \; \big( \text{TechComponent}(t) \land \text{Realizes}(cl, t) \big) \Big)$$
 
-### Axiom RECIPR-COMPOSANT-SYST
+### Axiom CONVERSE-SYSTEM-COMPONENT
 
 $$\forall cl \in \mathcal{C}_{\text{oop}} \; \Big( \text{Annotates}(cl, \text{@ClSystem}) \implies \exists! a \; \big( \text{SystemAgent}(a) \land \text{Realizes}(cl, a) \big) \Big)$$
 
-### Axiom RECIPR-SOUS-SYST
+### Axiom CONVERSE-SUBSYSTEM
 
 $$\forall s \in \mathcal{S}_{\text{oop}} \; \Big( \text{OOPSubsystem}(s) \implies \exists! p, \exists A \; \big( \text{Part}(p, A) \land \text{Realizes}(s, p) \big) \Big)$$
 
@@ -490,21 +490,21 @@ $$\forall f_1, f_2 \in \mathcal{I} \; \Big( \text{DirectInherit}(f_1, f_2) \land
 
 $$\begin{aligned} \forall c, p \in \mathcal{C}, &\forall f_c, f_p \in \mathcal{I} \; \Big( \big( \text{DirectInheritComponent}(c, p) \land \text{Family}(f_c) \land \text{Family}(f_p) \land \text{MirrorOf}(f_c, c) \land \\&\text{MirrorOf}(f_p, p) \big) \implies \text{DirectInherit}(f_c, f_p) \Big) \end{aligned}$$
 
-### Axiom INTERFS-VERS-CLPROLF
+### Axiom INTERFS-TO-CLPROLF
 
 1. **Family Interface**
 
-$$\forall f \in \mathcal{I} \; \Big( \text{Family}(f) \implies \exists! interfacePoo \in \mathcal{I}_{\text{oop}} \; \big( \text{Annotates}(interfacePoo, @ClFamily) \land \text{Realizes}(interfacePoo, f) \big) \Big)$$
+$$\forall f \in \mathcal{I} \; \Big( \text{Family}(f) \implies \exists! oopInterface \in \mathcal{I}_{\text{oop}} \; \big( \text{Annotates}(oopInterface, @ClFamily) \land \text{Realizes}(oopInterface, f) \big) \Big)$$
 
 2. **Trait Interface**
 
-$$\forall t \in \mathcal{I} \; \Big( \text{Trait}(t) \implies \exists! interfacePoo \in \mathcal{I}_{\text{oop}} \; \big( \text{Annotates}(interfacePoo, @ClTrait) \land \text{Realizes}(interfacePoo, t) \big) \Big)$$
+$$\forall t \in \mathcal{I} \; \Big( \text{Trait}(t) \implies \exists! oopInterface \in \mathcal{I}_{\text{oop}} \; \big( \text{Annotates}(oopInterface, @ClTrait) \land \text{Realizes}(oopInterface, t) \big) \Big)$$
 
-### Axiom RECIPR-INTERF-FAM
+### Axiom CONVERSE-FAMILY-INTERF
 
 $$\forall int \in \mathcal{I}_{\text{oop}} \; \Big( \text{Annotates}(int, \text{@ClFamily}) \implies \exists! f \in \mathcal{I} \; \big( \text{Family}(f) \land \text{Realizes}(int, f) \big) \Big)$$
 
-### Axiom RECIPR-INTERF-TRAIT
+### Axiom CONVERSE-TRAIT-INTERF
 
 $$\forall int \in \mathcal{I}_{\text{oop}} \; \Big( \text{Annotates}(int, \text{@ClTrait}) \implies \exists! t \in \mathcal{I} \; \big( \text{Trait}(t) \land \text{Realizes}(int, t) \big) \Big)$$
 
@@ -749,5 +749,3 @@ Consistent with its positioning as an **intermediate layer** between object-orie
 * **Main Clprolf repository (documentation, examples, and source code):** [https://github.com/charleskoffler/clprolf-public](https://github.com/charleskoffler/clprolf-public)
 * **Java static checker (ArchUnit-based):** [https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker](https://github.com/charleskoffler/clprolf-public/tree/main/clprolf_checker)
 * **C# .NET static checker (ArchUnitNET-based):** [https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet](https://github.com/charleskoffler/clprolf-public/tree/main/Clprolf.ArchUnitNet)
-
-```
