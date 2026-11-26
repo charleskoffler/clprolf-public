@@ -1,4 +1,3 @@
-<!-- vers 3.5 ENGLISH. Relu toutes les formules et les phrases avec , aucune erreur comparé à la version française, super!!! -->
 # Axiomatic Formalization of an Object-Oriented Software Topology and Static Domain Verification: The Clprolf Model
 
 **Version:** v1.2 (November 2026)
