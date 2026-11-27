@@ -1,6 +1,6 @@
 # Axiomatic Formalization of an Object-Oriented Software Topology and Static Domain Verification: The Clprolf Model
 
-**Version:** v1.2 (November 2026)
+**Version:** v1.3 (November 2026)
 
 **Primary Domain:** Software Design
 
@@ -43,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
 > * **Checks focused on what is decidable and adds value:** The static checker (ArchUnit / ArchUnitNET) verifies the fundamental and decidable constraints of the model (business/technical separation, domain invariance under inheritance, interface polarity). It does not pursue exhaustiveness where it brings no quality or engineering benefit.
 > * **No over-constraint or visual noise:** No extra artifact or annotation (`@ClAtom`, `@ClPart`) is imposed in the code. Atoms, standalone components within parts, and subsystems emerge naturally from standard project structure (`@ClAgent` / `@ClWorker` / `@ClSystem` injection, packages/namespaces).
 > * **Progressive adoption and seamless integration:** The checker supports two-step adoption (separating `@ClAgent`/`@ClWorker`/`@ClSystem` classes first, then optionally enabling strict mode on `@ClFamily`/`@ClTrait` interfaces). It also supports vocabulary aliases (e.g., `@ClDomain`/`@ClInfrastructure`) as well as automatic detection of native annotations from third-party ecosystems (e.g., `@RestController` or `[ApiController]` natively recognized as `@ClSystem`).
+> * **Linear-time verification and negligible CI overhead:** Because these checks rely strictly on local inspection of type annotations and inheritance edges rather than whole-program call-graph or data-flow analysis, verification runs in linear time $O(|V| + |E|)$ over the type hierarchy graph (where $V$ denotes the set of declared classes and interfaces, and $E$ the set of inheritance and implementation edges). This guarantees negligible overhead when executed as part of standard unit test suites in continuous integration.
 
 This boundary ensures smooth adoption in enterprise environments and preserves developer freedom, while locking down 100% of essential architectural rules.
 
@@ -204,15 +205,15 @@ public interface IllegalWorkerFamily extends MonitorableTrait { // MonitorableTr
 
 ### 1. The Family Space and the Component Space
 
-* **The Abstract World ($F$):** A space of contracts, traits, and families, allowing rich composition and multiple inheritance (DAG). It is the locus of pure conceptual definition.
-* **The Concrete World ($C$):** The space of executable components.
+* **The Abstract World ($\mathcal{I}$):** A space of contracts, traits, and families, allowing rich composition and multiple inheritance (DAG). It is the locus of pure conceptual definition.
+* **The Concrete World ($\mathcal{C}$):** The space of executable components.
 
 ### 2. The Mirror Function and Its Asymmetry
 
 The relation between the two worlds is carried by an anchoring function, called **Mirror**:
-* **Left totality:** $\forall c \in C, \quad \exists! f' \in F, \quad \text{Mirror}(c) = f'$
+* **Left totality:** $\forall c \in \mathcal{C}, \quad \exists! f' \in \mathcal{F}, \quad \text{Mirror}(c) = f'$
 *(Every concrete component necessarily has a unique mirror family).*
-* **Right partiality:** $\forall f \in F$, there is not necessarily an associated component $c$. But if such a component exists, it is by definition the mirror of this family.
+* **Right partiality:** $\forall f \in \mathcal{F}$, there is not necessarily an associated component $c$. But if such a component exists, it is by definition the mirror of this family.
 
 ### 3. Semantic Equivalence
 
@@ -226,7 +227,7 @@ The component and its family share strictly the same semantic identity. One exec
 
 * **Invariance under inheritance:** Every inheritance relation (direct or within the DAG of families) respects the domain invariant:
 
-$$\text{InheritsStar}(f_1, f_2) \implies \text{SameDomain}(f_1, f_2)$$
+$$\text{InheritsStar}(f_1, f_2) \implies \text{SameDomainFamily}(f_1, f_2)$$
 
 * **Universality:** Even under multiple inheritance, all parents of a family must converge toward the same domain, guaranteeing total confinement of the system.
 
@@ -251,13 +252,13 @@ Concrete components **never** directly implement technical interfaces (no parasi
 * **$\mathcal{P}_{A}$**: The set of parts / logical subsystems of application $A$. Each part $p \in \mathcal{P}_{A}$ simulates $m \in \mathcal{P}(\mathcal{M}_h)$.
 * **$\mathcal{P}$**: The set of all parts / logical subsystems across all applications.
 * **$\mathcal{D}$**: The set of domain atoms $d = (c, t)$.
-* **$\mathcal{C}$**: The set of abstract components ($\mathcal{C} = \mathcal{C}_{\text{business}} \cup \mathcal{C}_{\text{tech}} \cup \mathcal{C}_{\text{syst}}$).
-* **$\mathcal{I}$**: The set of interfaces ($\mathcal{I} = F \cup T$).
+* **$\mathcal{C}$**: The set of formal components ($\mathcal{C} = \mathcal{C}_{\text{business}} \cup \mathcal{C}_{\text{tech}} \cup \mathcal{C}_{\text{syst}}$).
+* **$\mathcal{I}$**: The set of formal interfaces ($\mathcal{I} = \mathcal{F} \cup \mathcal{T}$), partitioned into the set of family interfaces ($\mathcal{F}$) and the set of trait interfaces ($\mathcal{T}$).
 * **$\mathcal{C}_{\text{oop}}$**: The set of concrete classes (Java / C#).
 * **$\mathcal{I}_{\text{oop}}$**: The set of OOP interfaces.
 * **$\mathcal{S}_{\text{oop}}$**: The set of framework subsystems.
 
-*Scope note: The formal model below formalizes the strict core of Clprolf. Flexibility elements of the framework—such as classes under prototyping (`@ClDraft`), free or native host-language interfaces (`@ClFree`), as well as explicit bypass mechanisms (`@ClBypass`, `@ClInterfaceBypass`)—are intentionally excluded from the strict axiomatic core.*
+> *Scope note:* The formal model below formalizes the strict core of active architectural components ($\mathcal{C}$) and their contracts ($\mathcal{I}$). Passive data structures—such as DTOs, value objects, domain entities, events, and exceptions exchanged between components—do not act as behavioral drivers or technical executors; consequently, they lie outside $\mathcal{C}$ and do not require mirror `@ClFamily` interfaces (and may be annotated with `@ClFree` when implementing native host-language interfaces such as `Serializable` or `Comparable`). Likewise, flexibility mechanisms of the framework—such as classes under prototyping (`@ClDraft`), free interfaces (`@ClFree`), and explicit bypasses (`@ClBypass`, `@ClInterfaceBypass`)—are intentionally excluded from the strict axiomatic core.
 
 ---
 
@@ -517,7 +518,7 @@ For any family $f$ and any trait $t$, if $f$ inherits from $t$ (directly or tran
 
 $$\begin{aligned} \forall f, t \in \mathcal{I} \; &\Big( \text{Family}(f) \land \text{Trait}(t) \land \text{InheritsStar}(f, t) \implies \big( \text{TargetBusiness}(f) \implies \text{TargetBusiness}(t) \big) \land \\  &\big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetSystemAgent}(f) \implies \text{TargetSystemAgent}(t) \big) \Big) \end{aligned}$$
 
-*Deductive proof (Structural induction):*
+*Deductive proof (Structural induction, writing $\text{Target}(x)$ generically for each of $\text{TargetBusiness}(x)$, $\text{TargetTech}(x)$, and $\text{TargetSystemAgent}(x)$):*
 
 $$\begin{array}{rll} 1. & \text{Family}(f) \land \text{Trait}(t) \land \text{InheritsStar}(f, t) & \text{[Hypothesis]} \\ 2. & \text{Base case } (k=1) : \text{DirectInherit}(f, t) \implies \text{Target}(f) \implies \text{Target}(t) & \text{[Direct application of Axiom 4]} \\ 3. & \text{Inductive step } (k+1) : \exists i \in \mathcal{I} \; (\text{InheritsStar}(f, i) \land \text{DirectInherit}(i, t)) & \text{[Decomposition of interface chain]} \\ 4. & \text{Trait}(i) \land \text{Trait}(t) & \text{[Axiom 5 — Propagation of trait status]} \\ 5. & \text{InheritsStar}(f, i) \implies \text{Target}(f) \implies \text{Target}(i) & \text{[Induction hypothesis]} \\ 6. & \text{DirectInherit}(i, t) \implies \text{Target}(i) \implies \text{Target}(t) & \text{[Axiom 4 applied to } i \to t \text{]} \\ 7. & \text{Target}(f) \implies \text{Target}(t) & \text{[Transitivity of implication]} \\ \hline \therefore & \text{InheritsStar}(f, t) \implies \big( \text{TargetBusiness}(f) \implies \text{TargetBusiness}(t) \big) \land \dots & \blacksquare \end{array}$$
 
@@ -591,6 +592,8 @@ Direct consequence of Axiom 6 ($\text{DirectInherit} \implies \text{SameDomainFa
 
 ### Polymorphism and Anchoring Theorems
 
+Whereas Lemmas 3 and 4 establish purely topological reachability in the inheritance graph (locating the mirror family $f'$ above a static family $f$ or a trait $t$), Theorem 1 and Corollary 1.1 lift these structural results to the semantic and domain levels—proving that polymorphic access preserves both semantic equivalence (`SemEquiv`) with the concrete component and conceptual domain invariance (`SameDomainFamily`).
+
 #### Theorem 1 — Neutrality over Components of Family Polymorphism
 
 For any object $o$ statically typed by a family $f$, there exists a unique concrete class $c$ of which $o$ is the direct instance, and a unique mirror family $f'$ anchored to $c$, such that $f'$ inherits from $f$, belongs to the same conceptual domain as $f$, and guarantees semantic equivalence with the concrete component $c$.
@@ -615,18 +618,6 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{StaticType}(o, t) \land \text{Tr
 
 ---
 
-### Theorem 2 — Structure and Invariance of the Family Graph
-
-The Abstract World $\mathcal{F}$ forms a directed graph of family interfaces. Every extended inheritance relation ($\text{InheritsStar}$) between two families establishes a direct hierarchical derivation while guaranteeing strict invariance of the conceptual domain.
-
-$$\begin{aligned} \forall f_1, f_2 \in \mathcal{F}, \quad \Big( \text{Family}(f_1) \land \text{Family}(f_2) \land \text{InheritsStar}(f_1, f_2) \Big) \implies \text{SameDomainFamily}(f_1, f_2) \end{aligned}$$
-
-*Deductive proof:*
-
-$$\begin{aligned} \begin{array}{rll} 1. & \text{Family}(f_1) \land \text{Family}(f_2) \land \text{InheritsStar}(f_1, f_2) & \text{[Hypothesis: relation in graph } \mathcal{F} \text{]} \\  2. & \text{SameDomainFamily}(f_1, f_2) & \text{[Direct application of Lemma 6]} \\  \hline \therefore & \text{SameDomainFamily}(f_1, f_2) & \blacksquare \end{array} \end{aligned}$$
-
----
-
 ### Synthesis — Neutrality of Interfaces over Components
 
 > Theorem 1 and Corollary 1.1 establish the following conclusion: **interface polymorphism—whether expressed through families or traits—never constitutes a semantic or domain betrayal of the concrete code.** The formal system of components, atoms, and parts is thereby preserved.
@@ -636,7 +627,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Family}(f_1) \land \text{Family}
 
 ---
 
-#### Theorem 3 — Concretization of a Family (0 or More Components)
+#### Theorem 2 — Concretization of a Family (0 or More Components)
 
 For any family interface $f$, either there exists no concrete component for which $f$ is the mirror family (pure specification), or there exist one or more concrete components $c$ for which $f$ is the mirror family.
 
@@ -648,7 +639,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Family}(f) & \text{[Hypothesis]}
 
 ---
 
-#### Theorem 4 — DAG Structure and Multiple Inheritance of Families
+#### Theorem 3 — DAG Structure and Multiple Inheritance of Families
 
 The Abstract World $\mathcal{F}$ admits multiple inheritance: a family interface $f \in \mathcal{F}$ can derive directly from several distinct parent families $f_1, \dots, f_k \in \mathcal{F}$ ($k \ge 0$). This Directed Acyclic Graph (DAG) structure preserves strict business domain invariance on every branch.
 
@@ -660,7 +651,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Family}(f) & \text{[Hypothesis]}
 
 ---
 
-#### Theorem 5 — Factorization and Requalification of OOP Polymorphism
+#### Theorem 4 — Factorization and Requalification of OOP Polymorphism
 
 For any homogeneous OOP class $cl$ directly implementing a set of OOP interfaces $\{int_1, \dots, int_k\}$, there exists a domain requalification function $\psi : \mathcal{I}_{\text{oop}} \to (\mathcal{F} \cup \mathcal{T})$, a unique formal component $c \in \mathcal{C}$, and a unique pivot mirror family $f_{\text{pivot}} \in \mathcal{F}$ such that:
 1. $cl$ concretizes component $c \in \mathcal{C}$ ($\text{Realizes}(cl, c)$).

@@ -2,7 +2,7 @@
 
 Axiomatic Formalization of an Object-Oriented Software Topology and Static Domain Verification: The Clprolf Model
 
-**Version :** v1.2 (Novembre 2026)  
+**Version :** v1.3 (Novembre 2026)  
 **Domaine principal :** Software Design  
 **Domaines secondaires :** Theory of computation — Logic and verification *(Logique et vérification formelle)* ; Software notations and tools — Domain-specific languages *(Langages dédiés / EDSL)*  
 **Mots-clés :** Software Topology, Architectural Verification, Domain Invariance, First-Order Logic, Axiomatic Formalization, Static Analysis, Embedded DSL (EDSL), Domain-Driven Design (DDD), ArchUnit, Clprolf
@@ -47,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
 > * **Contrôles focalisés sur le décidable et la valeur ajoutée :** Le checker statique (ArchUnit / ArchUnitNET) vérifie les contraintes fondamentales et décidables du modèle (séparation métier/technique, invariance du domaine par héritage, polarité des interfaces). Il ne cherche pas l'exhaustivité là où elle n'apporte aucun gain de qualité ou d'ingénierie.
 > * **Absence de sur-contrainte et de bruit visuel :** Aucun artefact ou annotation supplémentaire (`@ClAtom`, `@ClPart`) n'est imposé dans le code. Les atomes, les composants autonomes au sein des parties et les sous-systèmes émergent naturellement de la structuration standard du projet (injection `@ClAgent` / `@ClWorker` / `@ClSystem`, packages/namespaces).
 > * **Adoption progressive et intégration transparente :** Le checker permet une adoption en deux étapes (séparation des classes `@ClAgent`/`@ClWorker`/`@ClSystem` d'abord, puis activation optionnelle du mode strict sur les interfaces `@ClFamily`/`@ClTrait`). Il supporte également les alias de vocabulaire (ex. `@ClDomain`/`@ClInfrastructure`) ainsi que la détection automatique d'annotations natives d'écosystèmes tiers (ex. `@RestController` ou `[ApiController]` reconnus nativement comme `@ClSystem`).
+> * **Vérification en temps linéaire et surcoût négligeable en intégration continue (CI) :** Comme ces contrôles reposent strictement sur une inspection locale des annotations de types et des arcs d'héritage plutôt que sur une analyse globale des graphes d'appels ou des flots de données, la vérification s'exécute en temps linéaire $O(|V| + |E|)$ sur le graphe de la hiérarchie des types (où $V$ désigne l'ensemble des classes et interfaces déclarées, et $E$ l'ensemble des arcs d'héritage et d'implémentation). Cela garantit un surcoût négligeable lors de l'exécution au sein des suites de tests unitaires classiques en intégration continue.
 
 Cette frontière garantit une adoption fluide en entreprise et préserve la liberté du développeur, tout en verrouillant 100 % des règles d'architecture indispensables.
 
@@ -218,16 +219,16 @@ public interface IllegalWorkerFamily extends MonitorableTrait { // MonitorableTr
 
 ### 1. L'Espace des Familles et l'Espace des Composants
 
-* **Le Monde Abstrait ($F$) :** Un espace de contrats, de traits et de familles, autorisant la composition riche et l'héritage multiple (DAG). C'est le lieu de la définition conceptuelle pure.
-* **Le Monde Concret ($C$) :** L'espace des composants exécutables.
+* **Le Monde Abstrait ($\mathcal{I}$) :** Un espace de contrats, de traits et de familles, autorisant la composition riche et l'héritage multiple (DAG). C'est le lieu de la définition conceptuelle pure.
+* **Le Monde Concret ($\mathcal{C}$) :** L'espace des composants exécutables.
 
 ### 2. La Fonction Miroir et son Asymétrie
 
 La relation entre les deux mondes est portée par une fonction d'ancrage, dite **Miroir** :
 
-* **Totalité à gauche :** $\forall c \in C, \quad \exists! f' \in F, \quad \text{Miroir}(c) = f'$
+* **Totalité à gauche :** $\forall c \in \mathcal{C}, \quad \exists! f' \in \mathcal{F}, \quad \text{Miroir}(c) = f'$
 *(Tout composant concret possède obligatoirement une famille miroir unique).*
-* **Partialité à droite :** $\forall f \in F$, il n'existe pas nécessairement de composant $c$ associé. Mais si un tel composant existe, il est par définition le miroir de cette famille.
+* **Partialité à droite :** $\forall f \in \mathcal{F}$, il n'existe pas nécessairement de composant $c$ associé. Mais si un tel composant existe, il est par définition le miroir de cette famille.
 
 ### 3. L'Équivalence Sémantique
 
@@ -243,7 +244,7 @@ Le composant et sa famille partagent strictement la même identité sémantique.
 
 * **Invariance par l'héritage :** Toute relation d'héritage (directe ou au sein du DAG des familles) respecte l'invariant de domaine :
 
-$$\text{HeriteStar}(f_1, f_2) \implies \text{MemeDomaine}(f_1, f_2)$$
+$$\text{HeriteStar}(f_1, f_2) \implies \text{MemeDomaineFamille}(f_1, f_2)$$
 
 
 * **Universalité :** Même en cas d'héritage multiple, tous les parents d'une famille doivent converger vers le même domaine, garantissant l'étanchéité totale du système.
@@ -272,13 +273,14 @@ $$\mathcal{M}_{\text{global}} = \{ \mathcal{M}_h \mid h \in \mathcal{H} \}$$
 * **$\mathcal{P}_{A}$** : L'ensemble des parties / sous-systèmes logiques de l'application $A$. Chaque partie $p \in \mathcal{P}_{A}$ simule $m \in \mathcal{P}(\mathcal{M}_h)$.
 * **$\mathcal{P}$** : L'ensemble de toutes les parties / sous-systèmes logiques, toutes applications confondues.
 * **$\mathcal{D}$** : L'ensemble des atomes de domaine $d = (c, t)$.
-* **$\mathcal{C}$** : L'ensemble des composants abstraits ($\mathcal{C} = \mathcal{C}_{\text{metier}} \cup \mathcal{C}_{\text{tech}} \cup \mathcal{C}_{\text{syst}}$).
-* **$\mathcal{I}$** : L'ensemble des interfaces ($\mathcal{I} = F \cup T$).
+* **$\mathcal{C}$** : L'ensemble des composants formels ($\mathcal{C} = \mathcal{C}_{\text{metier}} \cup \mathcal{C}_{\text{tech}} \cup \mathcal{C}_{\text{syst}}$).
+* **$\mathcal{I}$** : L'ensemble des interfaces formelles ($\mathcal{I} = \mathcal{F} \cup \mathcal{T}$), partitionné en l'ensemble des interfaces de famille ($\mathcal{F}$) et l'ensemble des interfaces de trait ($\mathcal{T}$).
 * **$\mathcal{C}_{\text{poo}}$** : L'ensemble des classes concrètes (Java / C#).
-* **$\mathcal{I}_{\text{poo}}$** : L'ensemble des interfaces POO
-* **$\mathcal{S}_{\text{poo}}$** : L'ensemble des sous-systèmes du framework
+* **$\mathcal{I}_{\text{poo}}$** : L'ensemble des interfaces POO.
+* **$\mathcal{S}_{\text{poo}}$** : L'ensemble des sous-systèmes du framework.
+  
 
-*Note de périmètre : Le modèle formel ci-dessous formalise le noyau strict de Clprolf. Les éléments de souplesse du framework — tels que les classes en cours de prototypage (`@ClDraft`), les interfaces libres ou natives du langage hôte (`@ClFree`), ainsi que les mécanismes explicites de dérogation (`@ClBypass`, `@ClInterfaceBypass`) — sont volontairement exclus du noyau axiomatique strict.*
+> *Note sur le périmètre :* Le modèle formel ci-dessous formalise le noyau strict des composants architecturaux actifs ($\mathcal{C}$) et de leurs contrats ($\mathcal{I}$). Les structures de données passives — telles que les DTO, objets-valeurs (*value objects*), entités métier, événements et exceptions échangés entre les composants — n'agissent ni comme pilotes comportementaux ni comme exécutants techniques ; par conséquent, elles se situent en dehors de $\mathcal{C}$ et ne requièrent pas d'interfaces miroirs `@ClFamily` (et peuvent être annotées avec `@ClFree` lorsqu'elles implémentent des interfaces natives du langage hôte telles que `Serializable` ou `Comparable`). De même, les mécanismes de souplesse du framework — tels que les classes en cours de prototypage (`@ClDraft`), les interfaces libres (`@ClFree`) et les contournements explicites (`@ClBypass`, `@ClInterfaceBypass`) — sont volontairement exclus du noyau axiomatique strict.
 
 ---
 
@@ -537,7 +539,7 @@ Pour toute famille $f$ et tout trait $t$, si $f$ hérite de $t$ (directement ou 
 
 $$\begin{aligned} \forall f, t \in \mathcal{I} \; &\Big( \text{Famille}(f) \land \text{Trait}(t) \land \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \\  &\big( \text{TargetTech}(f) \implies \text{TargetTech}(t) \big) \land \big( \text{TargetAgentSyst}(f) \implies \text{TargetAgentSyst}(t) \big) \Big) \end{aligned}$$
 
-*Démonstration déductive (Récurrence structurelle) :*
+*Preuve déductive (Récurrence structurelle, en notant $\text{Target}(x)$ de manière générique pour chacun des prédicats $\text{TargetMetier}(x)$, $\text{TargetTech}(x)$ et $\text{TargetAgentSyst}(x)$) :*
 
 $$\begin{array}{rll} 1. & \text{Famille}(f) \land \text{Trait}(t) \land \text{HeriteStar}(f, t) & \text{[Hypothèse]} \\ 2. & \text{Cas de base } (k=1) : \text{HeriteDirect}(f, t) \implies \text{Target}(f) \implies \text{Target}(t) & \text{[Application directe de l'Axiome 4]} \\ 3. & \text{Pas récursif } (k+1) : \exists i \in \mathcal{I} \; (\text{HeriteStar}(f, i) \land \text{HeriteDirect}(i, t)) & \text{[Décomposition de la chaîne d'interfaces]} \\ 4. & \text{Trait}(i) \land \text{Trait}(t) & \text{[Axiome 5 — Propagation du statut de trait]} \\ 5. & \text{HeriteStar}(f, i) \implies \text{Target}(f) \implies \text{Target}(i) & \text{[Hypothèse de récurrence]} \\ 6. & \text{HeriteDirect}(i, t) \implies \text{Target}(i) \implies \text{Target}(t) & \text{[Axiome 4 appliqué sur } i \to t \text{]} \\ 7. & \text{Target}(f) \implies \text{Target}(t) & \text{[Transitivité de l'implication]} \\ \hline \therefore & \text{HeriteStar}(f, t) \implies \big( \text{TargetMetier}(f) \implies \text{TargetMetier}(t) \big) \land \dots & \blacksquare \end{array}$$
 
@@ -611,6 +613,7 @@ Conséquence directe de l'Axiome 6 ($\text{HeriteDirect} \implies \text{MemeDoma
 
 ### Théorèmes de polymorphisme et d'ancrage
 
+Alors que les Lemmes 3 et 4 établissent une accessibilité purement topologique dans le graphe d'héritage (localisant la famille miroir $f'$ au-dessus d'une famille statique $f$ ou d'un trait $t$), le Théorème 1 et le Corollaire 1.1 élèvent ces résultats structurels aux niveaux sémantique et territorial — démontrant que l'accès polymorphe préserve à la fois l'équivalence sémantique (`EquivSem`) avec le composant concret et l'invariance du domaine conceptuel (`MemeDomaineFamille`).
 
 #### Théorème 1 — Neutralité sur les composants du polymorphisme des familles
 
@@ -638,19 +641,6 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{TypeStatique}(o, t) \land \text{
 ---
 
 
-### Théorème 2 — Structure et invariance du graphe des familles
-
-Le Monde Abstrait $\mathcal{F}$ forme un graphe orienté d'interfaces de familles. Toute relation d'héritage étendu ($\text{HeriteStar}$) entre deux familles établit une dérivation hiérarchique directe tout en garantissant la stricte invariance du domaine conceptuel.
-
-$$\begin{aligned} \forall f_1, f_2 \in \mathcal{F}, \quad \Big( \text{Famille}(f_1) \land \text{Famille}(f_2) \land \text{HeriteStar}(f_1, f_2) \Big) \implies \text{MemeDomaineFamille}(f_1, f_2) \end{aligned}$$
-
-*Démonstration déductive :*
-
-$$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f_1) \land \text{Famille}(f_2) \land \text{HeriteStar}(f_1, f_2) & \text{[Hypothèse : relation dans le graphe } \mathcal{F} \text{]} \\  2. & \text{MemeDomaineFamille}(f_1, f_2) & \text{[Application directe du Lemme 6]} \\  \hline \therefore & \text{MemeDomaineFamille}(f_1, f_2) & \blacksquare \end{array} \end{aligned}$$
-
----
-
-
 ### Synthèse — La neutralité des interfaces sur les composants
 
 > Le théorème 1 et le corollaire 1.1 établissent la conclusion suivante : **le polymorphisme d'interfaces — qu'il s'exprime par des familles ou par des traits — ne constitue en aucun cas une trahison sémantique ou domaniale du code concret.** Le système formel des composants, atomes, parties s'en trouve ainsi préservé.
@@ -661,7 +651,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f_1) \land \text{Famill
 ---
 
 
-#### Théorème 3 — Concrétisation d'une famille (0 ou plusieurs composants)
+#### Théorème 2 — Concrétisation d'une famille (0 ou plusieurs composants)
 
 Pour toute interface de famille $f$, soit il n'existe aucun composant concret dont $f$ est la famille miroir (spécification pure), soit il existe un ou plusieurs composants concrets $c$ dont $f$ est la famille miroir.
 
@@ -674,7 +664,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f) & \text{[Hypothèse]
 ---
 
 
-#### Théorème 4 — Structure en DAG et héritage multiple des familles
+#### Théorème 3 — Structure en DAG et héritage multiple des familles
 
 Le Monde Abstrait $\mathcal{F}$ admet l'héritage multiple : une interface de famille $f \in \mathcal{F}$ peut dériver directement de plusieurs familles parentes distinctes $f_1, \dots, f_k \in \mathcal{F}$ ($k \ge 0$). Cette structure en graphe orienté acyclique (DAG) préserve l'invariance stricte du domaine métier sur chaque branche.
 
@@ -686,7 +676,7 @@ $$\begin{aligned} \begin{array}{rll} 1. & \text{Famille}(f) & \text{[Hypothèse]
 
 ---
 
-#### Théorème 5 — Factorisation et requalification du polymorphisme POO
+#### Théorème 4 — Factorisation et requalification du polymorphisme POO
 
 Pour toute classe POO $cl$ homogène implémentant directement un ensemble d'interfaces POO $\{int_1, \dots, int_k\}$, il existe une fonction de requalification domaniale $\psi : \mathcal{I}_{\text{poo}} \to (\mathcal{F} \cup \mathcal{T})$, un unique composant formel $c \in \mathcal{C}$ et une unique famille miroir pivot $f_{\text{pivot}} \in \mathcal{F}$ tels que :
 
